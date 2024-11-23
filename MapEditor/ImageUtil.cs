@@ -31,8 +31,9 @@ namespace GameEditor
         }
 
         private static Bitmap CreatePaletteBitmap() {
+            static int cc(int c) => (c << 6) | (c << 4) | (c << 2) | c;
+
             Bitmap bmp = new Bitmap(8, 8);
-            Func<int, int> cc = (c) => (c<<6)|(c<<4)|(c<<2)|c;
             for (int r = 0; r < 4; r++) {
                 for (int g = 0; g < 4; g++) {
                     for (int b = 0; b < 4; b++) {
