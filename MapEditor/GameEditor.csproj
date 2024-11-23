@@ -8,6 +8,7 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+    <IsPublishable>True</IsPublishable>
   </PropertyGroup>
 
   <ItemGroup>

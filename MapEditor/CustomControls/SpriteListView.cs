@@ -75,6 +75,7 @@ namespace GameEditor.CustomControls
         protected override void OnMouseClick(MouseEventArgs e) {
             base.OnMouseClick(e);
             if (Util.DesignMode) return;
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right) Focus();
             if (e.Button != MouseButtons.Left) return;
             if (Loop == null) return;
 

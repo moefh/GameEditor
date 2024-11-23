@@ -114,7 +114,7 @@
             MinimizeBox = false;
             Name = "MapSizeDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Select Map Size";
+            Text = "Resize Map";
             Shown += MapSizeDialog_Shown;
             ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
             ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();

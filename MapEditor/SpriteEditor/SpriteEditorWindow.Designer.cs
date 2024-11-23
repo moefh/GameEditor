@@ -36,6 +36,7 @@
             toolStripBtnImport = new ToolStripButton();
             toolsToolStrip = new ToolStrip();
             toolStripBtnGrid = new ToolStripButton();
+            toolStripBtnTransparent = new ToolStripButton();
             mainSplit = new SplitContainer();
             loopsListBox = new ListBox();
             loopContextMenuStrip = new ContextMenuStrip(components);
@@ -120,7 +121,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnGrid });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -138,6 +139,18 @@
             toolStripBtnGrid.Size = new Size(55, 24);
             toolStripBtnGrid.Text = "Grid";
             toolStripBtnGrid.CheckedChanged += toolStripBtnGrid_CheckedChanged;
+            // 
+            // toolStripBtnTransparent
+            // 
+            toolStripBtnTransparent.Checked = true;
+            toolStripBtnTransparent.CheckOnClick = true;
+            toolStripBtnTransparent.CheckState = CheckState.Checked;
+            toolStripBtnTransparent.Image = (Image)resources.GetObject("toolStripBtnTransparent.Image");
+            toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
+            toolStripBtnTransparent.Name = "toolStripBtnTransparent";
+            toolStripBtnTransparent.Size = new Size(101, 24);
+            toolStripBtnTransparent.Text = "Transparent";
+            toolStripBtnTransparent.CheckedChanged += toolStripBtnTransparent_CheckedChanged;
             // 
             // mainSplit
             // 
@@ -235,7 +248,9 @@
             // 
             // spriteEditor
             // 
+            spriteEditor.BGPen = Color.Empty;
             spriteEditor.Dock = DockStyle.Fill;
+            spriteEditor.FGPen = Color.Empty;
             spriteEditor.Location = new Point(0, 0);
             spriteEditor.Loop = null;
             spriteEditor.Name = "spriteEditor";
@@ -245,6 +260,7 @@
             spriteEditor.Size = new Size(380, 176);
             spriteEditor.TabIndex = 0;
             spriteEditor.Text = "spriteEditor";
+            spriteEditor.ImageChanged += spriteEditor_ImageChanged;
             // 
             // spriteListView
             // 
@@ -260,14 +276,17 @@
             // 
             // colorPicker
             // 
-            colorPicker.BG = Color.FromArgb(0, 0, 255);
+            colorPicker.BG = Color.Lime;
+            colorPicker.Color = Color.Black;
             colorPicker.Dock = DockStyle.Fill;
-            colorPicker.FG = Color.FromArgb(255, 0, 0);
+            colorPicker.FG = Color.Black;
             colorPicker.Location = new Point(0, 0);
             colorPicker.Name = "colorPicker";
+            colorPicker.SingleSelection = false;
             colorPicker.Size = new Size(144, 253);
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
+            colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
             // SpriteEditorWindow
             // 
@@ -327,5 +346,6 @@
         private ToolStripButton toolStripBtnProperties;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton toolStripBtnImport;
+        private ToolStripButton toolStripBtnTransparent;
     }
 }

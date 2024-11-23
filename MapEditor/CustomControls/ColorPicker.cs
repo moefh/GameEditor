@@ -24,6 +24,7 @@ namespace GameEditor.CustomControls
             Color.FromArgb(255,0,255),
         ];
 
+        protected bool singleSelection;
         protected Color fg;
         protected Color bg;
         public event EventHandler? SelectedColorChanged;
@@ -34,6 +35,16 @@ namespace GameEditor.CustomControls
             SetDoubleBuffered();
             FG = Color.FromArgb(255,0,0);
             BG = Color.FromArgb(0,0,255);
+        }
+
+        public bool SingleSelection {
+           get { return singleSelection; }
+           set { singleSelection = value; Invalidate(); }
+        }
+
+        public Color Color {
+            get { return fg; }
+            set { fg = value; Invalidate(); }
         }
 
         public Color FG {
@@ -100,8 +111,12 @@ namespace GameEditor.CustomControls
 
             int size = ClientSize.Width;
             int blob = size / 8;
-            DrawSelectedColor(pe, 0, 0, 4*blob, 2*blob, FG, "FG");
-            DrawSelectedColor(pe, 4*blob, 0, 4*blob, 2*blob, BG, "BG");
+            if (singleSelection) {
+                DrawSelectedColor(pe, 0, 0, 8*blob, 2*blob, FG, "Selected");
+            } else {
+                DrawSelectedColor(pe, 0, 0, 4*blob, 2*blob, FG, "FG");
+                DrawSelectedColor(pe, 4*blob, 0, 4*blob, 2*blob, BG, "BG");
+            }
 
             // full palette
             pe.Graphics.DrawImage(ImageUtil.Palette,

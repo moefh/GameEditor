@@ -14,11 +14,14 @@ namespace GameEditor.CustomControls
 {
     public partial class SpriteEditor : AbstractPaintedControl
     {
-        public const uint RENDER_GRID = 1<<0;
+        public const uint RENDER_GRID = 1u<<0;
+        public const uint RENDER_TRANSPARENT = 1u<<1;
 
         private SpriteLoop? spriteLoop;
         private int selLoopIndex;
         private uint renderFlags;
+
+        public event EventHandler? ImageChanged;
 
         public SpriteEditor() {
             InitializeComponent();
@@ -28,6 +31,8 @@ namespace GameEditor.CustomControls
         public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
         public int SelectedLoopIndex { get { return selLoopIndex; } set { selLoopIndex = value; Invalidate(); } }
         public bool ReadOnly { get; set; }
+        public Color FGPen { get; set; }
+        public Color BGPen { get; set; }
 
         public SpriteLoop? Loop {
             get { return spriteLoop; }
@@ -66,9 +71,13 @@ namespace GameEditor.CustomControls
             if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect)) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
-            Loop.Sprite.DrawFrameAt(pe.Graphics, Loop.Frame(SelectedLoopIndex),
-                sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height, true);
 
+            // sprite image
+            Loop.Sprite.DrawFrameAt(pe.Graphics, Loop.Frame(SelectedLoopIndex),
+                sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height,
+                (RenderFlags & RENDER_TRANSPARENT) != 0);
+
+            // grid
             if ((RenderFlags & RENDER_GRID) != 0) {
                 for (int ty = 0; ty < Loop.Sprite.Height + 1; ty++) {
                     int y = ty * zoom;
@@ -79,6 +88,40 @@ namespace GameEditor.CustomControls
                     pe.Graphics.DrawLine(Pens.Black, x + sprRect.X, sprRect.Y, x + sprRect.X, sprRect.Y + sprRect.Height);
                 }
             }
+        }
+
+        private void SetPixel(Color color, int x, int y) {
+            if (Loop == null) return;
+            Loop.Sprite.SetFramePixel(Loop.Frame(SelectedLoopIndex), x, y, color);
+            Invalidate();
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void RunMouseDraw(MouseEventArgs e) {
+            if (Util.DesignMode) return;
+            if (Loop == null || e.Button == MouseButtons.None) return;
+
+            if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect) || zoom == 0) return;
+
+            int fx = (e.X - sprRect.X) / zoom;
+            int fy = (e.Y - sprRect.Y) / zoom;
+            if (fx < 0 || fy < 0 || fx >= Loop.Sprite.Width || fy >= Loop.Sprite.Height) return;
+
+            switch (e.Button) {
+            case MouseButtons.Left:  SetPixel(FGPen, fx, fy); break;
+            case MouseButtons.Right: SetPixel(BGPen, fx, fy); break;
+            }
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e) {
+            base.OnMouseDown(e);
+            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right) Focus();
+            RunMouseDraw(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            RunMouseDraw(e);
         }
     }
 }

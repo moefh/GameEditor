@@ -56,6 +56,7 @@ namespace GameEditor.GameData
                 SetFrame(i, frames[i]);
             }
         }
+
     }
 
     public class Sprite
@@ -159,6 +160,7 @@ namespace GameEditor.GameData
         }
 
         public void SetFramePixel(int frame, int x, int y, Color color) {
+            Util.Log($"-> setframepixel({frame},{x},{y}) -> ({x}, {y+frame*Height})");
             bitmap.SetPixel(x, y + frame * Height, color);
         }
 

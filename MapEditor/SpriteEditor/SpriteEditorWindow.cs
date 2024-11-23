@@ -16,6 +16,7 @@ namespace GameEditor.SpriteEditor
     public partial class SpriteEditorWindow : Form
     {
         private const uint RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
+        private const uint RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
 
         private readonly SpriteItem sprite;
 
@@ -27,7 +28,9 @@ namespace GameEditor.SpriteEditor
             RefreshSpriteLoopList();
             spriteListView.SelectedLoopIndex = 0;
             spriteEditor.SelectedLoopIndex = 0;
-            spriteEditor.RenderFlags = RENDER_GRID;
+            spriteEditor.FGPen = colorPicker.FG;
+            spriteEditor.BGPen = colorPicker.BG;
+            FixRenderFlags();
         }
 
         public void RefreshSpriteLoopList() {
@@ -42,6 +45,12 @@ namespace GameEditor.SpriteEditor
 
         private void FixFormTitle() {
             Text = "Sprite - " + Sprite.Name;
+        }
+
+        private void FixRenderFlags() {
+            uint renderGrid = (toolStripBtnGrid.Checked) ? RENDER_GRID : 0;
+            uint renderTransparent = (toolStripBtnTransparent.Checked) ? RENDER_TRANSPARENT : 0;
+            spriteEditor.RenderFlags = renderGrid | renderTransparent;
         }
 
         private void SpriteEditorWindow_Load(object sender, EventArgs e) {
@@ -109,9 +118,12 @@ namespace GameEditor.SpriteEditor
             return ret;
         }
 
-
         private void toolStripBtnGrid_CheckedChanged(object sender, EventArgs e) {
-            spriteEditor.RenderFlags = (toolStripBtnGrid.Checked) ? RENDER_GRID : 0;
+            FixRenderFlags();
+        }
+
+        private void toolStripBtnTransparent_CheckedChanged(object sender, EventArgs e) {
+            FixRenderFlags();
         }
 
         private void spriteListView_SelectedLoopIndexChanged(object sender, EventArgs e) {
@@ -154,6 +166,15 @@ namespace GameEditor.SpriteEditor
 
             Sprite.RemoveLoop(selectedLoop);
             RefreshSpriteLoopList();
+        }
+
+        private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
+            spriteEditor.FGPen = colorPicker.FG;
+            spriteEditor.BGPen = colorPicker.BG;
+        }
+
+        private void spriteEditor_ImageChanged(object sender, EventArgs e) {
+            spriteListView.Invalidate();
         }
     }
 }

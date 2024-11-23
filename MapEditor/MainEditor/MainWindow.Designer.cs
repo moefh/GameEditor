@@ -128,7 +128,7 @@
             // 
             // toolStrip
             // 
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnMapEditor, toolStripBtnTilesetEditor, toolStripBtnSpriteEditor, toolStripComboVgaSyncBits, toolStripLabel1, toolStripSeparator3, toolStripBtnLogWindow });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnTilesetEditor, toolStripBtnMapEditor, toolStripBtnSpriteEditor, toolStripComboVgaSyncBits, toolStripLabel1, toolStripSeparator3, toolStripBtnLogWindow });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(724, 27);

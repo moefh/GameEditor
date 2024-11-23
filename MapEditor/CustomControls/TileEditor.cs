@@ -35,45 +35,48 @@ namespace GameEditor.CustomControls
             SetDoubleBuffered();
         }
 
+        private bool GetTileRenderRect(out int zoom, out Rectangle rect) {
+            int winWidth = ClientSize.Width;
+            int winHeight = ClientSize.Height;
+            if (Tileset == null || winWidth <= 0 || winHeight <= 0) {
+                zoom = 0;
+                rect = Rectangle.Empty;
+                return false;
+            }
+
+            zoom = int.Min(ClientSize.Width, ClientSize.Height) / (TILE_SIZE + 1);
+            int zoomedTileSize = zoom * TILE_SIZE;
+            rect = new Rectangle((winWidth - zoomedTileSize) / 2, (winHeight - zoomedTileSize) / 2, zoomedTileSize, zoomedTileSize);
+            return true;
+        }
+
         protected override void OnPaint(PaintEventArgs pe)
         {
             base.OnPaint(pe);
-            if (Util.DesignMode) { ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize); return; }
+            ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
+            if (Util.DesignMode) return;
+            if (Tileset == null) return;
+            if (! GetTileRenderRect(out int zoom, out Rectangle tileRect)) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
-            pe.Graphics.Clear(Color.FromArgb(255,255,255));
-            int zoom = int.Min(ClientSize.Width, ClientSize.Height) / TILE_SIZE;
             int zoomedTileSize = zoom * TILE_SIZE;
             bool transparent = (RenderFlags & RENDER_TRANSPARENT) != 0;
 
-            // background
-            if (transparent) {
-                RenderBackground(pe, zoomedTileSize);
-            }
-
             // tile image
-            Tileset?.DrawTileAt(pe.Graphics, SelectedTile, 0, 0, zoomedTileSize, zoomedTileSize, transparent);
+            Tileset?.DrawTileAt(pe.Graphics, SelectedTile,
+                tileRect.X, tileRect.Y, tileRect.Width, tileRect.Height,
+                transparent);
 
             // grid
             if ((RenderFlags & RENDER_GRID) != 0) {
                 for (int ty = 0; ty < TILE_SIZE + 1; ty++) {
                     int y = (int) (ty * zoom);
-                    pe.Graphics.DrawLine(Pens.Black, 0, y, zoomedTileSize, y);
+                    pe.Graphics.DrawLine(Pens.Black, tileRect.X, tileRect.Y + y, tileRect.X + zoomedTileSize, tileRect.Y + y);
                 }
                 for (int tx = 0; tx < TILE_SIZE + 1; tx++) {
                     int x = (int) (tx * zoom);
-                    pe.Graphics.DrawLine(Pens.Black, x, 0, x, zoomedTileSize);
+                    pe.Graphics.DrawLine(Pens.Black, tileRect.X + x, tileRect.Y, tileRect.X + x, tileRect.Y + zoomedTileSize);
                 }
-            }
-        }
-
-        private static void RenderBackground(PaintEventArgs pe, int size) {
-            size += 1 - (size % 4);
-            for (int i = 0; i < size; i += 4) {
-                pe.Graphics.DrawLine(Pens.Black, i, 0, 0, i);
-                pe.Graphics.DrawLine(Pens.Black, i, size-1, size-1, i);
-                pe.Graphics.DrawLine(Pens.Black, i, 0, size-1, size-1-i);
-                pe.Graphics.DrawLine(Pens.Black, size-1-i, size-1, 0, i);
             }
         }
 
@@ -87,9 +90,9 @@ namespace GameEditor.CustomControls
             if (Util.DesignMode) return;
             if (Tileset == null) return;
 
-            int zoom = int.Min(ClientSize.Width, ClientSize.Height) / TILE_SIZE;
-            int tx = e.X / zoom;
-            int ty = e.Y / zoom;
+            if (! GetTileRenderRect(out int zoom, out Rectangle tileRect) || zoom == 0) return;
+            int tx = (e.X - tileRect.X) / zoom;
+            int ty = (e.Y - tileRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= TILE_SIZE || ty >= TILE_SIZE) return;
 
             switch (e.Button) {

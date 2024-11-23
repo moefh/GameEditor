@@ -189,13 +189,14 @@
             // colorPicker
             // 
             colorPicker.BG = Color.FromArgb(0, 0, 255);
+            colorPicker.Color = Color.FromArgb(255, 0, 0);
             colorPicker.Dock = DockStyle.Fill;
             colorPicker.FG = Color.FromArgb(255, 0, 0);
             colorPicker.Location = new Point(0, 0);
             colorPicker.Name = "colorPicker";
+            colorPicker.SingleSelection = false;
             colorPicker.Size = new Size(178, 211);
             colorPicker.TabIndex = 0;
-            colorPicker.Text = "colorPicker1";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
             // toolsToolStrip
