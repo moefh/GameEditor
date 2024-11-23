@@ -1,0 +1,37 @@
+﻿using GameEditor.GameData;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GameEditor.MapEditor
+{
+    public class MapDataItem
+    {
+        public MapDataItem(MapData mapData) {
+            Map = mapData;
+        }
+
+        public MapData Map { get; }
+        public MapEditorWindow? Editor { get; private set; }
+        public string Name { get { return Map.Name; } }
+
+        public void ShowEditor() {
+            if (Editor != null) {
+                if (Editor.WindowState == FormWindowState.Minimized) {
+                    Editor.WindowState = FormWindowState.Normal;
+                }
+                Editor.Activate();
+            } else {
+                Editor = new MapEditorWindow(this);
+                Editor.MdiParent = Util.MainWindow;
+                Editor.Show();
+            }
+        }
+
+        public void EditorClosed() {
+            Editor = null;
+        }
+    }
+}

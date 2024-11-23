@@ -1,0 +1,69 @@
+﻿using GameEditor.GameData;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace GameEditor.SpriteEditor
+{
+    public partial class SpriteListEditorWindow : Form
+    {
+        public SpriteListEditorWindow() {
+            InitializeComponent();
+            RefreshSpriteList();
+        }
+
+        public void RefreshSpriteList() {
+            spriteList.DataSource = null;
+            spriteList.DataSource = EditorState.SpriteList;
+            spriteList.DisplayMember = "Name";
+        }
+
+        public void LoadWindowPosition() {
+            Util.LoadWindowPosition(this, "SpriteListEditor");
+        }
+
+        private void SpriteListEditorWindow_Load(object sender, EventArgs e) {
+            LoadWindowPosition();
+        }
+
+        private void SpriteListEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
+            Util.SaveWindowPosition(this, "SpriteListEditor");
+            if (e.CloseReason == CloseReason.UserClosing) {
+                e.Cancel = true;
+                Hide();
+                return;
+            }
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e) {
+            EditorState.AddSprite(new Sprite("new_sprite"));
+        }
+
+        private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
+            object? item = spriteList.SelectedItem;
+            if (item is not SpriteItem map) return;
+            if (map.Editor != null) {
+                MessageBox.Show(
+                    "This sprite is open for editing. Close the sprite and try again.",
+                    "Can't Remove Sprite",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+            EditorState.SpriteList.RemoveAt(spriteList.SelectedIndex);
+        }
+
+        private void spriteList_DoubleClick(object sender, EventArgs e) {
+            object? item = spriteList.SelectedItem;
+            if (item is SpriteItem sprite) {
+                sprite.ShowEditor();
+            }
+        }
+    }
+}
