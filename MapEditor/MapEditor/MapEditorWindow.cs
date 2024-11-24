@@ -106,7 +106,7 @@ namespace GameEditor.MapEditor
         private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
             int sel = toolStripComboTiles.SelectedIndex;
             if (sel < 0 || sel >= EditorState.TilesetList.Count) {
-                Util.Log($"ERROR: dropdown has invalid selected index {sel}");
+                Util.Log($"WARNING: dropdown has invalid selected index {sel}");
                 return;
             }
             Map.Tileset = EditorState.TilesetList[sel].Tileset;

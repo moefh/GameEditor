@@ -243,6 +243,7 @@ namespace GameEditor.ProjectIO
         }
 
         public void ReadProject() {
+            Util.Log($"== started reading project");
             while (true) {
                 Token? t = NextToken();
                 if (t == null) break;

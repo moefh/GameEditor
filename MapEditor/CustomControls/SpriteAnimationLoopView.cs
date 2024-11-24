@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 namespace GameEditor.CustomControls
 {
-    public partial class SpriteListView : AbstractPaintedControl
+    public partial class SpriteAnimationLoopView : AbstractPaintedControl
     {
         private const int MARGIN = 3;
 
@@ -23,19 +23,19 @@ namespace GameEditor.CustomControls
             public int NumDisplayFrames { get; set; } = numDisplayFrames;
         }
 
-        private SpriteLoop? spriteLoop;
+        private SpriteAnimationLoop? spriteLoop;
         private int selLoopIndex;
 
         public event EventHandler? SelectedLoopIndexChanged;
 
-        public SpriteListView() {
+        public SpriteAnimationLoopView() {
             InitializeComponent();
             SetDoubleBuffered();
         }
 
         public int SelectedLoopIndex { get { return selLoopIndex; } set { selLoopIndex = value; Invalidate(); } }
 
-        public SpriteLoop? Loop {
+        public SpriteAnimationLoop? Loop {
             get { return spriteLoop; }
             set { spriteLoop = value; selLoopIndex = 0; Invalidate(); }
         }
@@ -58,7 +58,7 @@ namespace GameEditor.CustomControls
             if (Loop == null) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
-            Sprite spr = Loop.Sprite;
+            Sprite spr = Loop.Animation.Sprite;
 
             RenderInfo r = GetRenderInfo(spr);
             for (int i = 0; i < r.NumDisplayFrames; i++) {
@@ -79,7 +79,7 @@ namespace GameEditor.CustomControls
             if (e.Button != MouseButtons.Left) return;
             if (Loop == null) return;
 
-            RenderInfo r = GetRenderInfo(Loop.Sprite);
+            RenderInfo r = GetRenderInfo(Loop.Animation.Sprite);
             SelectedLoopIndex = GetLoopIndexAtPosition((e.X - MARGIN) / (r.Width + MARGIN), r.NumDisplayFrames);
             SelectedLoopIndexChanged?.Invoke(this, EventArgs.Empty);
         }

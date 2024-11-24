@@ -24,14 +24,6 @@ namespace GameEditor.MapEditor
             mapList.DisplayMember = "Name";
         }
 
-        public void RefreshMapsUsingTileset(Tileset tileset) {
-            foreach (MapDataItem map in EditorState.MapList) {
-                if (map.Editor != null && map.Map.Tileset == tileset) {
-                    map.Editor.RefreshTileset();
-                }
-            }
-        }
-
         private void WorldEditor_FormClosing(object sender, FormClosingEventArgs e) {
             Util.SaveWindowPosition(this, "MapListEditor");
             if (e.CloseReason == CloseReason.UserClosing) {

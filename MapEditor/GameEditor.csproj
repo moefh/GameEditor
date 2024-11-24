@@ -12,6 +12,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Update="CustomControls\SpriteFramePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Update="Properties\Resources.Designer.cs">
       <DesignTime>True</DesignTime>
       <AutoGen>True</AutoGen>
@@ -21,6 +24,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
+    <Compile Update="SpriteEditor\SpriteAnimationEditorWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Update="SpriteEditor\SpriteAnimationListEditorWindow.cs">
+      <SubType>Form</SubType>
     </Compile>
   </ItemGroup>
 

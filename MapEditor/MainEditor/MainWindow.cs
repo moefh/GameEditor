@@ -26,6 +26,7 @@ namespace GameEditor.MainEditor
         private readonly MapListEditorWindow mapListEditor;
         private readonly TilesetListEditorWindow tilesetListEditor;
         private readonly SpriteListEditorWindow spriteListEditor;
+        private readonly SpriteAnimationListEditorWindow spriteAnimationListEditor;
         private readonly LogWindow logWindow;
         private readonly string[] vgaSyncBitsList = [
             "0x00 (00)",
@@ -45,6 +46,8 @@ namespace GameEditor.MainEditor
             tilesetListEditor.MdiParent = this;
             spriteListEditor = new SpriteListEditorWindow();
             spriteListEditor.MdiParent = this;
+            spriteAnimationListEditor = new SpriteAnimationListEditorWindow();
+            spriteAnimationListEditor.MdiParent = this;
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
 
@@ -62,10 +65,6 @@ namespace GameEditor.MainEditor
 
         public void RefreshTilesetList() {
             tilesetListEditor.RefreshTilesetList();
-        }
-
-        public void RefreshTilesetUsers(Tileset tileset) {
-            mapListEditor.RefreshMapsUsingTileset(tileset);
         }
 
         public void AddLog(string log) {
@@ -108,6 +107,12 @@ namespace GameEditor.MainEditor
             spriteListEditor.LoadWindowPosition();
             spriteListEditor.Show();
             spriteListEditor.Activate();
+        }
+
+        private void toolStripBtnAnimationEditor_Click(object sender, EventArgs e) {
+            spriteAnimationListEditor.LoadWindowPosition();
+            spriteAnimationListEditor.Show();
+            spriteAnimationListEditor.Activate();
         }
 
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {

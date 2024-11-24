@@ -29,14 +29,13 @@ namespace GameEditor.SpriteEditor
             }
         }
 
-        public SpriteLoopPropertiesDialog(SpriteLoop loop) {
+        public SpriteLoopPropertiesDialog(SpriteAnimationLoop loop) {
             InitializeComponent();
-            DummyLoop = new SpriteLoop(loop.Sprite, "", true, loop.Sprite.NumFrames);
             LoopName = loop.Name;
-            spriteViewer.Loop = DummyLoop;
+            spriteViewer.Sprite = loop.Animation.Sprite;
 
             SelectedFrames = [.. Enumerable.Range(0, loop.NumFrames).Select((i) => loop.Frame(i))];
-            AllFrames = [.. Enumerable.Range(0, loop.Sprite.NumFrames).Select((i) => new SpriteFrame(SelectedFrames, i))];
+            AllFrames = [.. Enumerable.Range(0, loop.Animation.Sprite.NumFrames).Select((i) => new SpriteFrame(SelectedFrames, i))];
             listBoxAllFrames.DataSource = AllFrames;
             listBoxSelectedFrames.DataSource = SelectedFrames;
         }
@@ -45,8 +44,6 @@ namespace GameEditor.SpriteEditor
             get { return txtName.Text; }
             set { txtName.Text = value; }
         }
-
-        private SpriteLoop DummyLoop { get; set; }
 
         private List<SpriteFrame> AllFrames { get; set; }
 
@@ -75,7 +72,7 @@ namespace GameEditor.SpriteEditor
 
         private void listBoxAllFrames_SelectedValueChanged(object sender, EventArgs e) {
             if (listBoxAllFrames.SelectedValue is SpriteFrame frame) {
-                spriteViewer.SelectedLoopIndex = frame.Frame;
+                spriteViewer.SelectedFrame = frame.Frame;
             }
         }
 

@@ -17,8 +17,8 @@ namespace GameEditor.CustomControls
         public const uint RENDER_GRID = 1u<<0;
         public const uint RENDER_TRANSPARENT = 1u<<1;
 
-        private SpriteLoop? spriteLoop;
-        private int selLoopIndex;
+        private Sprite? sprite;
+        private int selFrame;
         private uint renderFlags;
 
         public event EventHandler? ImageChanged;
@@ -29,36 +29,35 @@ namespace GameEditor.CustomControls
         }
 
         public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
-        public int SelectedLoopIndex { get { return selLoopIndex; } set { selLoopIndex = value; Invalidate(); } }
+        public int SelectedFrame { get { return selFrame; } set { selFrame = value; Invalidate(); } }
         public bool ReadOnly { get; set; }
         public Color FGPen { get; set; }
         public Color BGPen { get; set; }
 
-        public SpriteLoop? Loop {
-            get { return spriteLoop; }
-            set { spriteLoop = value; selLoopIndex = 0; Invalidate(); }
+        public Sprite? Sprite {
+            get { return sprite; }
+            set { sprite = value; selFrame = 0; Invalidate(); }
         }
 
         private bool GetSpriteRenderRect(out int zoom, out Rectangle rect) {
             int winWidth = ClientSize.Width;
             int winHeight = ClientSize.Height;
-            if (Loop == null || winWidth <= 0 || winHeight <= 0) {
+            if (this.Sprite == null || winWidth <= 0 || winHeight <= 0) {
                 zoom = 0;
                 rect = Rectangle.Empty;
                 return false;
             }
 
-            Sprite spr = Loop.Sprite;
             double winAspect = (double) winWidth / winHeight;
-            double sprAspect = (double) spr.Width / spr.Height;
+            double sprAspect = (double) Sprite.Width / Sprite.Height;
 
             if (sprAspect < winAspect) {
-                zoom = ClientSize.Height / (spr.Height + 1);
+                zoom = ClientSize.Height / (Sprite.Height + 1);
             } else {
-                zoom = ClientSize.Width / (spr.Width + 1);
+                zoom = ClientSize.Width / (Sprite.Width + 1);
             }
-            int w = zoom * spr.Width;
-            int h = zoom * spr.Height;
+            int w = zoom * Sprite.Width;
+            int h = zoom * Sprite.Height;
             rect = new Rectangle((winWidth - w) / 2, (winHeight - h) / 2, w, h);
             return true;
         }
@@ -67,23 +66,23 @@ namespace GameEditor.CustomControls
             base.OnPaint(pe);
             ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
             if (Util.DesignMode) return;
-            if (Loop == null) return;
+            if (Sprite == null) return;
             if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect)) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
 
             // sprite image
-            Loop.Sprite.DrawFrameAt(pe.Graphics, Loop.Frame(SelectedLoopIndex),
+            Sprite.DrawFrameAt(pe.Graphics, SelectedFrame,
                 sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height,
                 (RenderFlags & RENDER_TRANSPARENT) != 0);
 
             // grid
             if ((RenderFlags & RENDER_GRID) != 0) {
-                for (int ty = 0; ty < Loop.Sprite.Height + 1; ty++) {
+                for (int ty = 0; ty < Sprite.Height + 1; ty++) {
                     int y = ty * zoom;
                     pe.Graphics.DrawLine(Pens.Black, sprRect.X, y + sprRect.Y, sprRect.X + sprRect.Width, y + sprRect.Y);
                 }
-                for (int tx = 0; tx < Loop.Sprite.Width + 1; tx++) {
+                for (int tx = 0; tx < Sprite.Width + 1; tx++) {
                     int x = tx * zoom;
                     pe.Graphics.DrawLine(Pens.Black, x + sprRect.X, sprRect.Y, x + sprRect.X, sprRect.Y + sprRect.Height);
                 }
@@ -91,21 +90,21 @@ namespace GameEditor.CustomControls
         }
 
         private void SetPixel(Color color, int x, int y) {
-            if (Loop == null) return;
-            Loop.Sprite.SetFramePixel(Loop.Frame(SelectedLoopIndex), x, y, color);
+            if (Sprite == null) return;
+            Sprite.SetFramePixel(SelectedFrame, x, y, color);
             Invalidate();
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void RunMouseDraw(MouseEventArgs e) {
             if (Util.DesignMode) return;
-            if (Loop == null || e.Button == MouseButtons.None) return;
+            if (Sprite == null || e.Button == MouseButtons.None) return;
 
             if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect) || zoom == 0) return;
 
             int fx = (e.X - sprRect.X) / zoom;
             int fy = (e.Y - sprRect.Y) / zoom;
-            if (fx < 0 || fy < 0 || fx >= Loop.Sprite.Width || fy >= Loop.Sprite.Height) return;
+            if (fx < 0 || fy < 0 || fx >= Sprite.Width || fy >= Sprite.Height) return;
 
             switch (e.Button) {
             case MouseButtons.Left:  SetPixel(FGPen, fx, fy); break;

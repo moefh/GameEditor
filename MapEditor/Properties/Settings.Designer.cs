@@ -358,5 +358,77 @@ namespace GameEditor.Properties {
                 this["SpriteEditorSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point SpriteAnimationListEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["SpriteAnimationListEditorLocation"]));
+            }
+            set {
+                this["SpriteAnimationListEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SpriteAnimationListEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SpriteAnimationListEditorSize"]));
+            }
+            set {
+                this["SpriteAnimationListEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SpriteAnimationListEditorSaved {
+            get {
+                return ((bool)(this["SpriteAnimationListEditorSaved"]));
+            }
+            set {
+                this["SpriteAnimationListEditorSaved"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point SpriteAnimationEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["SpriteAnimationEditorLocation"]));
+            }
+            set {
+                this["SpriteAnimationEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SpriteAnimationEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SpriteAnimationEditorSize"]));
+            }
+            set {
+                this["SpriteAnimationEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SpriteAnimationEditorSaved {
+            get {
+                return ((bool)(this["SpriteAnimationEditorSaved"]));
+            }
+            set {
+                this["SpriteAnimationEditorSaved"] = value;
+            }
+        }
     }
 }

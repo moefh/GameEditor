@@ -16,14 +16,16 @@ namespace GameEditor.GameData
     public class EditorState
     {
         private static readonly BindingList<MapDataItem> maps = [];
+        private static readonly BindingList<SpriteAnimationItem> spriteAnimations = [];
         private static readonly BindingList<SpriteItem> sprites = [];
         private static readonly BindingList<TilesetItem> tilesets = [
             new TilesetItem(new Tileset("default"))
         ];
 
+        public static BindingList<TilesetItem> TilesetList { get { return tilesets; } }
         public static BindingList<MapDataItem> MapList { get { return maps; } }
         public static BindingList<SpriteItem> SpriteList { get { return sprites; } }
-        public static BindingList<TilesetItem> TilesetList { get { return tilesets; } }
+        public static BindingList<SpriteAnimationItem> SpriteAnimationList { get { return spriteAnimations; } }
 
         public static void AddMap(MapData mapData) {
             maps.Add(new MapDataItem(mapData));
@@ -35,6 +37,10 @@ namespace GameEditor.GameData
 
         public static void AddSprite(Sprite sprite) {
             sprites.Add(new SpriteItem(sprite));
+        }
+
+        public static void AddSpriteAnimation(SpriteAnimation animation) {
+            spriteAnimations.Add(new SpriteAnimationItem(animation));
         }
 
         public static int GetTilesetIndex(Tileset tileset) {
@@ -61,6 +67,25 @@ namespace GameEditor.GameData
             if (addDefault) {
                 tilesets.Add(new TilesetItem(new Tileset("default")));
             }
+        }
+
+        public static void ClearAllSpriteAnimations() {
+            foreach (SpriteAnimationItem ai in SpriteAnimationList) {
+                ai.Editor?.Close();
+                ai.Animation.Close();  // unregister sprite event
+            }
+            SpriteAnimationList.Clear();
+        }
+
+        public static void ClearAllSprites() {
+            if (SpriteAnimationList.Count != 0) {
+                throw new Exception("ERROR: trying to clear sprites when an animation exists");
+            }
+
+            foreach (SpriteItem si in SpriteList) {
+                si.Editor?.Close();
+            }
+            SpriteList.Clear();
         }
     }
 }

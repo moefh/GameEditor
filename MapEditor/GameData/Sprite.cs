@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
@@ -11,54 +12,6 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace GameEditor.GameData
 {
-    public sealed class SpriteLoop {
-        public const string ALL_FRAMES_LOOP_NAME = "(all frames)";
-        public const string NEW_LOOP_NAME = "new_loop";
-
-        private string name;
-        private readonly List<int> indices;
-        private readonly bool immutable;
-
-        public SpriteLoop(Sprite spr, string name, bool immutable, int size) {
-            Sprite = spr;
-            this.name = name;
-            this.immutable = immutable;
-            indices = new List<int>(Enumerable.Range(0, size));
-        }
-
-        public Sprite Sprite { get; private set; }
-        public bool IsImmutable { get { return immutable; } }
-
-        public string Name {
-            get { return name; }
-            set { if (! immutable) name = value; }
-        }
-
-        public int NumFrames {
-            get { return indices.Count; }
-        }
-
-        public int Frame(int i) { return indices[i]; }
-        public void SetFrame(int i, int frame) { if (! immutable) indices[i] = frame; }
-
-        public void Resize(int newNumFrames) {
-            if (immutable || newNumFrames <= 0) return;
-            if (newNumFrames > indices.Count) {
-                indices.AddRange(Enumerable.Repeat(0, newNumFrames - indices.Count));
-            } else {
-                indices.RemoveRange(newNumFrames, indices.Count - newNumFrames);
-            }
-        }
-
-        public void SetFrames(IList<int> frames) {
-            Resize(frames.Count);
-            for (int i = 0; i < frames.Count; i++) {
-                SetFrame(i, frames[i]);
-            }
-        }
-
-    }
-
     public class Sprite
     {
         private const int DEFAULT_WIDTH = 16;
@@ -67,14 +20,14 @@ namespace GameEditor.GameData
 
         private Bitmap bitmap;
         private int height;
-        private readonly BindingList<SpriteLoop> loops;
+
+        public event EventHandler? NumFramesChanged;
 
         public Sprite(string name) {
             Name = name;
             FileName = null;
             height = DEFAULT_HEIGHT;
             bitmap = CreateDefaultBitmap(DEFAULT_WIDTH, height, DEFAULT_NUM_FRAMES);
-            loops = [ new SpriteLoop(this, SpriteLoop.ALL_FRAMES_LOOP_NAME, true, NumFrames) ];
         }
 
         public string Name { get; set; }
@@ -87,34 +40,8 @@ namespace GameEditor.GameData
 
         public int NumFrames { get { return bitmap.Height / Height; } }
 
-        public int NumLoops { get { return loops.Count; } }
-
-        public BindingList<SpriteLoop> GetAllLoops() { return loops; }
-
-        public SpriteLoop GetLoop(int i) { return loops[i]; }
-
-        public void AddLoop() { loops.Add(new SpriteLoop(this, SpriteLoop.NEW_LOOP_NAME, false, 1)); }
-
-        public bool RemoveLoop(SpriteLoop remove) {
-            if (remove == loops[0]) return false;  // can't remove full loop
-            return loops.Remove(remove);
-        }
-
-        private void FixLoopFrameReferences() {
-            // rebuild first loop (the full one) since it's immutable
-            if (GetLoop(0).NumFrames != NumFrames) {
-                loops[0] = new SpriteLoop(this, SpriteLoop.ALL_FRAMES_LOOP_NAME, true, NumFrames);
-            }
-
-            // every other loop will simply have their indices clamped to the valid range
-            for (int l = 1; l < loops.Count; l++) {
-                SpriteLoop loop = GetLoop(l);
-                for (int i = 0; i < loop.NumFrames; i++) {
-                    if (loop.Frame(i) >= NumFrames) {
-                        loop.SetFrame(i, NumFrames - 1);
-                    }
-                }
-            }
+        protected void NotifyNumFramesChanged() {
+            NumFramesChanged?.Invoke(this, EventArgs.Empty);
         }
 
         public void Resize(int newWidth, int newHeight, int newNumFrames) {
@@ -133,7 +60,7 @@ namespace GameEditor.GameData
             bitmap.Dispose();
             bitmap = frames;
             height = newHeight;
-            FixLoopFrameReferences();
+            NotifyNumFramesChanged();
         }
 
         private static Bitmap CreateDefaultBitmap(int width, int height, int numFrames) {
@@ -160,7 +87,6 @@ namespace GameEditor.GameData
         }
 
         public void SetFramePixel(int frame, int x, int y, Color color) {
-            Util.Log($"-> setframepixel({frame},{x},{y}) -> ({x}, {y+frame*Height})");
             bitmap.SetPixel(x, y + frame * Height, color);
         }
 
@@ -184,7 +110,7 @@ namespace GameEditor.GameData
             height = frameHeight;
             FileName = filename;
 
-            FixLoopFrameReferences();
+            NotifyNumFramesChanged();
         }
 
         public void ExportBitmap(string filename, int numHorzFrames) {
@@ -217,7 +143,7 @@ namespace GameEditor.GameData
             }
         }
 
-        public void ReadTilePixels(int frame, byte[] pixels) {
+        public void ReadFramePixels(int frame, byte[] pixels) {
             Rectangle rect = new Rectangle(0, frame * Height, Width, Height);
             BitmapData data = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try {

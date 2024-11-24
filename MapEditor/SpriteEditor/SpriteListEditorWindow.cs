@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MapEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -48,14 +49,32 @@ namespace GameEditor.SpriteEditor
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
             object? item = spriteList.SelectedItem;
-            if (item is not SpriteItem map) return;
-            if (map.Editor != null) {
+            if (item is not SpriteItem sprite) return;
+
+            // check that editor is not open
+            if (sprite.Editor != null) {
                 MessageBox.Show(
                     "This sprite is open for editing. Close the sprite and try again.",
                     "Can't Remove Sprite",
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
+
+            // check that the sprite is not used in an animation
+            List<string> anims = [];
+            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+                if (ai.Animation.Sprite == sprite.Sprite) {
+                    anims.Add(ai.Animation.Name);
+                }
+            }
+            if (anims.Count != 0) {
+                MessageBox.Show(
+                    "This sprite is used in the following animations:\n\n - " + string.Join("\n - ", anims),
+                    "Can't Remove Sprite",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+
             EditorState.SpriteList.RemoveAt(spriteList.SelectedIndex);
         }
 

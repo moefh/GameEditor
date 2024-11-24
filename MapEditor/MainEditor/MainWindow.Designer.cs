@@ -39,13 +39,14 @@
             aboutToolStripMenuItem = new ToolStripMenuItem();
             statusStrip = new StatusStrip();
             toolStrip = new ToolStrip();
-            toolStripBtnMapEditor = new ToolStripButton();
             toolStripBtnTilesetEditor = new ToolStripButton();
+            toolStripBtnMapEditor = new ToolStripButton();
             toolStripBtnSpriteEditor = new ToolStripButton();
             toolStripComboVgaSyncBits = new ToolStripComboBox();
             toolStripLabel1 = new ToolStripLabel();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripBtnLogWindow = new ToolStripButton();
+            toolStripBtnAnimationEditor = new ToolStripButton();
             menuStrip.SuspendLayout();
             toolStrip.SuspendLayout();
             SuspendLayout();
@@ -128,12 +129,21 @@
             // 
             // toolStrip
             // 
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnTilesetEditor, toolStripBtnMapEditor, toolStripBtnSpriteEditor, toolStripComboVgaSyncBits, toolStripLabel1, toolStripSeparator3, toolStripBtnLogWindow });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnTilesetEditor, toolStripBtnMapEditor, toolStripBtnSpriteEditor, toolStripComboVgaSyncBits, toolStripLabel1, toolStripSeparator3, toolStripBtnLogWindow, toolStripBtnAnimationEditor });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(724, 27);
             toolStrip.TabIndex = 5;
             toolStrip.Text = "toolStrip1";
+            // 
+            // toolStripBtnTilesetEditor
+            // 
+            toolStripBtnTilesetEditor.Image = (Image)resources.GetObject("toolStripBtnTilesetEditor.Image");
+            toolStripBtnTilesetEditor.ImageTransparentColor = Color.Magenta;
+            toolStripBtnTilesetEditor.Name = "toolStripBtnTilesetEditor";
+            toolStripBtnTilesetEditor.Size = new Size(73, 24);
+            toolStripBtnTilesetEditor.Text = "Tilesets";
+            toolStripBtnTilesetEditor.Click += toolStripBtnTilesetEditor_Click;
             // 
             // toolStripBtnMapEditor
             // 
@@ -144,15 +154,6 @@
             toolStripBtnMapEditor.Text = "Maps";
             toolStripBtnMapEditor.ToolTipText = "Map Editor";
             toolStripBtnMapEditor.Click += toolStripBtnMapEditor_Click;
-            // 
-            // toolStripBtnTilesetEditor
-            // 
-            toolStripBtnTilesetEditor.Image = (Image)resources.GetObject("toolStripBtnTilesetEditor.Image");
-            toolStripBtnTilesetEditor.ImageTransparentColor = Color.Magenta;
-            toolStripBtnTilesetEditor.Name = "toolStripBtnTilesetEditor";
-            toolStripBtnTilesetEditor.Size = new Size(73, 24);
-            toolStripBtnTilesetEditor.Text = "Tilesets";
-            toolStripBtnTilesetEditor.Click += toolStripBtnTilesetEditor_Click;
             // 
             // toolStripBtnSpriteEditor
             // 
@@ -192,6 +193,15 @@
             toolStripBtnLogWindow.Size = new Size(52, 24);
             toolStripBtnLogWindow.Text = "Log";
             toolStripBtnLogWindow.Click += toolStripBtnLogWindow_Click;
+            // 
+            // toolStripBtnAnimationEditor
+            // 
+            toolStripBtnAnimationEditor.Image = (Image)resources.GetObject("toolStripBtnAnimationEditor.Image");
+            toolStripBtnAnimationEditor.ImageTransparentColor = Color.Magenta;
+            toolStripBtnAnimationEditor.Name = "toolStripBtnAnimationEditor";
+            toolStripBtnAnimationEditor.Size = new Size(98, 24);
+            toolStripBtnAnimationEditor.Text = "Animations";
+            toolStripBtnAnimationEditor.Click += toolStripBtnAnimationEditor_Click;
             // 
             // MainWindow
             // 
@@ -239,5 +249,6 @@
         private ToolStripLabel toolStripLabel1;
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton toolStripBtnLogWindow;
+        private ToolStripButton toolStripBtnAnimationEditor;
     }
 }

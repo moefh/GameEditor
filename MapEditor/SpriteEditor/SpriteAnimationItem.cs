@@ -1,5 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +7,15 @@ using System.Threading.Tasks;
 
 namespace GameEditor.SpriteEditor
 {
-    public class SpriteItem
+    public class SpriteAnimationItem
     {
-        public SpriteItem(Sprite sprite) {
-            Sprite = sprite;
+        public SpriteAnimationItem(SpriteAnimation anim) {
+            Animation = anim;
         }
 
-        public Sprite Sprite { get; }
-        public SpriteEditorWindow? Editor { get; private set; }
-        public string Name { get { return Sprite.Name; } }
+        public SpriteAnimation Animation { get; }
+        public SpriteAnimationEditorWindow? Editor { get; private set; }
+        public string Name { get { return Animation.Name; } }
 
         public void ShowEditor() {
             if (Editor != null) {
@@ -25,7 +24,7 @@ namespace GameEditor.SpriteEditor
                 }
                 Editor.Activate();
             } else {
-                Editor = new SpriteEditorWindow(this);
+                Editor = new SpriteAnimationEditorWindow(this);
                 Editor.MdiParent = Util.MainWindow;
                 Editor.Show();
             }
@@ -34,6 +33,5 @@ namespace GameEditor.SpriteEditor
         public void EditorClosed() {
             Editor = null;
         }
-
     }
 }

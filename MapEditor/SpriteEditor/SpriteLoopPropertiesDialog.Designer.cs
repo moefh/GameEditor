@@ -83,11 +83,10 @@
             // 
             spriteViewer.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             spriteViewer.Location = new Point(132, 66);
-            spriteViewer.Loop = null;
             spriteViewer.Name = "spriteViewer";
             spriteViewer.ReadOnly = false;
             spriteViewer.RenderFlags = 0U;
-            spriteViewer.SelectedLoopIndex = 0;
+            spriteViewer.SelectedFrame = 0;
             spriteViewer.Size = new Size(159, 150);
             spriteViewer.TabIndex = 4;
             spriteViewer.Text = "spriteEditor";

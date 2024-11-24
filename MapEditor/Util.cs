@@ -9,6 +9,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using GameEditor.SpriteEditor;
+using GameEditor.MapEditor;
 
 namespace GameEditor
 {
@@ -40,7 +42,27 @@ namespace GameEditor
         }
 
         public static void RefreshTilesetUsers(Tileset tileset) {
-            MainWindow?.RefreshTilesetUsers(tileset);
+            foreach (MapDataItem map in EditorState.MapList) {
+                if (map.Editor != null && map.Map.Tileset == tileset) {
+                    map.Editor.RefreshTileset();
+                }
+            }
+        }
+
+        public static void RefreshSprite(Sprite sprite) {
+            foreach (SpriteItem si in EditorState.SpriteList) {
+                if (si.Editor != null && si.Sprite == sprite) {
+                    si.Editor.RefreshSprite();
+                }
+            }
+        }
+
+        public static void RefreshSpriteUsers(Sprite sprite, SpriteAnimationItem? exceptAnimationItem) {
+            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+                if (ai.Editor != null && ai != exceptAnimationItem && ai.Animation.Sprite == sprite) {
+                    ai.Editor.RefreshSprite();
+                }
+            }
         }
 
         public static void SaveWindowPosition(Form form, string name) {

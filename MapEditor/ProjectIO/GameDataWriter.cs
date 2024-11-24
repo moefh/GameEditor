@@ -1,5 +1,6 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
+using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,10 @@ namespace GameEditor.ProjectIO
 {
     public class GameDataWriter : IDisposable
     {
+        const string PREFIX_GAME_TILESET_DATA = "game_tileset_data";
+        const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data";
+        const string PREFIX_GAME_MAP_TILES = "game_map_tiles";
+
         private bool disposed;
         protected IdentifierNamespace identifiers = new IdentifierNamespace();
         protected StreamWriter f;
@@ -58,7 +63,7 @@ namespace GameEditor.ProjectIO
         }
 
         protected void WriteTilesetData(Tileset tileset) {
-            string ident = identifiers.Add(tileset, "game_tileset_data", tileset.Name);
+            string ident = identifiers.Add(tileset, PREFIX_GAME_TILESET_DATA, tileset.Name);
             f.Write($"static const uint32_t {ident}[] = ");
             f.WriteLine("{");
 
@@ -92,6 +97,10 @@ namespace GameEditor.ProjectIO
         }
 
         protected void WriteTilesets() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === TILESETS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
             foreach (TilesetItem ti in EditorState.TilesetList) {
                 WriteTilesetData(ti.Tileset);
             }
@@ -106,8 +115,80 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
+        /*
+        protected void WriteSpriteData(Sprite sprite) {
+            string ident = identifiers.Add(sprite, PREFIX_GAME_SPRITE_DATA, sprite.Name);
+            f.Write($"static const uint32_t {ident}[] = ");
+            f.WriteLine("{");
+
+            int numBlocksPerLine = (sprite.Width+3) / 4;
+
+            byte[] bmp = new byte[4 * sprite.Width * sprite.Height];
+            for (int frame = 0; frame < sprite.NumFrames; frame++) {
+                sprite.ReadFramePixels(frame, bmp);
+                f.Write($"  // frame {frame}");
+                for (int y = 0; y < sprite.Height; y++) {
+                    for (int bl = 0; bl < numBlocksPerLine; bl++) {
+                        if (bl % 8 == 0) {
+                            f.WriteLine();
+                            f.Write("  ");
+                        }
+                        int numPixelsInBlock = 4 - int.Clamp(4*(bl+1)-sprite.Width, 0, 3);
+                        uint block = 0;
+                        for (int p = 0; p < numPixelsInBlock; p++) {
+                            byte b = bmp[y*sprite.Width*4 + bl*16 + p*4 + 0];
+                            byte g = bmp[y*sprite.Width*4 + bl*16 + p*4 + 1];
+                            byte r = bmp[y*sprite.Width*4 + bl*16 + p*4 + 2];
+                            block |= ((uint) EncodeColor(r, g, b)) << (p*8);
+                        }
+                        f.Write("0x{0:x08},", block);
+                    }
+                }
+                f.WriteLine();
+                dataSize += 4*numBlocksPerLine * sprite.Height;
+            }
+
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected void WriteSprites() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === SPRITES");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+            foreach (SpriteItem si in EditorState.SpriteList) {
+                WriteSpriteData(si.Sprite);
+            }
+            f.WriteLine("const struct GAME_SPRITE game_sprites[] = {");
+            foreach (SpriteItem si in EditorState.SpriteList) {
+                int w = si.Sprite.Width;
+                int h = si.Sprite.Height;
+                int nFrames = si.Sprite.NumFrames;
+                string ident = identifiers.Get(si.Sprite);
+                f.WriteLine("  {");
+                f.WriteLine($"    {w}, {h}, {(w+3)/4}, {nFrames}, {ident},");
+                f.WriteLine("    {");
+                foreach (SpriteLoop sl in si.Sprite.GetAllLoops()) {
+                    if (sl.IsImmutable) continue;
+                    f.Write($"      {{ {sl.NumFrames}, {{ ");
+                    for (int i = 0; i < sl.NumFrames; i++) {
+                        if (i > 0) f.Write(",");
+                        f.Write(sl.Frame(i));
+                    }
+                    f.WriteLine(" } },");
+                }
+                f.WriteLine("    }");
+                f.WriteLine("  },");
+                dataSize += 5 * 4 + 4*16;  // 4 * int32_t + 1*intptr_t + 4*16*int8_t
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+        */
+
         protected void WriteMapTiles(MapData map) {
-            string ident = identifiers.Add(map, "game_map_tiles", map.Name);
+            string ident = identifiers.Add(map, PREFIX_GAME_MAP_TILES, map.Name);
             MapTiles tiles = map.Tiles;
             f.Write($"static const uint8_t {ident}[] = ");
             f.WriteLine("{");
@@ -140,6 +221,10 @@ namespace GameEditor.ProjectIO
             dataSize += 3 * tiles.Width * tiles.Height;
         }
         protected void WriteMaps() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === MAPS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
             foreach (MapDataItem mi in EditorState.MapList) {
                 WriteMapTiles(mi.Map);
             }
@@ -163,6 +248,7 @@ namespace GameEditor.ProjectIO
         public void WriteProject() {
             BeginWrite();
             WriteTilesets();
+            //WriteSprites();
             WriteMaps();
             EndWrite();
         }

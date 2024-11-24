@@ -15,32 +15,29 @@ namespace GameEditor.SpriteEditor
 {
     public partial class SpriteEditorWindow : Form
     {
-        private const uint RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
-        private const uint RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
+        private const uint EDITOR_RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
+        private const uint EDITOR_RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
 
-        private readonly SpriteItem sprite;
+        private const uint PICKER_RENDER_TRANSPARENT = CustomControls.SpriteFramePicker.RENDER_TRANSPARENT;
+
+        private readonly SpriteItem spriteItem;
 
         public SpriteEditorWindow(SpriteItem spriteItem) {
-            sprite = spriteItem;
+            this.spriteItem = spriteItem;
             InitializeComponent();
             FixFormTitle();
             toolStripTxtName.Text = Sprite.Name;
-            RefreshSpriteLoopList();
-            spriteListView.SelectedLoopIndex = 0;
-            spriteEditor.SelectedLoopIndex = 0;
+            spriteFramePicker.Sprite = Sprite;
+            spriteFramePicker.SelectedFrame = 0;
+            spriteEditor.Sprite = Sprite;
+            spriteEditor.SelectedFrame = 0;
             spriteEditor.FGPen = colorPicker.FG;
             spriteEditor.BGPen = colorPicker.BG;
             FixRenderFlags();
         }
 
-        public void RefreshSpriteLoopList() {
-            loopsListBox.DataSource = null;
-            loopsListBox.DataSource = Sprite.GetAllLoops();
-            loopsListBox.DisplayMember = "Name";
-        }
-
         public Sprite Sprite {
-            get { return sprite.Sprite; }
+            get { return spriteItem.Sprite; }
         }
 
         private void FixFormTitle() {
@@ -48,9 +45,12 @@ namespace GameEditor.SpriteEditor
         }
 
         private void FixRenderFlags() {
-            uint renderGrid = (toolStripBtnGrid.Checked) ? RENDER_GRID : 0;
-            uint renderTransparent = (toolStripBtnTransparent.Checked) ? RENDER_TRANSPARENT : 0;
-            spriteEditor.RenderFlags = renderGrid | renderTransparent;
+            uint editorRenderGrid = (toolStripBtnGrid.Checked) ? EDITOR_RENDER_GRID : 0;
+            uint editorRenderTransparent = (toolStripBtnTransparent.Checked) ? EDITOR_RENDER_TRANSPARENT : 0;
+            spriteEditor.RenderFlags = editorRenderGrid | editorRenderTransparent;
+
+            uint pickerRenderTransparent = (toolStripBtnTransparent.Checked) ? PICKER_RENDER_TRANSPARENT : 0;
+            spriteFramePicker.RenderFlags = pickerRenderTransparent;
         }
 
         private void SpriteEditorWindow_Load(object sender, EventArgs e) {
@@ -59,7 +59,7 @@ namespace GameEditor.SpriteEditor
 
         private void SpriteEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
             Util.SaveWindowPosition(this, "SpriteEditor");
-            sprite.EditorClosed();
+            spriteItem.EditorClosed();
         }
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
@@ -75,8 +75,8 @@ namespace GameEditor.SpriteEditor
             dlg.SpriteFrames = Sprite.NumFrames;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
-            if (spriteEditor.Loop != null) spriteEditor.SelectedLoopIndex %= spriteEditor.Loop.NumFrames;
-            if (spriteListView.Loop != null) spriteListView.SelectedLoopIndex %= spriteListView.Loop.NumFrames;
+            spriteEditor.SelectedFrame = 0;
+            spriteFramePicker.SelectedFrame = 0; ;
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -87,35 +87,13 @@ namespace GameEditor.SpriteEditor
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
                 spriteEditor.Invalidate();
-                spriteListView.Invalidate();
-                Util.Log($"imported sprite: {Sprite.Width}x{Sprite.Height} with {Sprite.NumFrames} frames");
+                spriteFramePicker.Invalidate();
             } catch (Exception ex) {
                 Util.Log($"Error importing sprite ({dlg.SpriteWidth}x{dlg.SpriteHeight}) from {dlg.FileName}:\n{ex}");
                 MessageBox.Show(
                     $"Error importing sprite: {ex.Message}\n\nConsult the log window for more information.",
                     "Error importing sprite", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-        }
-
-        private void loopsListBox_SelectedIndexChanged(object sender, EventArgs e) {
-            if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Sprite.NumLoops) return;
-            SpriteLoop selectedLoop = Sprite.GetLoop(loopsListBox.SelectedIndex);
-            spriteEditor.Loop = selectedLoop;
-            spriteListView.Loop = selectedLoop;
-            spriteListView.Focus(); // remove focus from list box so arrow keys can be used again
-        }
-
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-            bool ret = base.ProcessCmdKey(ref msg, keyData);
-            if (!ret && (keyData == Keys.Left || keyData == Keys.Right)) {
-                SpriteLoop? loop = spriteListView.Loop;
-                if (loop == null) return ret;
-                int frame = spriteListView.SelectedLoopIndex + ((keyData == Keys.Left) ? -1 : 1);
-                frame = (frame + loop.NumFrames) % loop.NumFrames;
-                spriteListView.SelectedLoopIndex = frame;
-                spriteEditor.SelectedLoopIndex = frame;
-            }
-            return ret;
         }
 
         private void toolStripBtnGrid_CheckedChanged(object sender, EventArgs e) {
@@ -126,55 +104,23 @@ namespace GameEditor.SpriteEditor
             FixRenderFlags();
         }
 
-        private void spriteListView_SelectedLoopIndexChanged(object sender, EventArgs e) {
-            spriteEditor.SelectedLoopIndex = spriteListView.SelectedLoopIndex;
-        }
-
-        private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Sprite.AddLoop();
-        }
-
-        private void loopsListBox_DoubleClick(object sender, EventArgs e) {
-            if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Sprite.NumLoops) return;
-            SpriteLoop selectedLoop = Sprite.GetLoop(loopsListBox.SelectedIndex);
-            if (selectedLoop.IsImmutable) {
-                MessageBox.Show("This is the loop that contains all frames, it can't be changed.",
-                    "Can't edit loop",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            SpriteLoopPropertiesDialog dlg = new SpriteLoopPropertiesDialog(selectedLoop);
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                selectedLoop.Name = dlg.LoopName;
-                selectedLoop.SetFrames(dlg.SelectedFrames);
-                spriteEditor.Invalidate();
-                spriteListView.Invalidate();
-                RefreshSpriteLoopList();
-            }
-        }
-
-        private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Sprite.NumLoops) return;
-            SpriteLoop selectedLoop = Sprite.GetLoop(loopsListBox.SelectedIndex);
-            if (selectedLoop.IsImmutable) {
-                MessageBox.Show("This is the loop that contains all frames, it can't be removed.",
-                    "Can't remove loop",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-
-            Sprite.RemoveLoop(selectedLoop);
-            RefreshSpriteLoopList();
-        }
-
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
             spriteEditor.FGPen = colorPicker.FG;
             spriteEditor.BGPen = colorPicker.BG;
         }
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
-            spriteListView.Invalidate();
+            spriteFramePicker.Invalidate();
+            Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
+            spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
+        }
+
+        public void RefreshSprite() {
+            spriteEditor.Invalidate();
+            spriteFramePicker.Invalidate();
         }
     }
 }
