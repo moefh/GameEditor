@@ -61,6 +61,13 @@ namespace GameEditor.GameData
             return -1;
         }
 
+        public static void ClearAllData(bool addDefaults) {
+            ClearAllMaps();
+            ClearAllSpriteAnimations();
+            ClearAllSprites();
+            ClearAllTilesets(addDefaults);
+        }
+
         public static void ClearAllMaps() {
             foreach (MapDataItem mi in MapList) {
                 mi.Editor?.Close();
@@ -71,6 +78,7 @@ namespace GameEditor.GameData
         public static void ClearAllTilesets(bool addDefault) {
             foreach (TilesetItem ti in TilesetList) {
                 ti.Editor?.Close();
+                ti.Tileset.Dispose();  // free bitmap
             }
             TilesetList.Clear();
             if (addDefault) {
@@ -93,6 +101,7 @@ namespace GameEditor.GameData
 
             foreach (SpriteItem si in SpriteList) {
                 si.Editor?.Close();
+                si.Sprite.Dispose();   // free bitmap
             }
             SpriteList.Clear();
         }

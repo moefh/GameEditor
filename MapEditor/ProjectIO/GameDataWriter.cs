@@ -19,7 +19,7 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_TILESET_DATA = "game_tileset_data";
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles";
-        const string PREFIX_GAME_MAP_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION";
+        const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION";
 
         private bool disposed;
         protected IdentifierNamespace identifiers = new IdentifierNamespace();
@@ -149,6 +149,10 @@ namespace GameEditor.ProjectIO
                             byte r = bmp[y*sprite.Width*4 + bl*16 + p*4 + 2];
                             block |= ((uint) EncodeColor(r, g, b)) << (p*8);
                         }
+                        // to be safe, ensure the padding also has the VGA bits set:
+                        for (int p = numPixelsInBlock; p < 4; p++) {
+                            block |= ((uint) EncodeColor(0, 0, 0)) << (p*8);
+                        }
                         f.Write("0x{0:x08},", block);
                     }
                 }
@@ -253,9 +257,9 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// ================================================================");
             f.WriteLine();
 
-            f.WriteLine("enum GAME_SPRITE_ANIMATION {");
+            f.WriteLine($"enum GAME_SPRITE_ANIMATION_IDS {{");
             foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
-                string ident = identifiers.Add(ai.Animation, PREFIX_GAME_MAP_SPRITE_ANIMATION,
+                string ident = identifiers.Add(ai.Animation, PREFIX_GAME_SPRITE_ANIMATION,
                                                ai.Animation.Name, IdentifierNamespace.UPPER_CASE);
                 f.WriteLine($"  {ident},");
             }

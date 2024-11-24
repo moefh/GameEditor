@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 namespace GameEditor.GameData
 {
-    public class Tileset
+    public class Tileset : IDisposable
     {
         public const int TILE_SIZE = 16;
 
@@ -43,6 +43,11 @@ namespace GameEditor.GameData
 
         public int NumTiles {
             get { return bitmap.Height / TILE_SIZE; }
+        }
+
+        public void Dispose() {
+            bitmap.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public void DrawTileAt(Graphics g, int tile, int x, int y, int w, int h, bool transparent) {

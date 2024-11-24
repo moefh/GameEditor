@@ -24,6 +24,13 @@ namespace GameEditor.GameData
             indices = new List<int>(Enumerable.Range(0, size));
         }
 
+        public SpriteAnimationLoop(SpriteAnimation anim, string name, bool immutable, List<int> indices) {
+            Animation = anim;
+            this.name = name;
+            this.immutable = immutable;
+            this.indices = new List<int>(indices);
+        }
+
         public SpriteAnimation Animation { get; private set; }
         public bool IsImmutable { get { return immutable; } }
 
@@ -89,6 +96,10 @@ namespace GameEditor.GameData
 
         public void AddLoop() {
             loops.Add(new SpriteAnimationLoop(this, SpriteAnimationLoop.NEW_LOOP_NAME, false, 1));
+        }
+
+        public void AddLoop(List<int> frameIndices) {
+            loops.Add(new SpriteAnimationLoop(this, SpriteAnimationLoop.NEW_LOOP_NAME, false, frameIndices));
         }
 
         public bool RemoveLoop(SpriteAnimationLoop remove) {

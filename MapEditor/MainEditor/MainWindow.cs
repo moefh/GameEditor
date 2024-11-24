@@ -130,8 +130,7 @@ namespace GameEditor.MainEditor
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorState.ClearAllMaps();
-            EditorState.ClearAllTilesets(true);
+            EditorState.ClearAllData(true);
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -172,14 +171,20 @@ namespace GameEditor.MainEditor
                 using GameDataReader reader = new GameDataReader(filename);
                 reader.ReadProject();
                 toolStripComboVgaSyncBits.SelectedIndex = (int)(reader.VgaSyncBits >> 6);
-                EditorState.ClearAllMaps();
-                EditorState.ClearAllTilesets(false);
+                EditorState.ClearAllData(false);
                 foreach (Tileset t in reader.TilesetList) {
                     EditorState.AddTileset(t);
+                }
+                foreach (Sprite s in reader.SpriteList) {
+                    EditorState.AddSprite(s);
+                }
+                foreach (SpriteAnimation a in reader.SpriteAnimationList) {
+                    EditorState.AddSpriteAnimation(a);
                 }
                 foreach (MapData m in reader.MapList) {
                     EditorState.AddMap(m);
                 }
+                reader.ConsumeData();  // prevent read data from being disposed
             } catch (ParseError ex) {
                 Util.Log($"{filename} at line {ex.LineNumber}:\n{ex}");
                 MessageBox.Show($"ERROR: {ex.Message}\n\nConsult the log window for more information.",

@@ -12,7 +12,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace GameEditor.GameData
 {
-    public class Sprite
+    public class Sprite : IDisposable
     {
         private const int DEFAULT_WIDTH = 16;
         private const int DEFAULT_HEIGHT = 16;
@@ -30,6 +30,13 @@ namespace GameEditor.GameData
             bitmap = CreateDefaultBitmap(DEFAULT_WIDTH, height, DEFAULT_NUM_FRAMES);
         }
 
+        public Sprite(string name, int width, int height, int numFrames) {
+            Name = name;
+            FileName = null;
+            this.height = height;
+            bitmap = CreateDefaultBitmap(width, height, numFrames);
+        }
+
         public string Name { get; set; }
 
         public string? FileName { get; set; }
@@ -39,6 +46,11 @@ namespace GameEditor.GameData
         public int Height { get { return height; } }
 
         public int NumFrames { get { return bitmap.Height / Height; } }
+
+        public void Dispose() {
+            bitmap.Dispose();
+            GC.SuppressFinalize(this);
+        }
 
         protected void NotifyNumFramesChanged() {
             NumFramesChanged?.Invoke(this, EventArgs.Empty);

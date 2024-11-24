@@ -26,7 +26,8 @@ namespace GameEditor.MainEditor
                 e.Cancel = true;
                 Hide();
                 return;
-            }        }
+            }
+        }
 
         private void toolStripBtnClear_Click(object sender, EventArgs e) {
             txtLog.Clear();
