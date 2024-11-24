@@ -20,11 +20,9 @@ namespace GameEditor.SpriteEditor
             public override string ToString() {
                 foreach (int f in selected) {
                     if (f == Frame) {
-                        Util.Log($"SpriteFrame({Frame}).ToString() returning SELECTED");
                         return $"{Frame} (selected)";
                     }
                 }
-                Util.Log($"SpriteFrame({Frame}).ToString() returning UNSELECTED");
                 return Frame.ToString();
             }
         }

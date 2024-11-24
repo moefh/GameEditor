@@ -61,14 +61,19 @@ namespace GameEditor.GameData
     {
         private readonly BindingList<SpriteAnimationLoop> loops;
 
+        private Sprite sprite;
+
         public SpriteAnimation(Sprite sprite, string name) {
-            Sprite = sprite;
+            this.sprite = sprite;
             Name = name;
             Sprite.NumFramesChanged += HandleNumFramesChanged;
             loops = [ new SpriteAnimationLoop(this, SpriteAnimationLoop.ALL_FRAMES_LOOP_NAME, true, Sprite.NumFrames) ];
         }
 
-        public Sprite Sprite;
+        public Sprite Sprite {
+            get { return sprite; }
+            set { sprite = value; FixLoopFrameReferences(); }
+        }
 
         public string Name { get; set; }
 
@@ -92,6 +97,8 @@ namespace GameEditor.GameData
         }
 
         public void FixLoopFrameReferences() {
+            if (NumLoops == 0) return;
+
             // rebuild first loop (the full one) since it's immutable
             if (GetLoop(0).NumFrames != Sprite.NumFrames) {
                 loops[0] = new SpriteAnimationLoop(this, SpriteAnimationLoop.ALL_FRAMES_LOOP_NAME, true, Sprite.NumFrames);

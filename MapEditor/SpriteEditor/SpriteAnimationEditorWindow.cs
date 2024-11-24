@@ -33,6 +33,9 @@ namespace GameEditor.SpriteEditor
             spriteEditor.FGPen = colorPicker.FG;
             spriteEditor.BGPen = colorPicker.BG;
             FixRenderFlags();
+            toolStripComboSprites.ComboBox.DataSource = EditorState.SpriteList;
+            toolStripComboSprites.ComboBox.DisplayMember = "Name";
+            toolStripComboSprites.SelectedIndex = EditorState.GetSpriteIndex(Animation.Sprite);
         }
 
         public void RefreshSpriteLoopList() {
@@ -71,7 +74,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Animation.Name = toolStripTxtName.Text;
-            Util.RefreshSpriteList();
+            Util.RefreshSpriteAnimationList();
             FixFormTitle();
         }
 
@@ -160,5 +163,16 @@ namespace GameEditor.SpriteEditor
             Util.RefreshSpriteUsers(Animation.Sprite, animationItem);
         }
 
+        private void toolStripComboSprites_DropDownClosed(object sender, EventArgs e) {
+            int sel = toolStripComboSprites.SelectedIndex;
+            if (sel < 0 || sel >= EditorState.SpriteList.Count) {
+                Util.Log($"WARNING: sprite dropdown has invalid selected index {sel}");
+                return;
+            }
+            Animation.Sprite = EditorState.SpriteList[sel].Sprite;
+            spriteEditor.Sprite = Animation.Sprite;
+            spriteListView.SelectedLoopIndex = 0;
+            spriteListView.Invalidate();
+        }
     }
 }

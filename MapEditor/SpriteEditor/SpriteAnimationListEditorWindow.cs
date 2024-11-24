@@ -16,10 +16,10 @@ namespace GameEditor.SpriteEditor
     {
         public SpriteAnimationListEditorWindow() {
             InitializeComponent();
-            RefreshSpriteList();
+            RefreshSpriteAnimationList();
         }
 
-        public void RefreshSpriteList() {
+        public void RefreshSpriteAnimationList() {
             animationList.DataSource = null;
             animationList.DataSource = EditorState.SpriteAnimationList;
             animationList.DisplayMember = "Name";

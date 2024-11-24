@@ -45,6 +45,8 @@
             spriteEditor = new CustomControls.SpriteEditor();
             spriteListView = new CustomControls.SpriteAnimationLoopView();
             colorPicker = new CustomControls.ColorPicker();
+            toolStripLabel2 = new ToolStripLabel();
+            toolStripComboSprites = new ToolStripComboBox();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -73,7 +75,7 @@
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1 });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, toolStripLabel2, toolStripComboSprites });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(632, 27);
@@ -89,7 +91,7 @@
             // toolStripTxtName
             // 
             toolStripTxtName.Name = "toolStripTxtName";
-            toolStripTxtName.Size = new Size(100, 27);
+            toolStripTxtName.Size = new Size(150, 27);
             toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
             // toolStripSeparator1
@@ -267,6 +269,19 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(47, 24);
+            toolStripLabel2.Text = "Sprite:";
+            // 
+            // toolStripComboSprites
+            // 
+            toolStripComboSprites.DropDownStyle = ComboBoxStyle.DropDownList;
+            toolStripComboSprites.Name = "toolStripComboSprites";
+            toolStripComboSprites.Size = new Size(100, 27);
+            toolStripComboSprites.DropDownClosed += toolStripComboSprites_DropDownClosed;
+            // 
             // SpriteAnimationEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -324,5 +339,7 @@
         private ToolStripMenuItem deleteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton toolStripBtnTransparent;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripComboBox toolStripComboSprites;
     }
 }

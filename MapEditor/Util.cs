@@ -41,6 +41,10 @@ namespace GameEditor
             MainWindow?.RefreshSpriteList();
         }
 
+        public static void RefreshSpriteAnimationList() {
+            MainWindow?.RefreshSpriteAnimationList();
+        }
+
         public static void RefreshTilesetUsers(Tileset tileset) {
             foreach (MapDataItem map in EditorState.MapList) {
                 if (map.Editor != null && map.Map.Tileset == tileset) {

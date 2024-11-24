@@ -19,6 +19,7 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_TILESET_DATA = "game_tileset_data";
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles";
+        const string PREFIX_GAME_MAP_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION";
 
         private bool disposed;
         protected IdentifierNamespace identifiers = new IdentifierNamespace();
@@ -61,6 +62,10 @@ namespace GameEditor.ProjectIO
             uint b = ((uint) blue  >> 6) & 0x3;
             return (byte) (syncBits | (b<<4) | (g<<2) | r);
         }
+
+        // =============================================================
+        // === TILESETS
+        // =============================================================
 
         protected void WriteTilesetData(Tileset tileset) {
             string ident = identifiers.Add(tileset, PREFIX_GAME_TILESET_DATA, tileset.Name);
@@ -115,7 +120,10 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        /*
+        // =============================================================
+        // === SPRITES
+        // =============================================================
+
         protected void WriteSpriteData(Sprite sprite) {
             string ident = identifiers.Add(sprite, PREFIX_GAME_SPRITE_DATA, sprite.Name);
             f.Write($"static const uint32_t {ident}[] = ");
@@ -160,32 +168,22 @@ namespace GameEditor.ProjectIO
             foreach (SpriteItem si in EditorState.SpriteList) {
                 WriteSpriteData(si.Sprite);
             }
-            f.WriteLine("const struct GAME_SPRITE game_sprites[] = {");
+            f.WriteLine("const struct GAME_IMAGE game_sprites[] = {");
             foreach (SpriteItem si in EditorState.SpriteList) {
                 int w = si.Sprite.Width;
                 int h = si.Sprite.Height;
                 int nFrames = si.Sprite.NumFrames;
                 string ident = identifiers.Get(si.Sprite);
-                f.WriteLine("  {");
-                f.WriteLine($"    {w}, {h}, {(w+3)/4}, {nFrames}, {ident},");
-                f.WriteLine("    {");
-                foreach (SpriteLoop sl in si.Sprite.GetAllLoops()) {
-                    if (sl.IsImmutable) continue;
-                    f.Write($"      {{ {sl.NumFrames}, {{ ");
-                    for (int i = 0; i < sl.NumFrames; i++) {
-                        if (i > 0) f.Write(",");
-                        f.Write(sl.Frame(i));
-                    }
-                    f.WriteLine(" } },");
-                }
-                f.WriteLine("    }");
-                f.WriteLine("  },");
-                dataSize += 5 * 4 + 4*16;  // 4 * int32_t + 1*intptr_t + 4*16*int8_t
+                f.WriteLine($"  {{ {w}, {h}, {(w+3)/4}, {nFrames}, {ident} }},");
+                dataSize += 5 * 4 + 4*16;  // 4 * int32_t + 1*intptr_t
             }
             f.WriteLine("};");
             f.WriteLine();
         }
-        */
+
+        // =============================================================
+        // === MAPS
+        // =============================================================
 
         protected void WriteMapTiles(MapData map) {
             string ident = identifiers.Add(map, PREFIX_GAME_MAP_TILES, map.Name);
@@ -245,11 +243,63 @@ namespace GameEditor.ProjectIO
             dataSize += 2*2 + 2*4;  // 2*int16_t + 2*intptr_t
         }
 
+        // =============================================================
+        // === SPRITE ANIMATIONS
+        // =============================================================
+
+        protected void WriteSpriteAnimations() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === SPRITE ANIMATIONS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+
+            f.WriteLine("enum GAME_SPRITE_ANIMATION {");
+            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+                string ident = identifiers.Add(ai.Animation, PREFIX_GAME_MAP_SPRITE_ANIMATION,
+                                               ai.Animation.Name, IdentifierNamespace.UPPER_CASE);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+
+            Dictionary<Sprite, int>? sprIndices = new Dictionary<Sprite, int>();
+            foreach (var (si, index) in EditorState.SpriteList.Zip(Enumerable.Range(0, EditorState.SpriteList.Count))) {
+                sprIndices[si.Sprite] = index;
+            }
+
+            f.WriteLine("const struct GAME_SPRITE_ANIMATION game_sprite_animations[] = {");
+            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+                string animName = identifiers.Get(ai.Animation);
+                string sprite = $"game_sprites[{EditorState.GetSpriteIndex(ai.Animation.Sprite)}]";
+                f.WriteLine($"  {{  // {animName}");
+                f.WriteLine($"    {sprite},");
+                f.WriteLine($"    {ai.Animation.NumLoops-1},");
+                f.WriteLine("    {");
+                foreach (SpriteAnimationLoop loop in ai.Animation.GetAllLoops()) {
+                    if (loop.IsImmutable) continue;  // skip "all frames" loop
+                    f.Write($"      {{ {loop.NumFrames}, {{ ");
+                    for (int i = 0; i < loop.NumFrames; i++) {
+                        f.Write($"{loop.Frame(i)},");
+                    }
+                    f.WriteLine(" } },");
+                }
+                f.WriteLine("    },");
+                f.WriteLine("  },");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+            dataSize += 2*2 + 2*4;  // 2*int16_t + 2*intptr_t
+        }
+
+        // =============================================================
+        // === PROJECT
+        // =============================================================
+
         public void WriteProject() {
             BeginWrite();
             WriteTilesets();
-            //WriteSprites();
+            WriteSprites();
             WriteMaps();
+            WriteSpriteAnimations();
             EndWrite();
         }
     }

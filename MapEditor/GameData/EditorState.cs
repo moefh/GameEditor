@@ -52,6 +52,15 @@ namespace GameEditor.GameData
             return -1;
         }
 
+        public static int GetSpriteIndex(Sprite sprite) {
+            for (int i = 0; i < SpriteList.Count; i++) {
+                if (SpriteList[i].Sprite == sprite) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public static void ClearAllMaps() {
             foreach (MapDataItem mi in MapList) {
                 mi.Editor?.Close();

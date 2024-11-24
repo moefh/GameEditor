@@ -76,7 +76,8 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
             spriteEditor.SelectedFrame = 0;
-            spriteFramePicker.SelectedFrame = 0; ;
+            spriteFramePicker.SelectedFrame = 0;
+            Util.RefreshSpriteUsers(Sprite, null);
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {

@@ -67,6 +67,10 @@ namespace GameEditor.MainEditor
             tilesetListEditor.RefreshTilesetList();
         }
 
+        public void RefreshSpriteAnimationList() {
+            spriteAnimationListEditor.RefreshSpriteAnimationList();
+        }
+
         public void AddLog(string log) {
             logWindow.AddLog(log);
         }
