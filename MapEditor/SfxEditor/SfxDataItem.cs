@@ -6,17 +6,17 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEditor.SpriteEditor
+namespace GameEditor.SfxEditor
 {
-    public class SpriteAnimationItem
+    public class SfxDataItem
     {
-        public SpriteAnimationItem(SpriteAnimation anim) {
-            Animation = anim;
+        public SfxDataItem(SfxData sfxData) {
+            Sfx = sfxData;
         }
 
-        public SpriteAnimation Animation { get; }
-        public SpriteAnimationEditorWindow? Editor { get; private set; }
-        public string Name { get { return Animation.Name; } }
+        public SfxData Sfx { get; }
+        public SfxEditorWindow? Editor { get; private set; }
+        public string Name { get { return Sfx.Name; } }
 
         public void ShowEditor() {
             if (Editor != null) {
@@ -25,7 +25,7 @@ namespace GameEditor.SpriteEditor
                 }
                 Editor.Activate();
             } else {
-                Editor = new SpriteAnimationEditorWindow(this);
+                Editor = new SfxEditorWindow(this);
                 Editor.MdiParent = Util.MainWindow;
                 Editor.Show();
             }

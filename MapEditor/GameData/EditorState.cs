@@ -1,6 +1,7 @@
 ﻿using GameEditor.MapEditor;
 using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
+using GameEditor.SfxEditor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -15,6 +16,7 @@ namespace GameEditor.GameData
 {
     public class EditorState
     {
+        private static readonly BindingList<SfxDataItem> sfxs = [];
         private static readonly BindingList<MapDataItem> maps = [];
         private static readonly BindingList<SpriteAnimationItem> spriteAnimations = [];
         private static readonly BindingList<SpriteItem> sprites = [];
@@ -26,6 +28,7 @@ namespace GameEditor.GameData
         public static BindingList<MapDataItem> MapList { get { return maps; } }
         public static BindingList<SpriteItem> SpriteList { get { return sprites; } }
         public static BindingList<SpriteAnimationItem> SpriteAnimationList { get { return spriteAnimations; } }
+        public static BindingList<SfxDataItem> SfxList { get { return sfxs; } }
 
         public static void AddMap(MapData mapData) {
             maps.Add(new MapDataItem(mapData));
@@ -42,6 +45,11 @@ namespace GameEditor.GameData
         public static void AddSpriteAnimation(SpriteAnimation animation) {
             spriteAnimations.Add(new SpriteAnimationItem(animation));
         }
+
+        public static void AddSfx(SfxData sfx) {
+            sfxs.Add(new SfxDataItem(sfx));
+        }
+
 
         public static int GetTilesetIndex(Tileset tileset) {
             for (int i = 0; i < TilesetList.Count; i++) {
@@ -61,11 +69,28 @@ namespace GameEditor.GameData
             return -1;
         }
 
+        public static int GetSfxIndex(SfxData sfx) {
+            for (int i = 0; i < SfxList.Count; i++) {
+                if (SfxList[i].Sfx == sfx) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
         public static void ClearAllData(bool addDefaults) {
+            ClearAllSfxs();
             ClearAllMaps();
             ClearAllSpriteAnimations();
             ClearAllSprites();
             ClearAllTilesets(addDefaults);
+        }
+
+        public static void ClearAllSfxs() {
+            foreach (SfxDataItem si in SfxList) {
+                si.Editor?.Close();
+            }
+            SfxList.Clear();
         }
 
         public static void ClearAllMaps() {

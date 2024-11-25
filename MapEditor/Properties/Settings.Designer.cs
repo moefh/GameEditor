@@ -430,5 +430,77 @@ namespace GameEditor.Properties {
                 this["SpriteAnimationEditorSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point SfxListEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["SfxListEditorLocation"]));
+            }
+            set {
+                this["SfxListEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SfxListEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SfxListEditorSize"]));
+            }
+            set {
+                this["SfxListEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SfxListEditorSaved {
+            get {
+                return ((bool)(this["SfxListEditorSaved"]));
+            }
+            set {
+                this["SfxListEditorSaved"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point SfxEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["SfxEditorLocation"]));
+            }
+            set {
+                this["SfxEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SfxEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SfxEditorSize"]));
+            }
+            set {
+                this["SfxEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool SfxEditorSaved {
+            get {
+                return ((bool)(this["SfxEditorSaved"]));
+            }
+            set {
+                this["SfxEditorSaved"] = value;
+            }
+        }
     }
 }

@@ -47,6 +47,7 @@
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripBtnLogWindow = new ToolStripButton();
             toolStripBtnAnimationEditor = new ToolStripButton();
+            toolStripBtnSfxEditor = new ToolStripButton();
             menuStrip.SuspendLayout();
             toolStrip.SuspendLayout();
             SuspendLayout();
@@ -56,7 +57,7 @@
             menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, toolStripMenuItem1 });
             menuStrip.Location = new Point(0, 0);
             menuStrip.Name = "menuStrip";
-            menuStrip.Size = new Size(724, 27);
+            menuStrip.Size = new Size(797, 27);
             menuStrip.TabIndex = 2;
             menuStrip.Text = "menuStrip1";
             // 
@@ -123,16 +124,16 @@
             // 
             statusStrip.Location = new Point(0, 305);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(724, 22);
+            statusStrip.Size = new Size(797, 22);
             statusStrip.TabIndex = 4;
             statusStrip.Text = "statusStrip1";
             // 
             // toolStrip
             // 
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnTilesetEditor, toolStripBtnMapEditor, toolStripBtnSpriteEditor, toolStripComboVgaSyncBits, toolStripLabel1, toolStripSeparator3, toolStripBtnLogWindow, toolStripBtnAnimationEditor });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnTilesetEditor, toolStripBtnMapEditor, toolStripBtnSpriteEditor, toolStripComboVgaSyncBits, toolStripLabel1, toolStripSeparator3, toolStripBtnLogWindow, toolStripBtnAnimationEditor, toolStripBtnSfxEditor });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
-            toolStrip.Size = new Size(724, 27);
+            toolStrip.Size = new Size(797, 27);
             toolStrip.TabIndex = 5;
             toolStrip.Text = "toolStrip1";
             // 
@@ -203,11 +204,20 @@
             toolStripBtnAnimationEditor.Text = "Animations";
             toolStripBtnAnimationEditor.Click += toolStripBtnAnimationEditor_Click;
             // 
+            // toolStripBtnSfxEditor
+            // 
+            toolStripBtnSfxEditor.Image = (Image)resources.GetObject("toolStripBtnSfxEditor.Image");
+            toolStripBtnSfxEditor.ImageTransparentColor = Color.Magenta;
+            toolStripBtnSfxEditor.Name = "toolStripBtnSfxEditor";
+            toolStripBtnSfxEditor.Size = new Size(111, 24);
+            toolStripBtnSfxEditor.Text = "Sound Effects";
+            toolStripBtnSfxEditor.Click += toolStripBtnSfxEditor_Click;
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(724, 327);
+            ClientSize = new Size(797, 327);
             Controls.Add(toolStrip);
             Controls.Add(statusStrip);
             Controls.Add(menuStrip);
@@ -250,5 +260,6 @@
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripButton toolStripBtnLogWindow;
         private ToolStripButton toolStripBtnAnimationEditor;
+        private ToolStripButton toolStripBtnSfxEditor;
     }
 }

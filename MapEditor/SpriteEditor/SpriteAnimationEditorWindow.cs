@@ -1,6 +1,7 @@
 ﻿using GameEditor.CustomControls;
 using GameEditor.GameData;
 using GameEditor.MapEditor;
+using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

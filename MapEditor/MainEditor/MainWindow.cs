@@ -1,8 +1,9 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
 using GameEditor.ProjectIO;
-using GameEditor.TilesetEditor;
+using GameEditor.SfxEditor;
 using GameEditor.SpriteEditor;
+using GameEditor.TilesetEditor;
 using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections;
@@ -18,11 +19,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
+using GameEditor.Misc;
 
 namespace GameEditor.MainEditor
 {
     public partial class MainWindow : Form
     {
+        private readonly SfxListEditorWindow sfxListEditor;
         private readonly MapListEditorWindow mapListEditor;
         private readonly TilesetListEditorWindow tilesetListEditor;
         private readonly SpriteListEditorWindow spriteListEditor;
@@ -48,11 +51,17 @@ namespace GameEditor.MainEditor
             spriteListEditor.MdiParent = this;
             spriteAnimationListEditor = new SpriteAnimationListEditorWindow();
             spriteAnimationListEditor.MdiParent = this;
+            sfxListEditor = new SfxListEditorWindow();
+            sfxListEditor.MdiParent = this;
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
 
             toolStripComboVgaSyncBits.Items.AddRange(vgaSyncBitsList);
             toolStripComboVgaSyncBits.SelectedIndex = 3;
+        }
+
+        public void RefreshSfxList() {
+            sfxListEditor.RefreshSfxList();
         }
 
         public void RefreshMapList() {
@@ -84,6 +93,7 @@ namespace GameEditor.MainEditor
             mapListEditor.Close();
             tilesetListEditor.Close();
             spriteListEditor.Close();
+            sfxListEditor.Close();
             logWindow.Close();
         }
 
@@ -119,6 +129,12 @@ namespace GameEditor.MainEditor
             spriteAnimationListEditor.Activate();
         }
 
+        private void toolStripBtnSfxEditor_Click(object sender, EventArgs e) {
+            sfxListEditor.LoadWindowPosition();
+            sfxListEditor.Show();
+            sfxListEditor.Activate();
+        }
+
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
             logWindow.LoadWindowPosition();
             logWindow.Show();
@@ -144,7 +160,7 @@ namespace GameEditor.MainEditor
 
             if (filename == null) {
                 SaveFileDialog dlg = new SaveFileDialog();
-                dlg.Filter = "Game project files (*.c)|*.c|All files|*.*";
+                dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
                 dlg.RestoreDirectory = true;
                 if (dlg.ShowDialog() != DialogResult.OK) return;
                 filename = dlg.FileName;
@@ -162,7 +178,7 @@ namespace GameEditor.MainEditor
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Filter = "Game project files (*.c)|*.c|All files|*.*";
+            dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             string filename = dlg.FileName;
@@ -183,6 +199,9 @@ namespace GameEditor.MainEditor
                 }
                 foreach (MapData m in reader.MapList) {
                     EditorState.AddMap(m);
+                }
+                foreach (SfxData s in reader.SfxList) {
+                    EditorState.AddSfx(s);
                 }
                 reader.ConsumeData();  // prevent read data from being disposed
             } catch (ParseError ex) {

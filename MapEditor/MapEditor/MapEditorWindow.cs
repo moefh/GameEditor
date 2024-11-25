@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
-using GameEditor;
 using GameEditor.GameData;
+using GameEditor.Misc;
 
 namespace GameEditor.MapEditor
 {

@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_TILESET_DATA = "game_tileset_data_";
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data_";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles_";
+        const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples_";
         const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION_";
 
         private bool disposed;
@@ -27,10 +29,12 @@ namespace GameEditor.ProjectIO
         protected Dictionary<string,List<uint>> gameTilesetData = [];
         protected Dictionary<string,List<uint>> gameSpriteData = [];
         protected Dictionary<string,List<byte>> gameMapTiles = [];
+        protected Dictionary<string,List<byte>> gameSfxSamples = [];
         protected List<string> gameSpriteAnimationNames = [];
         protected List<Sprite> spriteList = [];
         protected List<Tileset> tilesetList = [];
         protected List<MapData> mapList = [];
+        protected List<SfxData> sfxList = [];
         protected List<SpriteAnimation> spriteAnimationList = [];
 
         public GameDataReader(string filename) {
@@ -42,6 +46,7 @@ namespace GameEditor.ProjectIO
         public List<Sprite> SpriteList { get { return spriteList; } }
         public List<SpriteAnimation> SpriteAnimationList { get { return spriteAnimationList; } }
         public List<MapData> MapList { get { return mapList; } }
+        public List<SfxData> SfxList { get { return sfxList; } }
 
         public uint VgaSyncBits { get { return vgaSyncBits; }}
 
@@ -55,11 +60,13 @@ namespace GameEditor.ProjectIO
         }
 
         public void ConsumeData() {
-            // clear all lists so Dispose() doesn't dispose the data items that were successfully read
+            // Clear all lists so Dispose() doesn't dispose the
+            // data items that were successfully read.
             mapList.Clear();
             spriteAnimationList.Clear();
             spriteList.Clear();
             tilesetList.Clear();
+            sfxList.Clear();
         }
 
         private Token? NextToken() {
@@ -447,6 +454,60 @@ namespace GameEditor.ProjectIO
 
 
         // ======================================================================
+        // === SFX
+        // ======================================================================
+
+        private void ReadSfxSamples(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<byte> data = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                data.Add((byte) (next.Num & 0xff));
+                ExpectPunct(',');
+            }
+            ExpectPunct(';');
+
+            gameSfxSamples[ident.Str] = data;
+            Util.Log($"== got sfx samples {ident.Str}");
+        }
+
+        private void ReadSfxList(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                Token numSamples = ExpectNumber();
+                ExpectPunct(',');
+                Token dataIdent = ExpectIdent();
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                if (! gameSfxSamples.TryGetValue(dataIdent.Str, out List<byte>? data)) {
+                    throw new ParseError($"invalid sfx: samples {dataIdent.Str} not found", dataIdent.LineNum);
+                }
+                if (numSamples.Num != data.Count) {
+                    throw new ParseError($"invalid sfx: expected {numSamples.Num} samples, got {data.Count}", dataIdent.LineNum);
+                }
+
+                string name = dataIdent.Str.Substring(PREFIX_GAME_SPRITE_DATA.Length);
+                sfxList.Add(new SfxData(name, data));
+
+                Util.Log($"== got sfx definition for {dataIdent.Str} with {numSamples.Num} samples");
+            }
+            ExpectPunct(';');
+        }
+
+
+        // ======================================================================
         // === PROJECT
         // ======================================================================
 
@@ -467,9 +528,20 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("uint32_t")) continue;
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
+                if (t.Value.IsIdent("GAME_SFX")) continue;
                 if (t.Value.IsIdent("GAME_IMAGE")) continue;
                 if (t.Value.IsIdent("GAME_MAP")) continue;
                 if (t.Value.IsIdent("GAME_SPRITE_ANIMATION")) continue;
+
+                // sfx stuff
+                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_SFX_SAMPLES)) {
+                    ReadSfxSamples(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent("game_sfx")) {
+                    ReadSfxList(t.Value);
+                    continue;
+                }
 
                 // tileset stuff
                 if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_TILESET_DATA)) {
@@ -510,7 +582,6 @@ namespace GameEditor.ProjectIO
                     ReadSpriteAnimationList(t.Value);
                     continue;
                 }
-
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }

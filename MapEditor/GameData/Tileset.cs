@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
+using GameEditor.Misc;
 
 namespace GameEditor.GameData
 {

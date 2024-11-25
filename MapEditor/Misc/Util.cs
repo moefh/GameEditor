@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using GameEditor.SpriteEditor;
 using GameEditor.MapEditor;
 
-namespace GameEditor
+namespace GameEditor.Misc
 {
     public static class Util
     {
@@ -28,7 +28,11 @@ namespace GameEditor
             System.Diagnostics.Debug.WriteLine(log);
             MainWindow?.AddLog(log + "\r\n");
         }
-        
+
+        public static void RefreshSfxList() {
+            MainWindow?.RefreshSfxList();
+        }
+
         public static void RefreshMapList() {
             MainWindow?.RefreshMapList();
         }
@@ -80,10 +84,10 @@ namespace GameEditor
 
         public static bool LoadWindowPosition(Form form, string name) {
             try {
-                bool? saved = (bool?) Properties.Settings.Default[$"{name}Saved"];
+                bool? saved = (bool?)Properties.Settings.Default[$"{name}Saved"];
                 if (saved == true) {
-                    form.Location = (Point?) Properties.Settings.Default[$"{name}Location"] ?? form.Location;
-                    form.Size = (Size?) Properties.Settings.Default[$"{name}Size"] ?? form.Size;
+                    form.Location = (Point?)Properties.Settings.Default[$"{name}Location"] ?? form.Location;
+                    form.Size = (Size?)Properties.Settings.Default[$"{name}Size"] ?? form.Size;
                     return true;
                 }
             } catch (Exception) {
@@ -103,8 +107,8 @@ namespace GameEditor
         }
 
         public static void LoadMainWindowPosition(Form form, string name) {
-            if (! LoadWindowPosition(form, name)) return;  // not saved
-            if ((bool?) Properties.Settings.Default[$"{name}Maximized"] == true) {
+            if (!LoadWindowPosition(form, name)) return;  // not saved
+            if ((bool?)Properties.Settings.Default[$"{name}Maximized"] == true) {
                 form.WindowState = FormWindowState.Maximized;
             }
         }

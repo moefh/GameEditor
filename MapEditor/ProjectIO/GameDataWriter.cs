@@ -1,5 +1,7 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
+using GameEditor.Misc;
+using GameEditor.SfxEditor;
 using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
 using System;
@@ -19,6 +21,7 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_TILESET_DATA = "game_tileset_data";
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles";
+        const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples";
         const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION";
 
         private bool disposed;
@@ -64,13 +67,48 @@ namespace GameEditor.ProjectIO
         }
 
         // =============================================================
+        // === SFX
+        // =============================================================
+
+        protected void WriteSfxData(SfxData sfx) {
+            string ident = identifiers.Add(sfx, PREFIX_GAME_SFX_SAMPLES, sfx.Name);
+            f.Write($"static const uint8_t {ident}[] = {{");
+            for (int i = 0; i < sfx.NumSamples; i++) {
+                if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
+                f.Write($"0x{sfx.Data[i+WavFileUtil.OFFSET_SAMPLES]:x02},");
+            }
+            f.WriteLine();
+            f.WriteLine("};");
+            f.WriteLine();
+            dataSize += sfx.NumSamples;
+        }
+
+        protected void WriteSfxs() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === SFX");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+            foreach (SfxDataItem si in EditorState.SfxList) {
+                WriteSfxData(si.Sfx);
+            }
+
+            f.WriteLine("const struct GAME_SFX game_sfx[] = {");
+            foreach (SfxDataItem si in EditorState.SfxList) {
+                string name = identifiers.Get(si.Sfx);
+                f.WriteLine($"  {{ {si.Sfx.NumSamples}, {name} }},");
+                dataSize += 2*4;  // int32_t + intptr_t
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        // =============================================================
         // === TILESETS
         // =============================================================
 
         protected void WriteTilesetData(Tileset tileset) {
             string ident = identifiers.Add(tileset, PREFIX_GAME_TILESET_DATA, tileset.Name);
-            f.Write($"static const uint32_t {ident}[] = ");
-            f.WriteLine("{");
+            f.WriteLine($"static const uint32_t {ident}[] = {{");
 
             const int tileSize = Tileset.TILE_SIZE;
             const int numBlocksPerTile = tileSize * tileSize / 4;
@@ -126,8 +164,7 @@ namespace GameEditor.ProjectIO
 
         protected void WriteSpriteData(Sprite sprite) {
             string ident = identifiers.Add(sprite, PREFIX_GAME_SPRITE_DATA, sprite.Name);
-            f.Write($"static const uint32_t {ident}[] = ");
-            f.WriteLine("{");
+            f.WriteLine($"static const uint32_t {ident}[] = {{");
 
             int numBlocksPerLine = (sprite.Width+3) / 4;
 
@@ -179,7 +216,7 @@ namespace GameEditor.ProjectIO
                 int nFrames = si.Sprite.NumFrames;
                 string ident = identifiers.Get(si.Sprite);
                 f.WriteLine($"  {{ {w}, {h}, {(w+3)/4}, {nFrames}, {ident} }},");
-                dataSize += 5 * 4 + 4*16;  // 4 * int32_t + 1*intptr_t
+                dataSize += 5 * 4;  // 4*int32_t + 1*intptr_t
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -192,8 +229,7 @@ namespace GameEditor.ProjectIO
         protected void WriteMapTiles(MapData map) {
             string ident = identifiers.Add(map, PREFIX_GAME_MAP_TILES, map.Name);
             MapTiles tiles = map.Tiles;
-            f.Write($"static const uint8_t {ident}[] = ");
-            f.WriteLine("{");
+            f.WriteLine($"static const uint8_t {ident}[] = {{");
             f.Write("  // background");
             for (int y = 0; y < tiles.Height; y++) {
                 for (int x = 0; x < tiles.Width; x++) {
@@ -241,10 +277,10 @@ namespace GameEditor.ProjectIO
                 string tiles = identifiers.Get(mi.Map);
                 string tileset = $"game_tilesets[{EditorState.GetTilesetIndex(mi.Map.Tileset)}]";
                 f.WriteLine($"  {{ {mi.Map.Tiles.Width}, {mi.Map.Tiles.Height}, {tileset}, {tiles} }},");
+                dataSize += 2*2 + 2*4;  // 2*int16_t + 2*intptr_t
             }
             f.WriteLine("};");
             f.WriteLine();
-            dataSize += 2*2 + 2*4;  // 2*int16_t + 2*intptr_t
         }
 
         // =============================================================
@@ -288,11 +324,12 @@ namespace GameEditor.ProjectIO
                 }
                 f.WriteLine("    },");
                 f.WriteLine("  },");
+                dataSize += 0;  // TODO: calculate data size
             }
             f.WriteLine("};");
             f.WriteLine();
-            dataSize += 2*2 + 2*4;  // 2*int16_t + 2*intptr_t
         }
+
 
         // =============================================================
         // === PROJECT
@@ -300,6 +337,7 @@ namespace GameEditor.ProjectIO
 
         public void WriteProject() {
             BeginWrite();
+            WriteSfxs();
             WriteTilesets();
             WriteSprites();
             WriteMaps();

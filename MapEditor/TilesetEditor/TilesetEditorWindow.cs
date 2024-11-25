@@ -1,5 +1,6 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
+using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -69,6 +70,7 @@ namespace GameEditor.TilesetEditor
             } catch (Exception ex) {
                 Util.Log($"ERROR loading bitmap from {dlg.FileName}:\n{ex}");
                 MessageBox.Show(ex.Message, "Error Loading Image", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
             }
             tilePicker.Location = new Point(0, 0);
             tilePicker.SelectedTile = 0;
