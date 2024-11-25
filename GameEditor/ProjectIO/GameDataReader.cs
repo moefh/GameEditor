@@ -115,7 +115,7 @@ namespace GameEditor.ProjectIO
             switch (name.Str) {
             case "GAME_DATA_VGA_SYNC_BITS":
                 vgaSyncBits = val.Num;
-                Util.Log($"== got vga sync bits 0x{vgaSyncBits:x02}");
+                Util.Log($"-> got vga sync bits 0x{vgaSyncBits:x02}");
                 break;
 
             default:
@@ -153,7 +153,7 @@ namespace GameEditor.ProjectIO
             ExpectPunct(';');
 
             gameTilesetData[ident.Str] = data;
-            Util.Log($"== got tileset data {ident.Str}");
+            Util.Log($"-> got tileset data {ident.Str}");
         }
 
         private Tileset CreateTileset(string name, int numTiles, List<uint> data) {
@@ -217,7 +217,7 @@ namespace GameEditor.ProjectIO
                 string name = dataIdent.Str.Substring(PREFIX_GAME_TILESET_DATA.Length);
                 tilesetList.Add(CreateTileset(name, (int) numTiles.Num, data));
 
-                Util.Log($"== got tileset definition for {dataIdent.Str} with {numTiles.Num} tiles");
+                Util.Log($"-> got tileset for {dataIdent.Str} with {numTiles.Num} tiles");
             }
             ExpectPunct(';');
         }
@@ -242,7 +242,7 @@ namespace GameEditor.ProjectIO
             ExpectPunct(';');
 
             gameSpriteData[ident.Str] = data;
-            Util.Log($"== got sprite data {ident.Str}");
+            Util.Log($"-> got sprite data {ident.Str}");
         }
 
         private Sprite CreateSprite(string name, int width, int height, int numFrames, List<uint> data) {
@@ -305,7 +305,7 @@ namespace GameEditor.ProjectIO
                 string name = dataIdent.Str.Substring(PREFIX_GAME_SPRITE_DATA.Length);
                 spriteList.Add(CreateSprite(name, (int) width.Num, (int) height.Num, (int) numFrames.Num, data));
 
-                Util.Log($"== got sprite definition for {dataIdent.Str} with {numFrames.Num} frames");
+                Util.Log($"-> got sprite for {dataIdent.Str} with {numFrames.Num} frames");
             }
             ExpectPunct(';');
         }
@@ -331,7 +331,7 @@ namespace GameEditor.ProjectIO
             ExpectPunct(';');
 
             gameMapTiles[ident.Str] = data;
-            Util.Log($"== got map tiles {ident.Str}");
+            Util.Log($"-> got map tiles {ident.Str}");
         }
 
         private void ReadMapList(Token start) {
@@ -366,7 +366,7 @@ namespace GameEditor.ProjectIO
                 string name = mapTilesDataIdent.Str.Substring(PREFIX_GAME_MAP_TILES.Length);
                 Tileset tileset = tilesetList[(int) tilesetIndex.Num];
                 mapList.Add(new MapData(name, (int) width.Num, (int) height.Num, tileset, tiles));
-                Util.Log($"== got map definition for {mapTilesDataIdent.Str} with tileset {tilesetIndex.Num}");
+                Util.Log($"-> got map for {mapTilesDataIdent.Str} with tileset {tilesetIndex.Num}");
             }
             ExpectPunct(';');
         }
@@ -447,7 +447,7 @@ namespace GameEditor.ProjectIO
                     anim.AddLoop(loopFrames);
                 }
                 spriteAnimationList.Add(anim);
-                Util.Log($"== got sprite animation definition for {sprite.Name} with {loops.Count} loops");
+                Util.Log($"-> got sprite animation for {sprite.Name} with {loops.Count} loops");
             }
             ExpectPunct(';');
         }
@@ -473,7 +473,7 @@ namespace GameEditor.ProjectIO
             ExpectPunct(';');
 
             gameSfxSamples[ident.Str] = data;
-            Util.Log($"== got sfx samples {ident.Str}");
+            Util.Log($"-> got sfx samples {ident.Str}");
         }
 
         private void ReadSfxList(Token ident) {
@@ -501,7 +501,7 @@ namespace GameEditor.ProjectIO
                 string name = dataIdent.Str.Substring(PREFIX_GAME_SPRITE_DATA.Length);
                 sfxList.Add(new SfxData(name, data));
 
-                Util.Log($"== got sfx definition for {dataIdent.Str} with {numSamples.Num} samples");
+                Util.Log($"-> got sfx for {dataIdent.Str} with {numSamples.Num} samples");
             }
             ExpectPunct(';');
         }
@@ -589,6 +589,7 @@ namespace GameEditor.ProjectIO
             if (TilesetList.Count == 0) {
                 throw new ParseError("ERROR: the project must have at least one tileset", 1);
             }
+            Util.Log($"== finished reading project");
         }
 
     }

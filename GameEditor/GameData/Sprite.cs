@@ -48,6 +48,10 @@ namespace GameEditor.GameData
 
         public int NumFrames { get { return bitmap.Height / Height; } }
 
+        public int GameDataSize {
+            get { return 4*((Width+3)/4) * Height * NumFrames + 4*2 + 4; }
+        }
+
         public void Dispose() {
             bitmap.Dispose();
             GC.SuppressFinalize(this);

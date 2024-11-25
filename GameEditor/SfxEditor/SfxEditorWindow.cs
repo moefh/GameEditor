@@ -24,6 +24,7 @@ namespace GameEditor.SfxEditor
             InitializeComponent();
             sfxView.Sfx = Sfx;
             toolStripTxtName.Text = Sfx.Name;
+            UpdateDataSize();
             player = new SoundPlayer(new MemoryStream(Sfx.Data, false));
         }
 
@@ -32,10 +33,14 @@ namespace GameEditor.SfxEditor
         private void FixFormTitle() {
             Text = "Sound Effect - " + Sfx.Name;
         }
+        private void UpdateDataSize() {
+            lblDataSize.Text = $"{Sfx.GameDataSize} bytes";
+        }
 
         private void RefreshSfx() {
             player.Dispose();
             player = new SoundPlayer(new MemoryStream(Sfx.Data, false));
+            UpdateDataSize();
             sfxView.Invalidate();
         }
 

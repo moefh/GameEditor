@@ -24,6 +24,7 @@ namespace GameEditor.TilesetEditor
             tileset = ts;
             InitializeComponent();
             FixFormTitle();
+            UpdateGameDataSize();
             toolStripTxtName.Text = Tileset.Name;
             tileEditor.Tileset = Tileset;
             tileEditor.SelectedTile = tilePicker.SelectedTile;
@@ -37,6 +38,10 @@ namespace GameEditor.TilesetEditor
 
         private void FixFormTitle() {
             Text = "Tileset - " + Tileset.Name;
+        }
+
+        private void UpdateGameDataSize() {
+            lblDataSize.Text = $"{Tileset.GameDataSize} bytes";
         }
 
         private void UpdateRenderFlags() {
@@ -72,6 +77,8 @@ namespace GameEditor.TilesetEditor
                 MessageBox.Show(ex.Message, "Error Loading Image", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
+            UpdateGameDataSize();
+
             tilePicker.Location = new Point(0, 0);
             tilePicker.SelectedTile = 0;
             tilePicker.ResetSize();
@@ -87,7 +94,7 @@ namespace GameEditor.TilesetEditor
             dlg.MaxHorzTiles = Tileset.NumTiles;
             dlg.NumHorzTiles = (int)Math.Ceiling(Math.Sqrt(Tileset.NumTiles));
             dlg.FileName = Tileset.FileName ?? "";
-            if (dlg.ShowDialog(this) == DialogResult.OK) {
+            if (dlg.ShowDialog() == DialogResult.OK) {
                 try {
                     Tileset.ExportBitmap(dlg.FileName, dlg.NumHorzTiles);
                 } catch (Exception ex) {
@@ -122,6 +129,24 @@ namespace GameEditor.TilesetEditor
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
             tileEditor.FGPen = colorPicker.FG;
             tileEditor.BGPen = colorPicker.BG;
+        }
+
+        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
+            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
+            dlg.NumTiles = Tileset.NumTiles;
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                Tileset.Resize(dlg.NumTiles, colorPicker.BG);
+                UpdateGameDataSize();
+                tilePicker.ResetSize();
+                if (tilePicker.SelectedTile >= Tileset.NumTiles) {
+                    tilePicker.SelectedTile = Tileset.NumTiles - 1;
+                    tileEditor.SelectedTile = tilePicker.SelectedTile;
+                } else {
+                    tilePicker.Invalidate();
+                    tileEditor.Invalidate();
+                }
+                Util.RefreshTilesetUsers(Tileset);
+            }
         }
     }
 }

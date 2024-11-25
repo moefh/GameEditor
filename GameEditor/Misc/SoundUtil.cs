@@ -4,22 +4,77 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GameEditor.Misc
 {
-    public static class WavFileUtil {
-        public const int OFFSET_SAMPLES = 44;
-        private const int OFFSET_SAMPLE_RATE = 24;
-        private const int OFFSET_BYTES_PER_SEC = 28;
+    public static class SoundUtil {
+        public const int WAV_SAMPLES_OFFSET = 44;
+        private const int SAMPLE_RATE_OFFSET = 24;
+        private const int BYTES_PER_SEC_OFFSET = 28;
 
-        public static void SetSampleRate(byte[] wav, int sampleRate) {
-            for (int i = 0; i < 4; i++) {
-                wav[OFFSET_SAMPLE_RATE + 0] = (byte) ((sampleRate >> (8*i)) & 0xff);
-                wav[OFFSET_BYTES_PER_SEC + 0] = (byte) ((sampleRate >> (8*i)) & 0xff);
+        private readonly struct Oscillator(double freq, double mag) {
+            public readonly double Freq = freq;
+            public readonly double Mag = mag;
+        }
+
+        private static void PlayOscillators(byte[] samples, int start, int count, int sampleRate, Oscillator[] osc, double volume) {
+            for (int i = 0; i < count; i++) {
+                double hz = (2 * Math.PI * i) / sampleRate;
+                double sample = 0;
+                foreach (Oscillator o in osc) {
+                    sample += o.Mag * Math.Sin(o.Freq * hz);
+                }
+                double envelope = volume * Math.Exp(-2.0*i/count);
+                sample *= envelope / osc.Length;
+                samples[i + start] = (byte) (255 * Math.Clamp(sample/2 + 0.5, 0, 1));
             }
         }
 
-        public static byte[] CreateWav(int numChannels, int bitsPerSample, int sampleRate, int numSamples) {
+        /*
+         * Make a crappy triad.
+         * Each note has the fundamental and 2 overtones.
+         */
+        public static void MakeChord(byte[] samples, int start, int count, int sampleRate, double root, bool major, int inversion) {
+            double third = root * Math.Pow(2, (major?4:3) / 12.0) * ((inversion >= 2) ? 2 : 1);
+            double fifth = root * Math.Pow(2, 7.0 / 12);
+            if (inversion >= 1) root *= 2;
+            Oscillator[] triad = [
+                // root
+                new Oscillator(root*1, 1.0),
+                new Oscillator(root*2, 0.8),
+                new Oscillator(root*3, 0.2),
+
+                // 3rd
+                new Oscillator(third*1, 1.0),
+                new Oscillator(third*2, 0.8),
+                new Oscillator(third*3, 0.2),
+
+                // 5th
+                new Oscillator(fifth*1, 1.0),
+                new Oscillator(fifth*2, 0.8),
+                new Oscillator(fifth*3, 0.2),
+            ];
+            PlayOscillators(samples, start, count, sampleRate, triad, 1.5);
+        }
+
+        public static void Make251Cadence(byte[] samples, int start, int len, int sampleRate, double one) {
+            double two = one * Math.Pow(2, 2/12.0);
+            double five = one * Math.Pow(2, 7/12.0) / 2;
+            int chordLen = len/3;
+            MakeChord(samples, start + 0*chordLen, chordLen, sampleRate, two, false, 0);
+            MakeChord(samples, start + 1*chordLen, chordLen, sampleRate, five, true, 2);
+            MakeChord(samples, start + 2*chordLen, len-2*chordLen, sampleRate, one, true, 1);
+        }
+
+        public static void SetWaveSampleRate(byte[] wav, int sampleRate) {
+            for (int i = 0; i < 4; i++) {
+                wav[SAMPLE_RATE_OFFSET + 0] = (byte) ((sampleRate >> (8*i)) & 0xff);
+                wav[BYTES_PER_SEC_OFFSET + 0] = (byte) ((sampleRate >> (8*i)) & 0xff);
+            }
+        }
+
+        public static byte[] CreateWaveData(int numChannels, int bitsPerSample, int sampleRate, int numSamples) {
             uint fmtChunkSize = 4 + 4 + 16;  // tag + len + data
             uint dataChunkSize = 4 + 4 + (uint)numSamples; // tag + len + data
             uint fileSize = 4 + 4 + 4 + fmtChunkSize + dataChunkSize;  // RIFF + len + WAVE + chunks
@@ -28,8 +83,8 @@ namespace GameEditor.Misc
             uint bytesPerSecond = (uint) ((uint)bytesPerBlock * sampleRate);
 
             byte[] wav = new byte[fileSize];
-
             MemoryStreamIO w = new MemoryStreamIO(wav);
+
             // master chunk
             w.WriteTag("RIFF");
             w.WriteU32(fileSize - 8);     // file size - 8
@@ -49,19 +104,20 @@ namespace GameEditor.Misc
             w.WriteTag("data");
             w.WriteU32(dataChunkSize - 8); // chunk size - 8 (size of sample data)
 
+            Array.Fill<byte>(wav, 128, WAV_SAMPLES_OFFSET, wav.Length-WAV_SAMPLES_OFFSET);
             return wav;
         }
     }
 
-    public class WavFileReader
+    public class WaveFileReader
     {
         private int bitsPerSample = 0;
         private int sampleRate = 0;
         private int numChannels = 0;
         private int numSamples = 0;
-        private List<short[]> channels = [];
+        private readonly List<short[]> channels = [];
 
-        public WavFileReader(string filename) {
+        public WaveFileReader(string filename) {
             Read(filename);
         }
 
@@ -84,13 +140,13 @@ namespace GameEditor.Misc
 
         private byte[] Resample(int newSampleRate, uint channelBits, double volume) {
             int newNumSamples = (int) (((long)numSamples * newSampleRate) / sampleRate);
-            byte[] data = WavFileUtil.CreateWav(1, 8, newSampleRate, newNumSamples);
+            byte[] data = SoundUtil.CreateWaveData(1, 8, newSampleRate, newNumSamples);
 
             // srcAdv and srcPos are fixed point 20.12
             int srcAdv = (sampleRate << 12) / newSampleRate;
             int srcPos = 0;
             for (int destPos = 0; destPos < newNumSamples; destPos++) {
-                data[destPos + WavFileUtil.OFFSET_SAMPLES] = MixSampleChannels(channelBits, channels, srcPos>>12, volume);
+                data[destPos + SoundUtil.WAV_SAMPLES_OFFSET] = MixSampleChannels(channelBits, channels, srcPos>>12, volume);
                 srcPos += srcAdv;
             }
             return data;
@@ -101,9 +157,9 @@ namespace GameEditor.Misc
                 return Resample(newSampleRate, channelBits, volume);
             }
 
-            byte[] data = WavFileUtil.CreateWav(1, 8, newSampleRate, numSamples);
+            byte[] data = SoundUtil.CreateWaveData(1, 8, newSampleRate, numSamples);
             for (int i = 0; i < numSamples; i++) {
-                data[i + WavFileUtil.OFFSET_SAMPLES] = MixSampleChannels(channelBits, channels, i, volume);
+                data[i + SoundUtil.WAV_SAMPLES_OFFSET] = MixSampleChannels(channelBits, channels, i, volume);
             }
             return data;
         }

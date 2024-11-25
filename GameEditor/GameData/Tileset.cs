@@ -45,6 +45,10 @@ namespace GameEditor.GameData
         public int NumTiles {
             get { return bitmap.Height / TILE_SIZE; }
         }
+        
+        public int GameDataSize {
+            get { return TILE_SIZE*TILE_SIZE*NumTiles + 4*2 + 4; }
+        }
 
         public void Dispose() {
             bitmap.Dispose();
@@ -139,6 +143,20 @@ namespace GameEditor.GameData
             } finally {
                 bitmap.UnlockBits(data);
             }
+        }
+
+        public void Resize(int newNumTiles, Color newTileBackground) {
+            Bitmap tiles = new Bitmap(TILE_SIZE, TILE_SIZE * newNumTiles);
+            using Graphics g = Graphics.FromImage(tiles);
+            g.Clear(newTileBackground);
+
+            int copyNumTiles = Math.Min(newNumTiles, NumTiles);
+            for (int t = 0; t < copyNumTiles; t++) {
+                DrawTileAt(g, t, 0, t * TILE_SIZE, TILE_SIZE, TILE_SIZE, false);
+            }
+
+            bitmap.Dispose();
+            bitmap = tiles;
         }
     }
 }

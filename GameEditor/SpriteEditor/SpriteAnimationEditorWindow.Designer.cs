@@ -32,6 +32,8 @@
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
             toolStripSeparator1 = new ToolStripSeparator();
+            toolStripLabel2 = new ToolStripLabel();
+            toolStripComboSprites = new ToolStripComboBox();
             toolsToolStrip = new ToolStrip();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
@@ -45,8 +47,8 @@
             spriteEditor = new CustomControls.SpriteEditor();
             spriteListView = new CustomControls.SpriteAnimationLoopView();
             colorPicker = new CustomControls.ColorPicker();
-            toolStripLabel2 = new ToolStripLabel();
-            toolStripComboSprites = new ToolStripComboBox();
+            lblDataSize = new ToolStripStatusLabel();
+            statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -66,9 +68,10 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Location = new Point(0, 307);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip1.Location = new Point(0, 305);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(632, 22);
+            statusStrip1.Size = new Size(632, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -98,6 +101,19 @@
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 27);
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(47, 24);
+            toolStripLabel2.Text = "Sprite:";
+            // 
+            // toolStripComboSprites
+            // 
+            toolStripComboSprites.DropDownStyle = ComboBoxStyle.DropDownList;
+            toolStripComboSprites.Name = "toolStripComboSprites";
+            toolStripComboSprites.Size = new Size(100, 27);
+            toolStripComboSprites.DropDownClosed += toolStripComboSprites_DropDownClosed;
             // 
             // toolsToolStrip
             // 
@@ -150,7 +166,7 @@
             // 
             mainSplit.Panel2.Controls.Add(spriteLoopSplitter);
             mainSplit.Panel2MinSize = 100;
-            mainSplit.Size = new Size(632, 253);
+            mainSplit.Size = new Size(632, 251);
             mainSplit.SplitterDistance = 100;
             mainSplit.TabIndex = 3;
             // 
@@ -162,7 +178,7 @@
             loopsListBox.IntegralHeight = false;
             loopsListBox.Location = new Point(0, 0);
             loopsListBox.Name = "loopsListBox";
-            loopsListBox.Size = new Size(100, 253);
+            loopsListBox.Size = new Size(100, 251);
             loopsListBox.TabIndex = 1;
             loopsListBox.SelectedIndexChanged += loopsListBox_SelectedIndexChanged;
             loopsListBox.DoubleClick += loopsListBox_DoubleClick;
@@ -203,7 +219,7 @@
             // 
             spriteLoopSplitter.Panel2.Controls.Add(colorPicker);
             spriteLoopSplitter.Panel2MinSize = 100;
-            spriteLoopSplitter.Size = new Size(528, 253);
+            spriteLoopSplitter.Size = new Size(528, 251);
             spriteLoopSplitter.SplitterDistance = 380;
             spriteLoopSplitter.TabIndex = 1;
             // 
@@ -223,8 +239,8 @@
             // 
             spriteSplit.Panel2.Controls.Add(spriteListView);
             spriteSplit.Panel2MinSize = 70;
-            spriteSplit.Size = new Size(380, 253);
-            spriteSplit.SplitterDistance = 176;
+            spriteSplit.Size = new Size(380, 251);
+            spriteSplit.SplitterDistance = 174;
             spriteSplit.TabIndex = 0;
             // 
             // spriteEditor
@@ -237,7 +253,7 @@
             spriteEditor.ReadOnly = false;
             spriteEditor.RenderFlags = 0U;
             spriteEditor.SelectedFrame = 0;
-            spriteEditor.Size = new Size(380, 176);
+            spriteEditor.Size = new Size(380, 174);
             spriteEditor.Sprite = null;
             spriteEditor.TabIndex = 0;
             spriteEditor.Text = "spriteEditor";
@@ -264,23 +280,16 @@
             colorPicker.Location = new Point(0, 0);
             colorPicker.Name = "colorPicker";
             colorPicker.SingleSelection = false;
-            colorPicker.Size = new Size(144, 253);
+            colorPicker.Size = new Size(144, 251);
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
-            // toolStripLabel2
+            // lblDataSize
             // 
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(47, 24);
-            toolStripLabel2.Text = "Sprite:";
-            // 
-            // toolStripComboSprites
-            // 
-            toolStripComboSprites.DropDownStyle = ComboBoxStyle.DropDownList;
-            toolStripComboSprites.Name = "toolStripComboSprites";
-            toolStripComboSprites.Size = new Size(100, 27);
-            toolStripComboSprites.DropDownClosed += toolStripComboSprites_DropDownClosed;
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
             // 
             // SpriteAnimationEditorWindow
             // 
@@ -298,6 +307,8 @@
             Text = "Sprite Animation";
             FormClosing += SpriteEditorWindow_FormClosing;
             Load += SpriteEditorWindow_Load;
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             infoToolStrip.ResumeLayout(false);
             infoToolStrip.PerformLayout();
             toolsToolStrip.ResumeLayout(false);
@@ -341,5 +352,6 @@
         private ToolStripButton toolStripBtnTransparent;
         private ToolStripLabel toolStripLabel2;
         private ToolStripComboBox toolStripComboSprites;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

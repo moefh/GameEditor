@@ -31,8 +31,9 @@
             toolStripLabel1 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
             toolStripSeparator1 = new ToolStripSeparator();
-            toolStripBtnImport = new ToolStripButton();
             toolStripBtnExport = new ToolStripButton();
+            toolStripBtnImport = new ToolStripButton();
+            toolStripBtnProperties = new ToolStripButton();
             statusStrip1 = new StatusStrip();
             mainSplit = new SplitContainer();
             tilePickerPanel = new Panel();
@@ -44,7 +45,9 @@
             toolStripBtnGrid = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripBtnTransparent = new ToolStripButton();
+            lblDataSize = new ToolStripStatusLabel();
             infoToolStrip.SuspendLayout();
+            statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
             mainSplit.Panel1.SuspendLayout();
             mainSplit.Panel2.SuspendLayout();
@@ -60,7 +63,7 @@
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripSeparator1, toolStripBtnImport, toolStripBtnExport });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripSeparator1, toolStripBtnExport, toolStripBtnImport, toolStripBtnProperties });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(686, 27);
@@ -84,17 +87,9 @@
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 27);
             // 
-            // toolStripBtnImport
-            // 
-            toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
-            toolStripBtnImport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(71, 24);
-            toolStripBtnImport.Text = "Import";
-            toolStripBtnImport.Click += toolStripBtnImport_Click;
-            // 
             // toolStripBtnExport
             // 
+            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
             toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
             toolStripBtnExport.ImageTransparentColor = Color.Magenta;
             toolStripBtnExport.Name = "toolStripBtnExport";
@@ -102,11 +97,31 @@
             toolStripBtnExport.Text = "Export";
             toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
+            // toolStripBtnImport
+            // 
+            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
+            toolStripBtnImport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnImport.Name = "toolStripBtnImport";
+            toolStripBtnImport.Size = new Size(71, 24);
+            toolStripBtnImport.Text = "Import";
+            toolStripBtnImport.Click += toolStripBtnImport_Click;
+            // 
+            // toolStripBtnProperties
+            // 
+            toolStripBtnProperties.Image = (Image)resources.GetObject("toolStripBtnProperties.Image");
+            toolStripBtnProperties.ImageTransparentColor = Color.Magenta;
+            toolStripBtnProperties.Name = "toolStripBtnProperties";
+            toolStripBtnProperties.Size = new Size(91, 24);
+            toolStripBtnProperties.Text = "Properties";
+            toolStripBtnProperties.Click += toolStripBtnProperties_Click;
+            // 
             // statusStrip1
             // 
-            statusStrip1.Location = new Point(0, 271);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip1.Location = new Point(0, 269);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(686, 22);
+            statusStrip1.Size = new Size(686, 24);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -238,6 +253,12 @@
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
             // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // TilesetEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -255,6 +276,8 @@
             Load += TilesetEditor_Load;
             infoToolStrip.ResumeLayout(false);
             infoToolStrip.PerformLayout();
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             mainSplit.Panel1.ResumeLayout(false);
             mainSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplit).EndInit();
@@ -289,5 +312,7 @@
         private ToolStripButton toolStripBtnTransparent;
         private SplitContainer tileSplit;
         private CustomControls.ColorPicker colorPicker;
+        private ToolStripButton toolStripBtnProperties;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

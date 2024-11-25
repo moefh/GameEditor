@@ -20,6 +20,7 @@ namespace GameEditor.MapEditor
             map = mapItem;
             InitializeComponent();
             FixFormTitle();
+            UpdateDataSize();
             tilePicker.Tileset = Map.Tileset;
             mapView.Map = Map;
             mapView.EnabledRenderLayers = LAYER_FG | LAYER_BG | LAYER_GRID;
@@ -51,6 +52,10 @@ namespace GameEditor.MapEditor
 
         private void FixFormTitle() {
             Text = "Map - " + Map.Name;
+        }
+
+        private void UpdateDataSize() {
+            lblDataSize.Text = $"{Map.GameDataSize} bytes";
         }
 
         private void MapEditor_Load(object sender, EventArgs e) {
@@ -96,8 +101,9 @@ namespace GameEditor.MapEditor
             MapSizeDialog dlg = new MapSizeDialog();
             dlg.MapWidth = Map.Tiles.Width;
             dlg.MapHeight = Map.Tiles.Height;
-            if (dlg.ShowDialog(this) == DialogResult.OK) {
+            if (dlg.ShowDialog() == DialogResult.OK) {
                 Map.Resize(dlg.MapWidth, dlg.MapHeight);
+                UpdateDataSize();
                 SetDirty();
                 mapView.Invalidate();
             }

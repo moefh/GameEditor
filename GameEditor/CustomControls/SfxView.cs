@@ -36,11 +36,14 @@ namespace GameEditor.CustomControls
             int xMax = ClientSize.Width - 10;
             int xBase = 5;
             int yBase = ClientSize.Height / 2;
-            int yMax = ClientSize.Height / 4;
+            int yMax = ClientSize.Height / 2 - 10;
             long step = ((long) Sfx.NumSamples << 16) / xMax;
             if (step <= 0) return;
             for (int x = 0; x < xMax; x++) {
-                byte sample = Sfx.GetSample((int) ((x * step) >> 16));
+                //byte sample = Sfx.GetSample((int) ((x * step) >> 16));
+                int iStart = (int) ((x * step) >> 16);
+                int iNextStart = (int) (((x+1) * step) >> 16) - 1;
+                byte sample = Sfx.GetMaxSampleInRange(iStart, iNextStart-iStart);
                 int y = (sample - 128) * yMax / 128;
                 pe.Graphics.DrawLine(Pens.White, x + xBase, yBase - y, x + xBase, yBase);
             }

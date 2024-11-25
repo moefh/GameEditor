@@ -25,6 +25,7 @@ namespace GameEditor.SpriteEditor
             this.animationItem = animationItem;
             InitializeComponent();
             FixFormTitle();
+            UpdateGameDataSize();
             toolStripTxtName.Text = Animation.Name;
             RefreshSpriteLoopList();
             spriteListView.Loop = Animation.GetLoop(0);
@@ -51,6 +52,10 @@ namespace GameEditor.SpriteEditor
 
         private void FixFormTitle() {
             Text = "Sprite - " + Animation.Name;
+        }
+
+        private void UpdateGameDataSize() {
+            lblDataSize.Text = $"{Animation.GameDataSize}";
         }
 
         private void FixRenderFlags() {

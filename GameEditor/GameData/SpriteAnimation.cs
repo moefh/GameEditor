@@ -90,6 +90,10 @@ namespace GameEditor.GameData
 
         public SpriteAnimationLoop GetLoop(int i) { return loops[i]; }
 
+        public int GameDataSize {
+            get { return 64; }
+        }
+
         public void Close() {
             Sprite.NumFramesChanged -= HandleNumFramesChanged;
         }

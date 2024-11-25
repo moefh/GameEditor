@@ -42,6 +42,11 @@ namespace GameEditor.GameData
             set { tileset = value; }
         }
 
+        public int GameDataSize {
+            get { return 3 * Tiles.Width * Tiles.Height + 2*2 + 2*4; }
+        }
+
+
         public void Resize(int width, int height) {
             tiles.Resize(width, height);
         }

@@ -27,32 +27,41 @@
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SfxEditorWindow));
             statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             toolStrip1 = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
-            toolStripSeparator2 = new ToolStripSeparator();
-            toolStripBtnImport = new ToolStripButton();
             toolStripBtnExport = new ToolStripButton();
+            toolStripBtnImport = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
             toolStripBtnPlay = new ToolStripButton();
             sfxView = new CustomControls.SfxView();
+            statusStrip.SuspendLayout();
             toolStrip1.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip
             // 
-            statusStrip.Location = new Point(0, 242);
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 159);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(603, 22);
+            statusStrip.Size = new Size(443, 24);
             statusStrip.TabIndex = 0;
             statusStrip.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "0 bytes";
             // 
             // toolStrip1
             // 
             toolStrip1.AutoSize = false;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator2, toolStripBtnImport, toolStripBtnExport, toolStripBtnPlay });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnExport, toolStripBtnImport, toolStripSeparator1, toolStripBtnPlay });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(603, 27);
+            toolStrip1.Size = new Size(443, 27);
             toolStrip1.TabIndex = 1;
             toolStrip1.Text = "toolStrip1";
             // 
@@ -65,16 +74,22 @@
             // toolStripTxtName
             // 
             toolStripTxtName.Name = "toolStripTxtName";
-            toolStripTxtName.Size = new Size(200, 27);
+            toolStripTxtName.Size = new Size(100, 27);
             toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
-            // toolStripSeparator2
+            // toolStripBtnExport
             // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 27);
+            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
+            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnExport.Name = "toolStripBtnExport";
+            toolStripBtnExport.Size = new Size(68, 24);
+            toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
             // 
+            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
             toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
             toolStripBtnImport.ImageTransparentColor = Color.Magenta;
             toolStripBtnImport.Name = "toolStripBtnImport";
@@ -82,14 +97,11 @@
             toolStripBtnImport.Text = "Import";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
             // 
-            // toolStripBtnExport
+            // toolStripSeparator1
             // 
-            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
-            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(68, 24);
-            toolStripBtnExport.Text = "Export";
-            toolStripBtnExport.Click += toolStripBtnExport_Click;
+            toolStripSeparator1.Alignment = ToolStripItemAlignment.Right;
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 27);
             // 
             // toolStripBtnPlay
             // 
@@ -108,14 +120,14 @@
             sfxView.MinimumSize = new Size(100, 50);
             sfxView.Name = "sfxView";
             sfxView.Sfx = null;
-            sfxView.Size = new Size(603, 215);
+            sfxView.Size = new Size(443, 132);
             sfxView.TabIndex = 2;
             // 
             // SfxEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(603, 264);
+            ClientSize = new Size(443, 183);
             Controls.Add(sfxView);
             Controls.Add(toolStrip1);
             Controls.Add(statusStrip);
@@ -127,6 +139,8 @@
             FormClosing += SfxEditorWindow_FormClosing;
             FormClosed += SfxEditorWindow_FormClosed;
             Load += SfxEditorWindow_Load;
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             toolStrip1.ResumeLayout(false);
             toolStrip1.PerformLayout();
             ResumeLayout(false);
@@ -142,7 +156,8 @@
         private ToolStripButton toolStripBtnPlay;
         private ToolStripButton toolStripBtnExport;
         private CustomControls.SfxView sfxView;
-        private ToolStripSeparator toolStripSeparator2;
         private ToolStripButton toolStripBtnImport;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

@@ -30,8 +30,8 @@
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
-            toolStripBtnProperties = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
+            toolStripBtnProperties = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
             toolsToolStrip = new ToolStrip();
             toolStripBtnGrid = new ToolStripButton();
@@ -41,6 +41,8 @@
             spriteLoopSplitter = new SplitContainer();
             spriteEditor = new CustomControls.SpriteEditor();
             colorPicker = new CustomControls.ColorPicker();
+            lblDataSize = new ToolStripStatusLabel();
+            statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -55,16 +57,17 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Location = new Point(0, 307);
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip1.Location = new Point(0, 305);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(632, 22);
+            statusStrip1.Size = new Size(632, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnProperties, toolStripSeparator1, toolStripBtnImport });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, toolStripBtnProperties, toolStripBtnImport });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(632, 27);
@@ -83,9 +86,13 @@
             toolStripTxtName.Size = new Size(100, 27);
             toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 27);
+            // 
             // toolStripBtnProperties
             // 
-            toolStripBtnProperties.Alignment = ToolStripItemAlignment.Right;
             toolStripBtnProperties.Image = (Image)resources.GetObject("toolStripBtnProperties.Image");
             toolStripBtnProperties.ImageTransparentColor = Color.Magenta;
             toolStripBtnProperties.Name = "toolStripBtnProperties";
@@ -93,13 +100,9 @@
             toolStripBtnProperties.Text = "Properties";
             toolStripBtnProperties.Click += toolStripBtnProperties_Click;
             // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 27);
-            // 
             // toolStripBtnImport
             // 
+            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
             toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
             toolStripBtnImport.ImageTransparentColor = Color.Magenta;
             toolStripBtnImport.Name = "toolStripBtnImport";
@@ -158,7 +161,7 @@
             // 
             mainSplit.Panel2.Controls.Add(spriteLoopSplitter);
             mainSplit.Panel2MinSize = 100;
-            mainSplit.Size = new Size(632, 253);
+            mainSplit.Size = new Size(632, 251);
             mainSplit.SplitterDistance = 100;
             mainSplit.TabIndex = 3;
             // 
@@ -167,9 +170,10 @@
             spriteFramePicker.Dock = DockStyle.Fill;
             spriteFramePicker.Location = new Point(0, 0);
             spriteFramePicker.Name = "spriteFramePicker";
+            spriteFramePicker.RenderFlags = 0U;
             spriteFramePicker.SelectedFrame = 0;
             spriteFramePicker.ShowEmptyFrame = false;
-            spriteFramePicker.Size = new Size(100, 253);
+            spriteFramePicker.Size = new Size(100, 251);
             spriteFramePicker.TabIndex = 0;
             spriteFramePicker.Zoom = 4;
             spriteFramePicker.SelectedFrameChanged += spriteFramePicker_SelectedFrameChanged;
@@ -190,7 +194,7 @@
             // 
             spriteLoopSplitter.Panel2.Controls.Add(colorPicker);
             spriteLoopSplitter.Panel2MinSize = 100;
-            spriteLoopSplitter.Size = new Size(528, 253);
+            spriteLoopSplitter.Size = new Size(528, 251);
             spriteLoopSplitter.SplitterDistance = 380;
             spriteLoopSplitter.TabIndex = 1;
             // 
@@ -204,7 +208,7 @@
             spriteEditor.ReadOnly = false;
             spriteEditor.RenderFlags = 0U;
             spriteEditor.SelectedFrame = 0;
-            spriteEditor.Size = new Size(380, 253);
+            spriteEditor.Size = new Size(380, 251);
             spriteEditor.Sprite = null;
             spriteEditor.TabIndex = 0;
             spriteEditor.Text = "spriteEditor";
@@ -219,10 +223,16 @@
             colorPicker.Location = new Point(0, 0);
             colorPicker.Name = "colorPicker";
             colorPicker.SingleSelection = false;
-            colorPicker.Size = new Size(144, 253);
+            colorPicker.Size = new Size(144, 251);
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
             // 
             // SpriteEditorWindow
             // 
@@ -240,6 +250,8 @@
             Text = "Sprite";
             FormClosing += SpriteEditorWindow_FormClosing;
             Load += SpriteEditorWindow_Load;
+            statusStrip1.ResumeLayout(false);
+            statusStrip1.PerformLayout();
             infoToolStrip.ResumeLayout(false);
             infoToolStrip.PerformLayout();
             toolsToolStrip.ResumeLayout(false);
@@ -273,5 +285,6 @@
         private ToolStripButton toolStripBtnImport;
         private ToolStripButton toolStripBtnTransparent;
         private CustomControls.SpriteFramePicker spriteFramePicker;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

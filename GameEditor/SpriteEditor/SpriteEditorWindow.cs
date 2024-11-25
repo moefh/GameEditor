@@ -27,6 +27,7 @@ namespace GameEditor.SpriteEditor
             this.spriteItem = spriteItem;
             InitializeComponent();
             FixFormTitle();
+            UpdateGameDataSize();
             toolStripTxtName.Text = Sprite.Name;
             spriteFramePicker.Sprite = Sprite;
             spriteFramePicker.SelectedFrame = 0;
@@ -43,6 +44,10 @@ namespace GameEditor.SpriteEditor
 
         private void FixFormTitle() {
             Text = "Sprite - " + Sprite.Name;
+        }
+
+        private void UpdateGameDataSize() {
+            lblDataSize.Text = $"{Sprite.GameDataSize} bytes";
         }
 
         private void FixRenderFlags() {
@@ -76,6 +81,7 @@ namespace GameEditor.SpriteEditor
             dlg.SpriteFrames = Sprite.NumFrames;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
+            UpdateGameDataSize();
             spriteEditor.SelectedFrame = 0;
             spriteFramePicker.SelectedFrame = 0;
             Util.RefreshSpriteUsers(Sprite, null);
@@ -88,6 +94,7 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
+                UpdateGameDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.Invalidate();
             } catch (Exception ex) {

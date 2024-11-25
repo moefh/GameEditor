@@ -1,6 +1,7 @@
 ﻿using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -25,8 +26,8 @@ namespace GameEditor.GameData
         public SfxData(string name, List<byte> samples) {
             Name = name;
             FileName = null;
-            data = WavFileUtil.CreateWav(SFX_NUM_CHANNELS, SFX_BITS_PER_SAMPLE, SFX_DEFAULT_SAMPLE_RATE, samples.Count);
-            samples.CopyTo(data, WavFileUtil.OFFSET_SAMPLES);
+            data = SoundUtil.CreateWaveData(SFX_NUM_CHANNELS, SFX_BITS_PER_SAMPLE, SFX_DEFAULT_SAMPLE_RATE, samples.Count);
+            samples.CopyTo(data, SoundUtil.WAV_SAMPLES_OFFSET);
         }
 
         public string Name { get; set; }
@@ -35,50 +36,34 @@ namespace GameEditor.GameData
 
         public byte[] Data { get { return data; } }
 
-        public int NumSamples { get { return data.Length - WavFileUtil.OFFSET_SAMPLES; } }
+        public int NumSamples { get { return data.Length - SoundUtil.WAV_SAMPLES_OFFSET; } }
+
+        public int GameDataSize { get { return NumSamples + 2; } }
 
         public byte GetSample(int i) {
-            int off = i + WavFileUtil.OFFSET_SAMPLES;
-            if (off < 0 || off >= data.Length) throw new Exception("reading wave outside bounds"); // return 128;
+            int off = i + SoundUtil.WAV_SAMPLES_OFFSET;
+            if (off < 0 || off >= data.Length) return 128;
             return data[off];
         }
 
+        public byte GetMaxSampleInRange(int start, int num) {
+            int off = start + SoundUtil.WAV_SAMPLES_OFFSET;
+            if (off < 0 || off >= data.Length || off+num < 0 || off+num >= data.Length) return 128;
+            sbyte max = 0;
+            sbyte min = 0;
+            for (int i = 0; i < num; i++) {
+                sbyte val = (sbyte) (data[off+i] - 128);
+                max = sbyte.Max(val, max);
+                min = sbyte.Min(val, min);
+            }
+            return (byte) (((int.Abs(max) > int.Abs(min)) ? max : min) + 128);
+        }
 
         protected static byte[] CreateDefaultWav() {
             int numSamples = SFX_DEFAULT_SAMPLE_RATE/2;  // 1/2 second
-            byte[] data = WavFileUtil.CreateWav(SFX_NUM_CHANNELS, SFX_BITS_PER_SAMPLE, SFX_DEFAULT_SAMPLE_RATE, numSamples);
-
-            // crappy C major:
-            double root = 261.6;  // middle C
-            double third = Math.Pow(2, 4.0/12);
-            double fifth = Math.Pow(2, 7.0/12);
-            (double,double)[] voices = [
-                // root
-                (root*1, 1.0),
-                (root*2, 0.8),
-                (root*3, 0.2),
-
-                // 3rd
-                (root*1*third, 1.0),
-                (root*2*third, 0.8),
-                (root*3*third, 0.2),
-
-                // 5th
-                (root*1*fifth, 1.0),
-                (root*2*fifth, 0.8),
-                (root*3*fifth, 0.2),
-            ];
-            for (int i = 0; i < numSamples; i++) {
-                double hz = (2 * Math.PI * i) / SFX_DEFAULT_SAMPLE_RATE;
-                double sample = 0;
-                foreach ((double,double) voice in voices) {
-                    sample += voice.Item2 * Math.Sin(voice.Item1 * hz);
-                }
-                double envelope = Math.Exp(-2.0*i/numSamples);
-                sample *= envelope / voices.Length;
-                data[i + WavFileUtil.OFFSET_SAMPLES] = (byte) (255 * Math.Clamp(sample/2 + 0.5, 0, 1));
-            }
-
+            byte[] data = SoundUtil.CreateWaveData(SFX_NUM_CHANNELS, SFX_BITS_PER_SAMPLE, SFX_DEFAULT_SAMPLE_RATE, numSamples);
+            //SoundUtil.MakeChord(data, SoundUtil.WAV_SAMPLES_OFFSET, numSamples, SFX_DEFAULT_SAMPLE_RATE, 261.6, true, 0);
+            SoundUtil.Make251Cadence(data, SoundUtil.WAV_SAMPLES_OFFSET, numSamples, SFX_DEFAULT_SAMPLE_RATE, 261.6);
             return data;
         }
 
@@ -89,7 +74,7 @@ namespace GameEditor.GameData
         }
 
         public void Import(string filename, uint channelBits, bool resample, int newSampleRate, double volume) {
-            WavFileReader r = new WavFileReader(filename);
+            WaveFileReader r = new WaveFileReader(filename);
             if (newSampleRate == 0) newSampleRate = r.SampleRate;
             data = r.Convert(resample, newSampleRate, channelBits, volume);
         }

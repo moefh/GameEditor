@@ -39,7 +39,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(65, 17);
+            label1.Location = new Point(65, 25);
             label1.Name = "label1";
             label1.Size = new Size(49, 19);
             label1.TabIndex = 0;
@@ -48,7 +48,7 @@
             // label2
             // 
             label2.AutoSize = true;
-            label2.Location = new Point(61, 60);
+            label2.Location = new Point(61, 57);
             label2.Name = "label2";
             label2.Size = new Size(53, 19);
             label2.TabIndex = 2;
@@ -78,7 +78,7 @@
             // 
             // numWidth
             // 
-            numWidth.Location = new Point(120, 15);
+            numWidth.Location = new Point(120, 23);
             numWidth.Maximum = new decimal(new int[] { 1024, 0, 0, 0 });
             numWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.Name = "numWidth";
@@ -88,7 +88,7 @@
             // 
             // numHeight
             // 
-            numHeight.Location = new Point(120, 58);
+            numHeight.Location = new Point(120, 55);
             numHeight.Maximum = new decimal(new int[] { 1024, 0, 0, 0 });
             numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.Name = "numHeight";

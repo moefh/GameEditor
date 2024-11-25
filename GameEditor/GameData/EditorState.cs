@@ -130,5 +130,6 @@ namespace GameEditor.GameData
             }
             SpriteList.Clear();
         }
+
     }
 }

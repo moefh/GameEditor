@@ -38,6 +38,7 @@
             toolStripLabel1 = new ToolStripLabel();
             toolStripComboBoxZoom = new ToolStripComboBox();
             statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
             tilePickerPanel = new Panel();
             tilePicker = new CustomControls.TilePicker();
@@ -50,6 +51,7 @@
             toolStripSeparator1 = new ToolStripSeparator();
             btnResize = new ToolStripButton();
             toolsToolStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
             mainSplit.Panel1.SuspendLayout();
             mainSplit.Panel2.SuspendLayout();
@@ -141,11 +143,18 @@
             // 
             // statusStrip
             // 
-            statusStrip.Location = new Point(0, 266);
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 264);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(642, 22);
+            statusStrip.Size = new Size(642, 24);
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "0 bytes";
             // 
             // mainSplit
             // 
@@ -164,7 +173,7 @@
             // 
             mainSplit.Panel2.Controls.Add(mapView);
             mainSplit.Panel2.Padding = new Padding(3);
-            mainSplit.Size = new Size(642, 212);
+            mainSplit.Size = new Size(642, 210);
             mainSplit.SplitterDistance = 200;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
@@ -177,7 +186,7 @@
             tilePickerPanel.Location = new Point(3, 3);
             tilePickerPanel.MinimumSize = new Size(64, 64);
             tilePickerPanel.Name = "tilePickerPanel";
-            tilePickerPanel.Size = new Size(194, 206);
+            tilePickerPanel.Size = new Size(194, 204);
             tilePickerPanel.TabIndex = 0;
             // 
             // tilePicker
@@ -188,7 +197,7 @@
             tilePicker.Name = "tilePicker";
             tilePicker.SelectedTile = 0;
             tilePicker.ShowEmptyTile = true;
-            tilePicker.Size = new Size(194, 206);
+            tilePicker.Size = new Size(194, 204);
             tilePicker.TabIndex = 0;
             tilePicker.Text = "tilePicker";
             tilePicker.Zoom = 4;
@@ -203,7 +212,7 @@
             mapView.Name = "mapView";
             mapView.Padding = new Padding(3, 3, 2, 2);
             mapView.SelectedTile = 0;
-            mapView.Size = new Size(431, 206);
+            mapView.Size = new Size(431, 204);
             mapView.TabIndex = 0;
             mapView.Text = "mapView";
             mapView.Zoom = 3D;
@@ -274,6 +283,8 @@
             Load += MapEditor_Load;
             toolsToolStrip.ResumeLayout(false);
             toolsToolStrip.PerformLayout();
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             mainSplit.Panel1.ResumeLayout(false);
             mainSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplit).EndInit();
@@ -307,5 +318,6 @@
         private ToolStripSeparator toolStripSeparator1;
         private CustomControls.TilePicker tilePicker;
         private Panel tilePickerPanel;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

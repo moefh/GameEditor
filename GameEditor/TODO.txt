@@ -1,4 +1,4 @@
 ﻿
 - export sprite
 
-- import sfx
+- properly calculate sprite animation data size (SpriteAnimation.GameDataSize)
