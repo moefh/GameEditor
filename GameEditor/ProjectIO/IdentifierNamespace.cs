@@ -16,14 +16,15 @@ namespace GameEditor.ProjectIO
         private readonly HashSet<string> idents = [];
         private readonly Dictionary<object,string> infos = [];
 
-        public string Add(object info, string prefix, string name, uint flags = 0) {
+        public string Add(object info, string prefix, string name, string suffix = "", uint flags = 0) {
             string baseIdent = reNonIdent.Replace(name, "_");
             if ((flags & UPPER_CASE) != 0) baseIdent = baseIdent.ToUpperInvariant();
 
-            string ident = $"{prefix}_{baseIdent}";
+            if (suffix.Length > 0) suffix = $"_{suffix}";
+            string ident = $"{prefix}_{baseIdent}{suffix}";
             int serial = 0;
             while (! idents.Add(ident)) {
-                ident = $"{prefix}_{baseIdent}_{++serial}";
+                ident = $"{prefix}_{baseIdent}_{++serial}{suffix}";
             }
             infos[info] = ident;
             return ident;

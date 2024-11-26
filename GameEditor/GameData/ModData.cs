@@ -10,19 +10,19 @@ namespace GameEditor.GameData
 {
     public class ModData
     {
-        private ModFile? modFile;
+        private ModFile modFile;
 
         public ModData(string name) {
             Name = name;
             FileName = null;
-            modFile = null;
+            modFile = new ModFile();
         }
 
         public string Name { get; set; }
 
         public string? FileName { get; set; }
 
-        public ModFile? ModFile { get; }
+        public ModFile ModFile { get { return modFile; } }
 
         public int GameDataSize { get { return 0; } }
 

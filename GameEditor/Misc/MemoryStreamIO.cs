@@ -108,6 +108,12 @@ namespace GameEditor.Misc
             pos += count;
         }
 
+        public void ReadSBytes(sbyte[] data, int offset, int count) {
+            EnsureLength(count);
+            Array.Copy(this.data, pos, data, offset, count);
+            pos += count;
+        }
+
         public uint ReadU32() {
             EnsureLength(4);
             var val = mode switch {

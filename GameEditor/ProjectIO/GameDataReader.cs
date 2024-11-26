@@ -22,22 +22,29 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data_";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles_";
         const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples_";
+        const string PREFIX_GAME_MOD_SAMPLES = "game_mod_samples_";
+        const string PREFIX_GAME_MOD_PATTERN = "game_mod_pattern_";
         const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION_";
 
         private bool disposed;
         private Tokenizer tokenizer;
+        private Token? savedToken;
         private int lastLine;
+
         protected StreamReader f;
         protected uint vgaSyncBits;
         protected Dictionary<string,List<uint>> gameTilesetData = [];
         protected Dictionary<string,List<uint>> gameSpriteData = [];
         protected Dictionary<string,List<byte>> gameMapTiles = [];
         protected Dictionary<string,List<byte>> gameSfxSamples = [];
+        protected Dictionary<string,List<sbyte>> gameModSamples = [];
+        protected Dictionary<string,List<ModCell>> gameModPattern = [];
         protected List<string> gameSpriteAnimationNames = [];
         protected List<Sprite> spriteList = [];
         protected List<Tileset> tilesetList = [];
         protected List<MapData> mapList = [];
         protected List<SfxData> sfxList = [];
+        protected List<ModData> modList = [];
         protected List<SpriteAnimation> spriteAnimationList = [];
 
         public GameDataReader(string filename) {
@@ -73,9 +80,19 @@ namespace GameEditor.ProjectIO
         }
 
         private Token? NextToken() {
+            if (savedToken != null) {
+                Token ret = savedToken.Value;
+                savedToken = null;
+                return ret;
+            }
             Token? t = tokenizer.Next();
             if (t != null) lastLine = t.Value.LineNum;
             return t;
+        }
+
+        private void UnreadToken(Token tok) {
+            if (savedToken != null) throw new Exception("trying to unread second token in a row");
+            savedToken = tok;
         }
 
         private Token ExpectToken() {
@@ -515,10 +532,189 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid sfx: expected {numSamples.Num} samples, got {data.Count}", dataIdent.LineNum);
                 }
 
-                string name = dataIdent.Str.Substring(PREFIX_GAME_SPRITE_DATA.Length);
+                string name = dataIdent.Str.Substring(PREFIX_GAME_SFX_SAMPLES.Length);
                 sfxList.Add(new SfxData(name, data));
 
                 Util.Log($"-> got sfx for {dataIdent.Str} with {numSamples.Num} samples");
+            }
+            ExpectPunct(';');
+        }
+
+
+        // ======================================================================
+        // === MOD
+        // ======================================================================
+
+        private void ReadModSamples(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<sbyte> data = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                int sign = 1;
+                if (next.IsPunct('-')) {
+                    sign = -1;
+                    next = ExpectToken();
+                    if (! next.IsNumber()) {
+                        throw new ParseError("expecting number", lastLine);
+                    }
+                } else if (! next.IsNumber()) {
+                    throw new ParseError("expecting '}' or number", lastLine);
+                }
+                
+                data.Add((sbyte) (sign * (next.Num & 0x7f)));
+                ExpectPunct(',');
+            }
+            ExpectPunct(';');
+
+            gameModSamples[ident.Str] = data;
+            Util.Log($"-> got MOD samples {ident.Str}");
+        }
+
+        private void ReadModPattern(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<ModCell> data = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '}' or '{'", lastLine);
+
+                Token sample = ExpectNumber();
+                ExpectPunct(',');
+                Token period = ExpectNumber();
+                ExpectPunct(',');
+                Token effect = ExpectNumber();
+                ExpectPunct(',');
+
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                ModCell cell;
+                cell.Sample = (byte) sample.Num;
+                cell.Period = (ushort) period.Num;
+                cell.Effect = (ushort) effect.Num;
+                data.Add(cell);
+            }
+            ExpectPunct(';');
+
+            gameModPattern[ident.Str] = data;
+            Util.Log($"-> got MOD pattern {ident.Str}");
+        }
+
+        private List<ModSample> ReadModSampleDefs() {
+            List<ModSample> samples = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (! next.IsPunct('{')) {
+                    UnreadToken(next);
+                    return samples;
+                }
+
+                Token length = ExpectNumber();
+                ExpectPunct(',');
+                Token loopStart = ExpectNumber();
+                ExpectPunct(',');
+                Token loopLength = ExpectNumber();
+                ExpectPunct(',');
+                Token finetune = ExpectNumber(); // TODO: accept negative numbers?
+                ExpectPunct(',');
+                Token volume = ExpectNumber();
+                ExpectPunct(',');
+                Token dataIdent = ExpectToken();
+                ExpectPunct(',');
+
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                ModSample sample;
+                sample.Len = length.Num;
+                sample.LoopStart = loopStart.Num;
+                sample.LoopLen = loopLength.Num;
+                sample.Finetune = (sbyte) finetune.Num;
+                sample.Volume = (byte) volume.Num;
+                sample.Title = dataIdent.Str;
+
+                if (dataIdent.Str != "NULL") {
+                    if (! gameModSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
+                        throw new ParseError($"invalid mod: samples {dataIdent.Str} not found", dataIdent.LineNum);
+                    }
+                    if (length.Num != data.Count) {
+                        throw new ParseError($"invalid mod: expected {length.Num} samples, got {data.Count}", dataIdent.LineNum);
+                    }
+                    sample.Data = data.ToArray();
+                } else {
+                    if (length.Num != 0) {
+                        throw new ParseError($"invalid mod: NULL sample data with non-zero length", dataIdent.LineNum);
+                    }
+                    sample.Data = [];
+                }
+
+                samples.Add(sample);
+            }
+        }
+
+        private List<byte> ReadModSongPositions(Token numSongPositions) {
+            List<byte> songPositions = [];
+            Token start = ExpectPunct('{');
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+
+                songPositions.Add((byte) next.Num);
+                ExpectPunct(',');
+            }
+            ExpectPunct(',');
+            if (numSongPositions.Num != songPositions.Count) {
+                throw new ParseError($"invalid mod: expected {numSongPositions.Num} samples, got {songPositions.Count}", start.LineNum);
+            }
+            return songPositions;
+        }
+
+        private void ReadModList(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                List<ModSample> samples = ReadModSampleDefs();
+
+                Token numSongPositions = ExpectNumber();
+                ExpectPunct(',');
+                List<byte> songPositions = ReadModSongPositions(numSongPositions);
+
+                Token numChannels = ExpectNumber();
+                ExpectPunct(',');
+                Token numPatterns = ExpectNumber();
+                ExpectPunct(',');
+                Token patternIdent = ExpectIdent();
+                ExpectPunct(',');
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                if (! gameModPattern.TryGetValue(patternIdent.Str, out List<ModCell>? pattern)) {
+                    throw new ParseError($"invalid mod: samples {patternIdent.Str} not found", patternIdent.LineNum);
+                }
+
+                string name = patternIdent.Str.Substring(PREFIX_GAME_MOD_PATTERN.Length);
+
+                // TODO: use data to create mod:
+                // * samples
+                // * songPositions
+                // * numChannels
+                // * pattern
+                modList.Add(new ModData(name));
+
+                Util.Log($"-> got MOD {name} with {numPatterns.Num} patterns");
             }
             ExpectPunct(';');
         }
@@ -536,11 +732,14 @@ namespace GameEditor.ProjectIO
 
                 if (t.Value.IsIdent("static")) continue;
                 if (t.Value.IsIdent("const")) continue;
+                if (t.Value.IsIdent("int8_t")) continue;
                 if (t.Value.IsIdent("uint8_t")) continue;
                 if (t.Value.IsIdent("uint32_t")) continue;
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
                 if (t.Value.IsIdent("GAME_SFX")) continue;
+                if (t.Value.IsIdent("GAME_MOD")) continue;
+                if (t.Value.IsIdent("GAME_MOD_CELL")) continue;
                 if (t.Value.IsIdent("GAME_IMAGE")) continue;
                 if (t.Value.IsIdent("GAME_MAP")) continue;
                 if (t.Value.IsIdent("GAME_SPRITE_ANIMATION")) continue;
@@ -548,6 +747,20 @@ namespace GameEditor.ProjectIO
                 // pre-processor stuff
                 if (t.Value.IsPreProcessor()) {
                     ReadPreProcessorLine(t.Value);
+                    continue;
+                }
+
+                // MOD stuff
+                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_MOD_SAMPLES)) {
+                    ReadModSamples(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_MOD_PATTERN)) {
+                    ReadModPattern(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent("game_mod")) {
+                    ReadModList(t.Value);
                     continue;
                 }
 

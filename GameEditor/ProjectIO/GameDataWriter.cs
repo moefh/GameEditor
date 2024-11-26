@@ -1,11 +1,13 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
+using GameEditor.ModEditor;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
@@ -22,6 +24,8 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles";
         const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples";
+        const string PREFIX_GAME_MOD_SAMPLES = "game_mod_samples";
+        const string PREFIX_GAME_MOD_PATTERN = "game_mod_pattern";
         const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION";
 
         private bool disposed;
@@ -62,6 +66,105 @@ namespace GameEditor.ProjectIO
             uint g = ((uint) green >> 6) & 0x3;
             uint b = ((uint) blue  >> 6) & 0x3;
             return (byte) (syncBits | (b<<4) | (g<<2) | r);
+        }
+
+        // =============================================================
+        // === MOD
+        // =============================================================
+
+        protected void WriteModData(ModData mod) {
+            ModFile file = mod.ModFile;
+
+            // sample data
+            for (int spl = 0; spl < file.NumSamples; spl++) {
+                if (file.Sample[spl].Len == 0) continue;
+                string sampleIdent = identifiers.Add(file.Sample[spl], PREFIX_GAME_MOD_SAMPLES, mod.Name, $"sample{spl+1:D02}");
+                f.Write($"static const int8_t {sampleIdent}[] = {{");
+                for (int i = 0; i < file.Sample[spl].Len; i++) {
+                    if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
+                    f.Write($"{file.Sample[spl].Data[i]},");
+                }
+                f.WriteLine();
+                f.WriteLine("};");
+                f.WriteLine();
+            }
+
+            // patterns
+            string ident = identifiers.Add(file.Pattern, PREFIX_GAME_MOD_PATTERN, mod.Name);
+            f.Write($"static const GAME_MOD_CELL {ident}[] = {{");
+            int cell = 0;
+            for (int pat = 0; pat < file.NumPatterns; pat++) {
+                for (int row = 0; row < 64; row++) {
+                    for (int chan = 0; chan < file.NumChannels; chan++) {
+                        if (cell % 4 == 0) {
+                            f.WriteLine();
+                            f.Write("  ");
+                            if (cell % (64*file.NumChannels) == 0) {
+                                f.WriteLine($"// pattern {pat}");
+                                f.Write("  ");
+                            }
+                        }
+                        f.Write($"{{ {file.Pattern[cell].Sample,2}, {file.Pattern[cell].Period,5}, 0x{file.Pattern[cell].Effect:x03}, }}, ");
+                        cell++;
+                    }
+                }
+            }
+            f.WriteLine();
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected void WriteMod(ModData mod) {
+            ModFile file = mod.ModFile;
+
+            f.WriteLine("  {");
+
+            // samples
+            f.WriteLine("    // samples:");
+            for (int spl = 0; spl < file.NumSamples; spl++) {
+                string splIdent = (file.Sample[spl].Len == 0) ? "NULL" : identifiers.Get(file.Sample[spl]);
+                f.Write("    {");
+                f.Write($" {file.Sample[spl].Len,5}, {file.Sample[spl].LoopStart,5}, {file.Sample[spl].LoopLen,5},");
+                f.Write($" {file.Sample[spl].Finetune}, {file.Sample[spl].Volume,2}, {splIdent}, ");
+                f.WriteLine("},");
+            }
+
+            // song positions
+            f.WriteLine("    // song positions:");
+            f.Write($"    {file.NumSongPositions}, {{");
+            for (int sp = 0; sp < file.NumSongPositions; sp++) {
+                if (sp % 16 == 0) { f.WriteLine(); f.Write("      "); }
+                f.Write($"{file.SongPositions[sp],3},");
+            }
+            f.WriteLine();
+            f.WriteLine("    },");
+
+            // channel, pattern
+            f.WriteLine("    // num channels, pattern:");
+            string patternIdent = identifiers.Get(file.Pattern);
+            f.WriteLine($"    {file.NumChannels}, {file.NumPatterns}, {patternIdent},");
+
+            f.WriteLine("  },");
+        }
+
+        protected int WriteMods() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === MOD");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+            foreach (ModDataItem mi in EditorState.ModList) {
+                WriteModData(mi.Mod);
+            }
+
+            int dataSize = 0;
+            f.WriteLine("const struct GAME_MOD game_mod[] = {");
+            foreach (ModDataItem mi in EditorState.ModList) {
+                WriteMod(mi.Mod);
+                dataSize += mi.Mod.GameDataSize;
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+            return dataSize;
         }
 
         // =============================================================
@@ -300,7 +403,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine($"enum GAME_SPRITE_ANIMATION_IDS {{");
             foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
                 string ident = identifiers.Add(ai.Animation, PREFIX_GAME_SPRITE_ANIMATION,
-                                               ai.Animation.Name, IdentifierNamespace.UPPER_CASE);
+                                               ai.Animation.Name, "", IdentifierNamespace.UPPER_CASE);
                 f.WriteLine($"  {ident},");
             }
             f.WriteLine("};");
@@ -345,6 +448,7 @@ namespace GameEditor.ProjectIO
         public void WriteProject() {
             BeginWrite();
             int dataSize = 0;
+            dataSize += WriteMods();
             dataSize += WriteSfxs();
             dataSize += WriteTilesets();
             dataSize += WriteSprites();
