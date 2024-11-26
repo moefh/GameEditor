@@ -3,10 +3,13 @@ using GameEditor.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing.Design;
+using System.Globalization;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -109,19 +112,33 @@ namespace GameEditor.ProjectIO
             return t.Value;
         }
 
-        private void ReadPPDefine(Token t) {
-            Token name = ExpectIdent();
-            Token val = ExpectNumber();
-            switch (name.Str) {
-            case "GAME_DATA_VGA_SYNC_BITS":
-                vgaSyncBits = val.Num;
-                Util.Log($"-> got vga sync bits 0x{vgaSyncBits:x02}");
-                break;
+        private void ReadPreProcessorLine(Token t) {
+            // #define
+            Match define = Regex.Match(t.Str, """^#\s*define\s+([A-Za-z_][A-Za-z0-9_]+)\s+(.*)$""");
+            if (define.Success) {
+                string name = define.Groups[1].ToString();
+                string value = define.Groups[2].ToString();
+                switch (name) {
+                case "GAME_DATA_VGA_SYNC_BITS":
+                    vgaSyncBits = Tokenizer.ParseNumber(value, t.LineNum);
+                    Util.Log($"-> got vga sync bits 0x{vgaSyncBits:x02}");
+                    break;
 
-            default:
-                Util.Log($"WARNING: ignoring unknown #define {name.Str}");
-                break;
+                default:
+                    Util.Log($"WARNING: line {t.LineNum}: ignoring unknown #define {name}");
+                    break;
+                }
+                return;
             }
+            
+            // #include
+            Match include = Regex.Match(t.Str, """^#\s*include\s+["<](.*)[">]\s*$""");
+            if (include.Success) {
+                // ignore
+                return;
+            }
+
+            Util.Log($"WARNING: line {t.LineNum}: ignoring pre-processor directive: {t.Str}");
         }
 
         private static void DecodeColor(byte pixel, out byte red, out byte green, out byte blue) {
@@ -516,11 +533,6 @@ namespace GameEditor.ProjectIO
             while (true) {
                 Token? t = NextToken();
                 if (t == null) break;
-                if (t.Value.IsIncludeFile()) continue;
-                if (t.Value.IsPreProcessor("define")) {
-                    ReadPPDefine(t.Value);
-                    continue;
-                }
 
                 if (t.Value.IsIdent("static")) continue;
                 if (t.Value.IsIdent("const")) continue;
@@ -532,6 +544,12 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("GAME_IMAGE")) continue;
                 if (t.Value.IsIdent("GAME_MAP")) continue;
                 if (t.Value.IsIdent("GAME_SPRITE_ANIMATION")) continue;
+
+                // pre-processor stuff
+                if (t.Value.IsPreProcessor()) {
+                    ReadPreProcessorLine(t.Value);
+                    continue;
+                }
 
                 // sfx stuff
                 if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_SFX_SAMPLES)) {

@@ -4,11 +4,13 @@ using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms.Design;
 using static System.Net.Mime.MediaTypeNames;
 
 namespace GameEditor.Misc
 {
-    public static class SoundUtil {
+    public static class SoundUtil
+    {
         public const int WAV_SAMPLES_OFFSET = 44;
         private const int SAMPLE_RATE_OFFSET = 24;
         private const int BYTES_PER_SEC_OFFSET = 28;
@@ -257,4 +259,5 @@ namespace GameEditor.Misc
         }
 
     }
+
 }

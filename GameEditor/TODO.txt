@@ -1,4 +1,13 @@
 ﻿
+
+- MOD support:
+  - create empty (dummy) MOD
+  - save MOD
+  - load MOD
+  - calculate MOD data size (ModData.GameDataSize)
+
 - export sprite
 
 - properly calculate sprite animation data size (SpriteAnimation.GameDataSize)
+
+- edit map connections

@@ -14,7 +14,6 @@ namespace GameEditor.ProjectIO
         Punctuation,
         Identifier,
         Number,
-        IncludeFile,
         PreProcessor,
     }
 
@@ -47,12 +46,8 @@ namespace GameEditor.ProjectIO
             return new Token(punct, 0, TokenType.Punctuation, line);
         }
 
-        internal static Token IncludeFile(string filename, int line) {
-            return new Token(filename, 0, TokenType.IncludeFile, line);
-        }
-
-        internal static Token PreProcessor(string directive, int line) {
-            return new Token(directive, 0, TokenType.PreProcessor, line);
+        internal static Token PreProcessor(string line, int lineNum) {
+            return new Token(line, 0, TokenType.PreProcessor, lineNum);
         }
 
         public override string ToString() {
@@ -60,7 +55,6 @@ namespace GameEditor.ProjectIO
                 TokenType.Punctuation  => $"<punct@{LineNum} {Str}>",
                 TokenType.Identifier   => $"<ident@{LineNum} {Str}>",
                 TokenType.Number       => $"<num@{LineNum} {Num}>",
-                TokenType.IncludeFile  => $"<include@{LineNum} {Str}>",
                 TokenType.PreProcessor => $"<#pre@{LineNum} {Str}>",
                 _ => "???@" + LineNum,
             };
@@ -73,7 +67,6 @@ namespace GameEditor.ProjectIO
         public readonly bool IsNumber() { return Type == TokenType.Number; }
         public readonly bool IsPreProcessor() { return Type == TokenType.PreProcessor; }
         public readonly bool IsPreProcessor(string pp) { return IsPreProcessor() && Str == pp; }
-        public readonly bool IsIncludeFile() { return Type == TokenType.IncludeFile; }
     }
 
     internal class Tokenizer
@@ -85,6 +78,19 @@ namespace GameEditor.ProjectIO
 
         public Tokenizer(StreamReader f) {
             this.f = f;
+        }
+
+        public static uint ParseNumber(string s, int lineNumber) {
+            if (s.StartsWith("0x") || s.StartsWith("0X")) {
+                if (uint.TryParse(s.AsSpan(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out uint n)) {
+                    return n;
+                }
+            } else {
+                if (uint.TryParse(s, CultureInfo.InvariantCulture, out uint n)) {
+                    return n;
+                }
+            }
+            throw new ParseError($"invalid number: {s}", lineNumber);
         }
 
         private static bool IsSpace(int c) {
@@ -183,45 +189,26 @@ namespace GameEditor.ProjectIO
                 Unread(c);
                 break;
             }
-            if (gotX) {
-                string s = sb.ToString();
-                if (s.StartsWith("0x") || s.StartsWith("0X")) {
-                    s = s.Substring(2);
-                    if (uint.TryParse(s, NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out uint hex)) {
-                        return Token.Number(hex, startLine);
-                    }
-                }
-            } else {
-                if (uint.TryParse(sb.ToString(), CultureInfo.InvariantCulture, out uint num)) {
-                    return Token.Number(num, startLine);
-                }
-            }
-            throw new ParseError($"invalid number: {sb.ToString()}", startLine);
+            return Token.Number(ParseNumber(sb.ToString(), startLine), startLine);
         }
 
         private Token ReadPreProcessor(char ch) {
             int startLine = lineNum;
-            int c = NextNonWhitespaceChar();
-            if (c == -1) throw new ParseError("unexpected EOF", lineNum);
-            Token name = ReadIdentifier((char) c);
-            switch (name.Str) {
-            case "include": {
-                    int start = NextNonWhitespaceChar();
-                    int end = (start == '<') ? '>' : (start == '"') ? '"' : throw new ParseError("invalid #include directive", lineNum);
-                    StringBuilder include = new StringBuilder();
-                    include.Append((char) start);
-                    while (true) {
+            StringBuilder line = new StringBuilder();
+            line.Append(ch);
+            while (true) {
+                int c = NextChar();
+                if (c == -1 || c == '\n') break;
+                if (c == '\\') {
+                    while (c != -1 && c != '\n') {
                         c = NextChar();
-                        if (c == -1) throw new ParseError("invalid #include directive", lineNum);
-                        include.Append((char) c);
-                        if (c == end) break;
                     }
-                    return Token.IncludeFile(include.ToString(), startLine);
+                    if (c == -1) break;
+                    continue;
                 }
-
-            default:
-                return Token.PreProcessor(name.Str, startLine);
+                line.Append((char) c);
             }
+            return Token.PreProcessor(line.ToString(), startLine);
         }
 
         public Token? Next() {

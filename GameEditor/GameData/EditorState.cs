@@ -11,12 +11,14 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using GameEditor.ModEditor;
 
 namespace GameEditor.GameData
 {
     public class EditorState
     {
         private static readonly BindingList<SfxDataItem> sfxs = [];
+        private static readonly BindingList<ModDataItem> mods = [];
         private static readonly BindingList<MapDataItem> maps = [];
         private static readonly BindingList<SpriteAnimationItem> spriteAnimations = [];
         private static readonly BindingList<SpriteItem> sprites = [];
@@ -29,6 +31,7 @@ namespace GameEditor.GameData
         public static BindingList<SpriteItem> SpriteList { get { return sprites; } }
         public static BindingList<SpriteAnimationItem> SpriteAnimationList { get { return spriteAnimations; } }
         public static BindingList<SfxDataItem> SfxList { get { return sfxs; } }
+        public static BindingList<ModDataItem> ModList { get { return mods; } }
 
         public static void AddMap(MapData mapData) {
             maps.Add(new MapDataItem(mapData));
@@ -50,6 +53,10 @@ namespace GameEditor.GameData
             sfxs.Add(new SfxDataItem(sfx));
         }
 
+        public static void AddMod(ModData mod) {
+            mods.Add(new ModDataItem(mod));
+        }
+
 
         public static int GetTilesetIndex(Tileset tileset) {
             for (int i = 0; i < TilesetList.Count; i++) {
@@ -69,21 +76,20 @@ namespace GameEditor.GameData
             return -1;
         }
 
-        public static int GetSfxIndex(SfxData sfx) {
-            for (int i = 0; i < SfxList.Count; i++) {
-                if (SfxList[i].Sfx == sfx) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
         public static void ClearAllData(bool addDefaults) {
             ClearAllSfxs();
+            ClearAllMods();
             ClearAllMaps();
             ClearAllSpriteAnimations();
             ClearAllSprites();
             ClearAllTilesets(addDefaults);
+        }
+
+        public static void ClearAllMods() {
+            foreach (ModDataItem mi in ModList) {
+                mi.Editor?.Close();
+            }
+            ModList.Clear();
         }
 
         public static void ClearAllSfxs() {

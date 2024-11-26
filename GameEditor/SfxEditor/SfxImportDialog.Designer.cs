@@ -135,6 +135,7 @@
             // 
             txtFileName.Location = new Point(163, 158);
             txtFileName.Name = "txtFileName";
+            txtFileName.ReadOnly = true;
             txtFileName.Size = new Size(236, 26);
             txtFileName.TabIndex = 7;
             // 

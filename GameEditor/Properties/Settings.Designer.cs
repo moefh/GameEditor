@@ -502,5 +502,77 @@ namespace GameEditor.Properties {
                 this["SfxEditorSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point ModEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["ModEditorLocation"]));
+            }
+            set {
+                this["ModEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size ModEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["ModEditorSize"]));
+            }
+            set {
+                this["ModEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModEditorSaved {
+            get {
+                return ((bool)(this["ModEditorSaved"]));
+            }
+            set {
+                this["ModEditorSaved"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point ModListEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["ModListEditorLocation"]));
+            }
+            set {
+                this["ModListEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size ModListEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["ModListEditorSize"]));
+            }
+            set {
+                this["ModListEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ModListEditorSaved {
+            get {
+                return ((bool)(this["ModListEditorSaved"]));
+            }
+            set {
+                this["ModListEditorSaved"] = value;
+            }
+        }
     }
 }

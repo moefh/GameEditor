@@ -97,7 +97,9 @@ namespace GameEditor.SfxEditor
                 Sfx.Import(dlg.SfxFileName, channelBits, dlg.Resample, dlg.SampleRate, dlg.Volume);
             } catch (Exception ex) {
                 Util.Log($"ERROR loading WAV from {dlg.SfxFileName}:\n{ex}");
-                MessageBox.Show(ex.Message, "Error Loading Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                MessageBox.Show(
+                    $"Error reading WAV: {ex.Message}\n\nConsult the log window for more information.",
+                    "Error Loading Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
             Sfx.FileName = dlg.SfxFileName;

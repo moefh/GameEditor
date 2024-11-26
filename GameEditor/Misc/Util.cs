@@ -33,6 +33,10 @@ namespace GameEditor.Misc
             MainWindow?.RefreshSfxList();
         }
 
+        public static void RefreshModList() {
+            MainWindow?.RefreshModList();
+        }
+
         public static void RefreshMapList() {
             MainWindow?.RefreshMapList();
         }

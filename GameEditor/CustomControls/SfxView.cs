@@ -45,6 +45,7 @@ namespace GameEditor.CustomControls
                 int iNextStart = (int) (((x+1) * step) >> 16) - 1;
                 byte sample = Sfx.GetMaxSampleInRange(iStart, iNextStart-iStart);
                 int y = (sample - 128) * yMax / 128;
+                if (y == 0) y = 1;
                 pe.Graphics.DrawLine(Pens.White, x + xBase, yBase - y, x + xBase, yBase);
             }
         }

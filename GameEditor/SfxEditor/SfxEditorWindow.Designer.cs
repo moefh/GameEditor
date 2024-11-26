@@ -133,6 +133,7 @@
             Controls.Add(statusStrip);
             MaximizeBox = false;
             MinimizeBox = false;
+            MinimumSize = new Size(300, 200);
             Name = "SfxEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Sound Effect";

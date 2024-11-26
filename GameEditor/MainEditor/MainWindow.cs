@@ -20,12 +20,14 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using GameEditor.Misc;
+using GameEditor.ModEditor;
 
 namespace GameEditor.MainEditor
 {
     public partial class MainWindow : Form
     {
         private readonly SfxListEditorWindow sfxListEditor;
+        private readonly ModListEditorWindow modListEditor;
         private readonly MapListEditorWindow mapListEditor;
         private readonly TilesetListEditorWindow tilesetListEditor;
         private readonly SpriteListEditorWindow spriteListEditor;
@@ -53,6 +55,8 @@ namespace GameEditor.MainEditor
             spriteAnimationListEditor.MdiParent = this;
             sfxListEditor = new SfxListEditorWindow();
             sfxListEditor.MdiParent = this;
+            modListEditor = new ModListEditorWindow();
+            modListEditor.MdiParent = this;
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
 
@@ -62,6 +66,10 @@ namespace GameEditor.MainEditor
 
         public void RefreshSfxList() {
             sfxListEditor.RefreshSfxList();
+        }
+
+        public void RefreshModList() {
+            modListEditor.RefreshModList();
         }
 
         public void RefreshMapList() {
@@ -133,6 +141,12 @@ namespace GameEditor.MainEditor
             sfxListEditor.LoadWindowPosition();
             sfxListEditor.Show();
             sfxListEditor.Activate();
+        }
+
+        private void toolStripButton1_Click(object sender, EventArgs e) {
+            modListEditor.LoadWindowPosition();
+            modListEditor.Show();
+            modListEditor.Activate();
         }
 
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
