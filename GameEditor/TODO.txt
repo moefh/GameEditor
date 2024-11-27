@@ -1,4 +1,7 @@
 ﻿
+- dirty flag
+
+- mirror sprites when saving / ignore mirrors when loading
 
 - export sprite
 

@@ -62,6 +62,11 @@ namespace GameEditor.MainEditor
 
             toolStripComboVgaSyncBits.Items.AddRange(vgaSyncBitsList);
             toolStripComboVgaSyncBits.SelectedIndex = 3;
+            UpdateDataSize();
+        }
+
+        public void UpdateDataSize() {
+            lblDataSize.Text = $"{EditorState.GetGameDataSize()} bytes";
         }
 
         public void RefreshSfxList() {
@@ -93,7 +98,7 @@ namespace GameEditor.MainEditor
         }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e) {
-            Application.Exit();
+            Close();
         }
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) {
@@ -144,7 +149,7 @@ namespace GameEditor.MainEditor
             sfxListEditor.Activate();
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e) {
+        private void toolStripBtnModEditor_Click(object sender, EventArgs e) {
             modListEditor.LoadWindowPosition();
             modListEditor.Show();
             modListEditor.Activate();
@@ -157,38 +162,35 @@ namespace GameEditor.MainEditor
         }
 
         private void MainWindow_Shown(object sender, EventArgs e) {
-            Util.Log("Ready.");
+            Util.Log("Ready");
+        }
+
+        private void toolStripComboVgaSyncBits_SelectedIndexChanged(object sender, EventArgs e) {
+            if (toolStripComboVgaSyncBits.ComboBox.SelectedIndex < 0) return;
+            EditorState.VgaSyncBits = (byte)(toolStripComboVgaSyncBits.ComboBox.SelectedIndex << 6);
+        }
+
+        private string? GetProjectSaveFilename() {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return null;
+            return dlg.FileName;
+        }
+
+        private void SaveProject(string filename) {
+            if (EditorState.SaveProject(filename)) {
+                Util.Log("== saved project");
+                this.filename = filename;
+            } else {
+                MessageBox.Show($"Error saving project.\n\nConsult the log window for more information.",
+                    "Error Saving Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorState.ClearAllData(true);
-        }
-
-        private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (toolStripComboVgaSyncBits.ComboBox.SelectedIndex < 0) {
-                MessageBox.Show(
-                    "Invalid selection for VGA Sync Bits. Please select one of the valid options",
-                    "Error Saving Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
-            }
-            byte vgaSyncBits = (byte)(toolStripComboVgaSyncBits.ComboBox.SelectedIndex << 6);
-
-            if (filename == null) {
-                SaveFileDialog dlg = new SaveFileDialog();
-                dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
-                dlg.RestoreDirectory = true;
-                if (dlg.ShowDialog() != DialogResult.OK) return;
-                filename = dlg.FileName;
-            }
-
-            try {
-                using GameDataWriter writer = new GameDataWriter(filename, vgaSyncBits);
-                writer.WriteProject();
-            } catch (Exception ex) {
-                Util.Log($"Error writing project to '{filename}': {ex}");
-                MessageBox.Show($"ERROR: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error Saving Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            }
+            EditorState.NewProject();
+            Util.Log("== created new project");
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -196,40 +198,33 @@ namespace GameEditor.MainEditor
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
-            string filename = dlg.FileName;
 
-            try {
-                using GameDataReader reader = new GameDataReader(filename);
-                reader.ReadProject();
-                toolStripComboVgaSyncBits.SelectedIndex = (int)(reader.VgaSyncBits >> 6);
-                EditorState.ClearAllData(false);
-                foreach (Tileset t in reader.TilesetList) {
-                    EditorState.AddTileset(t);
-                }
-                foreach (Sprite s in reader.SpriteList) {
-                    EditorState.AddSprite(s);
-                }
-                foreach (SpriteAnimation a in reader.SpriteAnimationList) {
-                    EditorState.AddSpriteAnimation(a);
-                }
-                foreach (MapData m in reader.MapList) {
-                    EditorState.AddMap(m);
-                }
-                foreach (SfxData s in reader.SfxList) {
-                    EditorState.AddSfx(s);
-                }
-                foreach (ModData m in reader.ModList) {
-                    EditorState.AddMod(m);
-                }
-                reader.ConsumeData();  // prevent read data from being disposed
-            } catch (ParseError ex) {
-                Util.Log($"{filename} at line {ex.LineNumber}:\n{ex}");
-                MessageBox.Show($"ERROR: {ex.Message}\n\nConsult the log window for more information.",
+            if (EditorState.LoadProject(dlg.FileName)) {
+                toolStripComboVgaSyncBits.SelectedIndex = (int)(EditorState.VgaSyncBits >> 6);
+                filename = dlg.FileName;
+                Util.UpdateGameDataSize();
+                Util.Log("== loaded project");
+            } else {
+                MessageBox.Show($"Error loading project file.\n\nConsult the log window for more information.",
                     "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-            } catch (Exception ex) {
-                Util.Log($"Unexpected error reading project from '{filename}':\n{ex}");
-                MessageBox.Show($"ERROR: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+            }
+        }
+
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (filename == null) {
+                string? savefile = GetProjectSaveFilename();
+                if (savefile != null) {
+                    SaveProject(savefile);
+                }
+            } else {
+                SaveProject(filename);
+            }
+        }
+
+        private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) {
+            string? savefile = GetProjectSaveFilename();
+            if (savefile != null) {
+                SaveProject(savefile);
             }
         }
 

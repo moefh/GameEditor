@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GameEditor.Misc
 {
-    public class ModUtil
+    public static class ModUtil
     {
         static string[] NoteNames = [
             "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
@@ -30,6 +30,18 @@ namespace GameEditor.Misc
                 }
             }
             return $"<{period}>";
+        }
+
+        public static void GenerateDefaultSample(sbyte[] data, int sampleRate) {
+            for (int i = 0; i < data.Length; i++) {
+                double hz = (2 * Math.PI * i) / sampleRate;
+                double sample = Math.Sin(440 * hz);
+                double envelope = Math.Exp(-2.0*i/data.Length);
+                sample *= envelope;
+                data[i] = (sbyte) (127 * Math.Clamp(sample, -1, 1));
+
+            }
+
         }
     }
 }

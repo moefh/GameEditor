@@ -36,7 +36,7 @@ namespace GameEditor.ModEditor
                     sampleData = sample.Data;
                     this.volume = volume;
                     double vol = Math.Exp(Math.Log(3) * volume / 200) - 1.0;
-                    byte[] wav = SoundUtil.CreateWaveData(1, 8, 8287, sampleData.Length);
+                    byte[] wav = SoundUtil.CreateWaveData(1, 8, 22050, sampleData.Length);
                     for (int i = 0; i < sampleData.Length; i++) {
                         sbyte spl = (sbyte)double.Clamp(sampleData[i] * vol, -128, 127);
                         wav[i + SoundUtil.WAV_SAMPLES_OFFSET] = (byte)(spl + 128);
@@ -54,7 +54,6 @@ namespace GameEditor.ModEditor
 
         private readonly ModDataItem modItem;
         private readonly SamplePlayer player = new SamplePlayer();
-        private readonly Font gridCellFont = new Font(FontFamily.GenericMonospace, 12);
 
         public ModEditorWindow(ModDataItem modItem) {
             this.modItem = modItem;
@@ -133,10 +132,11 @@ namespace GameEditor.ModEditor
 
         private void ModEditorWindow_FormClosed(object sender, FormClosedEventArgs e) {
             player.Dispose();
-            gridCellFont.Dispose();
         }
 
         private void SetupPatternGridDisplay() {
+            Font gridCellFont = new Font(FontFamily.GenericMonospace, 12);
+            patternGrid.Font = gridCellFont;
             patternGrid.DefaultCellStyle.Font = gridCellFont;
             patternGrid.ColumnHeadersDefaultCellStyle.Font = new Font(gridCellFont, FontStyle.Bold);
 

@@ -56,6 +56,7 @@ namespace GameEditor.MapEditor
 
         private void UpdateDataSize() {
             lblDataSize.Text = $"{Map.GameDataSize} bytes";
+            Util.UpdateGameDataSize();
         }
 
         private void MapEditor_Load(object sender, EventArgs e) {

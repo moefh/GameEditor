@@ -29,6 +29,10 @@ namespace GameEditor.Misc
             MainWindow?.AddLog(log + "\r\n");
         }
 
+        public static void UpdateGameDataSize() {
+            MainWindow?.UpdateDataSize();
+        }
+
         public static void RefreshSfxList() {
             MainWindow?.RefreshSfxList();
         }

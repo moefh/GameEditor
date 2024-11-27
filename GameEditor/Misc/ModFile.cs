@@ -53,7 +53,7 @@ namespace GameEditor.Misc
             songPositions[0] = 0;
             sample = new ModSample[31];
             for (int i = 0; i < sample.Length; i++) {
-                sample[i] = CreateEmptyModSample((i == 0) ? 100 : 0);
+                sample[i] = CreateEmptyModSample((i == 0) ? 11025 : 0);
             }
             pattern = new ModCell[64 * numChannels];
         }
@@ -94,6 +94,7 @@ namespace GameEditor.Misc
             sample.Volume = 128;
             sample.Finetune = 0;
             sample.Data = new sbyte[sample.Len];
+            ModUtil.GenerateDefaultSample(sample.Data, 22050);
             return sample;
         }
 

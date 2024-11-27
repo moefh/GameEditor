@@ -45,6 +45,7 @@ namespace GameEditor.SfxEditor
 
         private void newSFXToolStripMenuItem_Click(object sender, EventArgs e) {
             EditorState.AddSfx(new SfxData("new_sfx"));
+            Util.UpdateGameDataSize();
         }
 
         private void deleteSFXToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -58,6 +59,7 @@ namespace GameEditor.SfxEditor
                 return;
             }
             EditorState.SfxList.RemoveAt(sfxList.SelectedIndex);
+            Util.UpdateGameDataSize();
         }
 
         private void sfxList_DoubleClick(object sender, EventArgs e) {

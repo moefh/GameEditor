@@ -31,13 +31,10 @@ namespace GameEditor.ProjectIO
         private bool disposed;
         protected IdentifierNamespace identifiers = new IdentifierNamespace();
         protected StreamWriter f;
-        protected uint syncBits;
 
-        public GameDataWriter(string filename, byte vgaSyncBits) {
+        public GameDataWriter(string filename) {
             f = new StreamWriter(filename, false, Encoding.UTF8);
             f.NewLine = "\n";
-            syncBits = ((uint) vgaSyncBits) & 0xc0;
-            Util.Log($"-> got sync bits {syncBits} from {vgaSyncBits}");
         }
 
         public void Dispose() {
@@ -52,7 +49,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
             f.WriteLine("#include \"game_data.h\"");
             f.WriteLine();
-            f.WriteLine($"#define GAME_DATA_VGA_SYNC_BITS 0x{syncBits:x02}");
+            f.WriteLine($"#define GAME_DATA_VGA_SYNC_BITS 0x{EditorState.VgaSyncBits:x02}");
             f.WriteLine();
         }
 
@@ -65,7 +62,7 @@ namespace GameEditor.ProjectIO
             uint r = ((uint) red   >> 6) & 0x3;
             uint g = ((uint) green >> 6) & 0x3;
             uint b = ((uint) blue  >> 6) & 0x3;
-            return (byte) (syncBits | (b<<4) | (g<<2) | r);
+            return (byte) (EditorState.VgaSyncBits | (b<<4) | (g<<2) | r);
         }
 
         // =============================================================

@@ -52,6 +52,7 @@ namespace GameEditor.SpriteEditor
             }
             Sprite sprite = EditorState.SpriteList[0].Sprite;
             EditorState.AddSpriteAnimation(new SpriteAnimation(sprite, "new_animation"));
+            Util.UpdateGameDataSize();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -66,6 +67,7 @@ namespace GameEditor.SpriteEditor
             }
             ai.Animation.Close();  // unregister sprite event
             EditorState.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
+            Util.UpdateGameDataSize();
         }
 
         private void spriteList_DoubleClick(object sender, EventArgs e) {
