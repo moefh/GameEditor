@@ -52,6 +52,7 @@ namespace GameEditor.MapEditor
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
             EditorState.AddMap(new MapData(16, 16, EditorState.TilesetList[0].Tileset));
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 
@@ -66,6 +67,7 @@ namespace GameEditor.MapEditor
                 return;
             }
             EditorState.MapList.RemoveAt(mapList.SelectedIndex);
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 

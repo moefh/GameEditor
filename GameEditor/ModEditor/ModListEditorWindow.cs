@@ -28,6 +28,7 @@ namespace GameEditor.ModEditor
 
         private void newMODToolStripMenuItem_Click(object sender, EventArgs e) {
             EditorState.AddMod(new ModData("new_mod"));
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 
@@ -42,6 +43,7 @@ namespace GameEditor.ModEditor
                 return;
             }
             EditorState.ModList.RemoveAt(modList.SelectedIndex);
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 

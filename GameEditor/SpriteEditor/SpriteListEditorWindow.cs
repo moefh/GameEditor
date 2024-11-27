@@ -46,6 +46,7 @@ namespace GameEditor.SpriteEditor
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
             EditorState.AddSprite(new Sprite("new_sprite"));
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 
@@ -78,6 +79,7 @@ namespace GameEditor.SpriteEditor
             }
 
             EditorState.SpriteList.RemoveAt(spriteList.SelectedIndex);
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 

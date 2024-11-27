@@ -30,12 +30,18 @@ namespace GameEditor.GameData
 
         public static byte VgaSyncBits { get; set; }
 
+        public static bool IsDirty { get; set; }
+
         public static BindingList<TilesetItem> TilesetList { get { return tilesets; } }
         public static BindingList<MapDataItem> MapList { get { return maps; } }
         public static BindingList<SpriteItem> SpriteList { get { return sprites; } }
         public static BindingList<SpriteAnimationItem> SpriteAnimationList { get { return spriteAnims; } }
         public static BindingList<SfxDataItem> SfxList { get { return sfxs; } }
         public static BindingList<ModDataItem> ModList { get { return mods; } }
+
+        public static void SetDirty() {
+            IsDirty = true;
+        }
 
         public static void AddMap(MapData mapData) {
             maps.Add(new MapDataItem(mapData));
@@ -134,12 +140,14 @@ namespace GameEditor.GameData
 
         public static void NewProject() {
             ClearAllData(true);
+            IsDirty = false;
         }
 
         public static bool SaveProject(string filename) {
             try {
                 using GameDataWriter writer = new GameDataWriter(filename);
                 writer.WriteProject();
+                IsDirty = false;
                 return true;
             } catch (Exception ex) {
                 Util.Log($"Error writing project to '{filename}': {ex}");
@@ -161,6 +169,7 @@ namespace GameEditor.GameData
                 foreach (SfxData s in reader.SfxList) AddSfx(s);
                 foreach (ModData m in reader.ModList) AddMod(m);
                 reader.ConsumeData();  // prevent read data from being disposed
+                IsDirty = false;
                 return true;
             } catch (ParseError ex) {
                 Util.Log($"{filename} at line {ex.LineNumber}:\n{ex}");

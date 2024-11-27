@@ -70,6 +70,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Sprite.Name = toolStripTxtName.Text;
+            EditorState.SetDirty();
             Util.RefreshSpriteList();
             FixFormTitle();
         }
@@ -81,6 +82,7 @@ namespace GameEditor.SpriteEditor
             dlg.SpriteFrames = Sprite.NumFrames;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
+            EditorState.SetDirty();
             UpdateGameDataSize();
             spriteEditor.SelectedFrame = 0;
             spriteFramePicker.SelectedFrame = 0;
@@ -94,6 +96,7 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
+                EditorState.SetDirty();
                 UpdateGameDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.Invalidate();
@@ -120,6 +123,7 @@ namespace GameEditor.SpriteEditor
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteFramePicker.Invalidate();
+            EditorState.SetDirty();
             Util.RefreshSpriteUsers(Sprite, null);
         }
 

@@ -21,6 +21,7 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using GameEditor.Misc;
 using GameEditor.ModEditor;
+using System.Runtime.CompilerServices;
 
 namespace GameEditor.MainEditor
 {
@@ -102,6 +103,11 @@ namespace GameEditor.MainEditor
         }
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) {
+            if (! ConfirmLoseData()) {
+                e.Cancel = true;
+                return;
+            }
+
             Util.SaveMainWindowPosition(this, "MainWindow");
             mapListEditor.Close();
             tilesetListEditor.Close();
@@ -188,12 +194,24 @@ namespace GameEditor.MainEditor
             }
         }
 
+        private bool ConfirmLoseData() {
+            if (! EditorState.IsDirty) return true;
+            if (MessageBox.Show("The project has unsaved changes.\n\nOK to lose unsaved changes?",
+                    "Unsaved Changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK) {
+                return true;
+            }
+            return false;
+        }
+
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (! ConfirmLoseData()) return;
             EditorState.NewProject();
+            Util.UpdateGameDataSize();
             Util.Log("== created new project");
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (! ConfirmLoseData()) return;
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;

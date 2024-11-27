@@ -95,15 +95,15 @@ namespace GameEditor.SfxEditor
                     _ => 0b11,
                 };
                 Sfx.Import(dlg.SfxFileName, channelBits, dlg.Resample, dlg.SampleRate, dlg.Volume);
+                Sfx.FileName = dlg.SfxFileName;
             } catch (Exception ex) {
                 Util.Log($"ERROR loading WAV from {dlg.SfxFileName}:\n{ex}");
                 MessageBox.Show(
                     $"Error reading WAV: {ex.Message}\n\nConsult the log window for more information.",
                     "Error Loading Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
             }
-            Sfx.FileName = dlg.SfxFileName;
             RefreshSfx();
+            EditorState.SetDirty();
         }
     }
 }

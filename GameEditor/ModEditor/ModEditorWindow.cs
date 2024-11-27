@@ -104,14 +104,14 @@ namespace GameEditor.ModEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Mod.Import(dlg.FileName);
+                Mod.FileName = dlg.FileName;
             } catch (Exception ex) {
                 Util.Log($"ERROR loading MOD from {dlg.FileName}:\n{ex}");
                 MessageBox.Show(
                     $"Error reading MOD: {ex.Message}\n\nConsult the log window for more information.",
                     "Error Loading MOD", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
             }
-            Mod.FileName = dlg.FileName;
+            EditorState.SetDirty();
             RefreshMod();
         }
 

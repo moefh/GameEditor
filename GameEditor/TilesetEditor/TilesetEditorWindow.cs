@@ -53,6 +53,7 @@ namespace GameEditor.TilesetEditor
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Tileset.Name = toolStripTxtName.Text;
             FixFormTitle();
+            EditorState.SetDirty();
             Util.RefreshTilesetList();
         }
 
@@ -77,6 +78,7 @@ namespace GameEditor.TilesetEditor
                 MessageBox.Show(ex.Message, "Error Loading Image", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
+            EditorState.SetDirty();
             UpdateGameDataSize();
 
             tilePicker.Location = new Point(0, 0);
@@ -123,6 +125,7 @@ namespace GameEditor.TilesetEditor
 
         private void tileEditor_ImageChanged(object sender, EventArgs e) {
             tilePicker.Invalidate();
+            EditorState.SetDirty();
             Util.RefreshTilesetUsers(Tileset);
         }
 
@@ -136,6 +139,7 @@ namespace GameEditor.TilesetEditor
             dlg.NumTiles = Tileset.NumTiles;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 Tileset.Resize(dlg.NumTiles, colorPicker.BG);
+                EditorState.SetDirty();
                 UpdateGameDataSize();
                 tilePicker.ResetSize();
                 if (tilePicker.SelectedTile >= Tileset.NumTiles) {

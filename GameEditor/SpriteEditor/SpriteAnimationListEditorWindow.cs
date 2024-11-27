@@ -52,6 +52,7 @@ namespace GameEditor.SpriteEditor
             }
             Sprite sprite = EditorState.SpriteList[0].Sprite;
             EditorState.AddSpriteAnimation(new SpriteAnimation(sprite, "new_animation"));
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 
@@ -67,6 +68,7 @@ namespace GameEditor.SpriteEditor
             }
             ai.Animation.Close();  // unregister sprite event
             EditorState.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 

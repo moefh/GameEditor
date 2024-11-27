@@ -80,6 +80,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Animation.Name = toolStripTxtName.Text;
+            EditorState.SetDirty();
             Util.RefreshSpriteAnimationList();
             FixFormTitle();
         }
@@ -122,6 +123,7 @@ namespace GameEditor.SpriteEditor
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
             Animation.AddLoop();
+            EditorState.SetDirty();
         }
 
         private void loopsListBox_DoubleClick(object sender, EventArgs e) {
@@ -155,6 +157,7 @@ namespace GameEditor.SpriteEditor
             }
 
             Animation.RemoveLoop(selectedLoop);
+            EditorState.SetDirty();
             RefreshSpriteLoopList();
         }
 
@@ -165,6 +168,7 @@ namespace GameEditor.SpriteEditor
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteListView.Invalidate();
+            EditorState.SetDirty();
             Util.RefreshSprite(Animation.Sprite);
             Util.RefreshSpriteUsers(Animation.Sprite, animationItem);
         }
@@ -176,6 +180,7 @@ namespace GameEditor.SpriteEditor
                 return;
             }
             Animation.Sprite = EditorState.SpriteList[sel].Sprite;
+            EditorState.SetDirty();
             spriteEditor.Sprite = Animation.Sprite;
             spriteListView.SelectedLoopIndex = 0;
             spriteListView.Invalidate();

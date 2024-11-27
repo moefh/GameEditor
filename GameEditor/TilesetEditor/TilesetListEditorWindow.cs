@@ -52,6 +52,7 @@ namespace GameEditor.TilesetEditor
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
             EditorState.AddTileset(new Tileset("new_tileset"));
+            EditorState.SetDirty();
             Util.UpdateGameDataSize();
         }
 
@@ -94,6 +95,7 @@ namespace GameEditor.TilesetEditor
             }
 
             EditorState.TilesetList.RemoveAt(tilesetList.SelectedIndex);
+            EditorState.SetDirty();
         }
 
         private void tilesetList_DoubleClick(object sender, EventArgs e)

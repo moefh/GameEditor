@@ -13,7 +13,6 @@ namespace GameEditor.MapEditor
         const uint LAYER_GRID = CustomControls.MapView.LAYER_GRID;
 
         private readonly MapDataItem map;
-        private bool dirty = false;
 
         public MapEditorWindow(MapDataItem mapItem)
         {
@@ -33,11 +32,6 @@ namespace GameEditor.MapEditor
 
         public MapData Map {
             get { return map.Map; }
-        }
-
-        public bool IsDirty {
-            get { return dirty; }
-            set { dirty = value; }
         }
 
         public uint EnabledRenderLayers {
@@ -88,10 +82,6 @@ namespace GameEditor.MapEditor
             }
         }
 
-        public void SetDirty() {
-            dirty = true;
-        }
-
         public void RefreshTileset() {
             tilePicker.ResetSize();
             tilePicker.Invalidate();
@@ -105,7 +95,7 @@ namespace GameEditor.MapEditor
             if (dlg.ShowDialog() == DialogResult.OK) {
                 Map.Resize(dlg.MapWidth, dlg.MapHeight);
                 UpdateDataSize();
-                SetDirty();
+                EditorState.SetDirty();
                 mapView.Invalidate();
             }
         }
