@@ -33,9 +33,9 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(129, 83);
+            btnCancel.Location = new Point(145, 87);
             btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(132, 36);
+            btnCancel.Size = new Size(95, 32);
             btnCancel.TabIndex = 0;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
@@ -43,11 +43,11 @@
             // btnLoseChanges
             // 
             btnLoseChanges.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnLoseChanges.Location = new Point(267, 83);
+            btnLoseChanges.Location = new Point(246, 87);
             btnLoseChanges.Name = "btnLoseChanges";
-            btnLoseChanges.Size = new Size(132, 36);
+            btnLoseChanges.Size = new Size(153, 32);
             btnLoseChanges.TabIndex = 1;
-            btnLoseChanges.Text = "Lose Changes";
+            btnLoseChanges.Text = "Discard Changes";
             btnLoseChanges.UseVisualStyleBackColor = true;
             btnLoseChanges.Click += btnLoseChanges_Click;
             // 
@@ -58,7 +58,7 @@
             label1.Name = "label1";
             label1.Size = new Size(387, 63);
             label1.TabIndex = 2;
-            label1.Text = "The project has unsaved changes. OK to lose them?";
+            label1.Text = "The project has unsaved changes. OK to discard them?";
             label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // ConfirmLoseChangesDialog

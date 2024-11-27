@@ -17,7 +17,8 @@ namespace GameEditor.CustomControls
     {
         public const uint RENDER_TRANSPARENT = 1<<0;
 
-        const int SEL_BORDER = 2;
+        private const int SEL_BORDER = 2;
+        private const int MAX_HORZ_FRAMES = 5;
 
         private struct RenderInfo(int emptyFrameSpace, int zoomedFrameWidth, int zoomedFrameHeight, int numHorzFrames, int numVertFrames)
         {
@@ -62,10 +63,12 @@ namespace GameEditor.CustomControls
             set { selectedFrame = value; Invalidate(); SelectedFrameChanged?.Invoke(this, EventArgs.Empty); }
         }
 
-        private RenderInfo GetRenderInfo(Sprite spr) {
+        private RenderInfo GetRenderInfo(Sprite spr, Size parentClientSize) {
             int zoomeFrameWidth = spr.Width * zoom;
             int zoomeFrameHeight = spr.Height * zoom;
-            int numHorzFrames = (ClientSize.Width - SEL_BORDER) / (zoomeFrameWidth + SEL_BORDER);
+            int numHorzFrames = (parentClientSize.Width - 2*SEL_BORDER - 2) / (zoomeFrameWidth + SEL_BORDER);
+            if (numHorzFrames <= 0) numHorzFrames = 1;
+            if (numHorzFrames > MAX_HORZ_FRAMES) numHorzFrames = MAX_HORZ_FRAMES;
             int numVertFrames = (spr.NumFrames + numHorzFrames - (ShowEmptyFrame ? 0 : 1)) / numHorzFrames;
 
             return new RenderInfo(
@@ -80,11 +83,12 @@ namespace GameEditor.CustomControls
         protected override void OnPaint(PaintEventArgs pe) {
             base.OnPaint(pe);
             if (Util.DesignMode) { ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize); return; }
-            if (Sprite == null) return;
+            if (Sprite == null || Parent == null) return;
 
+            ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
+            RenderInfo ri = GetRenderInfo(Sprite, Parent.ClientSize);
             bool transparent = (RenderFlags & RENDER_TRANSPARENT) != 0;
 
-            RenderInfo ri = GetRenderInfo(Sprite);
             ImageUtil.SetupTileGraphics(pe.Graphics);
             for (int i = 0; i < Sprite.NumFrames; i++) {
                 int x = ((i+ri.EmptyFrameSpace) % ri.NumHorzFrames) * (ri.ZoomedFrameWidth + 2*SEL_BORDER) + 1;
@@ -99,13 +103,12 @@ namespace GameEditor.CustomControls
         }
 
         public void ResetSize() {
-            if (Sprite == null) return;
-            int numHorzFrames = (ClientSize.Width - SEL_BORDER) / (Sprite.Width * zoom + SEL_BORDER);
-            if (numHorzFrames <= 0) numHorzFrames = 1;
-            int numVertFrames = (Sprite.NumFrames + numHorzFrames - (ShowEmptyFrame ? 0 : 1)) / numHorzFrames;
-            Width = (numHorzFrames * (Sprite.Width + SEL_BORDER) + SEL_BORDER) * Zoom;
-            Height = (numVertFrames * (Sprite.Width + SEL_BORDER) + SEL_BORDER) * Zoom;
+            if (Sprite == null || Parent == null) return;
+            RenderInfo ri = GetRenderInfo(Sprite, Parent.ClientSize);
+            Width = MAX_HORZ_FRAMES * (ri.ZoomedFrameWidth + SEL_BORDER) + 2*SEL_BORDER + 10;
+            Height = ri.NumVertFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 2*SEL_BORDER + 10;
             Location = new Point(0, Location.Y);
+            Parent.PerformLayout();
         }
 
         protected override void OnResize(EventArgs e) {
@@ -117,9 +120,9 @@ namespace GameEditor.CustomControls
             base.OnMouseClick(e);
             if (Util.DesignMode) return;
             if (e.Button != MouseButtons.Left) return;
-            if (Sprite == null) return;
+            if (Sprite == null || Parent == null) return;
 
-            RenderInfo ri = GetRenderInfo(Sprite);
+            RenderInfo ri = GetRenderInfo(Sprite, Parent.ClientSize);
             int x = (e.X - 2) / (ri.ZoomedFrameWidth + 2*SEL_BORDER);
             int y = (e.Y - 2) / (ri.ZoomedFrameHeight + 2*SEL_BORDER);
             if (x < 0) x = 0;

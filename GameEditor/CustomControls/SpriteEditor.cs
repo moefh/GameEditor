@@ -43,7 +43,7 @@ namespace GameEditor.CustomControls
         private bool GetSpriteRenderRect(out int zoom, out Rectangle rect) {
             int winWidth = ClientSize.Width;
             int winHeight = ClientSize.Height;
-            if (this.Sprite == null || winWidth <= 0 || winHeight <= 0) {
+            if (Sprite == null || winWidth <= 0 || winHeight <= 0) {
                 zoom = 0;
                 rect = Rectangle.Empty;
                 return false;
@@ -122,10 +122,6 @@ namespace GameEditor.CustomControls
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
             RunMouseDraw(e);
-        }
-
-        public void Paste(Image img) {
-            
         }
     }
 }

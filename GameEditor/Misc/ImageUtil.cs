@@ -80,5 +80,12 @@ namespace GameEditor.Misc
             }
         }
 
+        public static void ForceToGamePalette(int w, int h, byte[] pixels) {
+            for (int i = 0; i < pixels.Length; i++) {
+                uint c = ((uint)pixels[i] & 0xc0) >> 6;
+                pixels[i] = (byte) ((c<<6)|(c<<4)|(c<<2)|c);
+            }
+        }
+
     }
 }

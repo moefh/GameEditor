@@ -83,6 +83,7 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
             EditorState.SetDirty();
+            Util.UpdateGameDataSize();
             UpdateGameDataSize();
             spriteEditor.SelectedFrame = 0;
             spriteFramePicker.SelectedFrame = 0;
@@ -130,6 +131,9 @@ namespace GameEditor.SpriteEditor
         private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
             spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
         }
+        private void mainSplit_Panel1_SizeChanged(object sender, EventArgs e) {
+            spriteFramePicker.ResetSize();
+        }
 
         public void RefreshSprite() {
             spriteEditor.Invalidate();
@@ -137,12 +141,35 @@ namespace GameEditor.SpriteEditor
         }
 
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
-            Image? img = Clipboard.GetImage();
-            if (img == null) {
-                Util.Log("no image!");
-                return;
+            try {
+                Image? img = Clipboard.GetImage();
+                if (img == null) {
+                    Util.Log("no image!");
+                    return;
+                }
+                bool transparent = (spriteEditor.RenderFlags & EDITOR_RENDER_TRANSPARENT) != 0;
+                Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
+            } catch (Exception ex) {
+                Util.Log($"!! ERROR reading clipboard image: {ex.Message}\n{ex}");
+                MessageBox.Show("Error pasting image. Consult the log for details.",
+                    "Error Pasting Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            spriteEditor.Paste(img);
+            EditorState.SetDirty();
+            spriteEditor.Invalidate();
+            spriteFramePicker.Invalidate();
+            Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
+            using Bitmap frame = Sprite.CopyFrame(spriteEditor.SelectedFrame, 0, 0,
+                                                  Sprite.Width, Sprite.Height);
+            try {
+                Clipboard.SetImage(frame);
+            } catch (Exception ex) {
+                Util.Log($"!! ERROR setting clipboard image: {ex.Message}\n{ex}");
+                MessageBox.Show("Error copying image. Consult the log for details.",
+                    "Error Copying Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
     }
 }

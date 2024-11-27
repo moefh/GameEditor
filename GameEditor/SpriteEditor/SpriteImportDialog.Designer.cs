@@ -41,7 +41,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(141, 127);
+            btnCancel.Location = new Point(166, 127);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(87, 35);
             btnCancel.TabIndex = 3;
@@ -51,7 +51,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(234, 127);
+            btnOK.Location = new Point(259, 127);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(87, 35);
             btnOK.TabIndex = 4;
@@ -61,18 +61,18 @@
             // 
             // label1
             // 
-            label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label1.AutoSize = true;
-            label1.Location = new Point(14, 21);
+            label1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label1.Location = new Point(12, 21);
             label1.Name = "label1";
-            label1.Size = new Size(49, 19);
+            label1.Size = new Size(115, 19);
             label1.TabIndex = 7;
-            label1.Text = "Width:";
+            label1.Text = "Frame width:";
+            label1.TextAlign = ContentAlignment.TopRight;
             // 
             // numWidth
             // 
             numWidth.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            numWidth.Location = new Point(69, 19);
+            numWidth.Location = new Point(133, 19);
             numWidth.Maximum = new decimal(new int[] { 1024, 0, 0, 0 });
             numWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.Name = "numWidth";
@@ -83,7 +83,7 @@
             // btnSelectFile
             // 
             btnSelectFile.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSelectFile.Location = new Point(291, 86);
+            btnSelectFile.Location = new Point(316, 86);
             btnSelectFile.Name = "btnSelectFile";
             btnSelectFile.Size = new Size(30, 23);
             btnSelectFile.TabIndex = 2;
@@ -94,27 +94,27 @@
             // txtFileName
             // 
             txtFileName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            txtFileName.Location = new Point(69, 83);
+            txtFileName.Location = new Point(133, 83);
             txtFileName.Name = "txtFileName";
             txtFileName.ReadOnly = true;
-            txtFileName.Size = new Size(216, 26);
+            txtFileName.Size = new Size(177, 26);
             txtFileName.TabIndex = 10;
             txtFileName.TabStop = false;
             // 
             // label2
             // 
-            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label2.AutoSize = true;
-            label2.Location = new Point(31, 86);
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label2.Location = new Point(12, 86);
             label2.Name = "label2";
-            label2.Size = new Size(32, 19);
+            label2.Size = new Size(115, 19);
             label2.TabIndex = 9;
-            label2.Text = "File:";
+            label2.Text = "Import from:";
+            label2.TextAlign = ContentAlignment.TopRight;
             // 
             // numHeight
             // 
             numHeight.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            numHeight.Location = new Point(69, 51);
+            numHeight.Location = new Point(133, 51);
             numHeight.Maximum = new decimal(new int[] { 1024, 0, 0, 0 });
             numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.Name = "numHeight";
@@ -124,13 +124,13 @@
             // 
             // label3
             // 
-            label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label3.AutoSize = true;
-            label3.Location = new Point(14, 53);
+            label3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label3.Location = new Point(12, 53);
             label3.Name = "label3";
-            label3.Size = new Size(53, 19);
+            label3.Size = new Size(115, 19);
             label3.TabIndex = 12;
-            label3.Text = "Height:";
+            label3.Text = "Frame height:";
+            label3.TextAlign = ContentAlignment.TopRight;
             // 
             // SpriteImportDialog
             // 
@@ -138,7 +138,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(333, 174);
+            ClientSize = new Size(358, 174);
             Controls.Add(numHeight);
             Controls.Add(label3);
             Controls.Add(btnSelectFile);
@@ -153,7 +153,7 @@
             MinimizeBox = false;
             Name = "SpriteImportDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Import Sprite";
+            Text = "Import Sprite Image";
             ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
             ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();
             ResumeLayout(false);

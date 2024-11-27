@@ -140,20 +140,20 @@ namespace GameEditor.TilesetEditor
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
             TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
             dlg.NumTiles = Tileset.NumTiles;
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                Tileset.Resize(dlg.NumTiles, colorPicker.BG);
-                EditorState.SetDirty();
-                UpdateGameDataSize();
-                tilePicker.ResetSize();
-                if (tilePicker.SelectedTile >= Tileset.NumTiles) {
-                    tilePicker.SelectedTile = Tileset.NumTiles - 1;
-                    tileEditor.SelectedTile = tilePicker.SelectedTile;
-                } else {
-                    tilePicker.Invalidate();
-                    tileEditor.Invalidate();
-                }
-                Util.RefreshTilesetUsers(Tileset);
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Tileset.Resize(dlg.NumTiles, colorPicker.BG);
+            EditorState.SetDirty();
+            Util.UpdateGameDataSize();
+            UpdateGameDataSize();
+            tilePicker.ResetSize();
+            if (tilePicker.SelectedTile >= Tileset.NumTiles) {
+                tilePicker.SelectedTile = Tileset.NumTiles - 1;
+                tileEditor.SelectedTile = tilePicker.SelectedTile;
+            } else {
+                tilePicker.Invalidate();
+                tileEditor.Invalidate();
             }
+            Util.RefreshTilesetUsers(Tileset);
         }
 
     }

@@ -64,6 +64,7 @@ namespace GameEditor.CustomControls
         private RenderInfo GetRenderInfo(Tileset ts, Size parentClientSize) {
             int zoomedTileSize = TILE_SIZE * zoom;
             int numHorzTiles = (parentClientSize.Width - 2*SEL_BORDER - 2) / (zoomedTileSize + SEL_BORDER);
+            if (numHorzTiles <= 0) numHorzTiles = 1;
             if (numHorzTiles > MAX_HORZ_TILES) numHorzTiles = MAX_HORZ_TILES;
             int numVertTiles = (ts.NumTiles + numHorzTiles - (ShowEmptyTile ? 0 : 1)) / numHorzTiles;
 
@@ -100,8 +101,8 @@ namespace GameEditor.CustomControls
         public void ResetSize() {
             if (Tileset == null || Parent == null) return;
             RenderInfo ri = GetRenderInfo(Tileset, Parent.ClientSize);
-            Width = MAX_HORZ_TILES * (ri.ZoomedTileSize + SEL_BORDER) + 2*SEL_BORDER + 10;
-            Height = ri.NumVertTiles * (ri.ZoomedTileSize + SEL_BORDER) + 2*SEL_BORDER + 10;
+            Width = MAX_HORZ_TILES * (ri.ZoomedTileSize + 2*SEL_BORDER) + SEL_BORDER + 5;
+            Height = ri.NumVertTiles * (ri.ZoomedTileSize + 2*SEL_BORDER) + SEL_BORDER + 5;
             Location = new Point(0, Location.Y);
             Parent.PerformLayout();
         }

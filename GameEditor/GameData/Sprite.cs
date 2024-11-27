@@ -103,6 +103,35 @@ namespace GameEditor.GameData
             }
         }
 
+        public Bitmap CopyFrame(int frame, int x, int y, int w, int h) {
+            if (x < 0) x = 0;
+            if (x + w > Width) w = Width - x;
+            if (y < 0) y = 0;
+            if (y + h > Height) h = Height - y;
+            Bitmap copy = new Bitmap(w, h, PixelFormat.Format32bppArgb);
+            using Graphics g = Graphics.FromImage(copy);
+            g.DrawImage(bitmap, new Rectangle(0, 0, w, h), x, y+frame*Height, w, h, GraphicsUnit.Pixel);
+            return copy;
+        }
+
+        public void Paste(Image image, int frame, int x, int y, bool transparent) {
+            int w = int.Min(image.Width, Width-x);
+            int h = int.Min(image.Height, Height-y);
+            if (w <= 0 || h <= 0) return;
+
+            using Graphics g = Graphics.FromImage(bitmap);
+            if (transparent) {
+                g.DrawImage(image, new Rectangle(x, y+frame*Height, w, h), 0, 0, w, h, GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
+            } else {
+                g.DrawImage(image, new Rectangle(x, y+frame*Height, w, h), 0, 0, w, h, GraphicsUnit.Pixel);
+            }
+
+            byte[] pixels = new byte[Width*Height*4];
+            ReadFramePixels(frame, pixels);
+            ImageUtil.ForceToGamePalette(x, y, pixels);
+            WriteFramePixels(frame, pixels);
+        }
+
         public void SetFramePixel(int frame, int x, int y, Color color) {
             bitmap.SetPixel(x, y + frame * Height, color);
         }
