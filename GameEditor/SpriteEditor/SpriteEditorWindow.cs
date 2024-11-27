@@ -101,7 +101,7 @@ namespace GameEditor.SpriteEditor
                 EditorState.SetDirty();
                 UpdateGameDataSize();
                 spriteEditor.Invalidate();
-                spriteFramePicker.Invalidate();
+                spriteFramePicker.ResetSize();
             } catch (Exception ex) {
                 Util.Log($"Error importing sprite ({dlg.SpriteWidth}x{dlg.SpriteHeight}) from {dlg.FileName}:\n{ex}");
                 MessageBox.Show(

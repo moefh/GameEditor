@@ -20,7 +20,7 @@ namespace GameEditor.ModEditor
         {
             public ModSample sample = sample;
 
-            public override string ToString() {
+            public override readonly string ToString() {
                 return $"sample {index + 1}";
             }
         }
@@ -81,6 +81,7 @@ namespace GameEditor.ModEditor
         private void RefreshMod() {
             UpdateDataSize();
             UpdatePatternGrid();
+            Util.UpdateGameDataSize();
         }
 
         private void ModEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {

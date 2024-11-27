@@ -15,7 +15,7 @@ namespace GameEditor.GameData
 {
     public class Sprite : IDisposable
     {
-        public const int MAX_NUM_FRAMES = 8;
+        public const int MAX_NUM_FRAMES = 256;
         private const int DEFAULT_WIDTH = 16;
         private const int DEFAULT_HEIGHT = 16;
         private const int DEFAULT_NUM_FRAMES = 8;

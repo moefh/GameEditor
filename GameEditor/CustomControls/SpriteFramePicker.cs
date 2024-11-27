@@ -109,6 +109,7 @@ namespace GameEditor.CustomControls
             Height = ri.NumVertFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 2*SEL_BORDER + 10;
             Location = new Point(0, Location.Y);
             Parent.PerformLayout();
+            Invalidate();
         }
 
         protected override void OnResize(EventArgs e) {
