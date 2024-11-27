@@ -12,6 +12,7 @@ namespace GameEditor.GameData
     public class Tileset : IDisposable
     {
         public const int TILE_SIZE = 16;
+        public const int MAX_NUM_TILES = 255;  // valid tiles are 0-254; 0xff means "empty"
 
         private static readonly List<Color> colors = [
             Color.FromArgb(0xff,0x00,0x00),
@@ -75,23 +76,37 @@ namespace GameEditor.GameData
         }
 
         public void ImportBitmap(string filename) {
+            // read source image:
             using Bitmap bmp = new Bitmap(filename);
             int w = (bmp.Width + TILE_SIZE - 1) / TILE_SIZE;
             int h = (bmp.Height + TILE_SIZE - 1) / TILE_SIZE;
 
+            // create empty bitmap:
             Bitmap tiles = new Bitmap(TILE_SIZE, w * h * TILE_SIZE);
             using Graphics g = Graphics.FromImage(tiles);
-            g.FillRectangle(ImageUtil.GreenBrush, 0, 0, tiles.Width, tiles.Height);
+            g.Clear(Color.FromArgb(0, 255, 0));
+
+            // copy each tile:
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
                     g.DrawImage(bmp, 0, (x + y * w) * TILE_SIZE,
-                        new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE),
-                        GraphicsUnit.Pixel);
+                                new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE),
+                                GraphicsUnit.Pixel);
                 }
             }
+
+            // use the new bitmap:
             bitmap.Dispose();
             bitmap = tiles;
-            FileName = filename;  // won't be set if there's an error reading the image
+            FileName = filename;
+
+            // force each tile to the game palette:
+            byte[] pixels = new byte[TILE_SIZE*TILE_SIZE*4];
+            for (int t = 0; t < NumTiles; t++) {
+                ReadTilePixels(t, pixels);
+                ImageUtil.ForceToGamePalette(pixels);
+                WriteTilePixels(t, pixels);
+            }
         }
 
         public void ExportBitmap(string filename, int numHorzTiles) {

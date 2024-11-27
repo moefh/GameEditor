@@ -16,9 +16,14 @@ namespace GameEditor.TilesetEditor
             InitializeComponent();
         }
 
+        public int MaxNumTiles {
+            get { return (int)numTiles.Maximum; }
+            set { numTiles.Maximum = value; }
+        }
+
         public int NumTiles {
             get { return (int)numTiles.Value; }
-            set { numTiles.Value = value; }
+            set { numTiles.Value = int.Min(value, (int)numTiles.Maximum); }
         }
 
         private void btnOK_Click(object sender, EventArgs e) {

@@ -77,6 +77,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
             SpritePropertiesDialog dlg = new SpritePropertiesDialog();
+            dlg.MaxSpriteFrames = Sprite.MAX_NUM_FRAMES;
             dlg.SpriteWidth = Sprite.Width;
             dlg.SpriteHeight = Sprite.Height;
             dlg.SpriteFrames = Sprite.NumFrames;

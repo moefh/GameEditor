@@ -39,7 +39,6 @@ namespace GameEditor.ProjectIO
         private readonly StreamReader f;
         private readonly Tokenizer tokenizer;
         private bool disposed;
-        private Token? savedToken;
         private int lastLine;
 
         // read data:
@@ -92,19 +91,9 @@ namespace GameEditor.ProjectIO
         }
 
         private Token? NextToken() {
-            if (savedToken != null) {
-                Token ret = savedToken.Value;
-                savedToken = null;
-                return ret;
-            }
             Token? t = tokenizer.Next();
             if (t != null) lastLine = t.Value.LineNum;
             return t;
-        }
-
-        private void UnreadToken(Token tok) {
-            if (savedToken != null) throw new Exception("trying to unread second token in a row");
-            savedToken = tok;
         }
 
         private Token ExpectToken() {
@@ -158,7 +147,7 @@ namespace GameEditor.ProjectIO
 
         private void ReadPreProcessorLine(Token t) {
             // #define
-            Match define = Regex.Match(t.Str, """^#\s*define\s+([A-Za-z_][A-Za-z0-9_]+)\s+(.*)$""");
+            Match define = Regex.Match(t.Str, """^#\s*define\s+([A-Za-z_][A-Za-z0-9_]+)\s+(.*?)\s*$""");
             if (define.Success) {
                 string name = define.Groups[1].ToString();
                 string value = define.Groups[2].ToString();
@@ -175,28 +164,21 @@ namespace GameEditor.ProjectIO
                 return;
             }
 
-            // #if
-            Match ppIf = Regex.Match(t.Str, """^#\s*if\s+$""");
+            // #if/#ifdef/#ifndef/#elif/#else/#endif
+            Match ppIf = Regex.Match(t.Str, """^#\s*(?:if|ifdef|ifndef|elif|else|endif)\s+.*$""");
             if (ppIf.Success) {
                 // ignore
                 return;
             }
 
-            // #endif
-            Match ppEndIf = Regex.Match(t.Str, """^#\s*endif\s+$""");
-            if (ppEndIf.Success) {
-                // ignore
-                return;
-            }
-
             // #include
-            Match include = Regex.Match(t.Str, """^#\s*include\s+["<](.*)[">]\s*$""");
+            Match include = Regex.Match(t.Str, """^#\s*include\s+(.*?)\s*$""");
             if (include.Success) {
                 // ignore
                 return;
             }
 
-            Util.Log($"WARNING: line {t.LineNum}: ignoring pre-processor directive: {t.Str}");
+            Util.Log($"WARNING: line {t.LineNum}: ignoring pre-processor line: {t.Str}");
         }
 
         private static void DecodeColor(byte pixel, out byte red, out byte green, out byte blue) {
@@ -422,6 +404,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token height = ExpectNumber();
                 ExpectPunct(',');
+                ExpectPunct('&');
                 ExpectIdent("game_tilesets");
                 ExpectPunct('[');
                 Token tilesetIndex= ExpectNumber();
@@ -495,6 +478,7 @@ namespace GameEditor.ProjectIO
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                ExpectPunct('&');
                 ExpectIdent("game_sprites");
                 ExpectPunct('[');
                 Token spriteIndex = ExpectNumber();
@@ -650,10 +634,11 @@ namespace GameEditor.ProjectIO
 
         private List<ModSample> ReadModSampleDefs() {
             List<ModSample> samples = [];
+            ExpectPunct('{');
             while (true) {
                 Token next = ExpectToken();
-                if (! next.IsPunct('{')) {
-                    UnreadToken(next);
+                if (next.IsPunct('}')) {
+                    ExpectPunct(',');
                     return samples;
                 }
 
@@ -727,14 +712,16 @@ namespace GameEditor.ProjectIO
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+
                 List<ModSample> samples = ReadModSampleDefs();
+
+                Token numChannels = ExpectNumber();
+                ExpectPunct(',');
 
                 Token numSongPositions = ExpectNumber();
                 ExpectPunct(',');
                 List<byte> songPositions = ReadModSongPositions(numSongPositions);
 
-                Token numChannels = ExpectNumber();
-                ExpectPunct(',');
                 Token numPatterns = ExpectNumber();
                 ExpectPunct(',');
                 Token patternIdent = ExpectIdent();
@@ -802,7 +789,7 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
                 if (t.Value.IsIdent("GAME_SFX")) continue;
-                if (t.Value.IsIdent("GAME_MOD")) continue;
+                if (t.Value.IsIdent("GAME_MOD_DATA")) continue;
                 if (t.Value.IsIdent("GAME_MOD_CELL")) continue;
                 if (t.Value.IsIdent("GAME_IMAGE")) continue;
                 if (t.Value.IsIdent("GAME_MAP")) continue;
@@ -823,7 +810,7 @@ namespace GameEditor.ProjectIO
                     ReadModPattern(t.Value);
                     continue;
                 }
-                if (t.Value.IsIdent("game_mod")) {
+                if (t.Value.IsIdent("game_mods")) {
                     ReadModList(t.Value);
                     continue;
                 }
@@ -833,7 +820,7 @@ namespace GameEditor.ProjectIO
                     ReadSfxSamples(t.Value);
                     continue;
                 }
-                if (t.Value.IsIdent("game_sfx")) {
+                if (t.Value.IsIdent("game_sfxs")) {
                     ReadSfxList(t.Value);
                     continue;
                 }

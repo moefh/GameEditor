@@ -15,6 +15,7 @@ namespace GameEditor.GameData
 {
     public class Sprite : IDisposable
     {
+        public const int MAX_NUM_FRAMES = 8;
         private const int DEFAULT_WIDTH = 16;
         private const int DEFAULT_HEIGHT = 16;
         private const int DEFAULT_NUM_FRAMES = 8;
@@ -128,7 +129,7 @@ namespace GameEditor.GameData
 
             byte[] pixels = new byte[Width*Height*4];
             ReadFramePixels(frame, pixels);
-            ImageUtil.ForceToGamePalette(x, y, pixels);
+            ImageUtil.ForceToGamePalette(pixels);
             WriteFramePixels(frame, pixels);
         }
 
@@ -137,12 +138,17 @@ namespace GameEditor.GameData
         }
 
         public void ImportBitmap(string filename, int frameWidth, int frameHeight) {
+            // read source image:
             using Bitmap bmp = new Bitmap(filename);
             int nx = (bmp.Width + frameWidth - 1) / frameWidth;
             int ny = (bmp.Height + frameHeight - 1) / frameHeight;
 
+            // create empty bitmap:
             Bitmap frames = new Bitmap(frameWidth, nx * ny * frameHeight);
             using Graphics g = Graphics.FromImage(frames);
+            g.Clear(Color.FromArgb(0, 255, 0));
+
+            // copy each frame from the original to the new bitmap:
             for (int y = 0; y < ny; y++) {
                 for (int x = 0; x < nx; x++) {
                     g.DrawImage(bmp, 0, (x + y * nx) * frameHeight,
@@ -150,11 +156,20 @@ namespace GameEditor.GameData
                         GraphicsUnit.Pixel);
                 }
             }
+
+            // use the new bitmap:
             bitmap.Dispose();
             bitmap = frames;
-            // these won't be set if there's an error reading the image:
             height = frameHeight;
             FileName = filename;
+
+            // force each frame to the game palette:
+            byte[] pixels = new byte[Width*Height*4];
+            for (int f = 0; f < NumFrames; f++) {
+                ReadFramePixels(f, pixels);
+                ImageUtil.ForceToGamePalette(pixels);
+                WriteFramePixels(f, pixels);
+            }
 
             NotifyNumFramesChanged();
         }

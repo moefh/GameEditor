@@ -95,7 +95,7 @@ namespace GameEditor.ProjectIO
 
             // patterns
             string ident = identifiers.Add(file.Pattern, PREFIX_GAME_MOD_PATTERN, mod.Name);
-            f.Write($"static const GAME_MOD_CELL {ident}[] = {{");
+            f.Write($"static const struct GAME_MOD_CELL {ident}[] = {{");
             int cell = 0;
             for (int pat = 0; pat < file.NumPatterns; pat++) {
                 for (int row = 0; row < 64; row++) {
@@ -125,13 +125,19 @@ namespace GameEditor.ProjectIO
 
             // samples
             f.WriteLine("    // samples:");
+            f.WriteLine("    {");
             for (int spl = 0; spl < file.NumSamples; spl++) {
                 string splIdent = (file.Sample[spl].Len == 0) ? "NULL" : identifiers.Get(file.Sample[spl]);
-                f.Write("    {");
+                f.Write("      {");
                 f.Write($" {file.Sample[spl].Len,5}, {file.Sample[spl].LoopStart,5}, {file.Sample[spl].LoopLen,5},");
                 f.Write($" {file.Sample[spl].Finetune}, {file.Sample[spl].Volume,2}, {splIdent}, ");
                 f.WriteLine("},");
             }
+            f.WriteLine("    },");
+
+            // num channels
+            f.WriteLine("    // num channels:");
+            f.WriteLine($"    {file.NumChannels},");
 
             // song positions
             f.WriteLine("    // song positions:");
@@ -143,10 +149,10 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
             f.WriteLine("    },");
 
-            // channel, pattern
-            f.WriteLine("    // num channels, pattern:");
+            // pattern
+            f.WriteLine("    // pattern:");
             string patternIdent = identifiers.Get(file.Pattern);
-            f.WriteLine($"    {file.NumChannels}, {file.NumPatterns}, {patternIdent},");
+            f.WriteLine($"    {file.NumPatterns}, {patternIdent},");
 
             f.WriteLine("  },");
         }
@@ -161,7 +167,7 @@ namespace GameEditor.ProjectIO
             }
 
             int dataSize = 0;
-            f.WriteLine("const struct GAME_MOD game_mod[] = {");
+            f.WriteLine("const struct GAME_MOD_DATA game_mods[] = {");
             foreach (ModDataItem mi in EditorState.ModList) {
                 WriteMod(mi.Mod);
                 dataSize += mi.Mod.GameDataSize;
@@ -197,7 +203,7 @@ namespace GameEditor.ProjectIO
             }
 
             int dataSize = 0;
-            f.WriteLine("const struct GAME_SFX game_sfx[] = {");
+            f.WriteLine("const struct GAME_SFX game_sfxs[] = {");
             foreach (SfxDataItem si in EditorState.SfxList) {
                 string name = identifiers.Get(si.Sfx);
                 f.WriteLine($"  {{ {si.Sfx.NumSamples}, {name} }},");
@@ -385,7 +391,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine("const struct GAME_MAP game_maps[] = {");
             foreach (MapDataItem mi in EditorState.MapList) {
                 string tiles = identifiers.Get(mi.Map);
-                string tileset = $"game_tilesets[{EditorState.GetTilesetIndex(mi.Map.Tileset)}]";
+                string tileset = $"&game_tilesets[{EditorState.GetTilesetIndex(mi.Map.Tileset)}]";
                 f.WriteLine($"  {{ {mi.Map.Tiles.Width}, {mi.Map.Tiles.Height}, {tileset}, {tiles} }},");
                 dataSize += mi.Map.GameDataSize;
             }
@@ -412,7 +418,7 @@ namespace GameEditor.ProjectIO
             int dataSize = 0;
             f.WriteLine("const struct GAME_SPRITE_ANIMATION game_sprite_animations[] = {");
             foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
-                string sprite = $"game_sprites[{EditorState.GetSpriteIndex(ai.Animation.Sprite)}]";
+                string sprite = $"&game_sprites[{EditorState.GetSpriteIndex(ai.Animation.Sprite)}]";
                 f.WriteLine($"  {{  // {ai.Animation.Name}");
                 f.WriteLine($"    {sprite},");
                 f.WriteLine($"    {ai.Animation.NumLoops-1},");

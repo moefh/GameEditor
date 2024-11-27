@@ -89,6 +89,13 @@ namespace GameEditor.TilesetEditor
             tileEditor.Invalidate();
 
             Util.RefreshTilesetUsers(Tileset);
+
+            if (Tileset.NumTiles > Tileset.MAX_NUM_TILES) {
+                MessageBox.Show(
+                    "Too many tiles imported. Tiles above the maximum number can't be properly used in maps.\n\n" +
+                    "To fix this, edit the properties and set the number of tiles to the maximum.",
+                    "Too Many Tiles", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+            }
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
@@ -139,6 +146,7 @@ namespace GameEditor.TilesetEditor
 
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
             TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
+            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
             dlg.NumTiles = Tileset.NumTiles;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Tileset.Resize(dlg.NumTiles, colorPicker.BG);

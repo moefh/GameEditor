@@ -16,19 +16,24 @@ namespace GameEditor.SpriteEditor
             InitializeComponent();
         }
 
+        public int MaxSpriteFrames {
+            get { return (int)numFrames.Maximum; }
+            set { numFrames.Maximum = value; }
+        }
+
         public int SpriteWidth {
             get { return (int)numWidth.Value; }
-            internal set { numWidth.Value = value; }
+            set { numWidth.Value = value; }
         }
 
         public int SpriteHeight {
             get { return (int)numHeight.Value; }
-            internal set { numHeight.Value = value; }
+            set { numHeight.Value = value; }
         }
 
         public int SpriteFrames {
             get { return (int)numFrames.Value; }
-            internal set { numFrames.Value = value; }
+            set { numFrames.Value = int.Min(value, (int)numFrames.Maximum); }
         }
 
         private void btnOK_Click(object sender, EventArgs e) {

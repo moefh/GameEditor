@@ -112,7 +112,7 @@
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
             saveAsToolStripMenuItem.Size = new Size(180, 24);
-            saveAsToolStripMenuItem.Text = "Save &As";
+            saveAsToolStripMenuItem.Text = "Save &As...";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // toolStripSeparator4
