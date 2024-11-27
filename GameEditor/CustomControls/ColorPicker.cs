@@ -120,7 +120,7 @@ namespace GameEditor.CustomControls
             }
 
             // full palette
-            pe.Graphics.DrawImage(ImageUtil.Palette,
+            pe.Graphics.DrawImage(ImageUtil.ColorPickerPalette,
                 new Rectangle(0, 3*blob, size, size), new Rectangle(0, 0, 8, 8),
                 GraphicsUnit.Pixel);
 
@@ -151,7 +151,7 @@ namespace GameEditor.CustomControls
             if (e.X >= 0 && e.X < 8*blob && e.Y >= 3*blob && e.Y < 11*blob) {
                 int x = e.X / blob;
                 int y = (e.Y - 3*blob) / blob;
-                SetSelectedColor(ImageUtil.Palette.GetPixel(x, y), e.Button);
+                SetSelectedColor(ImageUtil.ColorPickerPalette.GetPixel(x, y), e.Button);
                 return;
             }
 

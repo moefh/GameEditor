@@ -25,7 +25,7 @@ namespace GameEditor.TilesetEditor
             InitializeComponent();
             FixFormTitle();
             UpdateGameDataSize();
-            toolStripTxtName.Text = Tileset.Name;
+            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Tileset.Name);
             tileEditor.Tileset = Tileset;
             tileEditor.SelectedTile = tilePicker.SelectedTile;
             tileEditor.FGPen = colorPicker.FG;
@@ -52,8 +52,8 @@ namespace GameEditor.TilesetEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Tileset.Name = toolStripTxtName.Text;
+            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
             FixFormTitle();
-            EditorState.SetDirty();
             Util.RefreshTilesetList();
         }
 
@@ -107,6 +107,9 @@ namespace GameEditor.TilesetEditor
             }
         }
 
+        private void mainSplit_Panel1_SizeChanged(object sender, EventArgs e) {
+            tilePicker.ResetSize();
+        }
         private void tilePickerPanel_SizeChanged(object sender, EventArgs e) {
             tilePicker.ResetSize();
         }
@@ -152,5 +155,6 @@ namespace GameEditor.TilesetEditor
                 Util.RefreshTilesetUsers(Tileset);
             }
         }
+
     }
 }

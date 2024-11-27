@@ -35,6 +35,7 @@
             toolStripBtnImport = new ToolStripButton();
             toolStripBtnProperties = new ToolStripButton();
             statusStrip1 = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
             tilePickerPanel = new Panel();
             tilePicker = new CustomControls.TilePicker();
@@ -45,7 +46,6 @@
             toolStripBtnGrid = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripBtnTransparent = new ToolStripButton();
-            lblDataSize = new ToolStripStatusLabel();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -125,6 +125,12 @@
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // mainSplit
             // 
             mainSplit.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
@@ -134,7 +140,9 @@
             // 
             // mainSplit.Panel1
             // 
+            mainSplit.Panel1.AutoScroll = true;
             mainSplit.Panel1.Controls.Add(tilePickerPanel);
+            mainSplit.Panel1.SizeChanged += mainSplit_Panel1_SizeChanged;
             mainSplit.Panel1MinSize = 110;
             // 
             // mainSplit.Panel2
@@ -164,8 +172,9 @@
             tilePicker.Name = "tilePicker";
             tilePicker.SelectedTile = 0;
             tilePicker.ShowEmptyTile = false;
-            tilePicker.Size = new Size(197, 211);
+            tilePicker.Size = new Size(200, 211);
             tilePicker.TabIndex = 0;
+            tilePicker.Tileset = null;
             tilePicker.Zoom = 5;
             tilePicker.SelectedTileChanged += tilePicker_SelectedTileChanged;
             // 
@@ -252,12 +261,6 @@
             toolStripBtnTransparent.Size = new Size(101, 24);
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
-            // 
-            // lblDataSize
-            // 
-            lblDataSize.Name = "lblDataSize";
-            lblDataSize.Size = new Size(54, 19);
-            lblDataSize.Text = "X bytes";
             // 
             // TilesetEditorWindow
             // 

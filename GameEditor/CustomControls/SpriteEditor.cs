@@ -123,6 +123,10 @@ namespace GameEditor.CustomControls
             base.OnMouseMove(e);
             RunMouseDraw(e);
         }
+
+        public void Paste(Image img) {
+            
+        }
     }
 }
 

@@ -25,8 +25,10 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpriteEditorWindow));
             statusStrip1 = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
@@ -41,7 +43,8 @@
             spriteLoopSplitter = new SplitContainer();
             spriteEditor = new CustomControls.SpriteEditor();
             colorPicker = new CustomControls.ColorPicker();
-            lblDataSize = new ToolStripStatusLabel();
+            contextMenuStrip = new ContextMenuStrip(components);
+            pasteToolStripMenuItem = new ToolStripMenuItem();
             statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -53,6 +56,7 @@
             spriteLoopSplitter.Panel1.SuspendLayout();
             spriteLoopSplitter.Panel2.SuspendLayout();
             spriteLoopSplitter.SuspendLayout();
+            contextMenuStrip.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
@@ -63,6 +67,12 @@
             statusStrip1.Size = new Size(632, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
             // 
             // infoToolStrip
             // 
@@ -201,6 +211,7 @@
             // spriteEditor
             // 
             spriteEditor.BGPen = Color.Empty;
+            spriteEditor.ContextMenuStrip = contextMenuStrip;
             spriteEditor.Dock = DockStyle.Fill;
             spriteEditor.FGPen = Color.Empty;
             spriteEditor.Location = new Point(0, 0);
@@ -228,11 +239,18 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
-            // lblDataSize
+            // contextMenuStrip
             // 
-            lblDataSize.Name = "lblDataSize";
-            lblDataSize.Size = new Size(54, 19);
-            lblDataSize.Text = "X bytes";
+            contextMenuStrip.Items.AddRange(new ToolStripItem[] { pasteToolStripMenuItem });
+            contextMenuStrip.Name = "contextMenuStrip";
+            contextMenuStrip.Size = new Size(181, 50);
+            // 
+            // pasteToolStripMenuItem
+            // 
+            pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            pasteToolStripMenuItem.Size = new Size(180, 24);
+            pasteToolStripMenuItem.Text = "Paste";
+            pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
             // 
             // SpriteEditorWindow
             // 
@@ -264,6 +282,7 @@
             spriteLoopSplitter.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)spriteLoopSplitter).EndInit();
             spriteLoopSplitter.ResumeLayout(false);
+            contextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -286,5 +305,7 @@
         private ToolStripButton toolStripBtnTransparent;
         private CustomControls.SpriteFramePicker spriteFramePicker;
         private ToolStripStatusLabel lblDataSize;
+        private ContextMenuStrip contextMenuStrip;
+        private ToolStripMenuItem pasteToolStripMenuItem;
     }
 }

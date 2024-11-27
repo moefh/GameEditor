@@ -64,10 +64,15 @@ namespace GameEditor.MainEditor
             toolStripComboVgaSyncBits.Items.AddRange(vgaSyncBitsList);
             toolStripComboVgaSyncBits.SelectedIndex = 3;
             UpdateDataSize();
+            UpdateDirtyStatus();
         }
 
         public void UpdateDataSize() {
             lblDataSize.Text = $"{EditorState.GetGameDataSize()} bytes";
+        }
+
+        public void UpdateDirtyStatus() {
+            lblModified.Visible = EditorState.IsDirty;
         }
 
         public void RefreshSfxList() {
@@ -196,11 +201,8 @@ namespace GameEditor.MainEditor
 
         private bool ConfirmLoseData() {
             if (! EditorState.IsDirty) return true;
-            if (MessageBox.Show("The project has unsaved changes.\n\nOK to lose unsaved changes?",
-                    "Unsaved Changes", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning) == DialogResult.OK) {
-                return true;
-            }
-            return false;
+            ConfirmLoseChangesDialog dlg = new ConfirmLoseChangesDialog();
+            return dlg.ShowDialog() == DialogResult.OK;
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {

@@ -14,17 +14,17 @@ namespace GameEditor.MapEditor
 
         private readonly MapDataItem map;
 
-        public MapEditorWindow(MapDataItem mapItem)
-        {
+        public MapEditorWindow(MapDataItem mapItem) {
             map = mapItem;
             InitializeComponent();
             FixFormTitle();
             UpdateDataSize();
             tilePicker.Tileset = Map.Tileset;
             mapView.Map = Map;
-            mapView.EnabledRenderLayers = LAYER_FG | LAYER_BG | LAYER_GRID;
+            mapView.EnabledRenderLayers = LAYER_FG | LAYER_BG | LAYER_COL | LAYER_GRID;
+            mapView.EditLayer = LAYER_FG;
             toolStripComboBoxZoom.SelectedIndex = 1;
-            toolStripTxtName.Text = Map.Name;
+            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Map.Name);
             toolStripComboTiles.ComboBox.DataSource = EditorState.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
             toolStripComboTiles.SelectedIndex = EditorState.GetTilesetIndex(Map.Tileset);
@@ -32,6 +32,22 @@ namespace GameEditor.MapEditor
 
         public MapData Map {
             get { return map.Map; }
+        }
+
+        public uint EditLayer {
+            get { return mapView.EditLayer; }
+            set {
+                uint oldValue = mapView.EditLayer;
+                mapView.EditLayer = value;
+                toolStripButtonEditFG.Checked = (value & LAYER_FG) != 0;
+                toolStripButtonEditBG.Checked = (value & LAYER_BG) != 0;
+                toolStripButtonEditCol.Checked = (value & LAYER_COL) != 0;
+                if ((mapView.EditLayer & LAYER_COL) != 0 && (oldValue & LAYER_COL) == 0) {
+                    tilePicker.Tileset = ImageUtil.CollisionTileset;
+                } else {
+                    tilePicker.Tileset = Map.Tileset;
+                }
+            }
         }
 
         public uint EnabledRenderLayers {
@@ -63,10 +79,10 @@ namespace GameEditor.MapEditor
         }
 
         private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
-            uint fg = toolStripButtonFG.Checked ? LAYER_FG : 0;
-            uint bg = toolStripButtonBG.Checked ? LAYER_BG : 0;
-            uint col = toolStripButtonCol.Checked ? LAYER_COL : 0;
-            uint grid = toolStripButtonGrid.Checked ? LAYER_GRID : 0;
+            uint fg = toolStripButtonShowFG.Checked ? LAYER_FG : 0;
+            uint bg = toolStripButtonShowBG.Checked ? LAYER_BG : 0;
+            uint col = toolStripButtonShowCol.Checked ? LAYER_COL : 0;
+            uint grid = toolStripButtonShowGrid.Checked ? LAYER_GRID : 0;
             EnabledRenderLayers = fg | bg | col | grid;
             mapView.Invalidate();
         }
@@ -114,12 +130,29 @@ namespace GameEditor.MapEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Map.Name = toolStripTxtName.Text;
+            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
             Util.RefreshMapList();
             FixFormTitle();
         }
 
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
             mapView.SelectedTile = tilePicker.SelectedTile;
+        }
+
+        private void toolStripButtonEditFG_Click(object sender, EventArgs e) {
+            EditLayer = LAYER_FG;
+        }
+
+        private void toolStripButtonEditBG_Click(object sender, EventArgs e) {
+            EditLayer = LAYER_BG;
+        }
+
+        private void toolStripButtonEditCol_Click(object sender, EventArgs e) {
+            EditLayer = LAYER_COL;
+        }
+
+        private void tilePickerPanel_SizeChanged(object sender, EventArgs e) {
+            tilePicker.ResetSize();
         }
     }
 }

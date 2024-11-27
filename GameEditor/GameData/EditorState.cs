@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 using GameEditor.ModEditor;
 using GameEditor.Misc;
 using GameEditor.ProjectIO;
+using System.DirectoryServices.ActiveDirectory;
 
 namespace GameEditor.GameData
 {
@@ -30,7 +31,7 @@ namespace GameEditor.GameData
 
         public static byte VgaSyncBits { get; set; }
 
-        public static bool IsDirty { get; set; }
+        public static bool IsDirty { get; private set; }
 
         public static BindingList<TilesetItem> TilesetList { get { return tilesets; } }
         public static BindingList<MapDataItem> MapList { get { return maps; } }
@@ -39,8 +40,11 @@ namespace GameEditor.GameData
         public static BindingList<SfxDataItem> SfxList { get { return sfxs; } }
         public static BindingList<ModDataItem> ModList { get { return mods; } }
 
-        public static void SetDirty() {
-            IsDirty = true;
+        public static void SetDirty(bool dirty = true) {
+            if (IsDirty != dirty) {
+                IsDirty = dirty;
+                Util.MainWindow?.UpdateDirtyStatus();
+            }
         }
 
         public static void AddMap(MapData mapData) {
@@ -140,14 +144,14 @@ namespace GameEditor.GameData
 
         public static void NewProject() {
             ClearAllData(true);
-            IsDirty = false;
+            SetDirty(false);
         }
 
         public static bool SaveProject(string filename) {
             try {
                 using GameDataWriter writer = new GameDataWriter(filename);
                 writer.WriteProject();
-                IsDirty = false;
+                SetDirty(false);
                 return true;
             } catch (Exception ex) {
                 Util.Log($"Error writing project to '{filename}': {ex}");
@@ -169,7 +173,7 @@ namespace GameEditor.GameData
                 foreach (SfxData s in reader.SfxList) AddSfx(s);
                 foreach (ModData m in reader.ModList) AddMod(m);
                 reader.ConsumeData();  // prevent read data from being disposed
-                IsDirty = false;
+                SetDirty(false);
                 return true;
             } catch (ParseError ex) {
                 Util.Log($"{filename} at line {ex.LineNumber}:\n{ex}");

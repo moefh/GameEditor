@@ -96,6 +96,7 @@ namespace GameEditor.TilesetEditor
 
             EditorState.TilesetList.RemoveAt(tilesetList.SelectedIndex);
             EditorState.SetDirty();
+            Util.UpdateGameDataSize();
         }
 
         private void tilesetList_DoubleClick(object sender, EventArgs e)

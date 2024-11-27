@@ -121,5 +121,16 @@ namespace GameEditor.Misc
             }
         }
 
+        public static void ChangeTextBoxWithoutDirtying(ToolStripTextBox tb, string text) {
+            // This is a hack: the text box event handler will dirty only if it's not readonly
+            if (tb.ReadOnly) {
+                tb.Text = text;
+            } else {
+                tb.ReadOnly = true;
+                tb.Text = text;
+                tb.ReadOnly = false;
+            }
+        }
+
     }
 }

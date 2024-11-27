@@ -1,4 +1,7 @@
 ﻿
+- #if GAME_DATA_DEFINITION for header inclusion
+  - generate enums for all assets
+
 - mirror sprites when saving / ignore mirrors when loading
 
 - export sprite

@@ -26,7 +26,7 @@ namespace GameEditor.SpriteEditor
             InitializeComponent();
             FixFormTitle();
             UpdateGameDataSize();
-            toolStripTxtName.Text = Animation.Name;
+            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Animation.Name);
             RefreshSpriteLoopList();
             spriteListView.Loop = Animation.GetLoop(0);
             spriteListView.SelectedLoopIndex = 0;
@@ -80,7 +80,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Animation.Name = toolStripTxtName.Text;
-            EditorState.SetDirty();
+            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
             Util.RefreshSpriteAnimationList();
             FixFormTitle();
         }

@@ -28,7 +28,7 @@ namespace GameEditor.SpriteEditor
             InitializeComponent();
             FixFormTitle();
             UpdateGameDataSize();
-            toolStripTxtName.Text = Sprite.Name;
+            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sprite.Name);
             spriteFramePicker.Sprite = Sprite;
             spriteFramePicker.SelectedFrame = 0;
             spriteEditor.Sprite = Sprite;
@@ -70,7 +70,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Sprite.Name = toolStripTxtName.Text;
-            EditorState.SetDirty();
+            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
             Util.RefreshSpriteList();
             FixFormTitle();
         }
@@ -134,6 +134,15 @@ namespace GameEditor.SpriteEditor
         public void RefreshSprite() {
             spriteEditor.Invalidate();
             spriteFramePicker.Invalidate();
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
+            Image? img = Clipboard.GetImage();
+            if (img == null) {
+                Util.Log("no image!");
+                return;
+            }
+            spriteEditor.Paste(img);
         }
     }
 }

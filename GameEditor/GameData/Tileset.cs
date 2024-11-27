@@ -38,6 +38,13 @@ namespace GameEditor.GameData
             bitmap = CreateDefaultBitmap(numTiles);
         }
 
+        public Tileset(string name, Bitmap bitmap) {
+            Name = name;
+            FileName = null;
+            this.bitmap = bitmap;
+        }
+
+
         public string Name { get; set; }
 
         public string? FileName { get; set; }
@@ -146,6 +153,7 @@ namespace GameEditor.GameData
         }
 
         public void Resize(int newNumTiles, Color newTileBackground) {
+            if (newNumTiles <= 0) return;
             Bitmap tiles = new Bitmap(TILE_SIZE, TILE_SIZE * newNumTiles);
             using Graphics g = Graphics.FromImage(tiles);
             g.Clear(newTileBackground);

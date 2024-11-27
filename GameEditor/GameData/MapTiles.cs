@@ -11,7 +11,7 @@ namespace GameEditor.GameData
     {
         const int EMPTY_FG = -1;
         const int EMPTY_BG = 0;
-        const int EMPTY_CLIP = 0;
+        const int EMPTY_CLIP = -1;
 
         public int[,] fg;
         public int[,] bg;

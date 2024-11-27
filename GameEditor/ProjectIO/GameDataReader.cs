@@ -12,6 +12,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.ProjectIO
@@ -24,28 +25,37 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples_";
         const string PREFIX_GAME_MOD_SAMPLES = "game_mod_samples_";
         const string PREFIX_GAME_MOD_PATTERN = "game_mod_pattern_";
-        const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION_";
+        const string ID_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION_ID_";
+        private string[] IGNORE_DATA_IDS = [
+            "GAME_MOD_ID",
+            "GAME_SFX_ID",
+            "GAME_TILESET_ID",
+            "GAME_SPRITE_ID",
+            "GAME_MAP_ID",
+        ];
 
+
+        // parsing stuff:
+        private readonly StreamReader f;
+        private readonly Tokenizer tokenizer;
         private bool disposed;
-        private Tokenizer tokenizer;
         private Token? savedToken;
         private int lastLine;
 
-        protected StreamReader f;
-        protected uint vgaSyncBits;
-        protected Dictionary<string,List<uint>> gameTilesetData = [];
-        protected Dictionary<string,List<uint>> gameSpriteData = [];
-        protected Dictionary<string,List<byte>> gameMapTiles = [];
-        protected Dictionary<string,List<byte>> gameSfxSamples = [];
-        protected Dictionary<string,List<sbyte>> gameModSamples = [];
-        protected Dictionary<string,List<ModCell>> gameModPattern = [];
-        protected List<string> gameSpriteAnimationNames = [];
-        protected List<Sprite> spriteList = [];
-        protected List<Tileset> tilesetList = [];
-        protected List<MapData> mapList = [];
-        protected List<SfxData> sfxList = [];
-        protected List<ModData> modList = [];
-        protected List<SpriteAnimation> spriteAnimationList = [];
+        // read data:
+        private uint vgaSyncBits;
+        private readonly Dictionary<string,List<uint>> gameTilesetData = [];
+        private readonly Dictionary<string,List<uint>> gameSpriteData = [];
+        private readonly Dictionary<string,List<byte>> gameMapTiles = [];
+        private readonly Dictionary<string,List<byte>> gameSfxSamples = [];
+        private readonly Dictionary<string,List<sbyte>> gameModSamples = [];
+        private readonly Dictionary<string,List<ModCell>> gameModPattern = [];
+        private readonly List<Sprite> spriteList = [];
+        private readonly List<Tileset> tilesetList = [];
+        private readonly List<MapData> mapList = [];
+        private readonly List<SfxData> sfxList = [];
+        private readonly List<ModData> modList = [];
+        private readonly List<SpriteAnimation> spriteAnimationList = [];
 
         public GameDataReader(string filename) {
             f = new StreamReader(filename, Encoding.UTF8);
@@ -164,7 +174,21 @@ namespace GameEditor.ProjectIO
                 }
                 return;
             }
-            
+
+            // #if
+            Match ppIf = Regex.Match(t.Str, """^#\s*if\s+$""");
+            if (ppIf.Success) {
+                // ignore
+                return;
+            }
+
+            // #endif
+            Match ppEndIf = Regex.Match(t.Str, """^#\s*endif\s+$""");
+            if (ppEndIf.Success) {
+                // ignore
+                return;
+            }
+
             // #include
             Match include = Regex.Match(t.Str, """^#\s*include\s+["<](.*)[">]\s*$""");
             if (include.Success) {
@@ -428,14 +452,19 @@ namespace GameEditor.ProjectIO
 
         private void ReadSpriteAnimationIds(Token ident) {
             ExpectPunct('{');
+            int nextId = 0;
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
-                if (! next.IsIdent() || ! next.Str.StartsWith(PREFIX_GAME_SPRITE_ANIMATION)) {
-                    throw new ParseError($"expecting identifier starting with '{PREFIX_GAME_SPRITE_ANIMATION}', got {next}", lastLine);
+                if (! next.IsIdent() || ! next.Str.StartsWith(ID_GAME_SPRITE_ANIMATION)) {
+                    throw new ParseError($"expecting identifier starting with '{ID_GAME_SPRITE_ANIMATION}', got {next}", lastLine);
                 }
-                string name = next.Str.Substring(PREFIX_GAME_SPRITE_ANIMATION.Length);
-                gameSpriteAnimationNames.Add(name.ToLowerInvariant());
+                string name = next.Str.Substring(ID_GAME_SPRITE_ANIMATION.Length);
+                if (nextId < spriteAnimationList.Count) {
+                    spriteAnimationList[nextId].Name = name.ToLowerInvariant();
+                } else {
+                    Util.Log($"!! WARNING: got animation id {next.Str} without corresponding animation");
+                }
                 ExpectPunct(',');
             }
             ExpectPunct(';');
@@ -462,7 +491,6 @@ namespace GameEditor.ProjectIO
             ExpectPunct(']');
             ExpectPunct('=');
             ExpectPunct('{');
-            int curAnimationId = 0;
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
@@ -488,12 +516,8 @@ namespace GameEditor.ProjectIO
                 if (spriteIndex.Num >= spriteList.Count) {
                     throw new ParseError($"sprite {spriteIndex.Num} doesn't exist", spriteIndex.LineNum);
                 }
-                if (curAnimationId >= gameSpriteAnimationNames.Count) {
-                    throw new ParseError($"animation at index {curAnimationId} of the array has no corresponding id in animations enum", lastLine);
-                }
-                string name = gameSpriteAnimationNames[curAnimationId++];
                 Sprite sprite = spriteList[(int) spriteIndex.Num];
-                SpriteAnimation anim = new SpriteAnimation(sprite, name);
+                SpriteAnimation anim = new SpriteAnimation(sprite, "new_animation");
                 foreach (List<int> loopFrames in loops) {
                     anim.AddLoop(loopFrames);
                 }
@@ -588,7 +612,7 @@ namespace GameEditor.ProjectIO
             ExpectPunct(';');
 
             gameModSamples[ident.Str] = data;
-            Util.Log($"-> got MOD samples {ident.Str}");
+            Util.Log($"-> got MOD sample {ident.Str}");
         }
 
         private void ReadModPattern(Token ident) {
@@ -737,6 +761,28 @@ namespace GameEditor.ProjectIO
             ExpectPunct(';');
         }
 
+        // ======================================================================
+        // === DATA IDS
+        // ======================================================================
+
+        private void IgnoreDataIdsEnum(string prefix) {
+            Util.Log($"-> reading ids for {prefix}");
+            string idPrefix = $"{prefix}_";
+            ExpectPunct('{');
+            int nextId = 0;
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsIdent() || ! next.Str.StartsWith(idPrefix)) {
+                    throw new ParseError($"expecting identifier starting with '{idPrefix}', got {next}", lastLine);
+                }
+                Util.Log($"  -> {next.Str} = {nextId}");
+                ExpectPunct(',');
+                nextId++;
+            }
+            ExpectPunct(';');
+            
+        }
 
         // ======================================================================
         // === PROJECT
@@ -831,6 +877,17 @@ namespace GameEditor.ProjectIO
                     ReadSpriteAnimationList(t.Value);
                     continue;
                 }
+
+                // ids
+                bool foundIdToIgnore = false;
+                foreach (string ignorePrefix in IGNORE_DATA_IDS) {
+                    if (t.Value.IsIdent($"{ignorePrefix}S")) {
+                        IgnoreDataIdsEnum(ignorePrefix);
+                        foundIdToIgnore = true;
+                        break;
+                    }
+                }
+                if (foundIdToIgnore) continue;
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }

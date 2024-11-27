@@ -23,7 +23,7 @@ namespace GameEditor.SfxEditor
             this.sfxItem = sfxItem;
             InitializeComponent();
             sfxView.Sfx = Sfx;
-            toolStripTxtName.Text = Sfx.Name;
+            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sfx.Name);
             UpdateDataSize();
             player = new SoundPlayer(new MemoryStream(Sfx.Data, false));
         }
@@ -59,6 +59,7 @@ namespace GameEditor.SfxEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Sfx.Name = toolStripTxtName.Text;
+            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
             Util.RefreshSfxList();
             FixFormTitle();
         }

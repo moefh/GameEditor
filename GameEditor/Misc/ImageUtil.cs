@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameEditor.GameData;
+using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
@@ -9,18 +10,23 @@ namespace GameEditor.Misc
 {
     public static class ImageUtil
     {
-        private static Bitmap? palette;
+        private static Bitmap? colorPickerPalette;
+        private static Tileset? collisionTileset;
         private static ImageAttributes? transparentGreen;
         private static SolidBrush? greenBrush;
 
-        public static Bitmap Palette {
-            get { palette ??= CreatePaletteBitmap(); return palette; }
+        public static Bitmap ColorPickerPalette {
+            get { colorPickerPalette ??= CreateColorPickerPaletteBitmap(); return colorPickerPalette; }
         }
         public static ImageAttributes TransparentGreen {
             get { transparentGreen ??= CreateTransparentGreenImageAttributes(); return transparentGreen; }
         }
         public static SolidBrush GreenBrush {
             get { greenBrush ??= new SolidBrush(Color.FromArgb(0, 255, 0)); return greenBrush; }
+        }
+
+        public static Tileset CollisionTileset {
+            get { collisionTileset ??= CreateCollisionTileset(); return collisionTileset; }
         }
 
         public static void SetupTileGraphics(Graphics g) {
@@ -30,7 +36,15 @@ namespace GameEditor.Misc
             g.TextRenderingHint = System.Drawing.Text.TextRenderingHint.SingleBitPerPixelGridFit;
         }
 
-        private static Bitmap CreatePaletteBitmap() {
+        private static Tileset CreateCollisionTileset() {
+            //Bitmap bmp = new Bitmap(Tileset.TILE_SIZE, 15*Tileset.TILE_SIZE);
+            //using Graphics g = Graphics.FromImage(bmp);
+            //g.FillRectangle(GreenBrush, 0, 0, bmp.Width, bmp.Height);
+            //return new Tileset("collision", bmp);
+            return new Tileset("collision", Properties.Resources.CollisionBitmap);
+        }
+
+        private static Bitmap CreateColorPickerPaletteBitmap() {
             static int cc(int c) => c << 6 | c << 4 | c << 2 | c;
 
             Bitmap bmp = new Bitmap(8, 8);

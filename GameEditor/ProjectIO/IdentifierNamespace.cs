@@ -30,6 +30,10 @@ namespace GameEditor.ProjectIO
             return ident;
         }
 
+        public string AddId(object info, string prefix, string name, string suffix = "", uint flags = 0) {
+            return Add(info, prefix, name, suffix, flags | UPPER_CASE);
+        }
+
         public string Get(object info) {
             return infos[info];
         }

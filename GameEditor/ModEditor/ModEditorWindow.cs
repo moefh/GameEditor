@@ -60,7 +60,7 @@ namespace GameEditor.ModEditor
             InitializeComponent();
             FixFormTitle();
             UpdateDataSize();
-            toolStripTxtName.Text = Mod.Name;
+            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Mod.Name);
             sampleList.Items.AddRange([.. ModFile.Sample.Select((spl, i) => new SampleItem(spl, i))]);
             SetupPatternGridDisplay();
             UpdatePatternGrid();
@@ -94,6 +94,7 @@ namespace GameEditor.ModEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Mod.Name = toolStripTxtName.Text;
+            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
             Util.RefreshModList();
             FixFormTitle();
         }

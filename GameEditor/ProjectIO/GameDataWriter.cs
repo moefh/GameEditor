@@ -26,7 +26,12 @@ namespace GameEditor.ProjectIO
         const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples";
         const string PREFIX_GAME_MOD_SAMPLES = "game_mod_samples";
         const string PREFIX_GAME_MOD_PATTERN = "game_mod_pattern";
-        const string PREFIX_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION";
+        const string ID_GAME_MOD = "GAME_MOD_ID";
+        const string ID_GAME_SFX = "GAME_SFX_ID";
+        const string ID_GAME_TILESET = "GAME_TILESET_ID";
+        const string ID_GAME_SPRITE = "GAME_SPRITE_ID";
+        const string ID_GAME_MAP = "GAME_MAP_ID";
+        const string ID_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION_ID";
 
         private bool disposed;
         protected IdentifierNamespace identifiers = new IdentifierNamespace();
@@ -50,6 +55,8 @@ namespace GameEditor.ProjectIO
             f.WriteLine("#include \"game_data.h\"");
             f.WriteLine();
             f.WriteLine($"#define GAME_DATA_VGA_SYNC_BITS 0x{EditorState.VgaSyncBits:x02}");
+            f.WriteLine();
+            f.WriteLine("#if GAME_DATA_DEFINITION");
             f.WriteLine();
         }
 
@@ -397,14 +404,6 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// ================================================================");
             f.WriteLine();
 
-            f.WriteLine($"enum GAME_SPRITE_ANIMATION_IDS {{");
-            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
-                string ident = identifiers.Add(ai.Animation, PREFIX_GAME_SPRITE_ANIMATION,
-                                               ai.Animation.Name, "", IdentifierNamespace.UPPER_CASE);
-                f.WriteLine($"  {ident},");
-            }
-            f.WriteLine("};");
-
             Dictionary<Sprite, int>? sprIndices = new Dictionary<Sprite, int>();
             foreach (var (si, index) in EditorState.SpriteList.Zip(Enumerable.Range(0, EditorState.SpriteList.Count))) {
                 sprIndices[si.Sprite] = index;
@@ -413,9 +412,8 @@ namespace GameEditor.ProjectIO
             int dataSize = 0;
             f.WriteLine("const struct GAME_SPRITE_ANIMATION game_sprite_animations[] = {");
             foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
-                string animName = identifiers.Get(ai.Animation);
                 string sprite = $"game_sprites[{EditorState.GetSpriteIndex(ai.Animation.Sprite)}]";
-                f.WriteLine($"  {{  // {animName}");
+                f.WriteLine($"  {{  // {ai.Animation.Name}");
                 f.WriteLine($"    {sprite},");
                 f.WriteLine($"    {ai.Animation.NumLoops-1},");
                 f.WriteLine("    {");
@@ -437,6 +435,73 @@ namespace GameEditor.ProjectIO
             return dataSize;
         }
 
+        // =============================================================
+        // === DATA IDS
+        // =============================================================
+
+        private void WriteDataIds() {
+            f.WriteLine("#endif /* GAME_DATA_DEFINITION */");
+            f.WriteLine();
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === IDS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+
+            // MODs
+            f.WriteLine($"enum {ID_GAME_MOD}S {{");
+            foreach (ModDataItem mi in EditorState.ModList) {
+                string ident = identifiers.AddId(mi.Mod, ID_GAME_MOD, mi.Mod.Name);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+
+            // Sfxs
+            f.WriteLine($"enum {ID_GAME_SFX}S {{");
+            foreach (SfxDataItem si in EditorState.SfxList) {
+                string ident = identifiers.AddId(si.Sfx, ID_GAME_SFX, si.Sfx.Name);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+
+            // Tilesets
+            f.WriteLine($"enum {ID_GAME_TILESET}S {{");
+            foreach (TilesetItem ti in EditorState.TilesetList) {
+                string ident = identifiers.AddId(ti.Tileset, ID_GAME_TILESET, ti.Tileset.Name);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+
+            // Sprites
+            f.WriteLine($"enum {ID_GAME_SPRITE}S {{");
+            foreach (SpriteItem si in EditorState.SpriteList) {
+                string ident = identifiers.AddId(si.Sprite, ID_GAME_SPRITE, si.Sprite.Name);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+
+            // Maps
+            f.WriteLine($"enum {ID_GAME_MAP}S {{");
+            foreach (MapDataItem mi in EditorState.MapList) {
+                string ident = identifiers.AddId(mi.Map, ID_GAME_MAP, mi.Map.Name);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+
+            // sprite animations
+            f.WriteLine($"enum GAME_SPRITE_ANIMATION_IDS {{");
+            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+                string ident = identifiers.AddId(ai.Animation, ID_GAME_SPRITE_ANIMATION, ai.Animation.Name);
+                f.WriteLine($"  {ident},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+            
+        }
 
         // =============================================================
         // === PROJECT
@@ -451,6 +516,7 @@ namespace GameEditor.ProjectIO
             dataSize += WriteSprites();
             dataSize += WriteMaps();
             dataSize += WriteSpriteAnimations();
+            WriteDataIds();
             EndWrite(dataSize);
         }
     }
