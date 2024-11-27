@@ -57,6 +57,7 @@ namespace GameEditor.ProjectIO
         public List<SpriteAnimation> SpriteAnimationList { get { return spriteAnimationList; } }
         public List<MapData> MapList { get { return mapList; } }
         public List<SfxData> SfxList { get { return sfxList; } }
+        public List<ModData> ModList { get { return modList; } }
 
         public uint VgaSyncBits { get { return vgaSyncBits; }}
 
@@ -77,6 +78,7 @@ namespace GameEditor.ProjectIO
             spriteList.Clear();
             tilesetList.Clear();
             sfxList.Clear();
+            modList.Clear();
         }
 
         private Token? NextToken() {
@@ -127,6 +129,21 @@ namespace GameEditor.ProjectIO
             if (t == null) throw new ParseError($"expected '{c}', got EOF", lastLine);
             if (! t.Value.IsPunct(c)) throw new ParseError($"expected '{c}', got {t.Value}", lastLine);
             return t.Value;
+        }
+
+        private long ReadSignedNumber() {
+            Token? t = NextToken();
+            if (t == null) throw new ParseError($"expected '-' or number, got EOF", lastLine);
+
+            if (t.Value.IsPunct('-')) {
+                Token num = ExpectNumber();
+                return -(long)num.Num;
+            }
+            if (t.Value.IsNumber()) {
+                return t.Value.Num;
+            }
+            
+            throw new ParseError($"expected '-' or number, got {t.Value}", lastLine);
         }
 
         private void ReadPreProcessorLine(Token t) {
@@ -622,7 +639,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token loopLength = ExpectNumber();
                 ExpectPunct(',');
-                Token finetune = ExpectNumber(); // TODO: accept negative numbers?
+                int finetune = (int) ReadSignedNumber();
                 ExpectPunct(',');
                 Token volume = ExpectNumber();
                 ExpectPunct(',');
@@ -636,7 +653,7 @@ namespace GameEditor.ProjectIO
                 sample.Len = length.Num;
                 sample.LoopStart = loopStart.Num;
                 sample.LoopLen = loopLength.Num;
-                sample.Finetune = (sbyte) finetune.Num;
+                sample.Finetune = (sbyte) finetune;
                 sample.Volume = (byte) volume.Num;
                 sample.Title = dataIdent.Str;
 
@@ -704,17 +721,18 @@ namespace GameEditor.ProjectIO
                 if (! gameModPattern.TryGetValue(patternIdent.Str, out List<ModCell>? pattern)) {
                     throw new ParseError($"invalid mod: samples {patternIdent.Str} not found", patternIdent.LineNum);
                 }
+                if (pattern.Count % (64 * numChannels.Num) != 0) {
+                    throw new ParseError($"invalid mod: number of pattern cells must be divisible by 64*num_channels, got {pattern.Count}", patternIdent.LineNum);
+                }
+                if (numPatterns.Num != pattern.Count / numChannels.Num / 64) {
+                    throw new ParseError($"invalid mod: expected pattern with {numPatterns.Num*numChannels.Num*64} cells, got {pattern.Count}", patternIdent.LineNum);
+                }
 
-                string name = patternIdent.Str.Substring(PREFIX_GAME_MOD_PATTERN.Length);
+                string modName = patternIdent.Str.Substring(PREFIX_GAME_MOD_PATTERN.Length);
+                ModFile modFile = new ModFile((int)numChannels.Num, samples, songPositions, pattern);
+                modList.Add(new ModData(modName, modFile));
 
-                // TODO: use data to create mod:
-                // * samples
-                // * songPositions
-                // * numChannels
-                // * pattern
-                modList.Add(new ModData(name));
-
-                Util.Log($"-> got MOD {name} with {numPatterns.Num} patterns");
+                Util.Log($"-> got MOD {modName} with {numPatterns.Num} patterns");
             }
             ExpectPunct(';');
         }

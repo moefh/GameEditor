@@ -102,6 +102,7 @@ namespace GameEditor.MainEditor
             tilesetListEditor.Close();
             spriteListEditor.Close();
             sfxListEditor.Close();
+            modListEditor.Close();
             logWindow.Close();
         }
 
@@ -216,6 +217,9 @@ namespace GameEditor.MainEditor
                 }
                 foreach (SfxData s in reader.SfxList) {
                     EditorState.AddSfx(s);
+                }
+                foreach (ModData m in reader.ModList) {
+                    EditorState.AddMod(m);
                 }
                 reader.ConsumeData();  // prevent read data from being disposed
             } catch (ParseError ex) {

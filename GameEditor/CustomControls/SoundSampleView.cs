@@ -12,18 +12,18 @@ using System.Windows.Forms;
 
 namespace GameEditor.CustomControls
 {
-    public partial class SfxView : AbstractPaintedControl
+    public partial class SoundSampleView : AbstractPaintedControl
     {
-        protected SfxData? sfx;
+        private sbyte[]? data;
 
-        public SfxView() {
+        public SoundSampleView() {
             InitializeComponent();
             SetDoubleBuffered();
         }
 
-        public SfxData? Sfx {
-            get { return sfx; }
-            set { sfx = value; Invalidate(); }
+        public sbyte[]? Data {
+            get { return data; }
+            set { data = value; Invalidate(); }
         }
 
         protected override void OnPaint(PaintEventArgs pe) {
@@ -31,23 +31,23 @@ namespace GameEditor.CustomControls
             if (Util.DesignMode) { ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize); return; }
 
             pe.Graphics.Clear(Color.Black);
-            if (Sfx == null) return;
+            if (Data == null) return;
 
             int xMax = ClientSize.Width - 10;
             int xBase = 5;
             int yBase = ClientSize.Height / 2;
             int yMax = ClientSize.Height / 2 - 10;
-            long step = ((long) Sfx.NumSamples << 16) / xMax;
+            long step = ((long) Data.Length << 16) / xMax;
             if (step <= 0) return;
             for (int x = 0; x < xMax; x++) {
-                //byte sample = Sfx.GetSample((int) ((x * step) >> 16));
                 int iStart = (int) ((x * step) >> 16);
                 int iNextStart = (int) (((x+1) * step) >> 16) - 1;
-                byte sample = Sfx.GetMaxSampleInRange(iStart, iNextStart-iStart);
-                int y = (sample - 128) * yMax / 128;
+                sbyte sample = SoundUtil.GetMaxS8SampleInRange(Data, iStart, iNextStart-iStart);
+                int y = sample * yMax / 128;
                 if (y == 0) y = 1;
                 pe.Graphics.DrawLine(Pens.White, x + xBase, yBase - y, x + xBase, yBase);
             }
+
         }
     }
 }

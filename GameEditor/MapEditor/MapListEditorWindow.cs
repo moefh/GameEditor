@@ -25,7 +25,7 @@ namespace GameEditor.MapEditor
             mapList.DisplayMember = "Name";
         }
 
-        private void WorldEditor_FormClosing(object sender, FormClosingEventArgs e) {
+        private void MapListEditor_FormClosing(object sender, FormClosingEventArgs e) {
             Util.SaveWindowPosition(this, "MapListEditor");
             if (e.CloseReason == CloseReason.UserClosing) {
                 e.Cancel = true;
@@ -34,7 +34,7 @@ namespace GameEditor.MapEditor
             }
         }
 
-        private void WorldEditor_Load(object sender, EventArgs e) {
+        private void MapListEditor_Load(object sender, EventArgs e) {
             LoadWindowPosition();
         }
 

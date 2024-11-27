@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace GameEditor.Misc
 {
@@ -55,6 +56,15 @@ namespace GameEditor.Misc
                 sample[i] = CreateEmptyModSample((i == 0) ? 100 : 0);
             }
             pattern = new ModCell[64 * numChannels];
+        }
+        public ModFile(int numChannels, List<ModSample> sample, List<byte> songPositions, List<ModCell> pattern) {
+            formatId = "M.K.";
+            modTitle = "";
+            this.numChannels = numChannels;
+            numSongPositions = songPositions.Count;
+            songPositions.CopyTo(0, this.songPositions, 0, songPositions.Count);
+            this.sample = [..sample];
+            this.pattern = [..pattern];
         }
 
         public string FormatId { get { return formatId; } }

@@ -18,16 +18,36 @@ namespace GameEditor.GameData
             modFile = new ModFile();
         }
 
+        public ModData(string name, ModFile modFile) {
+            Name = name;
+            FileName = null;
+            this.modFile = modFile;
+        }
+
         public string Name { get; set; }
 
         public string? FileName { get; set; }
 
         public ModFile ModFile { get { return modFile; } }
 
-        public int GameDataSize { get { return 0; } }
+        public int GameDataSize { get { return CalcGameDataSize(); } }
+
+        private int CalcGameDataSize() {
+            // sample struct: len(4) + loopStart(4) + loopLen(4) + finetune(1) + volume(1) + padding(2) + dataPointer(4)
+            int sampleStructSize = 4 + 4 + 4 + 1 + 1 + 2 + 4;
+
+            // mod struct: samples(...) + numChannels(1) + numSongPositions(1) + songPositions(128) + numPatterns(1) + padding(1) + patternsPointer(4)
+            int structSize = modFile.Sample.Length*(sampleStructSize) + 1 + 1 + 128 + 1 + 1 + 4;
+
+            // each pattern cell: sample(1) + padding(1) + period(2) + effect(2)
+            int patternSize = modFile.Pattern.Length * (1 + 1 + 2 + 2);
+
+            return structSize + patternSize;
+        }
 
         public void Import(string filename) {
             modFile = new ModFile(filename);
+            this.FileName = filename;
         }
     }
 }

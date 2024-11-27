@@ -109,6 +109,21 @@ namespace GameEditor.Misc
             Array.Fill<byte>(wav, 128, WAV_SAMPLES_OFFSET, wav.Length-WAV_SAMPLES_OFFSET);
             return wav;
         }
+
+        public static sbyte GetMaxS8SampleInRange(sbyte[] data, int start, int num) {
+            if (start < 0 || start >= data.Length || start+num < 0 || start+num >= data.Length) {
+                return 0;
+            }
+            sbyte max = 0;
+            sbyte min = 0;
+            for (int i = 0; i < num; i++) {
+                sbyte val = data[start+i];
+                max = sbyte.Max(val, max);
+                min = sbyte.Min(val, min);
+            }
+            return (int.Abs(max) > int.Abs(min)) ? max : min;
+        }
+
     }
 
     public class WaveFileReader

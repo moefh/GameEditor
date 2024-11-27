@@ -78,8 +78,8 @@
             Name = "MapListEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Maps";
-            FormClosing += WorldEditor_FormClosing;
-            Load += WorldEditor_Load;
+            FormClosing += MapListEditor_FormClosing;
+            Load += MapListEditor_Load;
             mapListContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
         }
