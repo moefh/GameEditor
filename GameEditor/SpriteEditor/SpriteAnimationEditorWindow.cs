@@ -55,7 +55,7 @@ namespace GameEditor.SpriteEditor
         }
 
         private void UpdateGameDataSize() {
-            lblDataSize.Text = $"{Animation.GameDataSize}";
+            lblDataSize.Text = $"{Animation.GameDataSize} bytes";
         }
 
         private void FixRenderFlags() {

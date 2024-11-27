@@ -10,6 +10,7 @@ using System.Xml.Linq;
 namespace GameEditor.GameData
 {
     public sealed class SpriteAnimationLoop {
+        public const int MAX_NUM_FRAMES = 16;
         public const string ALL_FRAMES_LOOP_NAME = "(all frames)";
         public const string NEW_LOOP_NAME = "new_loop";
 
@@ -66,6 +67,8 @@ namespace GameEditor.GameData
 
     public class SpriteAnimation
     {
+        public const int MAX_NUM_LOOPS = 4;
+
         private readonly BindingList<SpriteAnimationLoop> loops;
 
         private Sprite sprite;
@@ -91,7 +94,10 @@ namespace GameEditor.GameData
         public SpriteAnimationLoop GetLoop(int i) { return loops[i]; }
 
         public int GameDataSize {
-            get { return 64; }
+            get {
+                // spriteImage(4) + numLoops(1) + MAX_LOOPS(4)*(numFrames(1) + MAX_LOOP_FRAMES(16))
+                return 4 + 1 + 4 * (1 + 16);
+            }
         }
 
         public void Close() {
