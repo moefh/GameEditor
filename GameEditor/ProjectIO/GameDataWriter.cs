@@ -20,6 +20,8 @@ namespace GameEditor.ProjectIO
 {
     public class GameDataWriter : IDisposable
     {
+        const bool ADD_SPRITE_MIRRORS = true;
+
         const string PREFIX_GAME_TILESET_DATA = "game_tileset_data";
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles";
@@ -38,7 +40,8 @@ namespace GameEditor.ProjectIO
         protected StreamWriter f;
 
         public GameDataWriter(string filename) {
-            f = new StreamWriter(filename, false, Encoding.UTF8);
+            Encoding utf8WithoutBOM = new UTF8Encoding(false);
+            f = new StreamWriter(filename, false, utf8WithoutBOM);
             f.NewLine = "\n";
         }
 
@@ -276,16 +279,13 @@ namespace GameEditor.ProjectIO
         // === SPRITES
         // =============================================================
 
-        protected void WriteSpriteData(Sprite sprite) {
-            string ident = identifiers.Add(sprite, PREFIX_GAME_SPRITE_DATA, sprite.Name);
-            f.WriteLine($"static const uint32_t {ident}[] = {{");
-
-            int numBlocksPerLine = (sprite.Width+3) / 4;
-
+        protected void WriteSpriteFrames(Sprite sprite, bool mirror) {
+            string commentMirrored = mirror ? " (mirror)" : "";
             byte[] bmp = new byte[4 * sprite.Width * sprite.Height];
+            int numBlocksPerLine = (sprite.Width+3) / 4;
             for (int frame = 0; frame < sprite.NumFrames; frame++) {
-                sprite.ReadFramePixels(frame, bmp);
-                f.Write($"  // frame {frame}");
+                sprite.ReadFramePixels(frame, bmp, mirror);
+                f.Write($"  // frame {frame}{commentMirrored}");
                 for (int y = 0; y < sprite.Height; y++) {
                     for (int bl = 0; bl < numBlocksPerLine; bl++) {
                         if (bl % 8 == 0) {
@@ -309,6 +309,16 @@ namespace GameEditor.ProjectIO
                 }
                 f.WriteLine();
             }
+        }
+
+        protected void WriteSpriteData(Sprite sprite) {
+            string ident = identifiers.Add(sprite, PREFIX_GAME_SPRITE_DATA, sprite.Name);
+            f.WriteLine($"static const uint32_t {ident}[] = {{");
+
+            WriteSpriteFrames(sprite, false);
+            if (ADD_SPRITE_MIRRORS) {
+                WriteSpriteFrames(sprite, true);
+            }
 
             f.WriteLine("};");
             f.WriteLine();
@@ -330,6 +340,7 @@ namespace GameEditor.ProjectIO
                 int h = si.Sprite.Height;
                 int nFrames = si.Sprite.NumFrames;
                 string ident = identifiers.Get(si.Sprite);
+                if (ADD_SPRITE_MIRRORS) nFrames *= 2;
                 f.WriteLine($"  {{ {w}, {h}, {(w+3)/4}, {nFrames}, {ident} }},");
                 dataSize += si.Sprite.GameDataSize;
             }
@@ -459,6 +470,7 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.AddId(mi.Mod, ID_GAME_MOD, mi.Mod.Name);
                 f.WriteLine($"  {ident},");
             }
+            f.WriteLine($"  GAME_MOD_COUNT,");
             f.WriteLine("};");
             f.WriteLine();
 
@@ -468,6 +480,7 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.AddId(si.Sfx, ID_GAME_SFX, si.Sfx.Name);
                 f.WriteLine($"  {ident},");
             }
+            f.WriteLine($"  GAME_SFX_COUNT,");
             f.WriteLine("};");
             f.WriteLine();
 
@@ -477,6 +490,7 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.AddId(ti.Tileset, ID_GAME_TILESET, ti.Tileset.Name);
                 f.WriteLine($"  {ident},");
             }
+            f.WriteLine($"  GAME_TILESET_COUNT,");
             f.WriteLine("};");
             f.WriteLine();
 
@@ -486,6 +500,7 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.AddId(si.Sprite, ID_GAME_SPRITE, si.Sprite.Name);
                 f.WriteLine($"  {ident},");
             }
+            f.WriteLine($"  GAME_SPRITE_COUNT,");
             f.WriteLine("};");
             f.WriteLine();
 
@@ -495,6 +510,7 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.AddId(mi.Map, ID_GAME_MAP, mi.Map.Name);
                 f.WriteLine($"  {ident},");
             }
+            f.WriteLine($"  GAME_MAP_COUNT,");
             f.WriteLine("};");
             f.WriteLine();
 
@@ -504,6 +520,7 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.AddId(ai.Animation, ID_GAME_SPRITE_ANIMATION, ai.Animation.Name);
                 f.WriteLine($"  {ident},");
             }
+            f.WriteLine($"  GAME_SPRITE_ANIMATION_COUNT,");
             f.WriteLine("};");
             f.WriteLine();
             

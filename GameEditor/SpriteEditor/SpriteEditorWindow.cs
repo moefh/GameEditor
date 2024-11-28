@@ -35,6 +35,7 @@ namespace GameEditor.SpriteEditor
             spriteEditor.SelectedFrame = 0;
             spriteEditor.FGPen = colorPicker.FG;
             spriteEditor.BGPen = colorPicker.BG;
+            mainSplit.SplitterDistance = int.Max(Sprite.Width*spriteFramePicker.Zoom + 30, mainSplit.SplitterDistance);
             FixRenderFlags();
         }
 
@@ -86,9 +87,25 @@ namespace GameEditor.SpriteEditor
             EditorState.SetDirty();
             Util.UpdateGameDataSize();
             UpdateGameDataSize();
+            spriteFramePicker.ResetSize();
             spriteEditor.SelectedFrame = 0;
             spriteFramePicker.SelectedFrame = 0;
             Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void toolStripBtnExport_Click(object sender, EventArgs e) {
+            SpriteExportDialog dlg = new SpriteExportDialog();
+            dlg.NumHorzFrames = 1;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                Sprite.ExportBitmap(dlg.FileName, dlg.NumHorzFrames);
+            } catch (Exception ex) {
+                Util.Log($"ERROR saving bitmap to {dlg.FileName}:\n{ex}");
+                MessageBox.Show(
+                    $"Error exporting sprite: {ex.Message}\n\nConsult the log window for more information.",
+                    "Error Exporting Sprite", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -106,7 +123,7 @@ namespace GameEditor.SpriteEditor
                 Util.Log($"Error importing sprite ({dlg.SpriteWidth}x{dlg.SpriteHeight}) from {dlg.FileName}:\n{ex}");
                 MessageBox.Show(
                     $"Error importing sprite: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error importing sprite", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    "Error Importing Sprite", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -172,5 +189,6 @@ namespace GameEditor.SpriteEditor
                     "Error Copying Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
+
     }
 }

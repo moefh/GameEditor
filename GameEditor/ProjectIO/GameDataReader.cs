@@ -3,6 +3,7 @@ using GameEditor.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace GameEditor.ProjectIO
 {
     public class GameDataReader : IDisposable
     {
+        const bool REMOVE_SPRITE_MIRRORS = true;
+
         const string PREFIX_GAME_TILESET_DATA = "game_tileset_data_";
         const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data_";
         const string PREFIX_GAME_MAP_TILES = "game_map_tiles_";
@@ -355,12 +358,23 @@ namespace GameEditor.ProjectIO
                 if (! gameSpriteData.TryGetValue(dataIdent.Str, out List<uint>? data)) {
                     throw new ParseError($"invalid sprite: sprite data {dataIdent.Str} not found", dataIdent.LineNum);
                 }
+
+                // When reading sprites, we expect to find and ignore mirrors for every frame
+                // (the mirrors are written after the original frames).
                 if (numFrames.Num * stride.Num * height.Num != data.Count) {
                     throw new ParseError($"invalid sprite: expected {numFrames.Num * stride.Num * height.Num} array elements, got {data.Count}", dataIdent.LineNum);
                 }
+                int actualNumFrames = (int) numFrames.Num;
+                if (REMOVE_SPRITE_MIRRORS) {
+                    if (numFrames.Num % 2 != 0) {
+                        throw new ParseError($"invalid sprite: expected EVEN number of frames, got {numFrames.Num}", dataIdent.LineNum);
+                    }
+                    actualNumFrames /= 2;
+                    data.RemoveRange(data.Count/2, data.Count/2);
+                }
 
                 string name = dataIdent.Str.Substring(PREFIX_GAME_SPRITE_DATA.Length);
-                spriteList.Add(CreateSprite(name, (int) width.Num, (int) height.Num, (int) numFrames.Num, data));
+                spriteList.Add(CreateSprite(name, (int) width.Num, (int) height.Num, actualNumFrames, data));
 
                 Util.Log($"-> got sprite for {dataIdent.Str} with {numFrames.Num} frames");
             }
@@ -439,14 +453,20 @@ namespace GameEditor.ProjectIO
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
-                if (! next.IsIdent() || ! next.Str.StartsWith(ID_GAME_SPRITE_ANIMATION)) {
-                    throw new ParseError($"expecting identifier starting with '{ID_GAME_SPRITE_ANIMATION}', got {next}", lastLine);
+                if (nextId < 0) {
+                    throw new ParseError($"expected end of enum after COUNT member", lastLine);
                 }
-                string name = next.Str.Substring(ID_GAME_SPRITE_ANIMATION.Length);
-                if (nextId < spriteAnimationList.Count) {
-                    spriteAnimationList[nextId].Name = name.ToLowerInvariant();
+                if (next.IsIdent() && next.Str.StartsWith(ID_GAME_SPRITE_ANIMATION)) {
+                    string name = next.Str.Substring(ID_GAME_SPRITE_ANIMATION.Length);
+                    if (nextId < spriteAnimationList.Count) {
+                        spriteAnimationList[nextId++].Name = name.ToLowerInvariant();
+                    } else {
+                        Util.Log($"!! WARNING: got animation id {next.Str} without corresponding animation");
+                    }
+                } else if (next.IsIdent() && next.Str == $"{ID_GAME_SPRITE_ANIMATION[..^4]}_COUNT") {
+                    nextId = -1;
                 } else {
-                    Util.Log($"!! WARNING: got animation id {next.Str} without corresponding animation");
+                    throw new ParseError($"expecting {ID_GAME_SPRITE_ANIMATION[..^4]}_COUNT or identifier starting with '{ID_GAME_SPRITE_ANIMATION}', got {next}", lastLine);
                 }
                 ExpectPunct(',');
             }
@@ -760,12 +780,17 @@ namespace GameEditor.ProjectIO
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
-                if (! next.IsIdent() || ! next.Str.StartsWith(idPrefix)) {
-                    throw new ParseError($"expecting identifier starting with '{idPrefix}', got {next}", lastLine);
+                if (nextId < 0) {
+                    throw new ParseError($"expecting end of enum after COUNT member", lastLine);
                 }
-                Util.Log($"  -> {next.Str} = {nextId}");
+                if (next.IsIdent() && next.Str.StartsWith(idPrefix)) {
+                    Util.Log($"  -> {next.Str} = {nextId++}");
+                } else if (next.IsIdent() && next.Str == $"{idPrefix[..^4]}_COUNT") {
+                    nextId = -1;
+                } else {
+                    throw new ParseError($"expecting {idPrefix[..^4]}_COUNT or identifier starting with '{idPrefix}', got {next}", lastLine);
+                }
                 ExpectPunct(',');
-                nextId++;
             }
             ExpectPunct(';');
             

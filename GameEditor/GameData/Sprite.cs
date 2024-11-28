@@ -182,11 +182,17 @@ namespace GameEditor.GameData
 
             using Bitmap frames = new Bitmap(numHorzFrames * Width, numVertFrames * Height);
             using Graphics g = Graphics.FromImage(frames);
+            g.Clear(Color.FromArgb(0,0,0,0));
             for (int y = 0; y < numVertFrames; y++) {
                 for (int x = 0; x < numHorzFrames; x++) {
+                    g.DrawImage(bitmap, new Rectangle(x * Width, y * Height, Width, Height),
+                                0, (x + y * numHorzFrames) * Height, Width, Height,
+                                GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
+                    /*
                     g.DrawImage(bitmap, x * Width, y * Height,
-                        new Rectangle(0, (x + y * numHorzFrames) * Height, Width, Height),
-                        GraphicsUnit.Pixel);
+                                new Rectangle(0, (x + y * numHorzFrames) * Height, Width, Height),
+                                GraphicsUnit.Pixel);
+                    */
                 }
             }
             frames.Save(filename);
@@ -204,12 +210,33 @@ namespace GameEditor.GameData
             }
         }
 
-        public void ReadFramePixels(int frame, byte[] pixels) {
+        private static void MirrorSpriteLine(byte[] pixels, int start, int length) {
+            // If the length is odd, there's a center
+            // pixel that doesn't need to be mirrored.
+            for (int i = 0; i < length/2; i++) {
+                byte b = pixels[start + 4*i + 0];
+                byte g = pixels[start + 4*i + 1];
+                byte r = pixels[start + 4*i + 2];
+                byte a = pixels[start + 4*i + 3];
+                pixels[start + 4*i + 0] = pixels[start + 4*(length-i-1) + 0];
+                pixels[start + 4*i + 1] = pixels[start + 4*(length-i-1) + 1];
+                pixels[start + 4*i + 2] = pixels[start + 4*(length-i-1) + 2];
+                pixels[start + 4*i + 3] = pixels[start + 4*(length-i-1) + 3];
+                pixels[start + 4*(length-i-1) + 0] = b;
+                pixels[start + 4*(length-i-1) + 1] = g;
+                pixels[start + 4*(length-i-1) + 2] = r;
+                pixels[start + 4*(length-i-1) + 3] = a;
+            }
+        }
+
+        public void ReadFramePixels(int frame, byte[] pixels, bool mirror = false) {
+            Util.Log($"-> read frame pixels: mirror={mirror}");
             Rectangle rect = new Rectangle(0, frame * Height, Width, Height);
             BitmapData data = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try {
                 for (int y = 0; y < Height; y++) {
                     Marshal.Copy(data.Scan0 + y * data.Stride, pixels, y * 4 * Width, 4 * Width);
+                    if (mirror) MirrorSpriteLine(pixels, y * 4 * Width, Width);
                 }
             } finally {
                 bitmap.UnlockBits(data);

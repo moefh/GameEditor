@@ -12,8 +12,7 @@ namespace GameEditor.TilesetEditor
 {
     public partial class TilesetExportDialog : Form
     {
-        public TilesetExportDialog()
-        {
+        public TilesetExportDialog() {
             InitializeComponent();
         }
 
@@ -32,8 +31,7 @@ namespace GameEditor.TilesetEditor
             set { numHorzTilesSpinner.Maximum = value; }
         }
 
-        private void btnOk_Click(object sender, EventArgs e)
-        {
+        private void btnOk_Click(object sender, EventArgs e) {
             if (FileName == "") {
                 MessageBox.Show(
                     "Please select a file name",
@@ -44,8 +42,7 @@ namespace GameEditor.TilesetEditor
             Close();
         }
 
-        private void btnSelectFile_Click(object sender, EventArgs e)
-        {
+        private void btnSelectFile_Click(object sender, EventArgs e) {
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.FileName = FileName;
             dlg.RestoreDirectory = true;

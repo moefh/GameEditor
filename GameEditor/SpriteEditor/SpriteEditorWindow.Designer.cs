@@ -47,6 +47,7 @@
             spriteLoopSplitter = new SplitContainer();
             spriteEditor = new CustomControls.SpriteEditor();
             colorPicker = new CustomControls.ColorPicker();
+            toolStripBtnExport = new ToolStripButton();
             statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -78,7 +79,7 @@
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, toolStripBtnProperties, toolStripBtnImport });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, toolStripBtnProperties, toolStripBtnExport, toolStripBtnImport });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(632, 27);
@@ -284,6 +285,16 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
+            // toolStripBtnExport
+            // 
+            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
+            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnExport.Name = "toolStripBtnExport";
+            toolStripBtnExport.Size = new Size(68, 24);
+            toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.Click += toolStripBtnExport_Click;
+            // 
             // SpriteEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -341,5 +352,6 @@
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripLabel toolStripLabel1;
         private ToolStripMenuItem copyFrameToolStripMenuItem;
+        private ToolStripButton toolStripBtnExport;
     }
 }

@@ -1,8 +1,2 @@
 ﻿
-- mirror sprites when saving / ignore mirrors when loading
-
-- export sprite
-
-- export MOD
-
 - edit map connections (world editor)
