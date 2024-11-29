@@ -76,11 +76,11 @@ namespace GameEditor.ProjectIO
         }
 
         private string GetLowerGlobal(string name) {
-            return $"{globalPrefixLower}_{name}";
+            return $"{globalPrefixLower}_{IdentifierNamespace.SanitizeName(name)}";
         }
 
         private string GetUpperGlobal(string name) {
-            return $"{globalPrefixUpper}_{name}";
+            return $"{globalPrefixUpper}_{IdentifierNamespace.SanitizeName(name)}";
         }
 
         // =============================================================
@@ -471,7 +471,8 @@ namespace GameEditor.ProjectIO
             string typeIdentPrefix = GetUpperGlobal(type);
             f.WriteLine($"enum {typeIdentPrefix}_IDS {{");
             foreach (IDataAsset a in assets) {
-                f.WriteLine($"  {typeIdentPrefix}_ID_{a.Name.ToUpperInvariant()},");
+                string name = IdentifierNamespace.SanitizeName(a.Name.ToUpperInvariant());
+                f.WriteLine($"  {typeIdentPrefix}_ID_{name},");
             }
             f.WriteLine($"  {typeIdentPrefix}_COUNT,");
             f.WriteLine("};");

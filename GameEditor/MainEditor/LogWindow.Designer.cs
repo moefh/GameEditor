@@ -59,9 +59,10 @@
             txtLog.Multiline = true;
             txtLog.Name = "txtLog";
             txtLog.ReadOnly = true;
-            txtLog.ScrollBars = ScrollBars.Vertical;
+            txtLog.ScrollBars = ScrollBars.Both;
             txtLog.Size = new Size(547, 168);
             txtLog.TabIndex = 1;
+            txtLog.WordWrap = false;
             // 
             // LogWindow
             // 

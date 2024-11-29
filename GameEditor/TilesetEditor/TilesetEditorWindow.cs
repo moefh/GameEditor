@@ -38,7 +38,7 @@ namespace GameEditor.TilesetEditor
         public Tileset Tileset { get { return tileset.Tileset; } }
 
         private void FixFormTitle() {
-            Text = "Tileset - " + Tileset.Name;
+            Text = $"{Tileset.Name} - Tileset";
         }
 
         private void UpdateGameDataSize() {

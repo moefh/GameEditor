@@ -63,7 +63,7 @@ namespace GameEditor.MapEditor
         }
 
         private void FixFormTitle() {
-            Text = "Map - " + Map.Name;
+            Text = $"{Map.Name} - Map";
         }
 
         private void UpdateDataSize() {

@@ -21,8 +21,12 @@ namespace GameEditor.ProjectIO
             this.globalPrefix = globalPrefix;
         }
 
+        public static string SanitizeName(string name) {
+            return reNonIdent.Replace(name, "_");
+        }
+
         public string Add(object info, string prefix, string name, string suffix = "", uint flags = 0) {
-            string baseIdent = reNonIdent.Replace(name, "_");
+            string baseIdent = SanitizeName(name);
 
             if (suffix.Length > 0) suffix = $"_{suffix}";
             string ident = $"{globalPrefix}_{prefix}_{baseIdent}{suffix}";

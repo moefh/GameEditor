@@ -32,7 +32,7 @@ namespace GameEditor.SfxEditor
         public SfxData Sfx { get { return sfxItem.Sfx; } }
 
         private void FixFormTitle() {
-            Text = "Sound Effect - " + Sfx.Name;
+            Text = $"{Sfx.Name} - Sound Effect";
         }
         private void UpdateDataSize() {
             lblDataSize.Text = $"{Sfx.GameDataSize} bytes";

@@ -7,6 +7,11 @@ using System.Threading.Tasks;
 
 namespace GameEditor.MainEditor
 {
+    /**
+     * This should be an abstract class, but Visual Studio gets really
+     * annoyed about it for some reason. It also doesn't like if we
+     * don't have a default constructor.
+     */
     public class ProjectAssetEditorForm : ProjectForm
     {
         protected IDataAssetItem? assetItem;

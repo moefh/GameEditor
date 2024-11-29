@@ -22,6 +22,7 @@ using System.Windows.Forms.VisualStyles;
 using GameEditor.Misc;
 using GameEditor.ModEditor;
 using System.Runtime.CompilerServices;
+using System.Text.RegularExpressions;
 
 namespace GameEditor.MainEditor
 {
@@ -53,6 +54,7 @@ namespace GameEditor.MainEditor
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
 
+            UpdateWindowTitle();
             UpdateDataSize();
             UpdateDirtyStatus();
         }
@@ -63,6 +65,15 @@ namespace GameEditor.MainEditor
 
         public void UpdateDirtyStatus() {
             lblModified.Visible = Util.Project.IsDirty;
+        }
+
+        public void UpdateWindowTitle() {
+            if (Util.Project.FileName == null) {
+                Text = "New Project - Game Asset Editor";
+                return;
+            }
+            string name = Regex.Replace(Util.Project.FileName, """^(.*?)([^\\/]+)$""", "$2");
+            Text = $"{name} - Game Asset Editor";
         }
 
         private void RefreshAllAssetLists() {
@@ -148,9 +159,9 @@ namespace GameEditor.MainEditor
         }
 
         private void OpenFilledListWindows() {
-            if (Util.Project.MapList.Count != 0) mapListEditor.Show();
             if (Util.Project.TilesetList.Count != 0) tilesetListEditor.Show();
             if (Util.Project.SpriteList.Count != 0) spriteListEditor.Show();
+            if (Util.Project.MapList.Count != 0) mapListEditor.Show();
             if (Util.Project.SpriteAnimationList.Count != 0) spriteAnimationListEditor.Show();
             if (Util.Project.SfxList.Count != 0) sfxListEditor.Show();
             if (Util.Project.ModList.Count != 0) modListEditor.Show();
@@ -189,6 +200,7 @@ namespace GameEditor.MainEditor
             try {
                 ProjectData p = new ProjectData(dlg.FileName);
                 Util.Project = p;
+                UpdateWindowTitle();
                 RefreshAllAssetLists();
                 UpdateDirtyStatus();
                 Util.UpdateGameDataSize();
@@ -198,7 +210,7 @@ namespace GameEditor.MainEditor
                 UpdateDirtyStatus();
                 UpdateDataSize();
                 MessageBox.Show($"Error loading project file.\n\nConsult the log window for more information.",
-                    "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                                "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
         }
 
@@ -217,6 +229,7 @@ namespace GameEditor.MainEditor
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
             if (!ConfirmLoseData()) return;
             Util.Project = new ProjectData();
+            UpdateWindowTitle();
             RefreshAllAssetLists();
             Util.UpdateGameDataSize();
             Util.Log("== created new project");

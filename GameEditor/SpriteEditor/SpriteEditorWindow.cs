@@ -45,7 +45,7 @@ namespace GameEditor.SpriteEditor
         }
 
         private void FixFormTitle() {
-            Text = "Sprite - " + Sprite.Name;
+            Text = $"{Sprite.Name} - Sprite";
         }
 
         private void UpdateGameDataSize() {

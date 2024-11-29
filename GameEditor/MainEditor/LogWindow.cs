@@ -17,8 +17,19 @@ namespace GameEditor.MainEditor
             InitializeComponent();
         }
 
+        protected override void OnVisibleChanged(EventArgs e) {
+            base.OnVisibleChanged(e);
+            ScrollToBottom();
+        }
+
         private void toolStripBtnClear_Click(object sender, EventArgs e) {
             txtLog.Clear();
+        }
+
+        public void ScrollToBottom() {
+            txtLog.SelectionStart = txtLog.Text.Length;
+            txtLog.SelectionLength = 0;
+            txtLog.ScrollToCaret();
         }
 
         public void AddLog(string log) {
@@ -32,9 +43,7 @@ namespace GameEditor.MainEditor
                 }
             }
             txtLog.Text = newLog;
-            txtLog.SelectionStart = newLog.Length;
-            txtLog.SelectionLength = 0;
-            txtLog.ScrollToCaret();
+            ScrollToBottom();
         }
 
     }

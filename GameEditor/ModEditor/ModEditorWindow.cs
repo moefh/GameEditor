@@ -72,7 +72,7 @@ namespace GameEditor.ModEditor
         public ModFile ModFile { get { return modItem.Mod.ModFile; } }
 
         private void FixFormTitle() {
-            Text = "MOD - " + Mod.Name;
+            Text = $"{Mod.Name} - MOD";
         }
 
         private void UpdateDataSize() {
