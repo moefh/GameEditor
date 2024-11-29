@@ -310,8 +310,6 @@
             Name = "SpriteEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Sprite";
-            FormClosing += SpriteEditorWindow_FormClosing;
-            Load += SpriteEditorWindow_Load;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             infoToolStrip.ResumeLayout(false);

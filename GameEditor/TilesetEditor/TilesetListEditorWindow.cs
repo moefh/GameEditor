@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
@@ -14,16 +15,14 @@ using System.Windows.Forms;
 
 namespace GameEditor.TilesetEditor
 {
-    public partial class TilesetListEditorWindow : Form
+    public partial class TilesetListEditorWindow : ProjectForm
     {
-        public TilesetListEditorWindow()
-        {
+        public TilesetListEditorWindow() : base("TilesetListEditor") {
             InitializeComponent();
             RefreshTilesetList();
         }
 
-        public void RefreshTilesetList()
-        {
+        public void RefreshTilesetList() {
             tilesetList.DataSource = null;
             tilesetList.DataSource = Util.Project.TilesetList;
             tilesetList.DisplayMember = "Name";
@@ -36,33 +35,11 @@ namespace GameEditor.TilesetEditor
             return ti;
         }
 
-        private void TilesetListEditor_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Util.SaveWindowPosition(this, "TilesetListEditor");
-            if (e.CloseReason == CloseReason.UserClosing) {
-                e.Cancel = true;
-                Hide();
-                return;
-            }
-        }
-
-        private void TilesetListEditor_Load(object sender, EventArgs e)
-        {
-            LoadWindowPosition();
-        }
-
-        internal void LoadWindowPosition()
-        {
-            Util.LoadWindowPosition(this, "TilesetListEditor");
-        }
-
-        private void newToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+        private void newToolStripMenuItem_Click(object sender, EventArgs e) {
             AddTileset();
         }
 
-        private void removeToolStripMenuItem_Click(object sender, EventArgs e)
-        {
+        private void removeToolStripMenuItem_Click(object sender, EventArgs e) {
             object? item = tilesetList.SelectedItem;
             if (item is not TilesetItem ts) return;
 
@@ -104,8 +81,7 @@ namespace GameEditor.TilesetEditor
             Util.UpdateGameDataSize();
         }
 
-        private void tilesetList_DoubleClick(object sender, EventArgs e)
-        {
+        private void tilesetList_DoubleClick(object sender, EventArgs e) {
             object? item = tilesetList.SelectedItem;
             if (item is TilesetItem ts) {
                 ts.ShowEditor();

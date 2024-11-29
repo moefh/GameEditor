@@ -1,2 +1,9 @@
 ﻿
 - edit map connections (world editor)
+
+- MOD editor:
+  - create tab for song positions
+  - samples tab:
+    - show sample length
+	- select note when playing
+	- import(?)/export sample

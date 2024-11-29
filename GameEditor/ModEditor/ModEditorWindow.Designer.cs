@@ -243,9 +243,6 @@
             Name = "ModEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "MOD Editor";
-            FormClosing += ModEditorWindow_FormClosing;
-            FormClosed += ModEditorWindow_FormClosed;
-            Load += ModEditorWindow_Load;
             statusStrip1.ResumeLayout(false);
             statusStrip1.PerformLayout();
             toolStrip.ResumeLayout(false);

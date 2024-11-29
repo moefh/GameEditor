@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using GameEditor.SfxEditor;
 using System;
@@ -14,7 +15,7 @@ using System.Windows.Forms;
 
 namespace GameEditor.ModEditor
 {
-    public partial class ModEditorWindow : Form
+    public partial class ModEditorWindow : ProjectAssetEditorForm
     {
         private struct SampleItem(ModSample sample, int index)
         {
@@ -55,7 +56,7 @@ namespace GameEditor.ModEditor
         private readonly ModDataItem modItem;
         private readonly SamplePlayer player = new SamplePlayer();
 
-        public ModEditorWindow(ModDataItem modItem) {
+        public ModEditorWindow(ModDataItem modItem) : base(modItem, "ModEditor") {
             this.modItem = modItem;
             InitializeComponent();
             FixFormTitle();
@@ -132,7 +133,8 @@ namespace GameEditor.ModEditor
             player.Play(ModFile.Sample[index], trackSampleVolume.Value);
         }
 
-        private void ModEditorWindow_FormClosed(object sender, FormClosedEventArgs e) {
+        protected override void OnFormClosed(FormClosedEventArgs e) {
+            base.OnFormClosed(e);
             player.Dispose();
         }
 

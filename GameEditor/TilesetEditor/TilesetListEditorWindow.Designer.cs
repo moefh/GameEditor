@@ -80,8 +80,6 @@
             Name = "TilesetListEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Tilesets";
-            FormClosing += TilesetListEditor_FormClosing;
-            Load += TilesetListEditor_Load;
             tilesetListContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
         }

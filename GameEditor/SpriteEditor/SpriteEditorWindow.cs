@@ -1,5 +1,6 @@
 ﻿using GameEditor.CustomControls;
 using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
@@ -14,7 +15,7 @@ using System.Windows.Forms;
 
 namespace GameEditor.SpriteEditor
 {
-    public partial class SpriteEditorWindow : Form
+    public partial class SpriteEditorWindow : ProjectAssetEditorForm
     {
         private const uint EDITOR_RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
         private const uint EDITOR_RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
@@ -23,7 +24,7 @@ namespace GameEditor.SpriteEditor
 
         private readonly SpriteItem spriteItem;
 
-        public SpriteEditorWindow(SpriteItem spriteItem) {
+        public SpriteEditorWindow(SpriteItem spriteItem) : base(spriteItem, "SpriteEditor") {
             this.spriteItem = spriteItem;
             InitializeComponent();
             FixFormTitle();
@@ -58,15 +59,6 @@ namespace GameEditor.SpriteEditor
 
             uint pickerRenderTransparent = (toolStripBtnTransparent.Checked) ? PICKER_RENDER_TRANSPARENT : 0;
             spriteFramePicker.RenderFlags = pickerRenderTransparent;
-        }
-
-        private void SpriteEditorWindow_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "SpriteEditor");
-        }
-
-        private void SpriteEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "SpriteEditor");
-            spriteItem.EditorClosed();
         }
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {

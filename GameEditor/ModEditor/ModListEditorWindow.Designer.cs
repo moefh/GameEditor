@@ -78,8 +78,6 @@
             Name = "ModListEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "MODs";
-            FormClosing += ModListEditorWindow_FormClosing;
-            Load += ModListEditorWindow_Load;
             contextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
         }

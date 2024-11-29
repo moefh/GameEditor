@@ -276,8 +276,6 @@
             MinimizeBox = false;
             Name = "TilesetEditorWindow";
             Text = "Tileset Editor";
-            FormClosing += TilesetEditor_FormClosing;
-            Load += TilesetEditor_Load;
             infoToolStrip.ResumeLayout(false);
             infoToolStrip.PerformLayout();
             statusStrip1.ResumeLayout(false);

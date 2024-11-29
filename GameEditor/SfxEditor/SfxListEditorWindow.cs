@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ using System.Windows.Forms;
 
 namespace GameEditor.SfxEditor
 {
-    public partial class SfxListEditorWindow : Form
+    public partial class SfxListEditorWindow : ProjectForm
     {
-        public SfxListEditorWindow() {
+        public SfxListEditorWindow() : base("SfxListEditor") {
             InitializeComponent();
             RefreshSfxList();
         }
@@ -31,23 +32,6 @@ namespace GameEditor.SfxEditor
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
             return si;
-        }
-
-        private void SfxListEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "SfxListEditor");
-            if (e.CloseReason == CloseReason.UserClosing) {
-                e.Cancel = true;
-                Hide();
-                return;
-            }
-        }
-
-        private void SfxListEditorWindow_Load(object sender, EventArgs e) {
-            LoadWindowPosition();
-        }
-
-        public void LoadWindowPosition() {
-            Util.LoadWindowPosition(this, "SfxListEditor");
         }
 
         private void newSFXToolStripMenuItem_Click(object sender, EventArgs e) {

@@ -51,13 +51,17 @@
             lblDataSize = new ToolStripStatusLabel();
             lblModified = new ToolStripStatusLabel();
             toolStrip = new ToolStrip();
+            toolStripButtonOpen = new ToolStripButton();
+            toolStripButtonSave = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
             toolStripBtnTilesetEditor = new ToolStripButton();
             toolStripBtnSpriteEditor = new ToolStripButton();
             toolStripBtnMapEditor = new ToolStripButton();
-            toolStripBtnLogWindow = new ToolStripButton();
             toolStripBtnAnimationEditor = new ToolStripButton();
             toolStripBtnSfxEditor = new ToolStripButton();
             toolStripBtnModEditor = new ToolStripButton();
+            toolStripSeparator3 = new ToolStripSeparator();
+            toolStripBtnLogWindow = new ToolStripButton();
             menuStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             toolStrip.SuspendLayout();
@@ -91,7 +95,7 @@
             // 
             // openToolStripMenuItem
             // 
-            openToolStripMenuItem.Image = (Image)resources.GetObject("openToolStripMenuItem.Image");
+            openToolStripMenuItem.Image = Properties.Resources.OpenIcon;
             openToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
@@ -106,7 +110,7 @@
             // 
             // saveToolStripMenuItem
             // 
-            saveToolStripMenuItem.Image = (Image)resources.GetObject("saveToolStripMenuItem.Image");
+            saveToolStripMenuItem.Image = Properties.Resources.SaveIcon;
             saveToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
@@ -237,20 +241,49 @@
             // 
             // toolStrip
             // 
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnTilesetEditor, toolStripBtnSpriteEditor, toolStripBtnMapEditor, toolStripBtnLogWindow, toolStripBtnAnimationEditor, toolStripBtnSfxEditor, toolStripBtnModEditor });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonOpen, toolStripButtonSave, toolStripSeparator2, toolStripBtnTilesetEditor, toolStripBtnSpriteEditor, toolStripBtnMapEditor, toolStripBtnAnimationEditor, toolStripBtnSfxEditor, toolStripBtnModEditor, toolStripSeparator3, toolStripBtnLogWindow });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(870, 26);
             toolStrip.TabIndex = 5;
             toolStrip.Text = "toolStrip1";
             // 
+            // toolStripButtonOpen
+            // 
+            toolStripButtonOpen.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonOpen.Image = Properties.Resources.OpenIcon;
+            toolStripButtonOpen.ImageTransparentColor = Color.Magenta;
+            toolStripButtonOpen.Name = "toolStripButtonOpen";
+            toolStripButtonOpen.Size = new Size(23, 23);
+            toolStripButtonOpen.Text = "Open";
+            toolStripButtonOpen.ToolTipText = "Open Project";
+            toolStripButtonOpen.Click += toolStripButtonOpen_Click;
+            // 
+            // toolStripButtonSave
+            // 
+            toolStripButtonSave.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonSave.Image = Properties.Resources.SaveIcon;
+            toolStripButtonSave.ImageTransparentColor = Color.Magenta;
+            toolStripButtonSave.Name = "toolStripButtonSave";
+            toolStripButtonSave.Size = new Size(23, 23);
+            toolStripButtonSave.Text = "Save";
+            toolStripButtonSave.ToolTipText = "Save Project";
+            toolStripButtonSave.Click += toolStripButtonSave_Click;
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 26);
+            // 
             // toolStripBtnTilesetEditor
             // 
             toolStripBtnTilesetEditor.Image = Properties.Resources.TilesetIcon;
             toolStripBtnTilesetEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnTilesetEditor.Name = "toolStripBtnTilesetEditor";
-            toolStripBtnTilesetEditor.Size = new Size(73, 23);
-            toolStripBtnTilesetEditor.Text = "Tilesets";
+            toolStripBtnTilesetEditor.Size = new Size(67, 23);
+            toolStripBtnTilesetEditor.Text = "Tileset";
+            toolStripBtnTilesetEditor.ToolTipText = "Open Tileset List";
             toolStripBtnTilesetEditor.Click += toolStripBtnTilesetEditor_Click;
             // 
             // toolStripBtnSpriteEditor
@@ -260,6 +293,7 @@
             toolStripBtnSpriteEditor.Name = "toolStripBtnSpriteEditor";
             toolStripBtnSpriteEditor.Size = new Size(70, 23);
             toolStripBtnSpriteEditor.Text = "Sprites";
+            toolStripBtnSpriteEditor.ToolTipText = "Open Sprite List";
             toolStripBtnSpriteEditor.Click += toolStripBtnSpriteEditor_Click;
             // 
             // toolStripBtnMapEditor
@@ -269,18 +303,8 @@
             toolStripBtnMapEditor.Name = "toolStripBtnMapEditor";
             toolStripBtnMapEditor.Size = new Size(63, 23);
             toolStripBtnMapEditor.Text = "Maps";
-            toolStripBtnMapEditor.ToolTipText = "Map Editor";
+            toolStripBtnMapEditor.ToolTipText = "Open Map List";
             toolStripBtnMapEditor.Click += toolStripBtnMapEditor_Click;
-            // 
-            // toolStripBtnLogWindow
-            // 
-            toolStripBtnLogWindow.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnLogWindow.Image = Properties.Resources.LogIcon;
-            toolStripBtnLogWindow.ImageTransparentColor = Color.Magenta;
-            toolStripBtnLogWindow.Name = "toolStripBtnLogWindow";
-            toolStripBtnLogWindow.Size = new Size(52, 23);
-            toolStripBtnLogWindow.Text = "Log";
-            toolStripBtnLogWindow.Click += toolStripBtnLogWindow_Click;
             // 
             // toolStripBtnAnimationEditor
             // 
@@ -289,6 +313,7 @@
             toolStripBtnAnimationEditor.Name = "toolStripBtnAnimationEditor";
             toolStripBtnAnimationEditor.Size = new Size(98, 23);
             toolStripBtnAnimationEditor.Text = "Animations";
+            toolStripBtnAnimationEditor.ToolTipText = "Open Animation List";
             toolStripBtnAnimationEditor.Click += toolStripBtnAnimationEditor_Click;
             // 
             // toolStripBtnSfxEditor
@@ -298,6 +323,7 @@
             toolStripBtnSfxEditor.Name = "toolStripBtnSfxEditor";
             toolStripBtnSfxEditor.Size = new Size(111, 23);
             toolStripBtnSfxEditor.Text = "Sound Effects";
+            toolStripBtnSfxEditor.ToolTipText = "Open Sound Effect List";
             toolStripBtnSfxEditor.Click += toolStripBtnSfxEditor_Click;
             // 
             // toolStripBtnModEditor
@@ -307,7 +333,24 @@
             toolStripBtnModEditor.Name = "toolStripBtnModEditor";
             toolStripBtnModEditor.Size = new Size(69, 23);
             toolStripBtnModEditor.Text = "MODs";
+            toolStripBtnModEditor.ToolTipText = "Open MOD List";
             toolStripBtnModEditor.Click += toolStripBtnModEditor_Click;
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 26);
+            // 
+            // toolStripBtnLogWindow
+            // 
+            toolStripBtnLogWindow.Image = Properties.Resources.LogIcon;
+            toolStripBtnLogWindow.ImageTransparentColor = Color.Magenta;
+            toolStripBtnLogWindow.Name = "toolStripBtnLogWindow";
+            toolStripBtnLogWindow.Size = new Size(52, 23);
+            toolStripBtnLogWindow.Text = "Log";
+            toolStripBtnLogWindow.ToolTipText = "Open Log";
+            toolStripBtnLogWindow.Click += toolStripBtnLogWindow_Click;
             // 
             // MainWindow
             // 
@@ -324,9 +367,6 @@
             Name = "MainWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Game Asset Editor";
-            FormClosing += MainWindow_FormClosing;
-            Load += MainWindow_Load;
-            Shown += MainWindow_Shown;
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             statusStrip.ResumeLayout(false);
@@ -370,5 +410,9 @@
         private ToolStripMenuItem addSoundEffectToolStripMenuItem;
         private ToolStripMenuItem addMODToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator1;
+        private ToolStripButton toolStripButtonSave;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton toolStripButtonOpen;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }

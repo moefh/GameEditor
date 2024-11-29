@@ -1,5 +1,6 @@
 ﻿using GameEditor.CustomControls;
 using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
@@ -14,14 +15,14 @@ using System.Windows.Forms;
 
 namespace GameEditor.SpriteEditor
 {
-    public partial class SpriteAnimationEditorWindow : Form
+    public partial class SpriteAnimationEditorWindow : ProjectAssetEditorForm
     {
         private const uint RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
         private const uint RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
 
         private readonly SpriteAnimationItem animationItem;
 
-        public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) {
+        public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
             this.animationItem = animationItem;
             InitializeComponent();
             FixFormTitle();
@@ -67,15 +68,6 @@ namespace GameEditor.SpriteEditor
         public void RefreshSprite() {
             spriteListView.Invalidate();
             spriteEditor.Invalidate();
-        }
-
-        private void SpriteEditorWindow_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "SpriteAnimationEditor");
-        }
-
-        private void SpriteEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "SpriteAnimationEditor");
-            animationItem.EditorClosed();
         }
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {

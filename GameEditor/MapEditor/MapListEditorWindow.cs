@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -12,9 +13,9 @@ using System.Windows.Forms;
 
 namespace GameEditor.MapEditor
 {
-    public partial class MapListEditorWindow : Form
+    public partial class MapListEditorWindow : ProjectForm
     {
-        public MapListEditorWindow() {
+        public MapListEditorWindow() : base("MapListEditor") {
             InitializeComponent();
             RefreshMapList();
         }
@@ -36,24 +37,6 @@ namespace GameEditor.MapEditor
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
             return mi;
-        }
-
-        private void MapListEditor_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "MapListEditor");
-            if (e.CloseReason == CloseReason.UserClosing) {
-                e.Cancel = true;
-                Hide();
-                return;
-            }
-        }
-
-        private void MapListEditor_Load(object sender, EventArgs e) {
-            LoadWindowPosition();
-        }
-
-        public void LoadWindowPosition()
-        {
-            Util.LoadWindowPosition(this, "MapListEditor");
         }
 
         private void mapList_DoubleClick(object sender, EventArgs e) {

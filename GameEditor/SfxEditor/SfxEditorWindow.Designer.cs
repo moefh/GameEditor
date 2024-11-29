@@ -138,9 +138,6 @@
             Name = "SfxEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Sound Effect";
-            FormClosing += SfxEditorWindow_FormClosing;
-            FormClosed += SfxEditorWindow_FormClosed;
-            Load += SfxEditorWindow_Load;
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
             toolStrip1.ResumeLayout(false);

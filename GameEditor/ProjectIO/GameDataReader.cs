@@ -641,7 +641,7 @@ namespace GameEditor.ProjectIO
         // === MOD
         // ======================================================================
 
-        private void ReadModSamples(Token ident) {
+        private void ReadModSampleData(Token ident) {
             ExpectPunct('[');
             ExpectPunct(']');
             ExpectPunct('=');
@@ -870,7 +870,7 @@ namespace GameEditor.ProjectIO
 
                 // MOD stuff
                 if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "mod_samples")) {
-                    ReadModSamples(t.Value);
+                    ReadModSampleData(t.Value);
                     continue;
                 }
                 if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "mod_pattern")) {

@@ -102,11 +102,7 @@ namespace GameEditor.MainEditor
             logWindow.AddLog(log);
         }
 
-        private void quitToolStripMenuItem_Click(object sender, EventArgs e) {
-            Close();
-        }
-
-        private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) {
+        protected override void OnFormClosing(FormClosingEventArgs e) {
             if (!ConfirmLoseData()) {
                 e.Cancel = true;
                 return;
@@ -119,60 +115,28 @@ namespace GameEditor.MainEditor
             sfxListEditor.Close();
             modListEditor.Close();
             logWindow.Close();
+
+            base.OnFormClosing(e);
         }
 
-        private void MainWindow_Load(object sender, EventArgs e) {
+        protected override void OnLoad(EventArgs e) {
+            base.OnLoad(e);
             Util.LoadMainWindowPosition(this, "MainWindow");
         }
 
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
-            new AboutDialog().ShowDialog();
-        }
-
-        private void toolStripBtnMapEditor_Click(object sender, EventArgs e) {
-            mapListEditor.LoadWindowPosition();
-            mapListEditor.Show();
-            mapListEditor.Activate();
-        }
-
-        private void toolStripBtnTilesetEditor_Click(object sender, EventArgs e) {
-            tilesetListEditor.LoadWindowPosition();
-            tilesetListEditor.Show();
-            tilesetListEditor.Activate();
-        }
-
-        private void toolStripBtnSpriteEditor_Click(object sender, EventArgs e) {
-            spriteListEditor.LoadWindowPosition();
-            spriteListEditor.Show();
-            spriteListEditor.Activate();
-        }
-
-        private void toolStripBtnAnimationEditor_Click(object sender, EventArgs e) {
-            spriteAnimationListEditor.LoadWindowPosition();
-            spriteAnimationListEditor.Show();
-            spriteAnimationListEditor.Activate();
-        }
-
-        private void toolStripBtnSfxEditor_Click(object sender, EventArgs e) {
-            sfxListEditor.LoadWindowPosition();
-            sfxListEditor.Show();
-            sfxListEditor.Activate();
-        }
-
-        private void toolStripBtnModEditor_Click(object sender, EventArgs e) {
-            modListEditor.LoadWindowPosition();
-            modListEditor.Show();
-            modListEditor.Activate();
-        }
-
-        private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
-            logWindow.LoadWindowPosition();
-            logWindow.Show();
-            logWindow.Activate();
-        }
-
-        private void MainWindow_Shown(object sender, EventArgs e) {
+        protected override void OnShown(EventArgs e) {
+            base.OnShown(e);
             Util.Log("Ready");
+        }
+
+        // ======================================================================
+        // === SAVE/LOAD STUFF
+        // ======================================================================
+
+        private bool ConfirmLoseData() {
+            if (!Util.Project.IsDirty) return true;
+            ConfirmLoseChangesDialog dlg = new ConfirmLoseChangesDialog();
+            return dlg.ShowDialog() == DialogResult.OK;
         }
 
         private string? GetProjectSaveFilename() {
@@ -181,6 +145,26 @@ namespace GameEditor.MainEditor
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return null;
             return dlg.FileName;
+        }
+
+        private void OpenFilledListWindows() {
+            if (Util.Project.MapList.Count != 0) mapListEditor.Show();
+            if (Util.Project.TilesetList.Count != 0) tilesetListEditor.Show();
+            if (Util.Project.SpriteList.Count != 0) spriteListEditor.Show();
+            if (Util.Project.SpriteAnimationList.Count != 0) spriteAnimationListEditor.Show();
+            if (Util.Project.SfxList.Count != 0) sfxListEditor.Show();
+            if (Util.Project.ModList.Count != 0) modListEditor.Show();
+        }
+
+        private void SaveProject() {
+            if (Util.Project.FileName == null) {
+                string? savefile = GetProjectSaveFilename();
+                if (savefile != null) {
+                    SaveProject(savefile);
+                }
+            } else {
+                SaveProject(Util.Project.FileName);
+            }
         }
 
         private void SaveProject(string filename) {
@@ -192,21 +176,7 @@ namespace GameEditor.MainEditor
             }
         }
 
-        private bool ConfirmLoseData() {
-            if (!Util.Project.IsDirty) return true;
-            ConfirmLoseChangesDialog dlg = new ConfirmLoseChangesDialog();
-            return dlg.ShowDialog() == DialogResult.OK;
-        }
-
-        private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (!ConfirmLoseData()) return;
-            Util.Project = new ProjectData();
-            RefreshAllAssetLists();
-            Util.UpdateGameDataSize();
-            Util.Log("== created new project");
-        }
-
-        private void openToolStripMenuItem_Click(object sender, EventArgs e) {
+        private void OpenProject() {
             if (!ConfirmLoseData()) return;
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
@@ -222,6 +192,7 @@ namespace GameEditor.MainEditor
                 RefreshAllAssetLists();
                 UpdateDirtyStatus();
                 Util.UpdateGameDataSize();
+                OpenFilledListWindows();
                 Util.Log("== loaded project");
             } catch (Exception) {
                 UpdateDirtyStatus();
@@ -231,15 +202,32 @@ namespace GameEditor.MainEditor
             }
         }
 
+        // ======================================================================
+        // === MENU
+        // ======================================================================
+
+        private void quitToolStripMenuItem_Click(object sender, EventArgs e) {
+            Close();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            new AboutDialog().ShowDialog();
+        }
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (!ConfirmLoseData()) return;
+            Util.Project = new ProjectData();
+            RefreshAllAssetLists();
+            Util.UpdateGameDataSize();
+            Util.Log("== created new project");
+        }
+
+        private void openToolStripMenuItem_Click(object sender, EventArgs e) {
+            OpenProject();
+        }
+
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (Util.Project.FileName == null) {
-                string? savefile = GetProjectSaveFilename();
-                if (savefile != null) {
-                    SaveProject(savefile);
-                }
-            } else {
-                SaveProject(Util.Project.FileName);
-            }
+            SaveProject();
         }
 
         private void saveAsToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -262,7 +250,7 @@ namespace GameEditor.MainEditor
         private void addTilesetToolStripMenuItem_Click(object sender, EventArgs e) {
             tilesetListEditor.AddTileset().ShowEditor();
         }
-
+        
         private void addSpriteToolStripMenuItem_Click(object sender, EventArgs e) {
             spriteListEditor.AddSprite().ShowEditor();
         }
@@ -272,7 +260,7 @@ namespace GameEditor.MainEditor
         }
 
         private void addSpriteAnimationToolStripMenuItem_Click(object sender, EventArgs e) {
-            spriteAnimationListEditor.AddSpriteAnimation()?.ShowEditor();;
+            spriteAnimationListEditor.AddSpriteAnimation()?.ShowEditor(); ;
         }
 
         private void addSoundEffectToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -282,5 +270,53 @@ namespace GameEditor.MainEditor
         private void addMODToolStripMenuItem_Click(object sender, EventArgs e) {
             modListEditor.AddMod().ShowEditor();
         }
+
+        // ======================================================================
+        // === BUTTONS
+        // ======================================================================
+
+        private void toolStripButtonOpen_Click(object sender, EventArgs e) {
+            OpenProject();
+        }
+
+        private void toolStripButtonSave_Click(object sender, EventArgs e) {
+            SaveProject();
+        }
+
+        private void toolStripBtnMapEditor_Click(object sender, EventArgs e) {
+            mapListEditor.Show();
+            mapListEditor.Activate();
+        }
+
+        private void toolStripBtnTilesetEditor_Click(object sender, EventArgs e) {
+            tilesetListEditor.Show();
+            tilesetListEditor.Activate();
+        }
+
+        private void toolStripBtnSpriteEditor_Click(object sender, EventArgs e) {
+            spriteListEditor.Show();
+            spriteListEditor.Activate();
+        }
+
+        private void toolStripBtnAnimationEditor_Click(object sender, EventArgs e) {
+            spriteAnimationListEditor.Show();
+            spriteAnimationListEditor.Activate();
+        }
+
+        private void toolStripBtnSfxEditor_Click(object sender, EventArgs e) {
+            sfxListEditor.Show();
+            sfxListEditor.Activate();
+        }
+
+        private void toolStripBtnModEditor_Click(object sender, EventArgs e) {
+            modListEditor.Show();
+            modListEditor.Activate();
+        }
+
+        private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
+            logWindow.Show();
+            logWindow.Activate();
+        }
+
     }
 }

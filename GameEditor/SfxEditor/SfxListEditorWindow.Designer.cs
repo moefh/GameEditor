@@ -78,8 +78,6 @@
             Name = "SfxListEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "SFX List";
-            FormClosing += SfxListEditorWindow_FormClosing;
-            Load += SfxListEditorWindow_Load;
             contextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
         }

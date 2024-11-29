@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
@@ -13,14 +14,14 @@ using System.Windows.Forms;
 
 namespace GameEditor.TilesetEditor
 {
-    public partial class TilesetEditorWindow : Form
+    public partial class TilesetEditorWindow : ProjectAssetEditorForm
     {
         public const uint RENDER_GRID = CustomControls.TileEditor.RENDER_GRID;
         public const uint RENDER_TRANSPARENT = CustomControls.TileEditor.RENDER_TRANSPARENT;
 
         private readonly TilesetItem tileset;
 
-        public TilesetEditorWindow(TilesetItem ts) {
+        public TilesetEditorWindow(TilesetItem ts) : base(ts, "TilesetEditor") {
             tileset = ts;
             InitializeComponent();
             FixFormTitle();
@@ -55,15 +56,6 @@ namespace GameEditor.TilesetEditor
             if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
             FixFormTitle();
             Util.RefreshTilesetList();
-        }
-
-        private void TilesetEditor_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "TilesetEditor");
-        }
-
-        private void TilesetEditor_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "TilesetEditor");
-            tileset.EditorClosed();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {

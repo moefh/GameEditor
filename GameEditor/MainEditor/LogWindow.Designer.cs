@@ -76,8 +76,6 @@
             Name = "LogWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Log";
-            FormClosing += LogWindow_FormClosing;
-            Load += LogWindow_Load;
             toolStrip.ResumeLayout(false);
             toolStrip.PerformLayout();
             ResumeLayout(false);

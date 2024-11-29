@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using GameEditor.SfxEditor;
 using System;
@@ -13,9 +14,9 @@ using System.Windows.Forms;
 
 namespace GameEditor.ModEditor
 {
-    public partial class ModListEditorWindow : Form
+    public partial class ModListEditorWindow : ProjectForm
     {
-        public ModListEditorWindow() {
+        public ModListEditorWindow() : base("ModListEditor") {
             InitializeComponent();
             RefreshModList();
         }
@@ -50,23 +51,6 @@ namespace GameEditor.ModEditor
             Util.Project.ModList.RemoveAt(modList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
-        }
-
-        private void ModListEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "ModListEditor");
-            if (e.CloseReason == CloseReason.UserClosing) {
-                e.Cancel = true;
-                Hide();
-                return;
-            }
-        }
-
-        public void LoadWindowPosition() {
-            Util.LoadWindowPosition(this, "ModListEditor");
-        }
-
-        private void ModListEditorWindow_Load(object sender, EventArgs e) {
-            LoadWindowPosition();
         }
 
         private void modList_DoubleClick(object sender, EventArgs e) {

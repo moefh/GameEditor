@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -14,12 +15,12 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.SfxEditor
 {
-    public partial class SfxEditorWindow : Form
+    public partial class SfxEditorWindow : ProjectAssetEditorForm
     {
         protected SfxDataItem sfxItem;
         protected SoundPlayer player;
 
-        public SfxEditorWindow(SfxDataItem sfxItem) {
+        public SfxEditorWindow(SfxDataItem sfxItem) : base(sfxItem, "SfxEditor") {
             this.sfxItem = sfxItem;
             InitializeComponent();
             sfxView.Sfx = Sfx;
@@ -44,17 +45,9 @@ namespace GameEditor.SfxEditor
             sfxView.Invalidate();
         }
 
-        private void SfxEditorWindow_FormClosed(object sender, FormClosedEventArgs e) {
+        protected override void OnFormClosed(FormClosedEventArgs e) {
+            base.OnFormClosed(e);
             player.Dispose();
-        }
-
-        private void SfxEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "SfxEditor");
-            sfxItem.EditorClosed();
-        }
-
-        private void SfxEditorWindow_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "SfxEditor");
         }
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {

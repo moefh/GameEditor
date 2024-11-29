@@ -79,8 +79,6 @@
             Name = "SpriteAnimationListEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Sprite Animations";
-            FormClosing += SpriteListEditorWindow_FormClosing;
-            Load += SpriteListEditorWindow_Load;
             spriteListContextMenuStrip.ResumeLayout(false);
             ResumeLayout(false);
         }

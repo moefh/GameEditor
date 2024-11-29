@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -13,9 +14,9 @@ using System.Windows.Forms;
 
 namespace GameEditor.SpriteEditor
 {
-    public partial class SpriteAnimationListEditorWindow : Form
+    public partial class SpriteAnimationListEditorWindow : ProjectForm
     {
-        public SpriteAnimationListEditorWindow() {
+        public SpriteAnimationListEditorWindow() : base("SpriteAnimationListEditor") {
             InitializeComponent();
             RefreshSpriteAnimationList();
         }
@@ -38,23 +39,6 @@ namespace GameEditor.SpriteEditor
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
             return ai;
-        }
-
-        public void LoadWindowPosition() {
-            Util.LoadWindowPosition(this, "SpriteAnimationListEditor");
-        }
-
-        private void SpriteListEditorWindow_Load(object sender, EventArgs e) {
-            LoadWindowPosition();
-        }
-
-        private void SpriteListEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "SpriteAnimationListEditor");
-            if (e.CloseReason == CloseReason.UserClosing) {
-                e.Cancel = true;
-                Hide();
-                return;
-            }
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {

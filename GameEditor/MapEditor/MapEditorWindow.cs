@@ -1,11 +1,12 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 
 namespace GameEditor.MapEditor
 {
-    public partial class MapEditorWindow : Form
+    public partial class MapEditorWindow : ProjectAssetEditorForm
     {
         const uint LAYER_FG = CustomControls.MapView.LAYER_FG;
         const uint LAYER_BG = CustomControls.MapView.LAYER_BG;
@@ -15,7 +16,7 @@ namespace GameEditor.MapEditor
 
         private readonly MapDataItem map;
 
-        public MapEditorWindow(MapDataItem mapItem) {
+        public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
             map = mapItem;
             InitializeComponent();
             FixFormTitle();
@@ -68,15 +69,6 @@ namespace GameEditor.MapEditor
         private void UpdateDataSize() {
             lblDataSize.Text = $"{Map.GameDataSize} bytes";
             Util.UpdateGameDataSize();
-        }
-
-        private void MapEditor_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "MapEditor");
-        }
-
-        private void MapEditor_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "MapEditor");
-            map.EditorClosed();
         }
 
         private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {

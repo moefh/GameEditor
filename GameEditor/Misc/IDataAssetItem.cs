@@ -10,5 +10,7 @@ namespace GameEditor.Misc
     public interface IDataAssetItem
     {
         public IDataAsset Asset { get; }
+        public void ShowEditor();
+        public void EditorClosed();
     }
 }

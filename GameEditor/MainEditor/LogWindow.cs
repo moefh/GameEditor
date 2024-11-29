@@ -11,31 +11,14 @@ using System.Windows.Forms;
 
 namespace GameEditor.MainEditor
 {
-    public partial class LogWindow : Form
+    public partial class LogWindow : ProjectForm
     {
-        public LogWindow() {
+        public LogWindow() : base("LogWindow") {
             InitializeComponent();
-        }
-
-        private void LogWindow_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "LogWindow");
-        }
-
-        private void LogWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "LogWindow");
-            if (e.CloseReason == CloseReason.UserClosing) {
-                e.Cancel = true;
-                Hide();
-                return;
-            }
         }
 
         private void toolStripBtnClear_Click(object sender, EventArgs e) {
             txtLog.Clear();
-        }
-
-        public void LoadWindowPosition() {
-            Util.LoadWindowPosition(this, "LogWindow");
         }
 
         public void AddLog(string log) {

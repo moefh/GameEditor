@@ -35,10 +35,10 @@
             toolStripButtonEditCol = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripLabel4 = new ToolStripLabel();
-            toolStripButtonShowGrid = new ToolStripButton();
             toolStripButtonShowFG = new ToolStripButton();
             toolStripButtonShowBG = new ToolStripButton();
             toolStripButtonShowCol = new ToolStripButton();
+            toolStripButtonShowGrid = new ToolStripButton();
             toolStripButtonShowScreen = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripLabel1 = new ToolStripLabel();
@@ -68,7 +68,7 @@
             // 
             // toolsToolStrip
             // 
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowGrid, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(789, 27);
@@ -90,6 +90,7 @@
             toolStripButtonEditFG.Name = "toolStripButtonEditFG";
             toolStripButtonEditFG.Size = new Size(46, 24);
             toolStripButtonEditFG.Text = "FG";
+            toolStripButtonEditFG.ToolTipText = "Foreground Tiles";
             toolStripButtonEditFG.Click += toolStripButtonEditFG_Click;
             // 
             // toolStripButtonEditBG
@@ -99,6 +100,7 @@
             toolStripButtonEditBG.Name = "toolStripButtonEditBG";
             toolStripButtonEditBG.Size = new Size(47, 24);
             toolStripButtonEditBG.Text = "BG";
+            toolStripButtonEditBG.ToolTipText = "Background Tiles";
             toolStripButtonEditBG.Click += toolStripButtonEditBG_Click;
             // 
             // toolStripButtonEditCol
@@ -121,18 +123,6 @@
             toolStripLabel4.Size = new Size(56, 24);
             toolStripLabel4.Text = "Display:";
             // 
-            // toolStripButtonShowGrid
-            // 
-            toolStripButtonShowGrid.Checked = true;
-            toolStripButtonShowGrid.CheckOnClick = true;
-            toolStripButtonShowGrid.CheckState = CheckState.Checked;
-            toolStripButtonShowGrid.Image = (Image)resources.GetObject("toolStripButtonShowGrid.Image");
-            toolStripButtonShowGrid.ImageTransparentColor = Color.Magenta;
-            toolStripButtonShowGrid.Name = "toolStripButtonShowGrid";
-            toolStripButtonShowGrid.Size = new Size(55, 24);
-            toolStripButtonShowGrid.Text = "Grid";
-            toolStripButtonShowGrid.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
-            // 
             // toolStripButtonShowFG
             // 
             toolStripButtonShowFG.Checked = true;
@@ -143,6 +133,7 @@
             toolStripButtonShowFG.Name = "toolStripButtonShowFG";
             toolStripButtonShowFG.Size = new Size(46, 24);
             toolStripButtonShowFG.Text = "FG";
+            toolStripButtonShowFG.ToolTipText = "Foreground Tiles";
             toolStripButtonShowFG.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowBG
@@ -155,6 +146,7 @@
             toolStripButtonShowBG.Name = "toolStripButtonShowBG";
             toolStripButtonShowBG.Size = new Size(47, 24);
             toolStripButtonShowBG.Text = "BG";
+            toolStripButtonShowBG.ToolTipText = "Background Tiles";
             toolStripButtonShowBG.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowCol
@@ -168,6 +160,18 @@
             toolStripButtonShowCol.Size = new Size(80, 24);
             toolStripButtonShowCol.Text = "Collision";
             toolStripButtonShowCol.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
+            // 
+            // toolStripButtonShowGrid
+            // 
+            toolStripButtonShowGrid.Checked = true;
+            toolStripButtonShowGrid.CheckOnClick = true;
+            toolStripButtonShowGrid.CheckState = CheckState.Checked;
+            toolStripButtonShowGrid.Image = (Image)resources.GetObject("toolStripButtonShowGrid.Image");
+            toolStripButtonShowGrid.ImageTransparentColor = Color.Magenta;
+            toolStripButtonShowGrid.Name = "toolStripButtonShowGrid";
+            toolStripButtonShowGrid.Size = new Size(55, 24);
+            toolStripButtonShowGrid.Text = "Grid";
+            toolStripButtonShowGrid.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowScreen
             // 
@@ -343,8 +347,6 @@
             MinimizeBox = false;
             Name = "MapEditorWindow";
             Text = "Map Editor";
-            FormClosing += MapEditor_FormClosing;
-            Load += MapEditor_Load;
             toolsToolStrip.ResumeLayout(false);
             toolsToolStrip.PerformLayout();
             statusStrip.ResumeLayout(false);
