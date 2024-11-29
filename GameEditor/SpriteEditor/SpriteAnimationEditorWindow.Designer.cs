@@ -28,6 +28,7 @@
             components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpriteAnimationEditorWindow));
             statusStrip1 = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
@@ -47,7 +48,6 @@
             spriteEditor = new CustomControls.SpriteEditor();
             spriteListView = new CustomControls.SpriteAnimationLoopView();
             colorPicker = new CustomControls.ColorPicker();
-            lblDataSize = new ToolStripStatusLabel();
             statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -74,6 +74,12 @@
             statusStrip1.Size = new Size(632, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
             // 
             // infoToolStrip
             // 
@@ -285,12 +291,6 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
-            // lblDataSize
-            // 
-            lblDataSize.Name = "lblDataSize";
-            lblDataSize.Size = new Size(54, 19);
-            lblDataSize.Text = "X bytes";
-            // 
             // SpriteAnimationEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -300,6 +300,7 @@
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "SpriteAnimationEditorWindow";

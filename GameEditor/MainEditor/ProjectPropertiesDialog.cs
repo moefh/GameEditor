@@ -28,10 +28,7 @@ namespace GameEditor.MainEditor
 
         public byte VgaSyncBits {
             get { return (byte)((comboVgaSyncBits.SelectedIndex & 0x03) << 6); }
-            set {
-                comboVgaSyncBits.SelectedIndex = value >> 6;
-                Util.Log($"combo index set to {comboVgaSyncBits.SelectedIndex} for {value}");
-            }
+            set { comboVgaSyncBits.SelectedIndex = value >> 6; }
         }
 
         public string IdentifierPrefix {

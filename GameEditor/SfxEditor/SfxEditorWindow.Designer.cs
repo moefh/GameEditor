@@ -131,6 +131,7 @@
             Controls.Add(sfxView);
             Controls.Add(toolStrip1);
             Controls.Add(statusStrip);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(300, 200);

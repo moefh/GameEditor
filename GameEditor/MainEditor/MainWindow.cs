@@ -213,16 +213,22 @@ namespace GameEditor.MainEditor
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
+            lblModified.Visible = false;
+            lblDataSize.Text = "Parsing project file...";
+            Refresh();
             try {
                 ProjectData p = new ProjectData(dlg.FileName);
                 Util.Project = p;
                 RefreshAllAssetLists();
+                UpdateDirtyStatus();
+                Util.UpdateGameDataSize();
+                Util.Log("== loaded project");
             } catch (Exception) {
+                UpdateDirtyStatus();
+                UpdateDataSize();
                 MessageBox.Show($"Error loading project file.\n\nConsult the log window for more information.",
                     "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
-            Util.UpdateGameDataSize();
-            Util.Log("== loaded project");
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) {

@@ -26,6 +26,7 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpriteListEditorWindow));
             spriteList = new ListBox();
             spriteListContextMenuStrip = new ContextMenuStrip(components);
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -72,6 +73,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(164, 191);
             Controls.Add(spriteList);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "SpriteListEditorWindow";

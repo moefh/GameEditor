@@ -33,6 +33,7 @@
             toolStripTxtName = new ToolStripTextBox();
             toolStripSeparator1 = new ToolStripSeparator();
             toolStripBtnProperties = new ToolStripButton();
+            toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
             toolsToolStrip = new ToolStrip();
             toolStripDropDownButton1 = new ToolStripDropDownButton();
@@ -47,7 +48,6 @@
             spriteLoopSplitter = new SplitContainer();
             spriteEditor = new CustomControls.SpriteEditor();
             colorPicker = new CustomControls.ColorPicker();
-            toolStripBtnExport = new ToolStripButton();
             statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -112,6 +112,16 @@
             toolStripBtnProperties.Text = "Properties";
             toolStripBtnProperties.ToolTipText = "Edit sprite properties";
             toolStripBtnProperties.Click += toolStripBtnProperties_Click;
+            // 
+            // toolStripBtnExport
+            // 
+            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
+            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnExport.Name = "toolStripBtnExport";
+            toolStripBtnExport.Size = new Size(68, 24);
+            toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
             // 
@@ -285,16 +295,6 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
-            // toolStripBtnExport
-            // 
-            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
-            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(68, 24);
-            toolStripBtnExport.Text = "Export";
-            toolStripBtnExport.Click += toolStripBtnExport_Click;
-            // 
             // SpriteEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -304,6 +304,7 @@
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "SpriteEditorWindow";

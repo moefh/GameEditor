@@ -161,10 +161,7 @@ namespace GameEditor.SpriteEditor
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
             try {
                 Image? img = Clipboard.GetImage();
-                if (img == null) {
-                    Util.Log("no image!");
-                    return;
-                }
+                if (img == null) return;
                 bool transparent = (spriteEditor.RenderFlags & EDITOR_RENDER_TRANSPARENT) != 0;
                 Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
             } catch (Exception ex) {

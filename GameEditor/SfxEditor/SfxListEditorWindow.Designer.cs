@@ -26,6 +26,7 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SfxListEditorWindow));
             sfxList = new ListBox();
             contextMenuStrip = new ContextMenuStrip(components);
             newSFXToolStripMenuItem = new ToolStripMenuItem();
@@ -71,6 +72,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(145, 193);
             Controls.Add(sfxList);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "SfxListEditorWindow";

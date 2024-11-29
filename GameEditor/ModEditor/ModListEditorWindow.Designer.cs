@@ -26,6 +26,7 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ModListEditorWindow));
             modList = new ListBox();
             contextMenuStrip = new ContextMenuStrip(components);
             addMODToolStripMenuItem = new ToolStripMenuItem();
@@ -49,19 +50,19 @@
             // 
             contextMenuStrip.Items.AddRange(new ToolStripItem[] { addMODToolStripMenuItem, deleteMODToolStripMenuItem });
             contextMenuStrip.Name = "contextMenuStrip";
-            contextMenuStrip.Size = new Size(181, 74);
+            contextMenuStrip.Size = new Size(156, 52);
             // 
             // addMODToolStripMenuItem
             // 
             addMODToolStripMenuItem.Name = "addMODToolStripMenuItem";
-            addMODToolStripMenuItem.Size = new Size(180, 24);
+            addMODToolStripMenuItem.Size = new Size(155, 24);
             addMODToolStripMenuItem.Text = "New MOD";
             addMODToolStripMenuItem.Click += newMODToolStripMenuItem_Click;
             // 
             // deleteMODToolStripMenuItem
             // 
             deleteMODToolStripMenuItem.Name = "deleteMODToolStripMenuItem";
-            deleteMODToolStripMenuItem.Size = new Size(180, 24);
+            deleteMODToolStripMenuItem.Size = new Size(155, 24);
             deleteMODToolStripMenuItem.Text = "Delete MOD";
             deleteMODToolStripMenuItem.Click += deleteMODToolStripMenuItem_Click;
             // 
@@ -71,6 +72,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(143, 177);
             Controls.Add(modList);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "ModListEditorWindow";

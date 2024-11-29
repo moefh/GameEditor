@@ -26,6 +26,7 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpriteAnimationListEditorWindow));
             animationList = new ListBox();
             spriteListContextMenuStrip = new ContextMenuStrip(components);
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -50,7 +51,7 @@
             // 
             spriteListContextMenuStrip.Items.AddRange(new ToolStripItem[] { newToolStripMenuItem, deleteToolStripMenuItem });
             spriteListContextMenuStrip.Name = "spriteListContextMenuStrip";
-            spriteListContextMenuStrip.Size = new Size(185, 74);
+            spriteListContextMenuStrip.Size = new Size(185, 52);
             // 
             // newToolStripMenuItem
             // 
@@ -72,6 +73,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(164, 191);
             Controls.Add(animationList);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "SpriteAnimationListEditorWindow";

@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapListEditorWindow));
             mapList = new ListBox();
             mapListContextMenuStrip = new ContextMenuStrip(components);
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -73,6 +74,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(164, 188);
             Controls.Add(mapList);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "MapListEditorWindow";

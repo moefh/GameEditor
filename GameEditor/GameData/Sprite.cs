@@ -193,11 +193,6 @@ namespace GameEditor.GameData
                     g.DrawImage(bitmap, new Rectangle(x * Width, y * Height, Width, Height),
                                 0, (x + y * numHorzFrames) * Height, Width, Height,
                                 GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
-                    /*
-                    g.DrawImage(bitmap, x * Width, y * Height,
-                                new Rectangle(0, (x + y * numHorzFrames) * Height, Width, Height),
-                                GraphicsUnit.Pixel);
-                    */
                 }
             }
             frames.Save(filename);
@@ -235,7 +230,6 @@ namespace GameEditor.GameData
         }
 
         public void ReadFramePixels(int frame, byte[] pixels, bool mirror = false) {
-            Util.Log($"-> read frame pixels: mirror={mirror}");
             Rectangle rect = new Rectangle(0, frame * Height, Width, Height);
             BitmapData data = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try {

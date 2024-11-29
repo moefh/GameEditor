@@ -27,6 +27,7 @@
         /// </summary>
         private void InitializeComponent() {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(TilesetListEditorWindow));
             tilesetList = new ListBox();
             tilesetListContextMenuStrip = new ContextMenuStrip(components);
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -51,19 +52,19 @@
             // 
             tilesetListContextMenuStrip.Items.AddRange(new ToolStripItem[] { newToolStripMenuItem, removeToolStripMenuItem });
             tilesetListContextMenuStrip.Name = "mapListContextMenuStrip";
-            tilesetListContextMenuStrip.Size = new Size(181, 74);
+            tilesetListContextMenuStrip.Size = new Size(160, 52);
             // 
             // newToolStripMenuItem
             // 
             newToolStripMenuItem.Name = "newToolStripMenuItem";
-            newToolStripMenuItem.Size = new Size(180, 24);
+            newToolStripMenuItem.Size = new Size(159, 24);
             newToolStripMenuItem.Text = "New Tileset";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
             // removeToolStripMenuItem
             // 
             removeToolStripMenuItem.Name = "removeToolStripMenuItem";
-            removeToolStripMenuItem.Size = new Size(180, 24);
+            removeToolStripMenuItem.Size = new Size(159, 24);
             removeToolStripMenuItem.Text = "Delete Tileset";
             removeToolStripMenuItem.Click += removeToolStripMenuItem_Click;
             // 
@@ -73,6 +74,7 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(188, 265);
             Controls.Add(tilesetList);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "TilesetListEditorWindow";

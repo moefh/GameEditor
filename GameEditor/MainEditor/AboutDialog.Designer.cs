@@ -48,7 +48,7 @@
             label1.Name = "label1";
             label1.Size = new Size(397, 23);
             label1.TabIndex = 1;
-            label1.Text = "Game Editor";
+            label1.Text = "Game Asset Editor";
             label1.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // label2

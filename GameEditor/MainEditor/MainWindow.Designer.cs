@@ -240,7 +240,7 @@
             // 
             // toolStripBtnTilesetEditor
             // 
-            toolStripBtnTilesetEditor.Image = (Image)resources.GetObject("toolStripBtnTilesetEditor.Image");
+            toolStripBtnTilesetEditor.Image = Properties.Resources.TilesetIcon;
             toolStripBtnTilesetEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnTilesetEditor.Name = "toolStripBtnTilesetEditor";
             toolStripBtnTilesetEditor.Size = new Size(73, 23);
@@ -249,7 +249,7 @@
             // 
             // toolStripBtnSpriteEditor
             // 
-            toolStripBtnSpriteEditor.Image = (Image)resources.GetObject("toolStripBtnSpriteEditor.Image");
+            toolStripBtnSpriteEditor.Image = Properties.Resources.SpriteIcon;
             toolStripBtnSpriteEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnSpriteEditor.Name = "toolStripBtnSpriteEditor";
             toolStripBtnSpriteEditor.Size = new Size(70, 23);
@@ -258,7 +258,7 @@
             // 
             // toolStripBtnMapEditor
             // 
-            toolStripBtnMapEditor.Image = (Image)resources.GetObject("toolStripBtnMapEditor.Image");
+            toolStripBtnMapEditor.Image = Properties.Resources.MapIcon;
             toolStripBtnMapEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnMapEditor.Name = "toolStripBtnMapEditor";
             toolStripBtnMapEditor.Size = new Size(63, 23);
@@ -269,7 +269,7 @@
             // toolStripBtnLogWindow
             // 
             toolStripBtnLogWindow.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnLogWindow.Image = (Image)resources.GetObject("toolStripBtnLogWindow.Image");
+            toolStripBtnLogWindow.Image = Properties.Resources.LogIcon;
             toolStripBtnLogWindow.ImageTransparentColor = Color.Magenta;
             toolStripBtnLogWindow.Name = "toolStripBtnLogWindow";
             toolStripBtnLogWindow.Size = new Size(52, 23);
@@ -278,7 +278,7 @@
             // 
             // toolStripBtnAnimationEditor
             // 
-            toolStripBtnAnimationEditor.Image = (Image)resources.GetObject("toolStripBtnAnimationEditor.Image");
+            toolStripBtnAnimationEditor.Image = Properties.Resources.AnimationIcon;
             toolStripBtnAnimationEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnAnimationEditor.Name = "toolStripBtnAnimationEditor";
             toolStripBtnAnimationEditor.Size = new Size(98, 23);
@@ -287,7 +287,7 @@
             // 
             // toolStripBtnSfxEditor
             // 
-            toolStripBtnSfxEditor.Image = (Image)resources.GetObject("toolStripBtnSfxEditor.Image");
+            toolStripBtnSfxEditor.Image = Properties.Resources.SfxIcon;
             toolStripBtnSfxEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnSfxEditor.Name = "toolStripBtnSfxEditor";
             toolStripBtnSfxEditor.Size = new Size(111, 23);
@@ -296,7 +296,7 @@
             // 
             // toolStripBtnModEditor
             // 
-            toolStripBtnModEditor.Image = (Image)resources.GetObject("toolStripBtnModEditor.Image");
+            toolStripBtnModEditor.Image = Properties.Resources.MODIcon;
             toolStripBtnModEditor.ImageTransparentColor = Color.Magenta;
             toolStripBtnModEditor.Name = "toolStripBtnModEditor";
             toolStripBtnModEditor.Size = new Size(69, 23);
@@ -316,7 +316,7 @@
             MainMenuStrip = menuStrip;
             Name = "MainWindow";
             StartPosition = FormStartPosition.Manual;
-            Text = "Game Editor";
+            Text = "Game Asset Editor";
             FormClosing += MainWindow_FormClosing;
             Load += MainWindow_Load;
             Shown += MainWindow_Shown;

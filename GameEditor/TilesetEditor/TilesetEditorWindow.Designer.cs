@@ -271,6 +271,7 @@
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "TilesetEditorWindow";

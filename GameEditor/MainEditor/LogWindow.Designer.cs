@@ -54,7 +54,7 @@
             // txtLog
             // 
             txtLog.Dock = DockStyle.Fill;
-            txtLog.Font = new Font("Noto Mono", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            txtLog.Font = new Font("Consolas", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             txtLog.Location = new Point(0, 26);
             txtLog.Multiline = true;
             txtLog.Name = "txtLog";
@@ -70,6 +70,7 @@
             ClientSize = new Size(547, 194);
             Controls.Add(txtLog);
             Controls.Add(toolStrip);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "LogWindow";

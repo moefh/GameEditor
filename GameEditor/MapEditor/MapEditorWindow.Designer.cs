@@ -338,6 +338,7 @@
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "MapEditorWindow";
