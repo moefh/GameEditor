@@ -23,8 +23,15 @@ namespace GameEditor.SpriteEditor
 
         public void RefreshSpriteList() {
             spriteList.DataSource = null;
-            spriteList.DataSource = EditorState.SpriteList;
+            spriteList.DataSource = Util.Project.SpriteList;
             spriteList.DisplayMember = "Name";
+        }
+
+        public SpriteItem AddSprite() {
+            SpriteItem si = Util.Project.AddSprite(new Sprite("new_sprite"));
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return si;
         }
 
         public void LoadWindowPosition() {
@@ -45,9 +52,7 @@ namespace GameEditor.SpriteEditor
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorState.AddSprite(new Sprite("new_sprite"));
-            EditorState.SetDirty();
-            Util.UpdateGameDataSize();
+            AddSprite();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -65,7 +70,7 @@ namespace GameEditor.SpriteEditor
 
             // check that the sprite is not used in an animation
             List<string> anims = [];
-            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+            foreach (SpriteAnimationItem ai in Util.Project.SpriteAnimationList) {
                 if (ai.Animation.Sprite == sprite.Sprite) {
                     anims.Add(ai.Animation.Name);
                 }
@@ -78,8 +83,8 @@ namespace GameEditor.SpriteEditor
                 return;
             }
 
-            EditorState.SpriteList.RemoveAt(spriteList.SelectedIndex);
-            EditorState.SetDirty();
+            Util.Project.SpriteList.RemoveAt(spriteList.SelectedIndex);
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }
 

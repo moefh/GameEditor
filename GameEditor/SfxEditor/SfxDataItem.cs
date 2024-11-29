@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace GameEditor.SfxEditor
 {
-    public class SfxDataItem
+    public class SfxDataItem : IDataAssetItem
     {
         public SfxDataItem(SfxData sfxData) {
             Sfx = sfxData;
         }
 
+        public IDataAsset Asset { get { return Sfx; } }
         public SfxData Sfx { get; }
         public SfxEditorWindow? Editor { get; private set; }
         public string Name { get { return Sfx.Name; } }

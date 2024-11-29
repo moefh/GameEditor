@@ -22,14 +22,19 @@ namespace GameEditor.ModEditor
 
         public void RefreshModList() {
             modList.DataSource = null;
-            modList.DataSource = EditorState.ModList;
+            modList.DataSource = Util.Project.ModList;
             modList.DisplayMember = "Name";
         }
 
-        private void newMODToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorState.AddMod(new ModData("new_mod"));
-            EditorState.SetDirty();
+        public ModDataItem AddMod() {
+            ModDataItem mi = Util.Project.AddMod(new ModData("new_mod"));
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
+            return mi;
+        }
+
+        private void newMODToolStripMenuItem_Click(object sender, EventArgs e) {
+            AddMod();
         }
 
         private void deleteMODToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -42,8 +47,8 @@ namespace GameEditor.ModEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            EditorState.ModList.RemoveAt(modList.SelectedIndex);
-            EditorState.SetDirty();
+            Util.Project.ModList.RemoveAt(modList.SelectedIndex);
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }
 

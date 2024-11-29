@@ -16,12 +16,23 @@ namespace GameEditor.Misc
 {
     public static class Util
     {
+        private static ProjectData? project;
+        private static Point nextWindowPosition;
+
         static Util() {
             DesignMode = true;
+            project = null;
+            nextWindowPosition = new Point(20, 20);
         }
 
         public static bool DesignMode { get; set; }
-        public static MainWindow? MainWindow { get; internal set; }
+
+        public static MainWindow? MainWindow { get; set; }
+
+        public static ProjectData Project {
+            get { project ??= new ProjectData(); return project; }
+            set { project?.Dispose(); project = value; }
+        }
 
         public static void Log(string log) {
             if (DesignMode) return;
@@ -58,7 +69,7 @@ namespace GameEditor.Misc
         }
 
         public static void RefreshTilesetUsers(Tileset tileset) {
-            foreach (MapDataItem map in EditorState.MapList) {
+            foreach (MapDataItem map in Project.MapList) {
                 if (map.Editor != null && map.Map.Tileset == tileset) {
                     map.Editor.RefreshTileset();
                 }
@@ -66,7 +77,7 @@ namespace GameEditor.Misc
         }
 
         public static void RefreshSprite(Sprite sprite) {
-            foreach (SpriteItem si in EditorState.SpriteList) {
+            foreach (SpriteItem si in Project.SpriteList) {
                 if (si.Editor != null && si.Sprite == sprite) {
                     si.Editor.RefreshSprite();
                 }
@@ -74,7 +85,7 @@ namespace GameEditor.Misc
         }
 
         public static void RefreshSpriteUsers(Sprite sprite, SpriteAnimationItem? exceptAnimationItem) {
-            foreach (SpriteAnimationItem ai in EditorState.SpriteAnimationList) {
+            foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
                 if (ai.Editor != null && ai != exceptAnimationItem && ai.Animation.Sprite == sprite) {
                     ai.Editor.RefreshSprite();
                 }
@@ -99,7 +110,9 @@ namespace GameEditor.Misc
                     return true;
                 }
             } catch (Exception) {
-                // ignore
+                form.Location = nextWindowPosition;
+                nextWindowPosition.X += 20;
+                nextWindowPosition.Y += 20;
             }
             return false;
         }

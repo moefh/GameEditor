@@ -1,0 +1,47 @@
+﻿using GameEditor.GameData;
+using GameEditor.Misc;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+
+namespace GameEditor.MainEditor
+{
+    public partial class ProjectPropertiesDialog : Form
+    {
+        private readonly string[] vgaSyncBitsList = [
+            "0x00 (00)",
+            "0x40 (10)",
+            "0x80 (10)",
+            "0xc0 (11)"
+        ];
+
+        public ProjectPropertiesDialog() {
+            InitializeComponent();
+            comboVgaSyncBits.Items.AddRange(vgaSyncBitsList);
+        }
+
+        public byte VgaSyncBits {
+            get { return (byte)((comboVgaSyncBits.SelectedIndex & 0x03) << 6); }
+            set {
+                comboVgaSyncBits.SelectedIndex = value >> 6;
+                Util.Log($"combo index set to {comboVgaSyncBits.SelectedIndex} for {value}");
+            }
+        }
+
+        public string IdentifierPrefix {
+            get { return txtIdentifierPrefix.Text; }
+            set { txtIdentifierPrefix.Text = value; }
+        }
+
+        private void btnOK_Click(object sender, EventArgs e) {
+            DialogResult = DialogResult.OK;
+            Close();
+        }
+    }
+}

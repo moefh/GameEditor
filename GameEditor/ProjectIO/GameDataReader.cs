@@ -22,21 +22,13 @@ namespace GameEditor.ProjectIO
     {
         const bool REMOVE_SPRITE_MIRRORS = true;
 
-        const string PREFIX_GAME_TILESET_DATA = "game_tileset_data_";
-        const string PREFIX_GAME_SPRITE_DATA = "game_sprite_data_";
-        const string PREFIX_GAME_MAP_TILES = "game_map_tiles_";
-        const string PREFIX_GAME_SFX_SAMPLES = "game_sfx_samples_";
-        const string PREFIX_GAME_MOD_SAMPLES = "game_mod_samples_";
-        const string PREFIX_GAME_MOD_PATTERN = "game_mod_pattern_";
-        const string ID_GAME_SPRITE_ANIMATION = "GAME_SPRITE_ANIMATION_ID_";
-        private string[] IGNORE_DATA_IDS = [
-            "GAME_MOD_ID",
-            "GAME_SFX_ID",
-            "GAME_TILESET_ID",
-            "GAME_SPRITE_ID",
-            "GAME_MAP_ID",
+        private readonly string[] IGNORE_DATA_ID_ENUM_TYPES = [
+            "MOD",
+            "SFX",
+            "TILESET",
+            "SPRITE",
+            "MAP",
         ];
-
 
         // parsing stuff:
         private readonly StreamReader f;
@@ -46,6 +38,8 @@ namespace GameEditor.ProjectIO
 
         // read data:
         private uint vgaSyncBits;
+        private string globalPrefixLower;
+        private string globalPrefixUpper;
         private readonly Dictionary<string,List<uint>> gameTilesetData = [];
         private readonly Dictionary<string,List<uint>> gameSpriteData = [];
         private readonly Dictionary<string,List<byte>> gameMapTiles = [];
@@ -62,6 +56,8 @@ namespace GameEditor.ProjectIO
         public GameDataReader(string filename) {
             f = new StreamReader(filename, Encoding.UTF8);
             tokenizer = new Tokenizer(f);
+            globalPrefixLower = "";
+            globalPrefixUpper = "";
         }
 
         public List<Tileset> TilesetList { get { return tilesetList; } }
@@ -71,7 +67,9 @@ namespace GameEditor.ProjectIO
         public List<SfxData> SfxList { get { return sfxList; } }
         public List<ModData> ModList { get { return modList; } }
 
-        public uint VgaSyncBits { get { return vgaSyncBits; }}
+        public uint VgaSyncBits { get { return vgaSyncBits; } }
+        public string GlobalPrefixLower { get { return globalPrefixLower; } }
+        public string GlobalPrefixUpper { get { return globalPrefixUpper; } }
 
         public void Dispose() {
             if (disposed) return;
@@ -92,6 +90,10 @@ namespace GameEditor.ProjectIO
             sfxList.Clear();
             modList.Clear();
         }
+
+        // ======================================================================
+        // === PARSING
+        // ======================================================================
 
         private Token? NextToken() {
             Token? t = tokenizer.Next();
@@ -148,21 +150,79 @@ namespace GameEditor.ProjectIO
             throw new ParseError($"expected '-' or number, got {t.Value}", lastLine);
         }
 
+        private static void DecodeColor(byte pixel, out byte red, out byte green, out byte blue) {
+            int r = (pixel >> 0) & 0x3;
+            int g = (pixel >> 2) & 0x3;
+            int b = (pixel >> 4) & 0x3;
+            red   = (byte) ((r<<6)|(r<<4)|(r<<2)|r);
+            green = (byte) ((g<<6)|(g<<4)|(g<<2)|g);
+            blue  = (byte) ((b<<6)|(b<<4)|(b<<2)|b);
+        }
+
+        private void SetGlobalPrefix(string prefix) {
+            globalPrefixLower = prefix.ToLowerInvariant();
+            globalPrefixUpper = prefix.ToUpperInvariant();
+            Util.Log($"-> got project global prefix: {globalPrefixUpper}");
+        }
+
+        private bool MatchesGlobalUpperName(string ident, string type) {
+            return ident.StartsWith($"{GlobalPrefixUpper}_{type}_");
+        }
+
+        private bool IsGlobalUpperName(string ident, string name) {
+            return ident == $"{GlobalPrefixUpper}_{name}";
+        }
+
+        private bool IsGlobalUpperName(string ident, string type, string name) {
+            return ident == $"{GlobalPrefixUpper}_{type}_{name}";
+        }
+
+        private string ExtractGlobalUpperName(string ident, string type) {
+            string prefix = $"{GlobalPrefixUpper}_{type}_";
+            if (ident.StartsWith(prefix)) {
+                return ident[prefix.Length..];
+            }
+            throw new Exception($"can't extract name from global {ident} with type {type}");
+        }
+
+        private bool MatchesGlobalLowerName(string ident, string type) {
+            return ident.StartsWith($"{GlobalPrefixLower}_{type}_");
+        }
+
+        private bool IsGlobalLowerName(string ident, string name) {
+            return ident == $"{GlobalPrefixLower}_{name}";
+        }
+
+        private bool IsGlobalLowerName(string ident, string type, string name) {
+            return ident == $"{GlobalPrefixLower}_{type}_{name}";
+        }
+
+        private string ExtractGlobalLowerName(string ident, string type) {
+            string prefix = $"{GlobalPrefixLower}_{type}_";
+            if (ident.StartsWith(prefix)) {
+                return ident[prefix.Length..];
+            }
+            throw new Exception($"can't extract name from global {ident} with type {type}");
+        }
+
+        // ======================================================================
+        // === PRE-PROCESSOR
+        // ======================================================================
+
         private void ReadPreProcessorLine(Token t) {
             // #define
             Match define = Regex.Match(t.Str, """^#\s*define\s+([A-Za-z_][A-Za-z0-9_]+)\s+(.*?)\s*$""");
             if (define.Success) {
                 string name = define.Groups[1].ToString();
                 string value = define.Groups[2].ToString();
-                switch (name) {
-                case "GAME_DATA_VGA_SYNC_BITS":
-                    vgaSyncBits = Tokenizer.ParseNumber(value, t.LineNum);
-                    Util.Log($"-> got vga sync bits 0x{vgaSyncBits:x02}");
-                    break;
 
-                default:
+                if (name.EndsWith("_DATA_VGA_SYNC_BITS")) {
+                    SetGlobalPrefix(name[..^"_DATA_VGA_SYNC_BITS".Length]);
+
+                    vgaSyncBits = Tokenizer.ParseNumber(value, t.LineNum);
+                    Util.Log($"-> got vga sync bits 0x{VgaSyncBits:x02}");
+                } else {
                     Util.Log($"WARNING: line {t.LineNum}: ignoring unknown #define {name}");
-                    break;
                 }
                 return;
             }
@@ -182,15 +242,6 @@ namespace GameEditor.ProjectIO
             }
 
             Util.Log($"WARNING: line {t.LineNum}: ignoring pre-processor line: {t.Str}");
-        }
-
-        private static void DecodeColor(byte pixel, out byte red, out byte green, out byte blue) {
-            int r = (pixel >> 0) & 0x3;
-            int g = (pixel >> 2) & 0x3;
-            int b = (pixel >> 4) & 0x3;
-            red   = (byte) ((r<<6)|(r<<4)|(r<<2)|r);
-            green = (byte) ((g<<6)|(g<<4)|(g<<2)|g);
-            blue  = (byte) ((b<<6)|(b<<4)|(b<<2)|b);
         }
 
         // ======================================================================
@@ -274,7 +325,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid tileset: expected data for {numTiles.Num * width.Num * height.Num} pixels, got {data.Count*4}", dataIdent.LineNum);
                 }
 
-                string name = dataIdent.Str.Substring(PREFIX_GAME_TILESET_DATA.Length);
+                string name = ExtractGlobalLowerName(dataIdent.Str, "tileset_data");
                 tilesetList.Add(CreateTileset(name, (int) numTiles.Num, data));
 
                 Util.Log($"-> got tileset for {dataIdent.Str} with {numTiles.Num} tiles");
@@ -373,7 +424,7 @@ namespace GameEditor.ProjectIO
                     data.RemoveRange(data.Count/2, data.Count/2);
                 }
 
-                string name = dataIdent.Str.Substring(PREFIX_GAME_SPRITE_DATA.Length);
+                string name = ExtractGlobalLowerName(dataIdent.Str, "sprite_data");
                 spriteList.Add(CreateSprite(name, (int) width.Num, (int) height.Num, actualNumFrames, data));
 
                 Util.Log($"-> got sprite for {dataIdent.Str} with {numFrames.Num} frames");
@@ -419,7 +470,7 @@ namespace GameEditor.ProjectIO
                 Token height = ExpectNumber();
                 ExpectPunct(',');
                 ExpectPunct('&');
-                ExpectIdent("game_tilesets");
+                ExpectIdent($"{GlobalPrefixLower}_tilesets");
                 ExpectPunct('[');
                 Token tilesetIndex= ExpectNumber();
                 ExpectPunct(']');
@@ -435,7 +486,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"game map tile {mapTilesDataIdent.Str} doesn't exist", mapTilesDataIdent.LineNum);
                 }
 
-                string name = mapTilesDataIdent.Str.Substring(PREFIX_GAME_MAP_TILES.Length);
+                string name = ExtractGlobalLowerName(mapTilesDataIdent.Str, "map_tiles");
                 Tileset tileset = tilesetList[(int) tilesetIndex.Num];
                 mapList.Add(new MapData(name, (int) width.Num, (int) height.Num, tileset, tiles));
                 Util.Log($"-> got map for {mapTilesDataIdent.Str} with tileset {tilesetIndex.Num}");
@@ -456,17 +507,17 @@ namespace GameEditor.ProjectIO
                 if (nextId < 0) {
                     throw new ParseError($"expected end of enum after COUNT member", lastLine);
                 }
-                if (next.IsIdent() && next.Str.StartsWith(ID_GAME_SPRITE_ANIMATION)) {
-                    string name = next.Str.Substring(ID_GAME_SPRITE_ANIMATION.Length);
+                if (next.IsIdent() && MatchesGlobalUpperName(next.Str, "SPRITE_ANIMATION_ID")) {
+                    string name = ExtractGlobalUpperName(next.Str, "SPRITE_ANIMATION_ID");
                     if (nextId < spriteAnimationList.Count) {
                         spriteAnimationList[nextId++].Name = name.ToLowerInvariant();
                     } else {
                         Util.Log($"!! WARNING: got animation id {next.Str} without corresponding animation");
                     }
-                } else if (next.IsIdent() && next.Str == $"{ID_GAME_SPRITE_ANIMATION[..^4]}_COUNT") {
+                } else if (next.IsIdent() && IsGlobalUpperName(next.Str, "SPRITE_ANIMATION", "COUNT")) {
                     nextId = -1;
                 } else {
-                    throw new ParseError($"expecting {ID_GAME_SPRITE_ANIMATION[..^4]}_COUNT or identifier starting with '{ID_GAME_SPRITE_ANIMATION}', got {next}", lastLine);
+                    throw new ParseError($"expecting '${GlobalPrefixUpper}_SPRITE_ANIMATION_COUNT' or identifier starting with '${GlobalPrefixUpper}_SPRITE_ANIMATION_ID_', got {next}", lastLine);
                 }
                 ExpectPunct(',');
             }
@@ -499,7 +550,7 @@ namespace GameEditor.ProjectIO
                 if (next.IsPunct('}')) break;
                 if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
                 ExpectPunct('&');
-                ExpectIdent("game_sprites");
+                ExpectIdent($"{GlobalPrefixLower}_sprites");
                 ExpectPunct('[');
                 Token spriteIndex = ExpectNumber();
                 ExpectPunct(']');
@@ -577,7 +628,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid sfx: expected {numSamples.Num} samples, got {data.Count}", dataIdent.LineNum);
                 }
 
-                string name = dataIdent.Str.Substring(PREFIX_GAME_SFX_SAMPLES.Length);
+                string name = ExtractGlobalLowerName(dataIdent.Str, "sfx_samples");
                 sfxList.Add(new SfxData(name, data));
 
                 Util.Log($"-> got sfx for {dataIdent.Str} with {numSamples.Num} samples");
@@ -759,7 +810,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid mod: expected pattern with {numPatterns.Num*numChannels.Num*64} cells, got {pattern.Count}", patternIdent.LineNum);
                 }
 
-                string modName = patternIdent.Str.Substring(PREFIX_GAME_MOD_PATTERN.Length);
+                string modName = ExtractGlobalLowerName(patternIdent.Str, "mod_pattern");
                 ModFile modFile = new ModFile((int)numChannels.Num, samples, songPositions, pattern);
                 modList.Add(new ModData(modName, modFile));
 
@@ -772,9 +823,9 @@ namespace GameEditor.ProjectIO
         // === DATA IDS
         // ======================================================================
 
-        private void IgnoreDataIdsEnum(string prefix) {
-            Util.Log($"-> reading ids for {prefix}");
-            string idPrefix = $"{prefix}_";
+        private void IgnoreDataIdEnum(string type) {
+            Util.Log($"-> reading ids for type '{type}'");
+            string typeId = $"{type}_ID";
             ExpectPunct('{');
             int nextId = 0;
             while (true) {
@@ -783,12 +834,12 @@ namespace GameEditor.ProjectIO
                 if (nextId < 0) {
                     throw new ParseError($"expecting end of enum after COUNT member", lastLine);
                 }
-                if (next.IsIdent() && next.Str.StartsWith(idPrefix)) {
+                if (next.IsIdent() && MatchesGlobalUpperName(next.Str, typeId)) {
                     Util.Log($"  -> {next.Str} = {nextId++}");
-                } else if (next.IsIdent() && next.Str == $"{idPrefix[..^4]}_COUNT") {
+                } else if (next.IsIdent() && IsGlobalUpperName(next.Str, type, "COUNT")) {
                     nextId = -1;
                 } else {
-                    throw new ParseError($"expecting {idPrefix[..^4]}_COUNT or identifier starting with '{idPrefix}', got {next}", lastLine);
+                    throw new ParseError($"expecting '{GlobalPrefixUpper}_{type}_COUNT' or identifier starting with '{GlobalPrefixUpper}_{typeId}', got {next}", lastLine);
                 }
                 ExpectPunct(',');
             }
@@ -806,6 +857,92 @@ namespace GameEditor.ProjectIO
                 Token? t = NextToken();
                 if (t == null) break;
 
+                // pre-processor stuff
+                if (t.Value.IsPreProcessor()) {
+                    ReadPreProcessorLine(t.Value);
+                    continue;
+                }
+
+                // when we reach the first non-preprocessor token, we must have a prefix set
+                if (globalPrefixLower == "") {
+                    throw new ParseError("missing #define <PREFIX>_DATA_VGA_SYNC_BITS", t.Value.LineNum);
+                }
+
+                // MOD stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "mod_samples")) {
+                    ReadModSamples(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "mod_pattern")) {
+                    ReadModPattern(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "mods")) {
+                    ReadModList(t.Value);
+                    continue;
+                }
+
+                // sfx stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sfx_samples")) {
+                    ReadSfxSamples(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "sfxs")) {
+                    ReadSfxList(t.Value);
+                    continue;
+                }
+
+                // tileset stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "tileset_data")) {
+                    ReadTilesetData(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "tilesets")) {
+                    ReadTilesetList(t.Value);
+                    continue;
+                }
+
+                // sprite stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sprite_data")) {
+                    ReadSpriteData(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "sprites")) {
+                    ReadSpriteList(t.Value);
+                    continue;
+                }
+
+                // map stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "map_tiles")) {
+                    ReadMapTiles(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "maps")) {
+                    ReadMapList(t.Value);
+                    continue;
+                }
+
+                // sprite animation stuff
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SPRITE_ANIMATION_IDS")) {
+                    ReadSpriteAnimationIds(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "sprite_animations")) {
+                    ReadSpriteAnimationList(t.Value);
+                    continue;
+                }
+
+                // ids
+                bool foundIdToIgnore = false;
+                foreach (string ignoreDataIdEnumType in IGNORE_DATA_ID_ENUM_TYPES) {
+                    if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, ignoreDataIdEnumType, "IDS")) {
+                        IgnoreDataIdEnum(ignoreDataIdEnumType);
+                        foundIdToIgnore = true;
+                        break;
+                    }
+                }
+                if (foundIdToIgnore) continue;
+
                 if (t.Value.IsIdent("static")) continue;
                 if (t.Value.IsIdent("const")) continue;
                 if (t.Value.IsIdent("int8_t")) continue;
@@ -813,93 +950,12 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("uint32_t")) continue;
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
-                if (t.Value.IsIdent("GAME_SFX")) continue;
-                if (t.Value.IsIdent("GAME_MOD_DATA")) continue;
-                if (t.Value.IsIdent("GAME_MOD_CELL")) continue;
-                if (t.Value.IsIdent("GAME_IMAGE")) continue;
-                if (t.Value.IsIdent("GAME_MAP")) continue;
-                if (t.Value.IsIdent("GAME_SPRITE_ANIMATION")) continue;
-
-                // pre-processor stuff
-                if (t.Value.IsPreProcessor()) {
-                    ReadPreProcessorLine(t.Value);
-                    continue;
-                }
-
-                // MOD stuff
-                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_MOD_SAMPLES)) {
-                    ReadModSamples(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_MOD_PATTERN)) {
-                    ReadModPattern(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent("game_mods")) {
-                    ReadModList(t.Value);
-                    continue;
-                }
-
-                // sfx stuff
-                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_SFX_SAMPLES)) {
-                    ReadSfxSamples(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent("game_sfxs")) {
-                    ReadSfxList(t.Value);
-                    continue;
-                }
-
-                // tileset stuff
-                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_TILESET_DATA)) {
-                    ReadTilesetData(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent("game_tilesets")) {
-                    ReadTilesetList(t.Value);
-                    continue;
-                }
-
-                // sprite stuff
-                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_SPRITE_DATA)) {
-                    ReadSpriteData(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent("game_sprites")) {
-                    ReadSpriteList(t.Value);
-                    continue;
-                }
-
-                // map stuff
-                if (t.Value.IsIdent() && t.Value.Str.StartsWith(PREFIX_GAME_MAP_TILES)) {
-                    ReadMapTiles(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent("game_maps")) {
-                    ReadMapList(t.Value);
-                    continue;
-                }
-
-                // sprite animation stuff
-                if (t.Value.IsIdent("GAME_SPRITE_ANIMATION_IDS")) {
-                    ReadSpriteAnimationIds(t.Value);
-                    continue;
-                }
-                if (t.Value.IsIdent("game_sprite_animations")) {
-                    ReadSpriteAnimationList(t.Value);
-                    continue;
-                }
-
-                // ids
-                bool foundIdToIgnore = false;
-                foreach (string ignorePrefix in IGNORE_DATA_IDS) {
-                    if (t.Value.IsIdent($"{ignorePrefix}S")) {
-                        IgnoreDataIdsEnum(ignorePrefix);
-                        foundIdToIgnore = true;
-                        break;
-                    }
-                }
-                if (foundIdToIgnore) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SFX")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_DATA")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_CELL")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "IMAGE")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MAP")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SPRITE_ANIMATION")) continue;
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }

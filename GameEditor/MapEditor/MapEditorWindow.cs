@@ -11,6 +11,7 @@ namespace GameEditor.MapEditor
         const uint LAYER_BG = CustomControls.MapView.LAYER_BG;
         const uint LAYER_COL = CustomControls.MapView.LAYER_COL;
         const uint LAYER_GRID = CustomControls.MapView.LAYER_GRID;
+        const uint LAYER_SCREEN = CustomControls.MapView.LAYER_SCREEN;
 
         private readonly MapDataItem map;
 
@@ -25,9 +26,9 @@ namespace GameEditor.MapEditor
             mapView.EditLayer = LAYER_FG;
             toolStripComboBoxZoom.SelectedIndex = 1;
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Map.Name);
-            toolStripComboTiles.ComboBox.DataSource = EditorState.TilesetList;
+            toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
-            toolStripComboTiles.SelectedIndex = EditorState.GetTilesetIndex(Map.Tileset);
+            toolStripComboTiles.SelectedIndex = Util.Project.GetTilesetIndex(Map.Tileset);
         }
 
         public MapData Map {
@@ -83,7 +84,8 @@ namespace GameEditor.MapEditor
             uint bg = toolStripButtonShowBG.Checked ? LAYER_BG : 0;
             uint col = toolStripButtonShowCol.Checked ? LAYER_COL : 0;
             uint grid = toolStripButtonShowGrid.Checked ? LAYER_GRID : 0;
-            EnabledRenderLayers = fg | bg | col | grid;
+            uint screen = toolStripButtonShowScreen.Checked ? LAYER_SCREEN : 0;
+            EnabledRenderLayers = fg | bg | col | grid | screen;
             mapView.Invalidate();
         }
 
@@ -111,18 +113,18 @@ namespace GameEditor.MapEditor
             if (dlg.ShowDialog() == DialogResult.OK) {
                 Map.Resize(dlg.MapWidth, dlg.MapHeight);
                 UpdateDataSize();
-                EditorState.SetDirty();
+                Util.Project.SetDirty();
                 mapView.Invalidate();
             }
         }
 
         private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
             int sel = toolStripComboTiles.SelectedIndex;
-            if (sel < 0 || sel >= EditorState.TilesetList.Count) {
+            if (sel < 0 || sel >= Util.Project.TilesetList.Count) {
                 Util.Log($"WARNING: tileset dropdown has invalid selected index {sel}");
                 return;
             }
-            Map.Tileset = EditorState.TilesetList[sel].Tileset;
+            Map.Tileset = Util.Project.TilesetList[sel].Tileset;
             tilePicker.Tileset = Map.Tileset;
             mapView.Invalidate();
             tilePicker.Invalidate();
@@ -130,7 +132,7 @@ namespace GameEditor.MapEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Map.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
+            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
             Util.RefreshMapList();
             FixFormTitle();
         }
@@ -154,5 +156,6 @@ namespace GameEditor.MapEditor
         private void tilePickerPanel_SizeChanged(object sender, EventArgs e) {
             tilePicker.ResetSize();
         }
+
     }
 }

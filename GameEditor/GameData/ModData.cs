@@ -8,7 +8,7 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.GameData
 {
-    public class ModData
+    public class ModData : IDataAsset
     {
         private ModFile modFile;
 

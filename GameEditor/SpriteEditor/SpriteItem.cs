@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 
 namespace GameEditor.SpriteEditor
 {
-    public class SpriteItem
+    public class SpriteItem : IDataAssetItem
     {
         public SpriteItem(Sprite sprite) {
             Sprite = sprite;
         }
 
+        public IDataAsset Asset { get { return Sprite; } }
         public Sprite Sprite { get; }
         public SpriteEditorWindow? Editor { get; private set; }
         public string Name { get { return Sprite.Name; } }

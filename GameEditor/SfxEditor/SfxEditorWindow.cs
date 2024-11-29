@@ -59,7 +59,7 @@ namespace GameEditor.SfxEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Sfx.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
+            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
             Util.RefreshSfxList();
             FixFormTitle();
         }
@@ -104,7 +104,7 @@ namespace GameEditor.SfxEditor
                     "Error Loading Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
             RefreshSfx();
-            EditorState.SetDirty();
+            Util.Project.SetDirty();
         }
     }
 }

@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace GameEditor.SpriteEditor
 {
-    public class SpriteAnimationItem
+    public class SpriteAnimationItem : IDataAssetItem
     {
         public SpriteAnimationItem(SpriteAnimation anim) {
             Animation = anim;
         }
 
+        public IDataAsset Asset { get { return Animation; } }
         public SpriteAnimation Animation { get; }
         public SpriteAnimationEditorWindow? Editor { get; private set; }
         public string Name { get { return Animation.Name; } }

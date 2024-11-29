@@ -22,8 +22,15 @@ namespace GameEditor.SfxEditor
 
         public void RefreshSfxList() {
             sfxList.DataSource = null;
-            sfxList.DataSource = EditorState.SfxList;
+            sfxList.DataSource = Util.Project.SfxList;
             sfxList.DisplayMember = "Name";
+        }
+
+        public SfxDataItem AddSfx() {
+            SfxDataItem si = Util.Project.AddSfx(new SfxData("new_sfx"));
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return si;
         }
 
         private void SfxListEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
@@ -44,9 +51,7 @@ namespace GameEditor.SfxEditor
         }
 
         private void newSFXToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorState.AddSfx(new SfxData("new_sfx"));
-            EditorState.SetDirty();
-            Util.UpdateGameDataSize();
+            AddSfx();
         }
 
         private void deleteSFXToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -59,8 +64,8 @@ namespace GameEditor.SfxEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            EditorState.SfxList.RemoveAt(sfxList.SelectedIndex);
-            EditorState.SetDirty();
+            Util.Project.SfxList.RemoveAt(sfxList.SelectedIndex);
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }
 

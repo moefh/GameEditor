@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace GameEditor.GameData
 {
-    public class SfxData
+    public class SfxData : IDataAsset
     {
         public const int SFX_DEFAULT_SAMPLE_RATE = 22050;
         public const int SFX_NUM_CHANNELS = 1;
@@ -38,7 +38,7 @@ namespace GameEditor.GameData
 
         public int NumSamples { get { return data.Length - SoundUtil.WAV_SAMPLES_OFFSET; } }
 
-        public int GameDataSize { get { return NumSamples + 2; } }
+        public int GameDataSize { get { return NumSamples + 4; } }
 
         public byte GetSample(int i) {
             int off = i + SoundUtil.WAV_SAMPLES_OFFSET;

@@ -39,6 +39,7 @@
             toolStripButtonShowFG = new ToolStripButton();
             toolStripButtonShowBG = new ToolStripButton();
             toolStripButtonShowCol = new ToolStripButton();
+            toolStripButtonShowScreen = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripLabel1 = new ToolStripLabel();
             toolStripComboBoxZoom = new ToolStripComboBox();
@@ -67,10 +68,10 @@
             // 
             // toolsToolStrip
             // 
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowGrid, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowGrid, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
-            toolsToolStrip.Size = new Size(673, 27);
+            toolsToolStrip.Size = new Size(789, 27);
             toolsToolStrip.TabIndex = 2;
             toolsToolStrip.Text = "toolStrip";
             // 
@@ -117,8 +118,8 @@
             // toolStripLabel4
             // 
             toolStripLabel4.Name = "toolStripLabel4";
-            toolStripLabel4.Size = new Size(45, 24);
-            toolStripLabel4.Text = "Show:";
+            toolStripLabel4.Size = new Size(56, 24);
+            toolStripLabel4.Text = "Display:";
             // 
             // toolStripButtonShowGrid
             // 
@@ -168,6 +169,16 @@
             toolStripButtonShowCol.Text = "Collision";
             toolStripButtonShowCol.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
+            // toolStripButtonShowScreen
+            // 
+            toolStripButtonShowScreen.CheckOnClick = true;
+            toolStripButtonShowScreen.Image = (Image)resources.GetObject("toolStripButtonShowScreen.Image");
+            toolStripButtonShowScreen.ImageTransparentColor = Color.Magenta;
+            toolStripButtonShowScreen.Name = "toolStripButtonShowScreen";
+            toolStripButtonShowScreen.Size = new Size(69, 24);
+            toolStripButtonShowScreen.Text = "Screen";
+            toolStripButtonShowScreen.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
+            // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
@@ -194,7 +205,7 @@
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
             statusStrip.Location = new Point(0, 264);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(673, 24);
+            statusStrip.Size = new Size(789, 24);
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip";
             // 
@@ -222,7 +233,7 @@
             // 
             mainSplit.Panel2.Controls.Add(mapView);
             mainSplit.Panel2.Padding = new Padding(3);
-            mainSplit.Size = new Size(673, 210);
+            mainSplit.Size = new Size(789, 210);
             mainSplit.SplitterDistance = 200;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
@@ -264,7 +275,7 @@
             mapView.Name = "mapView";
             mapView.Padding = new Padding(3, 3, 2, 2);
             mapView.SelectedTile = 0;
-            mapView.Size = new Size(462, 204);
+            mapView.Size = new Size(578, 204);
             mapView.TabIndex = 0;
             mapView.Text = "mapView";
             mapView.Zoom = 3D;
@@ -274,7 +285,7 @@
             infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripLabel2, toolStripComboTiles, toolStripSeparator1, btnResize });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
-            infoToolStrip.Size = new Size(673, 27);
+            infoToolStrip.Size = new Size(789, 27);
             infoToolStrip.TabIndex = 7;
             infoToolStrip.Text = "toolStrip1";
             // 
@@ -322,7 +333,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(673, 288);
+            ClientSize = new Size(789, 288);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
@@ -376,5 +387,6 @@
         private ToolStripButton toolStripButtonEditCol;
         private ToolStripLabel toolStripLabel4;
         private ToolStripLabel toolStripLabel5;
+        private ToolStripButton toolStripButtonShowScreen;
     }
 }

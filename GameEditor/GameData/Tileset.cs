@@ -9,7 +9,7 @@ using GameEditor.Misc;
 
 namespace GameEditor.GameData
 {
-    public class Tileset : IDisposable
+    public class Tileset : IDataAsset, IDisposable
     {
         public const int TILE_SIZE = 16;
         public const int MAX_NUM_TILES = 255;  // valid tiles are 0-254; 0xff means "empty"

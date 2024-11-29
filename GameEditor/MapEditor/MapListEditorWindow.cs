@@ -21,8 +21,21 @@ namespace GameEditor.MapEditor
 
         public void RefreshMapList() {
             mapList.DataSource = null;
-            mapList.DataSource = EditorState.MapList;
+            mapList.DataSource = Util.Project.MapList;
             mapList.DisplayMember = "Name";
+        }
+
+        public MapDataItem? AddMap() {
+            if (Util.Project.TilesetList.Count == 0) {
+                MessageBox.Show(
+                    "You need at least one tileset to create a map.",
+                    "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            MapDataItem mi = Util.Project.AddMap(new MapData(24, 16, Util.Project.TilesetList[0].Tileset));
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return mi;
         }
 
         private void MapListEditor_FormClosing(object sender, FormClosingEventArgs e) {
@@ -51,9 +64,7 @@ namespace GameEditor.MapEditor
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorState.AddMap(new MapData(16, 16, EditorState.TilesetList[0].Tileset));
-            EditorState.SetDirty();
-            Util.UpdateGameDataSize();
+            AddMap();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -66,8 +77,8 @@ namespace GameEditor.MapEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            EditorState.MapList.RemoveAt(mapList.SelectedIndex);
-            EditorState.SetDirty();
+            Util.Project.MapList.RemoveAt(mapList.SelectedIndex);
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }
 

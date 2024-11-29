@@ -10,7 +10,7 @@ using System.Web;
 
 namespace GameEditor.GameData
 {
-    public class MapData
+    public class MapData : IDataAsset
     {
         private string name;
         private Tileset tileset;

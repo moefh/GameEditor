@@ -65,7 +65,7 @@ namespace GameEditor.GameData
 
     }
 
-    public class SpriteAnimation
+    public class SpriteAnimation : IDataAsset
     {
         public const int MAX_NUM_LOOPS = 4;
 

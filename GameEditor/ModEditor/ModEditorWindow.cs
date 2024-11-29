@@ -95,7 +95,7 @@ namespace GameEditor.ModEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Mod.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
+            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
             Util.RefreshModList();
             FixFormTitle();
         }
@@ -113,7 +113,7 @@ namespace GameEditor.ModEditor
                     $"Error reading MOD: {ex.Message}\n\nConsult the log window for more information.",
                     "Error Loading MOD", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
-            EditorState.SetDirty();
+            Util.Project.SetDirty();
             RefreshMod();
         }
 

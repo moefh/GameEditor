@@ -71,7 +71,7 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
             Sprite.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) EditorState.SetDirty();
+            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
             Util.RefreshSpriteList();
             FixFormTitle();
         }
@@ -84,7 +84,7 @@ namespace GameEditor.SpriteEditor
             dlg.SpriteFrames = Sprite.NumFrames;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
-            EditorState.SetDirty();
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
             UpdateGameDataSize();
             spriteFramePicker.ResetSize();
@@ -115,7 +115,7 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
-                EditorState.SetDirty();
+                Util.Project.SetDirty();
                 UpdateGameDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.ResetSize();
@@ -142,7 +142,7 @@ namespace GameEditor.SpriteEditor
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteFramePicker.Invalidate();
-            EditorState.SetDirty();
+            Util.Project.SetDirty();
             Util.RefreshSpriteUsers(Sprite, null);
         }
 
@@ -172,7 +172,7 @@ namespace GameEditor.SpriteEditor
                 MessageBox.Show("Error pasting image. Consult the log for details.",
                     "Error Pasting Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
-            EditorState.SetDirty();
+            Util.Project.SetDirty();
             spriteEditor.Invalidate();
             spriteFramePicker.Invalidate();
             Util.RefreshSpriteUsers(Sprite, null);

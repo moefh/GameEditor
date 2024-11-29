@@ -34,14 +34,6 @@ namespace GameEditor.MainEditor
         private readonly SpriteListEditorWindow spriteListEditor;
         private readonly SpriteAnimationListEditorWindow spriteAnimationListEditor;
         private readonly LogWindow logWindow;
-        private readonly string[] vgaSyncBitsList = [
-            "0x00 (00)",
-            "0x40 (10)",
-            "0x80 (10)",
-            "0xc0 (11)"
-        ];
-
-        private string? filename;
 
         public MainWindow() {
             InitializeComponent();
@@ -61,18 +53,25 @@ namespace GameEditor.MainEditor
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
 
-            toolStripComboVgaSyncBits.Items.AddRange(vgaSyncBitsList);
-            toolStripComboVgaSyncBits.SelectedIndex = 3;
             UpdateDataSize();
             UpdateDirtyStatus();
         }
 
         public void UpdateDataSize() {
-            lblDataSize.Text = $"{EditorState.GetGameDataSize()} bytes";
+            lblDataSize.Text = $"{Util.Project.GetGameDataSize()} bytes";
         }
 
         public void UpdateDirtyStatus() {
-            lblModified.Visible = EditorState.IsDirty;
+            lblModified.Visible = Util.Project.IsDirty;
+        }
+
+        private void RefreshAllAssetLists() {
+            sfxListEditor.RefreshSfxList();
+            modListEditor.RefreshModList();
+            mapListEditor.RefreshMapList();
+            spriteListEditor.RefreshSpriteList();
+            tilesetListEditor.RefreshTilesetList();
+            spriteAnimationListEditor.RefreshSpriteAnimationList();
         }
 
         public void RefreshSfxList() {
@@ -108,7 +107,7 @@ namespace GameEditor.MainEditor
         }
 
         private void MainWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            if (! ConfirmLoseData()) {
+            if (!ConfirmLoseData()) {
                 e.Cancel = true;
                 return;
             }
@@ -176,11 +175,6 @@ namespace GameEditor.MainEditor
             Util.Log("Ready");
         }
 
-        private void toolStripComboVgaSyncBits_SelectedIndexChanged(object sender, EventArgs e) {
-            if (toolStripComboVgaSyncBits.ComboBox.SelectedIndex < 0) return;
-            EditorState.VgaSyncBits = (byte)(toolStripComboVgaSyncBits.ComboBox.SelectedIndex << 6);
-        }
-
         private string? GetProjectSaveFilename() {
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
@@ -190,9 +184,8 @@ namespace GameEditor.MainEditor
         }
 
         private void SaveProject(string filename) {
-            if (EditorState.SaveProject(filename)) {
+            if (Util.Project.SaveProject(filename)) {
                 Util.Log("== saved project");
-                this.filename = filename;
             } else {
                 MessageBox.Show($"Error saving project.\n\nConsult the log window for more information.",
                     "Error Saving Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
@@ -200,44 +193,46 @@ namespace GameEditor.MainEditor
         }
 
         private bool ConfirmLoseData() {
-            if (! EditorState.IsDirty) return true;
+            if (!Util.Project.IsDirty) return true;
             ConfirmLoseChangesDialog dlg = new ConfirmLoseChangesDialog();
             return dlg.ShowDialog() == DialogResult.OK;
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (! ConfirmLoseData()) return;
-            EditorState.NewProject();
+            if (!ConfirmLoseData()) return;
+            Util.Project = new ProjectData();
+            RefreshAllAssetLists();
             Util.UpdateGameDataSize();
             Util.Log("== created new project");
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (! ConfirmLoseData()) return;
+            if (!ConfirmLoseData()) return;
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            if (EditorState.LoadProject(dlg.FileName)) {
-                toolStripComboVgaSyncBits.SelectedIndex = (int)(EditorState.VgaSyncBits >> 6);
-                filename = dlg.FileName;
-                Util.UpdateGameDataSize();
-                Util.Log("== loaded project");
-            } else {
+            try {
+                ProjectData p = new ProjectData(dlg.FileName);
+                Util.Project = p;
+                RefreshAllAssetLists();
+            } catch (Exception) {
                 MessageBox.Show($"Error loading project file.\n\nConsult the log window for more information.",
                     "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
+            Util.UpdateGameDataSize();
+            Util.Log("== loaded project");
         }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (filename == null) {
+            if (Util.Project.FileName == null) {
                 string? savefile = GetProjectSaveFilename();
                 if (savefile != null) {
                     SaveProject(savefile);
                 }
             } else {
-                SaveProject(filename);
+                SaveProject(Util.Project.FileName);
             }
         }
 
@@ -248,5 +243,38 @@ namespace GameEditor.MainEditor
             }
         }
 
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            ProjectPropertiesDialog dlg = new ProjectPropertiesDialog();
+            dlg.VgaSyncBits = Util.Project.VgaSyncBits;
+            dlg.IdentifierPrefix = Util.Project.IdentifierPrefix;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Util.Project.VgaSyncBits = dlg.VgaSyncBits;
+            Util.Project.IdentifierPrefix = dlg.IdentifierPrefix;
+            Util.Project.SetDirty();
+        }
+
+        private void addTilesetToolStripMenuItem_Click(object sender, EventArgs e) {
+            tilesetListEditor.AddTileset().ShowEditor();
+        }
+
+        private void addSpriteToolStripMenuItem_Click(object sender, EventArgs e) {
+            spriteListEditor.AddSprite().ShowEditor();
+        }
+
+        private void addMapToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapListEditor.AddMap()?.ShowEditor();
+        }
+
+        private void addSpriteAnimationToolStripMenuItem_Click(object sender, EventArgs e) {
+            spriteAnimationListEditor.AddSpriteAnimation()?.ShowEditor();;
+        }
+
+        private void addSoundEffectToolStripMenuItem_Click(object sender, EventArgs e) {
+            sfxListEditor.AddSfx().ShowEditor();
+        }
+
+        private void addMODToolStripMenuItem_Click(object sender, EventArgs e) {
+            modListEditor.AddMod().ShowEditor();
+        }
     }
 }

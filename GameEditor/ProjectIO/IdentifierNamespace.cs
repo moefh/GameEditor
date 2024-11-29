@@ -13,18 +13,24 @@ namespace GameEditor.ProjectIO
 
         private static readonly Regex reNonIdent = new Regex("[^A-Za-z0-9_]+");
 
+        private readonly string globalPrefix;
         private readonly HashSet<string> idents = [];
         private readonly Dictionary<object,string> infos = [];
 
+        public IdentifierNamespace(string globalPrefix) {
+            this.globalPrefix = globalPrefix;
+        }
+
         public string Add(object info, string prefix, string name, string suffix = "", uint flags = 0) {
             string baseIdent = reNonIdent.Replace(name, "_");
-            if ((flags & UPPER_CASE) != 0) baseIdent = baseIdent.ToUpperInvariant();
 
             if (suffix.Length > 0) suffix = $"_{suffix}";
-            string ident = $"{prefix}_{baseIdent}{suffix}";
+            string ident = $"{globalPrefix}_{prefix}_{baseIdent}{suffix}";
+            if ((flags & UPPER_CASE) != 0) ident = ident.ToUpperInvariant();
             int serial = 0;
             while (! idents.Add(ident)) {
                 ident = $"{prefix}_{baseIdent}_{++serial}{suffix}";
+                if ((flags & UPPER_CASE) != 0) ident = ident.ToUpperInvariant();
             }
             infos[info] = ident;
             return ident;

@@ -9,12 +9,13 @@ using System.Threading.Tasks;
 
 namespace GameEditor.ModEditor
 {
-    public class ModDataItem
+    public class ModDataItem : IDataAssetItem
     {
         public ModDataItem(ModData modData) {
             Mod = modData;
         }
 
+        public IDataAsset Asset { get { return Mod; } }
         public ModData Mod { get; }
         public ModEditorWindow? Editor { get; private set; }
         public string Name { get { return Mod.Name; } }

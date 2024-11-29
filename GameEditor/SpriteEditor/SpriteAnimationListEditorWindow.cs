@@ -22,8 +22,22 @@ namespace GameEditor.SpriteEditor
 
         public void RefreshSpriteAnimationList() {
             animationList.DataSource = null;
-            animationList.DataSource = EditorState.SpriteAnimationList;
+            animationList.DataSource = Util.Project.SpriteAnimationList;
             animationList.DisplayMember = "Name";
+        }
+
+        public SpriteAnimationItem? AddSpriteAnimation() {
+            if (Util.Project.SpriteList.Count == 0) {
+                MessageBox.Show(
+                    "You need at least one sprite to create an animation.",
+                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            Sprite sprite = Util.Project.SpriteList[0].Sprite;
+            SpriteAnimationItem ai = Util.Project.AddSpriteAnimation(new SpriteAnimation(sprite, "new_animation"));
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return ai;
         }
 
         public void LoadWindowPosition() {
@@ -44,16 +58,7 @@ namespace GameEditor.SpriteEditor
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (EditorState.SpriteList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one sprite to create an animation.",
-                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return;
-            }
-            Sprite sprite = EditorState.SpriteList[0].Sprite;
-            EditorState.AddSpriteAnimation(new SpriteAnimation(sprite, "new_animation"));
-            EditorState.SetDirty();
-            Util.UpdateGameDataSize();
+            AddSpriteAnimation();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -67,8 +72,8 @@ namespace GameEditor.SpriteEditor
                 return;
             }
             ai.Animation.Close();  // unregister sprite event
-            EditorState.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
-            EditorState.SetDirty();
+            Util.Project.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }
 

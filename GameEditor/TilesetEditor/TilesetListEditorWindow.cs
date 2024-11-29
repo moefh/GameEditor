@@ -25,8 +25,15 @@ namespace GameEditor.TilesetEditor
         public void RefreshTilesetList()
         {
             tilesetList.DataSource = null;
-            tilesetList.DataSource = EditorState.TilesetList;
+            tilesetList.DataSource = Util.Project.TilesetList;
             tilesetList.DisplayMember = "Name";
+        }
+
+        public TilesetItem AddTileset() {
+            TilesetItem ti = Util.Project.AddTileset(new Tileset("new_tileset"));
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return ti;
         }
 
         private void TilesetListEditor_FormClosing(object sender, FormClosingEventArgs e)
@@ -51,9 +58,7 @@ namespace GameEditor.TilesetEditor
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            EditorState.AddTileset(new Tileset("new_tileset"));
-            EditorState.SetDirty();
-            Util.UpdateGameDataSize();
+            AddTileset();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e)
@@ -62,7 +67,7 @@ namespace GameEditor.TilesetEditor
             if (item is not TilesetItem ts) return;
 
             // check that this is not the last tileset
-            if (EditorState.TilesetList.Count < 2) {
+            if (Util.Project.TilesetList.Count < 2) {
                 MessageBox.Show(
                     "Can't remove the last tileset, there must be at least one tileset present.",
                     "Can't Remove Tileset",
@@ -81,7 +86,7 @@ namespace GameEditor.TilesetEditor
 
             // check that the tileset is not used in a map
             List<string> maps = [];
-            foreach (MapDataItem map in EditorState.MapList) {
+            foreach (MapDataItem map in Util.Project.MapList) {
                 if (map.Map.Tileset == ts.Tileset) {
                     maps.Add(map.Map.Name);
                 }
@@ -94,8 +99,8 @@ namespace GameEditor.TilesetEditor
                 return;
             }
 
-            EditorState.TilesetList.RemoveAt(tilesetList.SelectedIndex);
-            EditorState.SetDirty();
+            Util.Project.TilesetList.RemoveAt(tilesetList.SelectedIndex);
+            Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }
 

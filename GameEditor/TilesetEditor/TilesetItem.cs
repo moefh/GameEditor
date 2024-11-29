@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace GameEditor.TilesetEditor
 {
-    public class TilesetItem
+    public class TilesetItem : IDataAssetItem
     {
         public TilesetItem(Tileset ts) {
             Tileset = ts;
         }
 
+        public IDataAsset Asset { get { return Tileset; } }
         public Tileset Tileset { get; }
         public TilesetEditorWindow? Editor { get; private set; }
         public string Name { get { return Tileset.Name; } }

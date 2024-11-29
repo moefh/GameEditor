@@ -19,9 +19,12 @@ namespace GameEditor.CustomControls
         public const uint LAYER_BG = 1 << 1;
         public const uint LAYER_COL = 1 << 2;
         public const uint LAYER_GRID = 1 << 3;
+        public const uint LAYER_SCREEN = 1 << 4;
 
         const int TILE_SIZE = Tileset.TILE_SIZE;
         const int MARGIN = 1;
+        const int GAME_SCREEN_WIDTH = 320;
+        const int GAME_SCREEN_HEIGHT = 240;
 
         private double zoom = 3.0f;
         private Point scrollOrigin;
@@ -80,6 +83,7 @@ namespace GameEditor.CustomControls
                     if ((EnabledRenderLayers & LAYER_COL) != 0) {
                         RenderCollision(pe, Map.Tiles.clip[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true);
                     }
+
                 }
             }
             if ((EnabledRenderLayers & LAYER_GRID) != 0) {
@@ -92,6 +96,26 @@ namespace GameEditor.CustomControls
                 for (int tx = 0; tx < Map.Tiles.Width + 1; tx++) {
                     int x = (int) (tx * TILE_SIZE * zoom) - origin.X;
                     pe.Graphics.DrawLine(Pens.Black, x + MARGIN, MARGIN, x + MARGIN, h);
+                }
+            }
+            if ((EnabledRenderLayers & LAYER_SCREEN) != 0) {
+                int w = (int) (GAME_SCREEN_WIDTH * zoom);
+                int h = (int) (GAME_SCREEN_HEIGHT * zoom);
+                int x = ((int)double.Min(ClientSize.Width, Map.Tiles.Width * TILE_SIZE * zoom) - w) / 2;
+                int y = ((int)double.Min(ClientSize.Height, Map.Tiles.Height * TILE_SIZE * zoom) - h) / 2;
+                if (x < 0) x = 0;
+                if (y < 0) y = 0;
+                Pen[] pens = {
+                    Pens.LightGreen,
+                    Pens.Black,
+                    Pens.LightGreen,
+                };
+                for (int i = 0; i < 5; i++) {
+                    Pen pen = pens[i%pens.Length];
+                    pe.Graphics.DrawLine(pen, x +   i, y +   i, x + w-i, y +   i);
+                    pe.Graphics.DrawLine(pen, x +   i, y + h-i, x + w-i, y + h-i);
+                    pe.Graphics.DrawLine(pen, x +   i, y +   i, x +   i, y + h-i);
+                    pe.Graphics.DrawLine(pen, x + w-i, y +   i, x + w-i, y + h-i);
                 }
             }
         }

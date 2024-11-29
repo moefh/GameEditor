@@ -8,12 +8,13 @@ using System.Threading.Tasks;
 
 namespace GameEditor.MapEditor
 {
-    public class MapDataItem
+    public class MapDataItem : IDataAssetItem
     {
         public MapDataItem(MapData mapData) {
             Map = mapData;
         }
 
+        public IDataAsset Asset { get { return Map; } }
         public MapData Map { get; }
         public MapEditorWindow? Editor { get; private set; }
         public string Name { get { return Map.Name; } }

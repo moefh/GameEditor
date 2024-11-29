@@ -13,7 +13,7 @@ using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace GameEditor.GameData
 {
-    public class Sprite : IDisposable
+    public class Sprite : IDataAsset, IDisposable
     {
         public const int MAX_NUM_FRAMES = 256;
         private const int DEFAULT_WIDTH = 16;
@@ -50,7 +50,12 @@ namespace GameEditor.GameData
         public int NumFrames { get { return bitmap.Height / Height; } }
 
         public int GameDataSize {
-            get { return 4*((Width+3)/4) * Height * NumFrames + 4*2 + 4; }
+            get {
+                int frameSize = 4*((Width+3)/4) * Height;
+                // frames+mirrors(2) * each frame(frameSize) * numFrames +
+                //   width(2)+height(2)+stride(2)+numFrames(2) + data(4)
+                return 2*frameSize*NumFrames + 2+2+2+2 + 4;
+            }
         }
 
         public void Dispose() {
