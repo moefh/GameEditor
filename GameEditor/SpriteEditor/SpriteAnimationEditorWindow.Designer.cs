@@ -32,7 +32,6 @@
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
-            toolStripSeparator1 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
             toolStripComboSprites = new ToolStripComboBox();
             toolsToolStrip = new ToolStrip();
@@ -48,6 +47,7 @@
             spriteEditor = new CustomControls.SpriteEditor();
             spriteListView = new CustomControls.SpriteAnimationLoopView();
             colorPicker = new CustomControls.ColorPicker();
+            toolStripLabel1 = new ToolStripLabel();
             statusStrip1.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -84,7 +84,7 @@
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, toolStripLabel2, toolStripComboSprites });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripComboSprites, toolStripLabel2 });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(632, 27);
@@ -103,19 +103,16 @@
             toolStripTxtName.Size = new Size(150, 27);
             toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 27);
-            // 
             // toolStripLabel2
             // 
+            toolStripLabel2.Alignment = ToolStripItemAlignment.Right;
             toolStripLabel2.Name = "toolStripLabel2";
             toolStripLabel2.Size = new Size(47, 24);
             toolStripLabel2.Text = "Sprite:";
             // 
             // toolStripComboSprites
             // 
+            toolStripComboSprites.Alignment = ToolStripItemAlignment.Right;
             toolStripComboSprites.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboSprites.Name = "toolStripComboSprites";
             toolStripComboSprites.Size = new Size(100, 27);
@@ -124,7 +121,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -291,6 +288,12 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(56, 24);
+            toolStripLabel1.Text = "Display:";
+            // 
             // SpriteAnimationEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -347,10 +350,10 @@
         private ContextMenuStrip loopContextMenuStrip;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem deleteToolStripMenuItem;
-        private ToolStripSeparator toolStripSeparator1;
         private ToolStripButton toolStripBtnTransparent;
         private ToolStripLabel toolStripLabel2;
         private ToolStripComboBox toolStripComboSprites;
         private ToolStripStatusLabel lblDataSize;
+        private ToolStripLabel toolStripLabel1;
     }
 }

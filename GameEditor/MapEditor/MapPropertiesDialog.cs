@@ -1,8 +1,8 @@
 ﻿namespace GameEditor.MapEditor
 {
-    public partial class MapSizeDialog : Form
+    public partial class MapPropertiesDialog : Form
     {
-        public MapSizeDialog() {
+        public MapPropertiesDialog() {
             InitializeComponent();
         }
 

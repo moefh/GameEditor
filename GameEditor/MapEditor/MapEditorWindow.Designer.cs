@@ -52,10 +52,10 @@
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
-            toolStripLabel2 = new ToolStripLabel();
-            toolStripComboTiles = new ToolStripComboBox();
             toolStripSeparator1 = new ToolStripSeparator();
-            btnResize = new ToolStripButton();
+            btnProperties = new ToolStripButton();
+            toolStripComboTiles = new ToolStripComboBox();
+            toolStripLabel2 = new ToolStripLabel();
             toolsToolStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -68,6 +68,7 @@
             // 
             // toolsToolStrip
             // 
+            toolsToolStrip.AutoSize = false;
             toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
@@ -151,9 +152,7 @@
             // 
             // toolStripButtonShowCol
             // 
-            toolStripButtonShowCol.Checked = true;
             toolStripButtonShowCol.CheckOnClick = true;
-            toolStripButtonShowCol.CheckState = CheckState.Checked;
             toolStripButtonShowCol.Image = (Image)resources.GetObject("toolStripButtonShowCol.Image");
             toolStripButtonShowCol.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowCol.Name = "toolStripButtonShowCol";
@@ -163,9 +162,7 @@
             // 
             // toolStripButtonShowGrid
             // 
-            toolStripButtonShowGrid.Checked = true;
             toolStripButtonShowGrid.CheckOnClick = true;
-            toolStripButtonShowGrid.CheckState = CheckState.Checked;
             toolStripButtonShowGrid.Image = (Image)resources.GetObject("toolStripButtonShowGrid.Image");
             toolStripButtonShowGrid.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowGrid.Name = "toolStripButtonShowGrid";
@@ -185,6 +182,7 @@
             // 
             // toolStripSeparator3
             // 
+            toolStripSeparator3.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator3.Name = "toolStripSeparator3";
             toolStripSeparator3.Size = new Size(6, 27);
             // 
@@ -257,7 +255,7 @@
             // tilePicker
             // 
             tilePicker.Anchor = AnchorStyles.Top;
-            tilePicker.Location = new Point(0, 0);
+            tilePicker.Location = new Point(9, 0);
             tilePicker.MinimumSize = new Size(64, 64);
             tilePicker.Name = "tilePicker";
             tilePicker.SelectedTile = 0;
@@ -286,7 +284,8 @@
             // 
             // infoToolStrip
             // 
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripLabel2, toolStripComboTiles, toolStripSeparator1, btnResize });
+            infoToolStrip.AutoSize = false;
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, btnProperties, toolStripComboTiles, toolStripLabel2 });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(789, 27);
@@ -302,36 +301,40 @@
             // toolStripTxtName
             // 
             toolStripTxtName.Name = "toolStripTxtName";
-            toolStripTxtName.Size = new Size(200, 27);
+            toolStripTxtName.Size = new Size(160, 27);
             toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
-            // toolStripLabel2
+            // toolStripSeparator1
             // 
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(50, 24);
-            toolStripLabel2.Text = "Tileset:";
+            toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 27);
+            // 
+            // btnProperties
+            // 
+            btnProperties.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            btnProperties.Image = Properties.Resources.PropertiesIcon;
+            btnProperties.ImageTransparentColor = Color.Magenta;
+            btnProperties.Name = "btnProperties";
+            btnProperties.Size = new Size(23, 24);
+            btnProperties.Text = "Properties";
+            btnProperties.ToolTipText = "Edit map properties";
+            btnProperties.Click += btnProperties_Click;
             // 
             // toolStripComboTiles
             // 
+            toolStripComboTiles.Alignment = ToolStripItemAlignment.Right;
             toolStripComboTiles.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboTiles.Name = "toolStripComboTiles";
             toolStripComboTiles.Size = new Size(100, 27);
             toolStripComboTiles.DropDownClosed += toolStripComboTiles_DropdownClosed;
             // 
-            // toolStripSeparator1
+            // toolStripLabel2
             // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 27);
-            // 
-            // btnResize
-            // 
-            btnResize.Image = (Image)resources.GetObject("btnResize.Image");
-            btnResize.ImageTransparentColor = Color.Magenta;
-            btnResize.Name = "btnResize";
-            btnResize.Size = new Size(66, 24);
-            btnResize.Text = "Resize";
-            btnResize.ToolTipText = "Resize";
-            btnResize.Click += btnResize_Click;
+            toolStripLabel2.Alignment = ToolStripItemAlignment.Right;
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(50, 24);
+            toolStripLabel2.Text = "Tileset:";
             // 
             // MapEditorWindow
             // 
@@ -377,7 +380,7 @@
         private ToolStripLabel toolStripLabel1;
         private ToolStrip infoToolStrip;
         private ToolStripComboBox toolStripComboTiles;
-        private ToolStripButton btnResize;
+        private ToolStripButton btnProperties;
         private ToolStripLabel toolStripLabel3;
         private ToolStripTextBox toolStripTxtName;
         private ToolStripLabel toolStripLabel2;

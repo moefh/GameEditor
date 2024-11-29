@@ -33,7 +33,6 @@
             toolStripTxtName = new ToolStripTextBox();
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
-            toolStripSeparator1 = new ToolStripSeparator();
             toolStripBtnPlay = new ToolStripButton();
             sfxView = new CustomControls.SfxView();
             statusStrip.SuspendLayout();
@@ -58,7 +57,7 @@
             // toolStrip1
             // 
             toolStrip1.AutoSize = false;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnExport, toolStripBtnImport, toolStripSeparator1, toolStripBtnPlay });
+            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnExport, toolStripBtnImport, toolStripBtnPlay });
             toolStrip1.Location = new Point(0, 0);
             toolStrip1.Name = "toolStrip1";
             toolStrip1.Size = new Size(443, 27);
@@ -80,37 +79,36 @@
             // toolStripBtnExport
             // 
             toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
+            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
             toolStripBtnExport.ImageTransparentColor = Color.Magenta;
             toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(68, 24);
+            toolStripBtnExport.Size = new Size(23, 24);
             toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.ToolTipText = "Export sample to WAV file";
             toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
             // 
             toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
+            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
             toolStripBtnImport.ImageTransparentColor = Color.Magenta;
             toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(71, 24);
+            toolStripBtnImport.Size = new Size(23, 24);
             toolStripBtnImport.Text = "Import";
+            toolStripBtnImport.ToolTipText = "Import sample from WAV file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
-            // 
-            // toolStripSeparator1
-            // 
-            toolStripSeparator1.Alignment = ToolStripItemAlignment.Right;
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 27);
             // 
             // toolStripBtnPlay
             // 
-            toolStripBtnPlay.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnPlay.Image = (Image)resources.GetObject("toolStripBtnPlay.Image");
+            toolStripBtnPlay.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnPlay.Image = Properties.Resources.PlayIcon;
             toolStripBtnPlay.ImageTransparentColor = Color.Magenta;
             toolStripBtnPlay.Name = "toolStripBtnPlay";
-            toolStripBtnPlay.Size = new Size(54, 24);
+            toolStripBtnPlay.Size = new Size(23, 24);
             toolStripBtnPlay.Text = "Play";
+            toolStripBtnPlay.ToolTipText = "Play sample";
             toolStripBtnPlay.Click += toolStripBtnPlay_Click;
             // 
             // sfxView
@@ -156,7 +154,6 @@
         private ToolStripButton toolStripBtnExport;
         private CustomControls.SfxView sfxView;
         private ToolStripButton toolStripBtnImport;
-        private ToolStripSeparator toolStripSeparator1;
         private ToolStripStatusLabel lblDataSize;
     }
 }

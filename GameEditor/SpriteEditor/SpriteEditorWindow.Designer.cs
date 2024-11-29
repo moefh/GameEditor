@@ -100,15 +100,17 @@
             // 
             // toolStripSeparator1
             // 
+            toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 27);
             // 
             // toolStripBtnProperties
             // 
-            toolStripBtnProperties.Image = (Image)resources.GetObject("toolStripBtnProperties.Image");
+            toolStripBtnProperties.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnProperties.Image = Properties.Resources.PropertiesIcon;
             toolStripBtnProperties.ImageTransparentColor = Color.Magenta;
             toolStripBtnProperties.Name = "toolStripBtnProperties";
-            toolStripBtnProperties.Size = new Size(91, 24);
+            toolStripBtnProperties.Size = new Size(23, 24);
             toolStripBtnProperties.Text = "Properties";
             toolStripBtnProperties.ToolTipText = "Edit sprite properties";
             toolStripBtnProperties.Click += toolStripBtnProperties_Click;
@@ -116,20 +118,23 @@
             // toolStripBtnExport
             // 
             toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
+            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
             toolStripBtnExport.ImageTransparentColor = Color.Magenta;
             toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(68, 24);
+            toolStripBtnExport.Size = new Size(23, 24);
             toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.ToolTipText = "Export sprite image to file";
             toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
             // 
             toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
+            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
             toolStripBtnImport.ImageTransparentColor = Color.Magenta;
             toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(71, 24);
+            toolStripBtnImport.Size = new Size(23, 24);
             toolStripBtnImport.Text = "Import";
             toolStripBtnImport.ToolTipText = "Import sprite image from file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
@@ -174,14 +179,15 @@
             // 
             // toolStripSeparator2
             // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
             // 
             // toolStripLabel1
             // 
             toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(45, 24);
-            toolStripLabel1.Text = "Show:";
+            toolStripLabel1.Size = new Size(56, 24);
+            toolStripLabel1.Text = "Display:";
             // 
             // toolStripBtnGrid
             // 

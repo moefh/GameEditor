@@ -44,8 +44,8 @@
             colorPicker = new CustomControls.ColorPicker();
             toolsToolStrip = new ToolStrip();
             toolStripBtnGrid = new ToolStripButton();
-            toolStripSeparator2 = new ToolStripSeparator();
             toolStripBtnTransparent = new ToolStripButton();
+            toolStripLabel2 = new ToolStripLabel();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -84,36 +84,43 @@
             // 
             // toolStripSeparator1
             // 
+            toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 27);
             // 
             // toolStripBtnExport
             // 
             toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.Image = (Image)resources.GetObject("toolStripBtnExport.Image");
+            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
             toolStripBtnExport.ImageTransparentColor = Color.Magenta;
             toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(68, 24);
+            toolStripBtnExport.Size = new Size(23, 24);
             toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.ToolTipText = "Export tileset image to file";
             toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
             // 
             toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
+            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
             toolStripBtnImport.ImageTransparentColor = Color.Magenta;
             toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(71, 24);
+            toolStripBtnImport.Size = new Size(23, 24);
             toolStripBtnImport.Text = "Import";
+            toolStripBtnImport.ToolTipText = "Import tileset image from file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
             // 
             // toolStripBtnProperties
             // 
-            toolStripBtnProperties.Image = (Image)resources.GetObject("toolStripBtnProperties.Image");
+            toolStripBtnProperties.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnProperties.Image = Properties.Resources.PropertiesIcon;
             toolStripBtnProperties.ImageTransparentColor = Color.Magenta;
             toolStripBtnProperties.Name = "toolStripBtnProperties";
-            toolStripBtnProperties.Size = new Size(91, 24);
+            toolStripBtnProperties.Size = new Size(23, 24);
             toolStripBtnProperties.Text = "Properties";
+            toolStripBtnProperties.ToolTipText = "Edit tileset properties";
             toolStripBtnProperties.Click += toolStripBtnProperties_Click;
             // 
             // statusStrip1
@@ -226,7 +233,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnGrid, toolStripSeparator2, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
@@ -245,11 +252,6 @@
             toolStripBtnGrid.Text = "Grid";
             toolStripBtnGrid.Click += toolStripBtnGrid_Click;
             // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 27);
-            // 
             // toolStripBtnTransparent
             // 
             toolStripBtnTransparent.Checked = true;
@@ -261,6 +263,12 @@
             toolStripBtnTransparent.Size = new Size(101, 24);
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(56, 24);
+            toolStripLabel2.Text = "Display:";
             // 
             // TilesetEditorWindow
             // 
@@ -305,7 +313,6 @@
         private ToolStrip toolsToolStrip;
         private ToolStripButton toolStripBtnGrid;
         private ToolStripSeparator toolStripSeparator1;
-        private ToolStripSeparator toolStripSeparator2;
         private CustomControls.TileEditor tileEditor;
         private ToolStripButton toolStripBtnImport;
         private ToolStripButton toolStripBtnExport;
@@ -316,5 +323,6 @@
         private CustomControls.ColorPicker colorPicker;
         private ToolStripButton toolStripBtnProperties;
         private ToolStripStatusLabel lblDataSize;
+        private ToolStripLabel toolStripLabel2;
     }
 }

@@ -98,8 +98,8 @@ namespace GameEditor.MapEditor
             mapView.Invalidate();
         }
 
-        private void btnResize_Click(object sender, EventArgs e) {
-            MapSizeDialog dlg = new MapSizeDialog();
+        private void btnProperties_Click(object sender, EventArgs e) {
+            MapPropertiesDialog dlg = new MapPropertiesDialog();
             dlg.MapWidth = Map.Tiles.Width;
             dlg.MapHeight = Map.Tiles.Height;
             if (dlg.ShowDialog() == DialogResult.OK) {

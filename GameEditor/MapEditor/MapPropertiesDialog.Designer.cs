@@ -1,6 +1,6 @@
 ﻿namespace GameEditor.MapEditor
 {
-    partial class MapSizeDialog
+    partial class MapPropertiesDialog
     {
         /// <summary>
         /// Required designer variable.
@@ -96,7 +96,7 @@
             numHeight.TabIndex = 1;
             numHeight.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
-            // MapSizeDialog
+            // MapPropertiesDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -112,9 +112,9 @@
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "MapSizeDialog";
+            Name = "MapPropertiesDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Resize Map";
+            Text = "Map Properties";
             Shown += MapSizeDialog_Shown;
             ((System.ComponentModel.ISupportInitialize)numWidth).EndInit();
             ((System.ComponentModel.ISupportInitialize)numHeight).EndInit();

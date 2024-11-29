@@ -100,11 +100,13 @@
             // toolStripBtnImport
             // 
             toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.Image = (Image)resources.GetObject("toolStripBtnImport.Image");
+            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
             toolStripBtnImport.ImageTransparentColor = Color.Magenta;
             toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(71, 22);
+            toolStripBtnImport.Size = new Size(23, 22);
             toolStripBtnImport.Text = "Import";
+            toolStripBtnImport.ToolTipText = "Import MOD file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
             // 
             // mainTabControl
@@ -190,7 +192,7 @@
             // 
             // trackSampleVolume
             // 
-            trackSampleVolume.Location = new Point(98, 3);
+            trackSampleVolume.Location = new Point(75, 3);
             trackSampleVolume.Maximum = 200;
             trackSampleVolume.Name = "trackSampleVolume";
             trackSampleVolume.Size = new Size(156, 45);
@@ -200,11 +202,14 @@
             // 
             // btnPlaySample
             // 
+            btnPlaySample.Image = Properties.Resources.PlayIcon;
+            btnPlaySample.ImageAlign = ContentAlignment.MiddleLeft;
             btnPlaySample.Location = new Point(3, 3);
             btnPlaySample.Name = "btnPlaySample";
-            btnPlaySample.Size = new Size(89, 34);
+            btnPlaySample.Size = new Size(66, 34);
             btnPlaySample.TabIndex = 0;
             btnPlaySample.Text = "Play";
+            btnPlaySample.TextAlign = ContentAlignment.MiddleRight;
             btnPlaySample.UseVisualStyleBackColor = true;
             btnPlaySample.Click += btnPlaySample_Click;
             // 
