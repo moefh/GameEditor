@@ -39,8 +39,15 @@
             sampleList = new ListBox();
             splitSample = new SplitContainer();
             sampleView = new CustomControls.SoundSampleView();
-            trackSampleVolume = new TrackBar();
+            groupBox2 = new GroupBox();
+            lblSampleLength = new Label();
+            label2 = new Label();
+            btnExportSample = new Button();
+            groupBox1 = new GroupBox();
+            volPlaySample = new CustomControls.VolumeControl();
+            label1 = new Label();
             btnPlaySample = new Button();
+            numPlaySampleRate = new NumericUpDown();
             tabPattern = new TabPage();
             patternGrid = new DataGridView();
             tooltip = new ToolTip(components);
@@ -56,7 +63,9 @@
             splitSample.Panel1.SuspendLayout();
             splitSample.Panel2.SuspendLayout();
             splitSample.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)trackSampleVolume).BeginInit();
+            groupBox2.SuspendLayout();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numPlaySampleRate).BeginInit();
             tabPattern.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)patternGrid).BeginInit();
             SuspendLayout();
@@ -64,9 +73,9 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip1.Location = new Point(0, 293);
+            statusStrip1.Location = new Point(0, 335);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(545, 24);
+            statusStrip1.Size = new Size(548, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -82,7 +91,7 @@
             toolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnImport });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
-            toolStrip.Size = new Size(545, 25);
+            toolStrip.Size = new Size(548, 25);
             toolStrip.TabIndex = 1;
             // 
             // toolStripLabel1
@@ -117,7 +126,7 @@
             mainTabControl.Location = new Point(0, 25);
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
-            mainTabControl.Size = new Size(545, 268);
+            mainTabControl.Size = new Size(548, 310);
             mainTabControl.TabIndex = 2;
             // 
             // tabSamples
@@ -126,7 +135,7 @@
             tabSamples.Location = new Point(4, 28);
             tabSamples.Name = "tabSamples";
             tabSamples.Padding = new Padding(3);
-            tabSamples.Size = new Size(537, 236);
+            tabSamples.Size = new Size(540, 278);
             tabSamples.TabIndex = 0;
             tabSamples.Text = "Samples";
             tabSamples.UseVisualStyleBackColor = true;
@@ -145,8 +154,8 @@
             // splitSampleList.Panel2
             // 
             splitSampleList.Panel2.Controls.Add(splitSample);
-            splitSampleList.Size = new Size(531, 230);
-            splitSampleList.SplitterDistance = 127;
+            splitSampleList.Size = new Size(534, 272);
+            splitSampleList.SplitterDistance = 171;
             splitSampleList.TabIndex = 0;
             // 
             // sampleList
@@ -156,7 +165,7 @@
             sampleList.IntegralHeight = false;
             sampleList.Location = new Point(0, 0);
             sampleList.Name = "sampleList";
-            sampleList.Size = new Size(127, 230);
+            sampleList.Size = new Size(171, 272);
             sampleList.TabIndex = 0;
             sampleList.SelectedIndexChanged += sampleList_SelectedIndexChanged;
             // 
@@ -174,10 +183,10 @@
             // 
             // splitSample.Panel2
             // 
-            splitSample.Panel2.Controls.Add(trackSampleVolume);
-            splitSample.Panel2.Controls.Add(btnPlaySample);
-            splitSample.Size = new Size(400, 230);
-            splitSample.SplitterDistance = 145;
+            splitSample.Panel2.Controls.Add(groupBox2);
+            splitSample.Panel2.Controls.Add(groupBox1);
+            splitSample.Size = new Size(359, 272);
+            splitSample.SplitterDistance = 122;
             splitSample.TabIndex = 0;
             // 
             // sampleView
@@ -186,32 +195,107 @@
             sampleView.Dock = DockStyle.Fill;
             sampleView.Location = new Point(0, 0);
             sampleView.Name = "sampleView";
-            sampleView.Size = new Size(400, 145);
+            sampleView.Size = new Size(359, 122);
             sampleView.TabIndex = 0;
             sampleView.Text = "soundSampleView1";
             // 
-            // trackSampleVolume
+            // groupBox2
             // 
-            trackSampleVolume.Location = new Point(75, 3);
-            trackSampleVolume.Maximum = 200;
-            trackSampleVolume.Name = "trackSampleVolume";
-            trackSampleVolume.Size = new Size(156, 45);
-            trackSampleVolume.TabIndex = 1;
-            tooltip.SetToolTip(trackSampleVolume, "Volume");
-            trackSampleVolume.Value = 30;
+            groupBox2.Controls.Add(lblSampleLength);
+            groupBox2.Controls.Add(label2);
+            groupBox2.Controls.Add(btnExportSample);
+            groupBox2.Location = new Point(3, 81);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(337, 72);
+            groupBox2.TabIndex = 8;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Data";
+            // 
+            // lblSampleLength
+            // 
+            lblSampleLength.AutoSize = true;
+            lblSampleLength.Location = new Point(67, 33);
+            lblSampleLength.Name = "lblSampleLength";
+            lblSampleLength.Size = new Size(68, 19);
+            lblSampleLength.TabIndex = 4;
+            lblSampleLength.Text = "? samples";
+            // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(6, 33);
+            label2.Name = "label2";
+            label2.Size = new Size(55, 19);
+            label2.TabIndex = 3;
+            label2.Text = "Length:";
+            // 
+            // btnExportSample
+            // 
+            btnExportSample.Image = Properties.Resources.ExportIcon;
+            btnExportSample.Location = new Point(286, 25);
+            btnExportSample.Name = "btnExportSample";
+            btnExportSample.Size = new Size(39, 34);
+            btnExportSample.TabIndex = 2;
+            tooltip.SetToolTip(btnExportSample, "Export sample to WAV");
+            btnExportSample.UseVisualStyleBackColor = true;
+            btnExportSample.Click += btnExportSample_Click;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(volPlaySample);
+            groupBox1.Controls.Add(label1);
+            groupBox1.Controls.Add(btnPlaySample);
+            groupBox1.Controls.Add(numPlaySampleRate);
+            groupBox1.Location = new Point(3, 3);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(337, 72);
+            groupBox1.TabIndex = 7;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Play";
+            // 
+            // volPlaySample
+            // 
+            volPlaySample.Location = new Point(51, 25);
+            volPlaySample.MaxValue = 200;
+            volPlaySample.MinValue = 0;
+            volPlaySample.Name = "volPlaySample";
+            volPlaySample.Size = new Size(145, 34);
+            volPlaySample.TabIndex = 3;
+            tooltip.SetToolTip(volPlaySample, "Play volume");
+            volPlaySample.Value = 30;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(286, 33);
+            label1.Name = "label1";
+            label1.Size = new Size(25, 19);
+            label1.TabIndex = 6;
+            label1.Text = "Hz";
             // 
             // btnPlaySample
             // 
             btnPlaySample.Image = Properties.Resources.PlayIcon;
-            btnPlaySample.ImageAlign = ContentAlignment.MiddleLeft;
-            btnPlaySample.Location = new Point(3, 3);
+            btnPlaySample.Location = new Point(6, 25);
             btnPlaySample.Name = "btnPlaySample";
-            btnPlaySample.Size = new Size(66, 34);
+            btnPlaySample.Size = new Size(39, 34);
             btnPlaySample.TabIndex = 0;
-            btnPlaySample.Text = "Play";
-            btnPlaySample.TextAlign = ContentAlignment.MiddleRight;
+            tooltip.SetToolTip(btnPlaySample, "Play sample");
             btnPlaySample.UseVisualStyleBackColor = true;
             btnPlaySample.Click += btnPlaySample_Click;
+            // 
+            // numPlaySampleRate
+            // 
+            numPlaySampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
+            numPlaySampleRate.Location = new Point(202, 31);
+            numPlaySampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
+            numPlaySampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
+            numPlaySampleRate.Name = "numPlaySampleRate";
+            numPlaySampleRate.Size = new Size(78, 26);
+            numPlaySampleRate.TabIndex = 5;
+            numPlaySampleRate.TextAlign = HorizontalAlignment.Right;
+            tooltip.SetToolTip(numPlaySampleRate, "Play sample rate");
+            numPlaySampleRate.Value = new decimal(new int[] { 22050, 0, 0, 0 });
             // 
             // tabPattern
             // 
@@ -219,7 +303,7 @@
             tabPattern.Location = new Point(4, 28);
             tabPattern.Name = "tabPattern";
             tabPattern.Padding = new Padding(3);
-            tabPattern.Size = new Size(537, 236);
+            tabPattern.Size = new Size(540, 278);
             tabPattern.TabIndex = 1;
             tabPattern.Text = "Pattern";
             tabPattern.UseVisualStyleBackColor = true;
@@ -230,14 +314,14 @@
             patternGrid.Dock = DockStyle.Fill;
             patternGrid.Location = new Point(3, 3);
             patternGrid.Name = "patternGrid";
-            patternGrid.Size = new Size(531, 230);
+            patternGrid.Size = new Size(534, 272);
             patternGrid.TabIndex = 0;
             // 
             // ModEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(545, 317);
+            ClientSize = new Size(548, 359);
             Controls.Add(mainTabControl);
             Controls.Add(toolStrip);
             Controls.Add(statusStrip1);
@@ -260,10 +344,13 @@
             splitSampleList.ResumeLayout(false);
             splitSample.Panel1.ResumeLayout(false);
             splitSample.Panel2.ResumeLayout(false);
-            splitSample.Panel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)splitSample).EndInit();
             splitSample.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)trackSampleVolume).EndInit();
+            groupBox2.ResumeLayout(false);
+            groupBox2.PerformLayout();
+            groupBox1.ResumeLayout(false);
+            groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)numPlaySampleRate).EndInit();
             tabPattern.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)patternGrid).EndInit();
             ResumeLayout(false);
@@ -286,8 +373,15 @@
         private SplitContainer splitSample;
         private CustomControls.SoundSampleView sampleView;
         private Button btnPlaySample;
-        private TrackBar trackSampleVolume;
         private ToolTip tooltip;
         private DataGridView patternGrid;
+        private Button btnExportSample;
+        private CustomControls.VolumeControl volPlaySample;
+        private GroupBox groupBox1;
+        private Label label1;
+        private NumericUpDown numPlaySampleRate;
+        private GroupBox groupBox2;
+        private Label lblSampleLength;
+        private Label label2;
     }
 }

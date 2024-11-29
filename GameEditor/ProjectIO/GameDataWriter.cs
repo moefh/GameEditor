@@ -42,7 +42,6 @@ namespace GameEditor.ProjectIO
         public void Dispose() {
             if (disposed) return;
             f.Dispose();
-            GC.SuppressFinalize(this);
             disposed = true;
         }
 

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Linq;
 using System.Media;
@@ -22,34 +23,11 @@ namespace GameEditor.ModEditor
             public ModSample sample = sample;
 
             public override readonly string ToString() {
-                return $"sample {index + 1}";
-            }
-        }
-
-        private class SamplePlayer : IDisposable
-        {
-            private SoundPlayer? player = null;
-            private sbyte[]? sampleData = null;
-            private int volume = 0;
-
-            public void Play(ModSample sample, int volume) {
-                if (sampleData != sample.Data || this.volume != volume || player == null) {
-                    sampleData = sample.Data;
-                    this.volume = volume;
-                    double vol = Math.Exp(Math.Log(3) * volume / 200) - 1.0;
-                    byte[] wav = SoundUtil.CreateWaveData(1, 8, 22050, sampleData.Length);
-                    for (int i = 0; i < sampleData.Length; i++) {
-                        sbyte spl = (sbyte)double.Clamp(sampleData[i] * vol, -128, 127);
-                        wav[i + SoundUtil.WAV_SAMPLES_OFFSET] = (byte)(spl + 128);
-                    }
-                    player?.Dispose();
-                    player = new SoundPlayer(new MemoryStream(wav, false));
+                if (sample.Data.Length == 0) {
+                    return $"sample {index + 1} (empty)";
+                } else {
+                    return $"sample {index + 1}";
                 }
-                player.Play();
-            }
-
-            public void Dispose() {
-                player?.Dispose();
             }
         }
 
@@ -63,6 +41,7 @@ namespace GameEditor.ModEditor
             UpdateDataSize();
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Mod.Name);
             sampleList.Items.AddRange([.. ModFile.Sample.Select((spl, i) => new SampleItem(spl, i))]);
+            sampleList.SelectedIndex = 0;
             SetupPatternGridDisplay();
             UpdatePatternGrid();
         }
@@ -85,13 +64,17 @@ namespace GameEditor.ModEditor
             Util.UpdateGameDataSize();
         }
 
-        private void ModEditorWindow_FormClosing(object sender, FormClosingEventArgs e) {
-            Util.SaveWindowPosition(this, "ModEditor");
-            modItem.EditorClosed();
+        private void UpdateSampleInfo(ModSample sample) {
+            if (sample.Len == 0) {
+                lblSampleLength.Text = "(no sample)";
+            } else {
+                lblSampleLength.Text = $"{sample.Len} samples";
+            }
         }
 
-        private void ModEditorWindow_Load(object sender, EventArgs e) {
-            Util.LoadWindowPosition(this, "ModEditor");
+        protected override void OnFormClosed(FormClosedEventArgs e) {
+            base.OnFormClosed(e);
+            player.Dispose();
         }
 
         private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
@@ -125,17 +108,34 @@ namespace GameEditor.ModEditor
                 return;
             }
             sampleView.Data = ModFile.Sample[index].Data;
+            UpdateSampleInfo(ModFile.Sample[index]);
         }
 
         private void btnPlaySample_Click(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
             if (index < 0 || index > ModFile.Sample.Length) return;
-            player.Play(ModFile.Sample[index], trackSampleVolume.Value);
+            player.Play(ModFile.Sample[index], volPlaySample.Value, (int)numPlaySampleRate.Value);
         }
 
-        protected override void OnFormClosed(FormClosedEventArgs e) {
-            base.OnFormClosed(e);
-            player.Dispose();
+        private void btnExportSample_Click(object sender, EventArgs e) {
+            int index = sampleList.SelectedIndex;
+            if (index < 0 || index > ModFile.Sample.Length) return;
+
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.RestoreDirectory = true;
+            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                try {
+                    ModFile.Sample[index].Export(dlg.FileName);
+                } catch (Exception ex) {
+                    Util.Log($"ERROR saving WAV to {dlg.FileName}:\n{ex}");
+                    MessageBox.Show(
+                        $"Error saving WAV: {ex.Message}\n\nConsult the log window for more information.",
+                        "Error Exporting Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
+                Util.Log($"Exported sample {index+1} of MOD {Mod.Name} to {dlg.FileName}");
+            }
         }
 
         private void SetupPatternGridDisplay() {
@@ -183,15 +183,16 @@ namespace GameEditor.ModEditor
         }
 
         private void PatternGrid_CellValueNeeded(object? sender, DataGridViewCellValueEventArgs e) {
-            int cell = e.RowIndex*ModFile.NumChannels + e.ColumnIndex/3;
+            int cell = e.RowIndex * ModFile.NumChannels + e.ColumnIndex / 3;
             //Util.Log($"retrieving cell ({e.RowIndex},{e.ColumnIndex}) -> {cell}");
             if (cell >= ModFile.Pattern.Length) return;
             e.Value = (e.ColumnIndex % 3) switch {
                 0 => (ModFile.Pattern[cell].Period == 0) ? "---" : ModUtil.GetModNoteName(ModFile.Pattern[cell].Period),
-                1 => (ModFile.Pattern[cell].Period == 0) ? "--"  : $"{ModFile.Pattern[cell].Sample,2}",
+                1 => (ModFile.Pattern[cell].Period == 0) ? "--" : $"{ModFile.Pattern[cell].Sample,2}",
                 2 => (ModFile.Pattern[cell].Effect == 0) ? "---" : $"{ModFile.Pattern[cell].Effect:X03}",
                 _ => "",
             };
         }
+
     }
 }

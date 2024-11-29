@@ -17,6 +17,16 @@ namespace GameEditor.Misc
         public sbyte Finetune;
         public byte Volume;
         public sbyte[] Data;
+
+        public readonly void Export(string filename) {
+            byte[] data = SoundUtil.CreateWaveData(1, 8, 22050, Data.Length);
+            for (int i = 0; i < Data.Length; i++) {
+                data[i+SoundUtil.WAV_SAMPLES_OFFSET] = (byte) (Data[i] + 128);
+            }
+            using FileStream f = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            f.Write(data);
+            f.Close();
+        }
     }
 
     public struct ModCell {

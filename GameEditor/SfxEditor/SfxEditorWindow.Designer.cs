@@ -25,26 +25,42 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SfxEditorWindow));
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
-            toolStrip1 = new ToolStrip();
+            sfxView = new CustomControls.SfxView();
+            BottomToolStripPanel = new ToolStripPanel();
+            TopToolStripPanel = new ToolStripPanel();
+            RightToolStripPanel = new ToolStripPanel();
+            LeftToolStripPanel = new ToolStripPanel();
+            ContentPanel = new ToolStripContentPanel();
+            infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
-            toolStripBtnPlay = new ToolStripButton();
-            sfxView = new CustomControls.SfxView();
+            splitContainer1 = new SplitContainer();
+            sampleVolumeControl = new CustomControls.VolumeControl();
+            btnPlay = new Button();
+            toolTip1 = new ToolTip(components);
+            numSampleRate = new NumericUpDown();
+            label1 = new Label();
             statusStrip.SuspendLayout();
-            toolStrip1.SuspendLayout();
+            infoToolStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
+            splitContainer1.Panel1.SuspendLayout();
+            splitContainer1.Panel2.SuspendLayout();
+            splitContainer1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numSampleRate).BeginInit();
             SuspendLayout();
             // 
             // statusStrip
             // 
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip.Location = new Point(0, 159);
+            statusStrip.Location = new Point(0, 215);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(443, 24);
+            statusStrip.Size = new Size(469, 24);
             statusStrip.TabIndex = 0;
             statusStrip.Text = "statusStrip1";
             // 
@@ -54,15 +70,60 @@
             lblDataSize.Size = new Size(54, 19);
             lblDataSize.Text = "0 bytes";
             // 
-            // toolStrip1
+            // sfxView
             // 
-            toolStrip1.AutoSize = false;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnExport, toolStripBtnImport, toolStripBtnPlay });
-            toolStrip1.Location = new Point(0, 0);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(443, 27);
-            toolStrip1.TabIndex = 1;
-            toolStrip1.Text = "toolStrip1";
+            sfxView.Dock = DockStyle.Fill;
+            sfxView.Location = new Point(0, 0);
+            sfxView.MinimumSize = new Size(100, 50);
+            sfxView.Name = "sfxView";
+            sfxView.Sfx = null;
+            sfxView.Size = new Size(469, 139);
+            sfxView.TabIndex = 2;
+            // 
+            // BottomToolStripPanel
+            // 
+            BottomToolStripPanel.Location = new Point(0, 0);
+            BottomToolStripPanel.Name = "BottomToolStripPanel";
+            BottomToolStripPanel.Orientation = Orientation.Horizontal;
+            BottomToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            BottomToolStripPanel.Size = new Size(0, 0);
+            // 
+            // TopToolStripPanel
+            // 
+            TopToolStripPanel.Location = new Point(0, 0);
+            TopToolStripPanel.Name = "TopToolStripPanel";
+            TopToolStripPanel.Orientation = Orientation.Horizontal;
+            TopToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            TopToolStripPanel.Size = new Size(0, 0);
+            // 
+            // RightToolStripPanel
+            // 
+            RightToolStripPanel.Location = new Point(0, 0);
+            RightToolStripPanel.Name = "RightToolStripPanel";
+            RightToolStripPanel.Orientation = Orientation.Horizontal;
+            RightToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            RightToolStripPanel.Size = new Size(0, 0);
+            // 
+            // LeftToolStripPanel
+            // 
+            LeftToolStripPanel.Location = new Point(0, 0);
+            LeftToolStripPanel.Name = "LeftToolStripPanel";
+            LeftToolStripPanel.Orientation = Orientation.Horizontal;
+            LeftToolStripPanel.RowMargin = new Padding(3, 0, 0, 0);
+            LeftToolStripPanel.Size = new Size(0, 0);
+            // 
+            // ContentPanel
+            // 
+            ContentPanel.Size = new Size(150, 178);
+            // 
+            // infoToolStrip
+            // 
+            infoToolStrip.AutoSize = false;
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
+            infoToolStrip.Location = new Point(0, 0);
+            infoToolStrip.Name = "infoToolStrip";
+            infoToolStrip.Size = new Size(469, 27);
+            infoToolStrip.TabIndex = 1;
             // 
             // toolStripLabel3
             // 
@@ -100,34 +161,80 @@
             toolStripBtnImport.ToolTipText = "Import sample from WAV file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
             // 
-            // toolStripBtnPlay
+            // splitContainer1
             // 
-            toolStripBtnPlay.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnPlay.Image = Properties.Resources.PlayIcon;
-            toolStripBtnPlay.ImageTransparentColor = Color.Magenta;
-            toolStripBtnPlay.Name = "toolStripBtnPlay";
-            toolStripBtnPlay.Size = new Size(23, 24);
-            toolStripBtnPlay.Text = "Play";
-            toolStripBtnPlay.ToolTipText = "Play sample";
-            toolStripBtnPlay.Click += toolStripBtnPlay_Click;
+            splitContainer1.Dock = DockStyle.Fill;
+            splitContainer1.FixedPanel = FixedPanel.Panel2;
+            splitContainer1.Location = new Point(0, 27);
+            splitContainer1.Name = "splitContainer1";
+            splitContainer1.Orientation = Orientation.Horizontal;
             // 
-            // sfxView
+            // splitContainer1.Panel1
             // 
-            sfxView.Dock = DockStyle.Fill;
-            sfxView.Location = new Point(0, 27);
-            sfxView.MinimumSize = new Size(100, 50);
-            sfxView.Name = "sfxView";
-            sfxView.Sfx = null;
-            sfxView.Size = new Size(443, 132);
-            sfxView.TabIndex = 2;
+            splitContainer1.Panel1.Controls.Add(sfxView);
+            // 
+            // splitContainer1.Panel2
+            // 
+            splitContainer1.Panel2.Controls.Add(label1);
+            splitContainer1.Panel2.Controls.Add(numSampleRate);
+            splitContainer1.Panel2.Controls.Add(sampleVolumeControl);
+            splitContainer1.Panel2.Controls.Add(btnPlay);
+            splitContainer1.Size = new Size(469, 188);
+            splitContainer1.SplitterDistance = 139;
+            splitContainer1.TabIndex = 3;
+            // 
+            // sampleVolumeControl
+            // 
+            sampleVolumeControl.Location = new Point(52, 3);
+            sampleVolumeControl.MaxValue = 200;
+            sampleVolumeControl.MinValue = 0;
+            sampleVolumeControl.Name = "sampleVolumeControl";
+            sampleVolumeControl.Size = new Size(163, 39);
+            sampleVolumeControl.TabIndex = 1;
+            toolTip1.SetToolTip(sampleVolumeControl, "Play volume");
+            sampleVolumeControl.Value = 50;
+            // 
+            // btnPlay
+            // 
+            btnPlay.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left;
+            btnPlay.Image = Properties.Resources.PlayIcon;
+            btnPlay.Location = new Point(3, 3);
+            btnPlay.Name = "btnPlay";
+            btnPlay.Size = new Size(43, 39);
+            btnPlay.TabIndex = 0;
+            toolTip1.SetToolTip(btnPlay, "Play sample");
+            btnPlay.UseVisualStyleBackColor = true;
+            btnPlay.Click += btnPlay_Click;
+            // 
+            // numSampleRate
+            // 
+            numSampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
+            numSampleRate.Location = new Point(221, 11);
+            numSampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
+            numSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
+            numSampleRate.Name = "numSampleRate";
+            numSampleRate.Size = new Size(78, 26);
+            numSampleRate.TabIndex = 3;
+            numSampleRate.TextAlign = HorizontalAlignment.Right;
+            toolTip1.SetToolTip(numSampleRate, "Play sample rate");
+            numSampleRate.Value = new decimal(new int[] { 22050, 0, 0, 0 });
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(305, 13);
+            label1.Name = "label1";
+            label1.Size = new Size(25, 19);
+            label1.TabIndex = 4;
+            label1.Text = "Hz";
             // 
             // SfxEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(443, 183);
-            Controls.Add(sfxView);
-            Controls.Add(toolStrip1);
+            ClientSize = new Size(469, 239);
+            Controls.Add(splitContainer1);
+            Controls.Add(infoToolStrip);
             Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -138,8 +245,14 @@
             Text = "Sound Effect";
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
+            infoToolStrip.ResumeLayout(false);
+            infoToolStrip.PerformLayout();
+            splitContainer1.Panel1.ResumeLayout(false);
+            splitContainer1.Panel2.ResumeLayout(false);
+            splitContainer1.Panel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)splitContainer1).EndInit();
+            splitContainer1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)numSampleRate).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -147,13 +260,23 @@
         #endregion
 
         private StatusStrip statusStrip;
-        private ToolStrip toolStrip1;
+        private CustomControls.SfxView sfxView;
+        private ToolStripStatusLabel lblDataSize;
+        private ToolStripPanel BottomToolStripPanel;
+        private ToolStripPanel TopToolStripPanel;
+        private ToolStripPanel RightToolStripPanel;
+        private ToolStripPanel LeftToolStripPanel;
+        private ToolStripContentPanel ContentPanel;
+        private ToolStrip infoToolStrip;
         private ToolStripLabel toolStripLabel3;
         private ToolStripTextBox toolStripTxtName;
-        private ToolStripButton toolStripBtnPlay;
         private ToolStripButton toolStripBtnExport;
-        private CustomControls.SfxView sfxView;
         private ToolStripButton toolStripBtnImport;
-        private ToolStripStatusLabel lblDataSize;
+        private SplitContainer splitContainer1;
+        private Button btnPlay;
+        private CustomControls.VolumeControl sampleVolumeControl;
+        private ToolTip toolTip1;
+        private Label label1;
+        private NumericUpDown numSampleRate;
     }
 }

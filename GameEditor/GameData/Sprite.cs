@@ -60,7 +60,6 @@ namespace GameEditor.GameData
 
         public void Dispose() {
             bitmap.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         protected void NotifyNumFramesChanged() {

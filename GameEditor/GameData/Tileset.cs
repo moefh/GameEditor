@@ -60,7 +60,6 @@ namespace GameEditor.GameData
 
         public void Dispose() {
             bitmap.Dispose();
-            GC.SuppressFinalize(this);
         }
 
         public void DrawTileAt(Graphics g, int tile, int x, int y, int w, int h, bool transparent) {

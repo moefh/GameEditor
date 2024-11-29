@@ -68,7 +68,7 @@ namespace GameEditor.GameData
         }
 
         public void Export(string filename) {
-            FileStream f = new FileStream(filename, FileMode.Create, FileAccess.Write);
+            using FileStream f = new FileStream(filename, FileMode.Create, FileAccess.Write);
             f.Write(data);
             f.Close();
         }

@@ -1,4 +1,5 @@
-﻿using GameEditor.GameData;
+﻿using GameEditor.CustomControls;
+using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
@@ -18,15 +19,16 @@ namespace GameEditor.SfxEditor
     public partial class SfxEditorWindow : ProjectAssetEditorForm
     {
         protected SfxDataItem sfxItem;
-        protected SoundPlayer player;
+        protected SamplePlayer player;
 
         public SfxEditorWindow(SfxDataItem sfxItem) : base(sfxItem, "SfxEditor") {
             this.sfxItem = sfxItem;
             InitializeComponent();
+
             sfxView.Sfx = Sfx;
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sfx.Name);
             UpdateDataSize();
-            player = new SoundPlayer(new MemoryStream(Sfx.Data, false));
+            player = new SamplePlayer();
         }
 
         public SfxData Sfx { get { return sfxItem.Sfx; } }
@@ -39,8 +41,6 @@ namespace GameEditor.SfxEditor
         }
 
         private void RefreshSfx() {
-            player.Dispose();
-            player = new SoundPlayer(new MemoryStream(Sfx.Data, false));
             UpdateDataSize();
             sfxView.Invalidate();
         }
@@ -57,8 +57,8 @@ namespace GameEditor.SfxEditor
             FixFormTitle();
         }
 
-        private void toolStripBtnPlay_Click(object sender, EventArgs e) {
-            player.Play();
+        private void btnPlay_Click(object sender, EventArgs e) {
+            player.Play(Sfx.Data, sampleVolumeControl.Value, (int) numSampleRate.Value);
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
@@ -67,8 +67,16 @@ namespace GameEditor.SfxEditor
             dlg.RestoreDirectory = true;
             dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             if (dlg.ShowDialog() == DialogResult.OK) {
+                try {
+                    Sfx.Export(dlg.FileName);
+                } catch (Exception ex) {
+                    Util.Log($"ERROR saving WAV to {dlg.FileName}:\n{ex}");
+                    MessageBox.Show(
+                        $"Error saving WAV: {ex.Message}\n\nConsult the log window for more information.",
+                        "Error Exporting Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    return;
+                }
                 Sfx.FileName = dlg.FileName;
-                Sfx.Export(Sfx.FileName);
                 Util.Log($"Exported sfx {Sfx.Name} to file {Sfx.FileName}");
             }
         }

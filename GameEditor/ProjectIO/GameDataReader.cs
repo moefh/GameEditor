@@ -76,7 +76,6 @@ namespace GameEditor.ProjectIO
             f.Dispose();
             foreach (Tileset t in tilesetList) t.Dispose();
             foreach (Sprite s in spriteList) s.Dispose();
-            GC.SuppressFinalize(this);
             disposed = true;
         }
 
