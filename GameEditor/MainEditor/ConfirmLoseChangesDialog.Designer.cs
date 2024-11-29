@@ -27,13 +27,14 @@
         private void InitializeComponent() {
             btnCancel = new Button();
             btnLoseChanges = new Button();
-            label1 = new Label();
+            lblText = new Label();
+            lblWarning = new Label();
             SuspendLayout();
             // 
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(145, 87);
+            btnCancel.Location = new Point(92, 87);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(95, 32);
             btnCancel.TabIndex = 0;
@@ -43,7 +44,7 @@
             // btnLoseChanges
             // 
             btnLoseChanges.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnLoseChanges.Location = new Point(246, 87);
+            btnLoseChanges.Location = new Point(193, 87);
             btnLoseChanges.Name = "btnLoseChanges";
             btnLoseChanges.Size = new Size(153, 32);
             btnLoseChanges.TabIndex = 1;
@@ -51,15 +52,23 @@
             btnLoseChanges.UseVisualStyleBackColor = true;
             btnLoseChanges.Click += btnLoseChanges_Click;
             // 
-            // label1
+            // lblText
             // 
-            label1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            label1.Location = new Point(12, 9);
-            label1.Name = "label1";
-            label1.Size = new Size(387, 63);
-            label1.TabIndex = 2;
-            label1.Text = "The project has unsaved changes. OK to discard them?";
-            label1.TextAlign = ContentAlignment.MiddleCenter;
+            lblText.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            lblText.Location = new Point(73, 9);
+            lblText.Name = "lblText";
+            lblText.Size = new Size(273, 63);
+            lblText.TabIndex = 2;
+            lblText.Text = "The project has unsaved changes. OK to discard them?";
+            lblText.TextAlign = ContentAlignment.MiddleCenter;
+            // 
+            // lblWarning
+            // 
+            lblWarning.Image = Properties.Resources.WarningImage;
+            lblWarning.Location = new Point(12, 9);
+            lblWarning.Name = "lblWarning";
+            lblWarning.Size = new Size(55, 63);
+            lblWarning.TabIndex = 3;
             // 
             // ConfirmLoseChangesDialog
             // 
@@ -67,8 +76,9 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(411, 131);
-            Controls.Add(label1);
+            ClientSize = new Size(358, 131);
+            Controls.Add(lblWarning);
+            Controls.Add(lblText);
             Controls.Add(btnLoseChanges);
             Controls.Add(btnCancel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -84,6 +94,7 @@
 
         private Button btnCancel;
         private Button btnLoseChanges;
-        private Label label1;
+        private Label lblText;
+        private Label lblWarning;
     }
 }

@@ -9,7 +9,12 @@
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <IsPublishable>True</IsPublishable>
+    <ApplicationIcon>star.ico</ApplicationIcon>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="star.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="CustomControls\SpriteFramePicker.cs">

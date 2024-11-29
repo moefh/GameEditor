@@ -142,6 +142,7 @@
             // 
             // addTilesetToolStripMenuItem
             // 
+            addTilesetToolStripMenuItem.Image = Properties.Resources.TilesetIcon;
             addTilesetToolStripMenuItem.Name = "addTilesetToolStripMenuItem";
             addTilesetToolStripMenuItem.Size = new Size(240, 24);
             addTilesetToolStripMenuItem.Text = "Add New &Tileset";
@@ -149,6 +150,7 @@
             // 
             // addSpriteToolStripMenuItem
             // 
+            addSpriteToolStripMenuItem.Image = Properties.Resources.SpriteIcon;
             addSpriteToolStripMenuItem.Name = "addSpriteToolStripMenuItem";
             addSpriteToolStripMenuItem.Size = new Size(240, 24);
             addSpriteToolStripMenuItem.Text = "Add New &Sprite";
@@ -156,6 +158,7 @@
             // 
             // addMapToolStripMenuItem
             // 
+            addMapToolStripMenuItem.Image = Properties.Resources.MapIcon;
             addMapToolStripMenuItem.Name = "addMapToolStripMenuItem";
             addMapToolStripMenuItem.Size = new Size(240, 24);
             addMapToolStripMenuItem.Text = "Add New &Map";
@@ -163,6 +166,7 @@
             // 
             // addSpriteAnimationToolStripMenuItem
             // 
+            addSpriteAnimationToolStripMenuItem.Image = Properties.Resources.AnimationIcon;
             addSpriteAnimationToolStripMenuItem.Name = "addSpriteAnimationToolStripMenuItem";
             addSpriteAnimationToolStripMenuItem.Size = new Size(240, 24);
             addSpriteAnimationToolStripMenuItem.Text = "Add New Sprite &Animation";
@@ -170,6 +174,7 @@
             // 
             // addSoundEffectToolStripMenuItem
             // 
+            addSoundEffectToolStripMenuItem.Image = Properties.Resources.SfxIcon;
             addSoundEffectToolStripMenuItem.Name = "addSoundEffectToolStripMenuItem";
             addSoundEffectToolStripMenuItem.Size = new Size(240, 24);
             addSoundEffectToolStripMenuItem.Text = "Add New Sound &Effect";
@@ -177,6 +182,7 @@
             // 
             // addMODToolStripMenuItem
             // 
+            addMODToolStripMenuItem.Image = Properties.Resources.MODIcon;
             addMODToolStripMenuItem.Name = "addMODToolStripMenuItem";
             addMODToolStripMenuItem.Size = new Size(240, 24);
             addMODToolStripMenuItem.Text = "Add New M&OD";
@@ -311,6 +317,7 @@
             Controls.Add(toolStrip);
             Controls.Add(statusStrip);
             Controls.Add(menuStrip);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             IsMdiContainer = true;
             Location = new Point(100, 100);
             MainMenuStrip = menuStrip;

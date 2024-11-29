@@ -131,11 +131,31 @@ namespace GameEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
+        /// </summary>
+        internal static System.Drawing.Icon StarIcon {
+            get {
+                object obj = ResourceManager.GetObject("StarIcon", resourceCulture);
+                return ((System.Drawing.Icon)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap TilesetIcon {
             get {
                 object obj = ResourceManager.GetObject("TilesetIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap WarningImage {
+            get {
+                object obj = ResourceManager.GetObject("WarningImage", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
