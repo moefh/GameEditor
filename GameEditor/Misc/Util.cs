@@ -11,21 +11,58 @@ using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GameEditor.SpriteEditor;
 using GameEditor.MapEditor;
+using System.Windows.Forms;
+using System.Xml.Linq;
 
 namespace GameEditor.Misc
 {
     public static class Util
     {
+        public const uint LOG_TARGET_DEBUG = 1<<0;
+        public const uint LOG_TARGET_WINDOW = 1<<1;
+
         private static ProjectData? project;
         private static Point nextWindowPosition;
+        private static uint logTargets;
+        private static bool logTargetsLoaded;
 
         static Util() {
             DesignMode = true;
             project = null;
             nextWindowPosition = new Point(20, 20);
+            logTargets = LOG_TARGET_WINDOW;
+            logTargetsLoaded = false;
         }
 
         public static bool DesignMode { get; set; }
+        public static uint LogTargets {
+            get {
+                if (logTargetsLoaded) return logTargets;
+                try {
+                    bool? saved = (bool?)Properties.Settings.Default[$"LogTargetsSaved"];
+                    if (saved == true) {
+                        logTargets = (uint?)Properties.Settings.Default[$"LogTargets"] ?? LOG_TARGET_WINDOW;
+                    } else {
+                        logTargets = LOG_TARGET_WINDOW;
+                    }
+                } catch (Exception) {
+                    // ignore
+                }
+                logTargetsLoaded = true;
+                return logTargets;
+            }
+            set {
+                logTargets = value;
+                logTargetsLoaded = true;
+                try {
+                    Properties.Settings.Default[$"LogTargets"] = logTargets;
+                    Properties.Settings.Default[$"LogTargetsSaved"] = true;
+                    Properties.Settings.Default.Save();
+                } catch (Exception) {
+                    // ignore
+                }
+            }
+        }
 
         public static MainWindow? MainWindow { get; set; }
 
@@ -36,8 +73,8 @@ namespace GameEditor.Misc
 
         public static void Log(string log) {
             if (DesignMode) return;
-            System.Diagnostics.Debug.WriteLine(log);
-            MainWindow?.AddLog(log + "\r\n");
+            if ((LogTargets & LOG_TARGET_DEBUG) != 0) System.Diagnostics.Debug.WriteLine(log);
+            if ((LogTargets & LOG_TARGET_WINDOW) != 0) MainWindow?.AddLog(log + "\r\n");
         }
 
         public static void ShowError(Exception ex, string message, string title) {

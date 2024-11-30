@@ -574,5 +574,29 @@ namespace GameEditor.Properties {
                 this["ModListEditorSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0")]
+        public uint LogTargets {
+            get {
+                return ((uint)(this["LogTargets"]));
+            }
+            set {
+                this["LogTargets"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool LogTargetsSaved {
+            get {
+                return ((bool)(this["LogTargetsSaved"]));
+            }
+            set {
+                this["LogTargetsSaved"] = value;
+            }
+        }
     }
 }

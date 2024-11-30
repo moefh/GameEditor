@@ -137,7 +137,7 @@ namespace GameEditor.MainEditor
 
         protected override void OnShown(EventArgs e) {
             base.OnShown(e);
-            Util.Log("Ready");
+            Util.Log("== Ready");
         }
 
         // ======================================================================
@@ -265,7 +265,7 @@ namespace GameEditor.MainEditor
         private void addTilesetToolStripMenuItem_Click(object sender, EventArgs e) {
             tilesetListEditor.AddTileset().ShowEditor();
         }
-        
+
         private void addSpriteToolStripMenuItem_Click(object sender, EventArgs e) {
             spriteListEditor.AddSprite().ShowEditor();
         }
@@ -284,6 +284,11 @@ namespace GameEditor.MainEditor
 
         private void addMODToolStripMenuItem_Click(object sender, EventArgs e) {
             modListEditor.AddMod().ShowEditor();
+        }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {
+            EditorSettingsDialog dlg = new EditorSettingsDialog();
+            dlg.ShowDialog();
         }
 
         // ======================================================================
