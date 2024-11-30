@@ -2,8 +2,5 @@
 - edit map connections (world editor)
 
 - MOD editor:
-  - create tab for song positions
   - samples tab:
-	- select note when playing
-	- select sample rate when exporting sample
 	- import sample

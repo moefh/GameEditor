@@ -242,7 +242,7 @@
             btnExportSample.Name = "btnExportSample";
             btnExportSample.Size = new Size(39, 34);
             btnExportSample.TabIndex = 2;
-            tooltip.SetToolTip(btnExportSample, "Export sample to WAV");
+            tooltip.SetToolTip(btnExportSample, "Export sample to WAV file");
             btnExportSample.UseVisualStyleBackColor = true;
             btnExportSample.Click += btnExportSample_Click;
             // 
@@ -319,7 +319,7 @@
             numPlaySampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
             numPlaySampleRate.Location = new Point(184, 31);
             numPlaySampleRate.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
-            numPlaySampleRate.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
+            numPlaySampleRate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numPlaySampleRate.Name = "numPlaySampleRate";
             numPlaySampleRate.Size = new Size(78, 26);
             numPlaySampleRate.TabIndex = 5;

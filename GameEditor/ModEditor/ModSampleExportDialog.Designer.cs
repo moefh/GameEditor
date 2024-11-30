@@ -131,8 +131,8 @@
             // numSampleRate
             // 
             numSampleRate.Location = new Point(150, 27);
-            numSampleRate.Maximum = new decimal(new int[] { 48000, 0, 0, 0 });
-            numSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
+            numSampleRate.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            numSampleRate.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numSampleRate.Name = "numSampleRate";
             numSampleRate.Size = new Size(91, 26);
             numSampleRate.TabIndex = 24;
