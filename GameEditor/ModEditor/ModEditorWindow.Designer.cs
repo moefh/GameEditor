@@ -44,12 +44,17 @@
             label2 = new Label();
             btnExportSample = new Button();
             groupBoxSamplePlay = new GroupBox();
+            comboPlaySampleOctave = new ComboBox();
+            comboPlaySampleNote = new ComboBox();
             volPlaySample = new CustomControls.VolumeControl();
             label1 = new Label();
             btnPlaySample = new Button();
             numPlaySampleRate = new NumericUpDown();
             tabPattern = new TabPage();
             patternGrid = new DataGridView();
+            patternToolStrip = new ToolStrip();
+            toolStripLabel2 = new ToolStripLabel();
+            toolStripComboPatternOrder = new ToolStripComboBox();
             tooltip = new ToolTip(components);
             statusStrip1.SuspendLayout();
             toolStrip.SuspendLayout();
@@ -68,6 +73,7 @@
             ((System.ComponentModel.ISupportInitialize)numPlaySampleRate).BeginInit();
             tabPattern.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)patternGrid).BeginInit();
+            patternToolStrip.SuspendLayout();
             SuspendLayout();
             // 
             // statusStrip1
@@ -75,7 +81,7 @@
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
             statusStrip1.Location = new Point(0, 335);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(548, 24);
+            statusStrip1.Size = new Size(636, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -91,7 +97,7 @@
             toolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnImport });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
-            toolStrip.Size = new Size(548, 25);
+            toolStrip.Size = new Size(636, 25);
             toolStrip.TabIndex = 1;
             // 
             // toolStripLabel1
@@ -126,7 +132,7 @@
             mainTabControl.Location = new Point(0, 25);
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
-            mainTabControl.Size = new Size(548, 310);
+            mainTabControl.Size = new Size(636, 310);
             mainTabControl.TabIndex = 2;
             // 
             // tabSamples
@@ -135,7 +141,7 @@
             tabSamples.Location = new Point(4, 28);
             tabSamples.Name = "tabSamples";
             tabSamples.Padding = new Padding(3);
-            tabSamples.Size = new Size(540, 278);
+            tabSamples.Size = new Size(628, 278);
             tabSamples.TabIndex = 0;
             tabSamples.Text = "Samples";
             tabSamples.UseVisualStyleBackColor = true;
@@ -154,7 +160,7 @@
             // splitSampleList.Panel2
             // 
             splitSampleList.Panel2.Controls.Add(splitSample);
-            splitSampleList.Size = new Size(534, 272);
+            splitSampleList.Size = new Size(622, 272);
             splitSampleList.SplitterDistance = 171;
             splitSampleList.TabIndex = 0;
             // 
@@ -185,17 +191,17 @@
             // 
             splitSample.Panel2.Controls.Add(groupBoxSampleData);
             splitSample.Panel2.Controls.Add(groupBoxSamplePlay);
-            splitSample.Size = new Size(359, 272);
+            splitSample.Size = new Size(447, 272);
             splitSample.SplitterDistance = 122;
             splitSample.TabIndex = 0;
             // 
             // sampleView
             // 
-            sampleView.Samples = null;
             sampleView.Dock = DockStyle.Fill;
             sampleView.Location = new Point(0, 0);
             sampleView.Name = "sampleView";
-            sampleView.Size = new Size(359, 122);
+            sampleView.Samples = null;
+            sampleView.Size = new Size(447, 122);
             sampleView.TabIndex = 0;
             sampleView.Text = "soundSampleView1";
             // 
@@ -206,7 +212,7 @@
             groupBoxSampleData.Controls.Add(btnExportSample);
             groupBoxSampleData.Location = new Point(3, 81);
             groupBoxSampleData.Name = "groupBoxSampleData";
-            groupBoxSampleData.Size = new Size(337, 72);
+            groupBoxSampleData.Size = new Size(423, 72);
             groupBoxSampleData.TabIndex = 8;
             groupBoxSampleData.TabStop = false;
             groupBoxSampleData.Text = "Data";
@@ -232,7 +238,7 @@
             // btnExportSample
             // 
             btnExportSample.Image = Properties.Resources.ExportIcon;
-            btnExportSample.Location = new Point(286, 25);
+            btnExportSample.Location = new Point(366, 25);
             btnExportSample.Name = "btnExportSample";
             btnExportSample.Size = new Size(39, 34);
             btnExportSample.TabIndex = 2;
@@ -242,16 +248,40 @@
             // 
             // groupBoxSamplePlay
             // 
+            groupBoxSamplePlay.Controls.Add(comboPlaySampleOctave);
+            groupBoxSamplePlay.Controls.Add(comboPlaySampleNote);
             groupBoxSamplePlay.Controls.Add(volPlaySample);
             groupBoxSamplePlay.Controls.Add(label1);
             groupBoxSamplePlay.Controls.Add(btnPlaySample);
             groupBoxSamplePlay.Controls.Add(numPlaySampleRate);
             groupBoxSamplePlay.Location = new Point(3, 3);
             groupBoxSamplePlay.Name = "groupBoxSamplePlay";
-            groupBoxSamplePlay.Size = new Size(337, 72);
+            groupBoxSamplePlay.Size = new Size(423, 72);
             groupBoxSamplePlay.TabIndex = 7;
             groupBoxSamplePlay.TabStop = false;
             groupBoxSamplePlay.Text = "Play";
+            // 
+            // comboPlaySampleOctave
+            // 
+            comboPlaySampleOctave.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboPlaySampleOctave.FormattingEnabled = true;
+            comboPlaySampleOctave.Location = new Point(366, 30);
+            comboPlaySampleOctave.Name = "comboPlaySampleOctave";
+            comboPlaySampleOctave.Size = new Size(39, 27);
+            comboPlaySampleOctave.TabIndex = 8;
+            tooltip.SetToolTip(comboPlaySampleOctave, "MOD note octave");
+            comboPlaySampleOctave.SelectedIndexChanged += comboPlaySampleNote_SelectedIndexChanged;
+            // 
+            // comboPlaySampleNote
+            // 
+            comboPlaySampleNote.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboPlaySampleNote.FormattingEnabled = true;
+            comboPlaySampleNote.Location = new Point(317, 30);
+            comboPlaySampleNote.Name = "comboPlaySampleNote";
+            comboPlaySampleNote.Size = new Size(43, 27);
+            comboPlaySampleNote.TabIndex = 7;
+            tooltip.SetToolTip(comboPlaySampleNote, "MOD note");
+            comboPlaySampleNote.SelectedIndexChanged += comboPlaySampleNote_SelectedIndexChanged;
             // 
             // volPlaySample
             // 
@@ -259,7 +289,7 @@
             volPlaySample.MaxValue = 200;
             volPlaySample.MinValue = 0;
             volPlaySample.Name = "volPlaySample";
-            volPlaySample.Size = new Size(145, 34);
+            volPlaySample.Size = new Size(127, 34);
             volPlaySample.TabIndex = 3;
             tooltip.SetToolTip(volPlaySample, "Play volume");
             volPlaySample.Value = 30;
@@ -267,7 +297,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(286, 33);
+            label1.Location = new Point(268, 33);
             label1.Name = "label1";
             label1.Size = new Size(25, 19);
             label1.TabIndex = 6;
@@ -287,23 +317,25 @@
             // numPlaySampleRate
             // 
             numPlaySampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
-            numPlaySampleRate.Location = new Point(202, 31);
-            numPlaySampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
-            numPlaySampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
+            numPlaySampleRate.Location = new Point(184, 31);
+            numPlaySampleRate.Maximum = new decimal(new int[] { 1000000, 0, 0, 0 });
+            numPlaySampleRate.Minimum = new decimal(new int[] { 1000, 0, 0, 0 });
             numPlaySampleRate.Name = "numPlaySampleRate";
             numPlaySampleRate.Size = new Size(78, 26);
             numPlaySampleRate.TabIndex = 5;
             numPlaySampleRate.TextAlign = HorizontalAlignment.Right;
             tooltip.SetToolTip(numPlaySampleRate, "Play sample rate");
             numPlaySampleRate.Value = new decimal(new int[] { 11025, 0, 0, 0 });
+            numPlaySampleRate.ValueChanged += numPlaySampleRate_ValueChanged;
             // 
             // tabPattern
             // 
             tabPattern.Controls.Add(patternGrid);
+            tabPattern.Controls.Add(patternToolStrip);
             tabPattern.Location = new Point(4, 28);
             tabPattern.Name = "tabPattern";
             tabPattern.Padding = new Padding(3);
-            tabPattern.Size = new Size(540, 278);
+            tabPattern.Size = new Size(628, 278);
             tabPattern.TabIndex = 1;
             tabPattern.Text = "Pattern";
             tabPattern.UseVisualStyleBackColor = true;
@@ -312,16 +344,40 @@
             // 
             patternGrid.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             patternGrid.Dock = DockStyle.Fill;
-            patternGrid.Location = new Point(3, 3);
+            patternGrid.Location = new Point(3, 30);
             patternGrid.Name = "patternGrid";
-            patternGrid.Size = new Size(534, 272);
+            patternGrid.Size = new Size(622, 245);
             patternGrid.TabIndex = 0;
+            // 
+            // patternToolStrip
+            // 
+            patternToolStrip.AutoSize = false;
+            patternToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripComboPatternOrder });
+            patternToolStrip.Location = new Point(3, 3);
+            patternToolStrip.Name = "patternToolStrip";
+            patternToolStrip.Size = new Size(622, 27);
+            patternToolStrip.TabIndex = 1;
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(57, 24);
+            toolStripLabel2.Text = "Pattern:";
+            // 
+            // toolStripComboPatternOrder
+            // 
+            toolStripComboPatternOrder.DropDownHeight = 200;
+            toolStripComboPatternOrder.DropDownStyle = ComboBoxStyle.DropDownList;
+            toolStripComboPatternOrder.IntegralHeight = false;
+            toolStripComboPatternOrder.Name = "toolStripComboPatternOrder";
+            toolStripComboPatternOrder.Size = new Size(80, 27);
+            toolStripComboPatternOrder.SelectedIndexChanged += toolStripComboPatternOrder_SelectedIndexChanged;
             // 
             // ModEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(548, 359);
+            ClientSize = new Size(636, 359);
             Controls.Add(mainTabControl);
             Controls.Add(toolStrip);
             Controls.Add(statusStrip1);
@@ -353,6 +409,8 @@
             ((System.ComponentModel.ISupportInitialize)numPlaySampleRate).EndInit();
             tabPattern.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)patternGrid).EndInit();
+            patternToolStrip.ResumeLayout(false);
+            patternToolStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -383,5 +441,10 @@
         private GroupBox groupBoxSampleData;
         private Label lblSampleLength;
         private Label label2;
+        private ComboBox comboPlaySampleNote;
+        private ComboBox comboPlaySampleOctave;
+        private ToolStrip patternToolStrip;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripComboBox toolStripComboPatternOrder;
     }
 }

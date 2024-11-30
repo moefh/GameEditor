@@ -40,12 +40,12 @@
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
             splitContainer1 = new SplitContainer();
+            soundSampleView = new CustomControls.SoundSampleView();
             label1 = new Label();
             numSampleRate = new NumericUpDown();
             sampleVolumeControl = new CustomControls.VolumeControl();
             btnPlay = new Button();
             toolTip1 = new ToolTip(components);
-            soundSampleView = new CustomControls.SoundSampleView();
             statusStrip.SuspendLayout();
             infoToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -173,6 +173,15 @@
             splitContainer1.SplitterDistance = 139;
             splitContainer1.TabIndex = 3;
             // 
+            // soundSampleView
+            // 
+            soundSampleView.Dock = DockStyle.Fill;
+            soundSampleView.Location = new Point(0, 0);
+            soundSampleView.Name = "soundSampleView";
+            soundSampleView.Samples = null;
+            soundSampleView.Size = new Size(469, 139);
+            soundSampleView.TabIndex = 0;
+            // 
             // label1
             // 
             label1.AutoSize = true;
@@ -186,7 +195,7 @@
             // 
             numSampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
             numSampleRate.Location = new Point(221, 11);
-            numSampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
+            numSampleRate.Maximum = new decimal(new int[] { 48000, 0, 0, 0 });
             numSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
             numSampleRate.Name = "numSampleRate";
             numSampleRate.Size = new Size(78, 26);
@@ -217,15 +226,6 @@
             toolTip1.SetToolTip(btnPlay, "Play sample");
             btnPlay.UseVisualStyleBackColor = true;
             btnPlay.Click += btnPlay_Click;
-            // 
-            // soundSampleView
-            // 
-            soundSampleView.Samples = null;
-            soundSampleView.Dock = DockStyle.Fill;
-            soundSampleView.Location = new Point(0, 0);
-            soundSampleView.Name = "soundSampleView";
-            soundSampleView.Size = new Size(469, 139);
-            soundSampleView.TabIndex = 0;
             // 
             // SfxEditorWindow
             // 

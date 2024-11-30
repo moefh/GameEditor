@@ -3,6 +3,7 @@ using GameEditor.MainEditor;
 using GameEditor.Misc;
 using GameEditor.SfxEditor;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -41,9 +42,16 @@ namespace GameEditor.ModEditor
             UpdateDataSize();
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Mod.Name);
             sampleList.Items.AddRange([.. ModFile.Sample.Select((spl, i) => new SampleItem(spl, i))]);
-            sampleList.SelectedIndex = 0;
+            SetupSamplePlayFrequencies();
             SetupPatternGridDisplay();
-            UpdatePatternGrid();
+            UpdateModPattern();
+
+            // select sample 1:
+            sampleList.SelectedIndex = 0;
+
+            // select "F" in octave 2 for playing the sample:
+            comboPlaySampleNote.SelectedIndex = 6;
+            comboPlaySampleOctave.SelectedIndex = 4;
         }
 
         public ModData Mod { get { return modItem.Mod; } }
@@ -63,7 +71,7 @@ namespace GameEditor.ModEditor
             sampleList.Items.AddRange([.. ModFile.Sample.Select((spl, i) => new SampleItem(spl, i))]);
             sampleList.SelectedIndex = 0;
             UpdateDataSize();
-            UpdatePatternGrid();
+            UpdateModPattern();
             Util.UpdateGameDataSize();
         }
 
@@ -111,6 +119,39 @@ namespace GameEditor.ModEditor
             }
         }
 
+        // ============================================================
+        // ==== SAMPLE STUFF
+        // ============================================================
+
+        private void SetupSamplePlayFrequencies() {
+            // fill note combo:
+            comboPlaySampleNote.Items.Clear();
+            comboPlaySampleNote.Items.Add("--");
+            for (int note = 0; note < ModUtil.PeriodTable.GetLength(1); note++) {
+                comboPlaySampleNote.Items.Add(ModUtil.NoteNames[note]);
+            }
+            // fill octave combo
+            comboPlaySampleOctave.Items.Clear();
+            comboPlaySampleOctave.Items.Add("--");
+            for (int octave = 0; octave < ModUtil.PeriodTable.GetLength(0); octave++) {
+                comboPlaySampleOctave.Items.Add($"{octave - 1}");
+            }
+        }
+
+        private void comboPlaySampleNote_SelectedIndexChanged(object sender, EventArgs e) {
+            if (comboPlaySampleNote.SelectedIndex <= 0 || comboPlaySampleOctave.SelectedIndex <= 0) return;
+            numPlaySampleRate.ReadOnly = true;
+            numPlaySampleRate.Value = ModUtil.GetNoteSampleRate(comboPlaySampleNote.SelectedIndex - 1, comboPlaySampleOctave.SelectedIndex - 1);
+            numPlaySampleRate.ReadOnly = false;
+        }
+
+        private void numPlaySampleRate_ValueChanged(object sender, EventArgs e) {
+            if (!numPlaySampleRate.ReadOnly) {
+                comboPlaySampleOctave.SelectedIndex = 0;
+                comboPlaySampleNote.SelectedIndex = 0;
+            }
+        }
+
         private void btnPlaySample_Click(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
             if (index < 0 || index > ModFile.Sample.Length) return;
@@ -132,9 +173,13 @@ namespace GameEditor.ModEditor
                 } catch (Exception ex) {
                     Util.ShowError(ex, $"Error saving WAV: {ex.Message}", "Error Exporting SFX");
                 }
-                Util.Log($"Exported sample {index+1} of MOD {Mod.Name} to {dlg.ModSampleFileName}");
+                Util.Log($"Exported sample {index + 1} of MOD {Mod.Name} to {dlg.ModSampleFileName}");
             }
         }
+
+        // ============================================================
+        // ==== PATTERN STUFF
+        // ============================================================
 
         private void SetupPatternGridDisplay() {
             Font gridCellFont = new Font(FontFamily.GenericMonospace, 12);
@@ -174,23 +219,39 @@ namespace GameEditor.ModEditor
                 effectCol.DataPropertyName = "Effect";
                 patternGrid.Columns.Add(effectCol);
             }
+            patternGrid.RowCount = 64;
         }
 
-        private void UpdatePatternGrid() {
-            patternGrid.RowCount = ModFile.Pattern.Length / ModFile.NumChannels;
+        private void UpdateModPattern() {
+            // song order:
+            toolStripComboPatternOrder.Items.Clear();
+            for (int pos = 0; pos < ModFile.NumSongPositions; pos++) {
+                toolStripComboPatternOrder.Items.Add(ModFile.SongPositions[pos]);
+            }
+            toolStripComboPatternOrder.SelectedIndex = 0;
         }
 
         private void PatternGrid_CellValueNeeded(object? sender, DataGridViewCellValueEventArgs e) {
+            int orderIndex = toolStripComboPatternOrder.SelectedIndex;
+            if (orderIndex < 0 || orderIndex >= ModFile.NumSongPositions) return;
+            int songPosition = ModFile.SongPositions[orderIndex];
+
             int cell = e.RowIndex * ModFile.NumChannels + e.ColumnIndex / 3;
             //Util.Log($"retrieving cell ({e.RowIndex},{e.ColumnIndex}) -> {cell}");
-            if (cell >= ModFile.Pattern.Length) return;
+            if (cell >= 64*ModFile.NumChannels) return;
+
+            cell += songPosition * 64 * ModFile.NumChannels;
+
             e.Value = (e.ColumnIndex % 3) switch {
                 0 => (ModFile.Pattern[cell].Period == 0) ? "---" : ModUtil.GetModNoteName(ModFile.Pattern[cell].Period),
-                1 => (ModFile.Pattern[cell].Period == 0) ? "--" : $"{ModFile.Pattern[cell].Sample,2}",
+                1 => (ModFile.Pattern[cell].Period == 0 || ModFile.Pattern[cell].Sample == 0) ? "--" : $"{ModFile.Pattern[cell].Sample,2}",
                 2 => (ModFile.Pattern[cell].Effect == 0) ? "---" : $"{ModFile.Pattern[cell].Effect:X03}",
                 _ => "",
             };
         }
 
+        private void toolStripComboPatternOrder_SelectedIndexChanged(object sender, EventArgs e) {
+            patternGrid.Invalidate();
+        }
     }
 }

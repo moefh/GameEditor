@@ -74,7 +74,7 @@
             // numConvertSampleRate
             // 
             numConvertSampleRate.Location = new Point(302, 62);
-            numConvertSampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
+            numConvertSampleRate.Maximum = new decimal(new int[] { 48000, 0, 0, 0 });
             numConvertSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
             numConvertSampleRate.Name = "numConvertSampleRate";
             numConvertSampleRate.Size = new Size(71, 26);

@@ -26,6 +26,7 @@ namespace GameEditor.SfxEditor
             InitializeComponent();
 
             soundSampleView.Samples = Sfx.Samples;
+            numSampleRate.Value = SfxData.DEFAULT_SAMPLE_RATE;
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sfx.Name);
             UpdateDataSize();
             player = new SamplePlayer();
