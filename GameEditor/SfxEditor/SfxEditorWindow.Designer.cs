@@ -29,7 +29,6 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SfxEditorWindow));
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
-            sfxView = new CustomControls.SfxView();
             BottomToolStripPanel = new ToolStripPanel();
             TopToolStripPanel = new ToolStripPanel();
             RightToolStripPanel = new ToolStripPanel();
@@ -41,11 +40,12 @@
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
             splitContainer1 = new SplitContainer();
+            label1 = new Label();
+            numSampleRate = new NumericUpDown();
             sampleVolumeControl = new CustomControls.VolumeControl();
             btnPlay = new Button();
             toolTip1 = new ToolTip(components);
-            numSampleRate = new NumericUpDown();
-            label1 = new Label();
+            soundSampleView = new CustomControls.SoundSampleView();
             statusStrip.SuspendLayout();
             infoToolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)splitContainer1).BeginInit();
@@ -69,16 +69,6 @@
             lblDataSize.Name = "lblDataSize";
             lblDataSize.Size = new Size(54, 19);
             lblDataSize.Text = "0 bytes";
-            // 
-            // sfxView
-            // 
-            sfxView.Dock = DockStyle.Fill;
-            sfxView.Location = new Point(0, 0);
-            sfxView.MinimumSize = new Size(100, 50);
-            sfxView.Name = "sfxView";
-            sfxView.Sfx = null;
-            sfxView.Size = new Size(469, 139);
-            sfxView.TabIndex = 2;
             // 
             // BottomToolStripPanel
             // 
@@ -171,7 +161,7 @@
             // 
             // splitContainer1.Panel1
             // 
-            splitContainer1.Panel1.Controls.Add(sfxView);
+            splitContainer1.Panel1.Controls.Add(soundSampleView);
             // 
             // splitContainer1.Panel2
             // 
@@ -182,6 +172,28 @@
             splitContainer1.Size = new Size(469, 188);
             splitContainer1.SplitterDistance = 139;
             splitContainer1.TabIndex = 3;
+            // 
+            // label1
+            // 
+            label1.AutoSize = true;
+            label1.Location = new Point(305, 13);
+            label1.Name = "label1";
+            label1.Size = new Size(25, 19);
+            label1.TabIndex = 4;
+            label1.Text = "Hz";
+            // 
+            // numSampleRate
+            // 
+            numSampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
+            numSampleRate.Location = new Point(221, 11);
+            numSampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
+            numSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
+            numSampleRate.Name = "numSampleRate";
+            numSampleRate.Size = new Size(78, 26);
+            numSampleRate.TabIndex = 3;
+            numSampleRate.TextAlign = HorizontalAlignment.Right;
+            toolTip1.SetToolTip(numSampleRate, "Play sample rate");
+            numSampleRate.Value = new decimal(new int[] { 22050, 0, 0, 0 });
             // 
             // sampleVolumeControl
             // 
@@ -206,27 +218,14 @@
             btnPlay.UseVisualStyleBackColor = true;
             btnPlay.Click += btnPlay_Click;
             // 
-            // numSampleRate
+            // soundSampleView
             // 
-            numSampleRate.Increment = new decimal(new int[] { 100, 0, 0, 0 });
-            numSampleRate.Location = new Point(221, 11);
-            numSampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
-            numSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
-            numSampleRate.Name = "numSampleRate";
-            numSampleRate.Size = new Size(78, 26);
-            numSampleRate.TabIndex = 3;
-            numSampleRate.TextAlign = HorizontalAlignment.Right;
-            toolTip1.SetToolTip(numSampleRate, "Play sample rate");
-            numSampleRate.Value = new decimal(new int[] { 22050, 0, 0, 0 });
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(305, 13);
-            label1.Name = "label1";
-            label1.Size = new Size(25, 19);
-            label1.TabIndex = 4;
-            label1.Text = "Hz";
+            soundSampleView.Samples = null;
+            soundSampleView.Dock = DockStyle.Fill;
+            soundSampleView.Location = new Point(0, 0);
+            soundSampleView.Name = "soundSampleView";
+            soundSampleView.Size = new Size(469, 139);
+            soundSampleView.TabIndex = 0;
             // 
             // SfxEditorWindow
             // 
@@ -260,7 +259,6 @@
         #endregion
 
         private StatusStrip statusStrip;
-        private CustomControls.SfxView sfxView;
         private ToolStripStatusLabel lblDataSize;
         private ToolStripPanel BottomToolStripPanel;
         private ToolStripPanel TopToolStripPanel;
@@ -278,5 +276,6 @@
         private ToolTip toolTip1;
         private Label label1;
         private NumericUpDown numSampleRate;
+        private CustomControls.SoundSampleView soundSampleView;
     }
 }

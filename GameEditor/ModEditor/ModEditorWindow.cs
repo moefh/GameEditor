@@ -23,7 +23,7 @@ namespace GameEditor.ModEditor
             public ModSample sample = sample;
 
             public override readonly string ToString() {
-                if (sample.Data.Length == 0) {
+                if (sample.Data == null) {
                     return $"sample {index + 1} (empty)";
                 } else {
                     return $"sample {index + 1}";
@@ -59,17 +59,12 @@ namespace GameEditor.ModEditor
         }
 
         private void RefreshMod() {
+            sampleList.Items.Clear();
+            sampleList.Items.AddRange([.. ModFile.Sample.Select((spl, i) => new SampleItem(spl, i))]);
+            sampleList.SelectedIndex = 0;
             UpdateDataSize();
             UpdatePatternGrid();
             Util.UpdateGameDataSize();
-        }
-
-        private void UpdateSampleInfo(ModSample sample) {
-            if (sample.Len == 0) {
-                lblSampleLength.Text = "(no sample)";
-            } else {
-                lblSampleLength.Text = $"{sample.Len} samples";
-            }
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
@@ -90,12 +85,9 @@ namespace GameEditor.ModEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Mod.Import(dlg.FileName);
-                Mod.FileName = dlg.FileName;
             } catch (Exception ex) {
-                Util.Log($"ERROR loading MOD from {dlg.FileName}:\n{ex}");
-                MessageBox.Show(
-                    $"Error reading MOD: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error Loading MOD", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                Util.ShowError(ex, $"Error importing MOD from {dlg.FileName}", "Error Importing MOD");
+                return;
             }
             Util.Project.SetDirty();
             RefreshMod();
@@ -103,38 +95,44 @@ namespace GameEditor.ModEditor
 
         private void sampleList_SelectedIndexChanged(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
-            if (index < 0 || index > ModFile.Sample.Length) {
-                sampleView.Data = null;
-                return;
+            sbyte[]? sampleData = null;
+            if (index >= 0 && index < ModFile.Sample.Length) {
+                sampleData = ModFile.Sample[index].Data;
             }
-            sampleView.Data = ModFile.Sample[index].Data;
-            UpdateSampleInfo(ModFile.Sample[index]);
+            sampleView.Samples = sampleData;
+            if (sampleData == null || sampleData.Length == 0) {
+                lblSampleLength.Text = "(no sample)";
+                groupBoxSamplePlay.Enabled = false;
+                groupBoxSampleData.Enabled = false;
+            } else {
+                lblSampleLength.Text = $"{sampleData.Length} samples";
+                groupBoxSamplePlay.Enabled = true;
+                groupBoxSampleData.Enabled = true;
+            }
         }
 
         private void btnPlaySample_Click(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
             if (index < 0 || index > ModFile.Sample.Length) return;
-            player.Play(ModFile.Sample[index], volPlaySample.Value, (int)numPlaySampleRate.Value);
+            sbyte[]? sampleData = ModFile.Sample[index].Data;
+            if (sampleData != null) {
+                player.Play(sampleData, volPlaySample.Value, (int)numPlaySampleRate.Value);
+            }
         }
 
         private void btnExportSample_Click(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
             if (index < 0 || index > ModFile.Sample.Length) return;
 
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.RestoreDirectory = true;
-            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
+            ModSampleExportDialog dlg = new ModSampleExportDialog();
+            dlg.SampleRate = (int)numPlaySampleRate.Value;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 try {
-                    ModFile.Sample[index].Export(dlg.FileName);
+                    ModFile.Sample[index].Export(dlg.ModSampleFileName, dlg.SampleRate, dlg.Volume);
                 } catch (Exception ex) {
-                    Util.Log($"ERROR saving WAV to {dlg.FileName}:\n{ex}");
-                    MessageBox.Show(
-                        $"Error saving WAV: {ex.Message}\n\nConsult the log window for more information.",
-                        "Error Exporting Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                    return;
+                    Util.ShowError(ex, $"Error saving WAV: {ex.Message}", "Error Exporting SFX");
                 }
-                Util.Log($"Exported sample {index+1} of MOD {Mod.Name} to {dlg.FileName}");
+                Util.Log($"Exported sample {index+1} of MOD {Mod.Name} to {dlg.ModSampleFileName}");
             }
         }
 

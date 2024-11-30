@@ -16,16 +16,12 @@ namespace GameEditor.Misc
         public uint LoopLen;
         public sbyte Finetune;
         public byte Volume;
-        public sbyte[] Data;
+        public sbyte[]? Data;
 
-        public readonly void Export(string filename) {
-            byte[] data = SoundUtil.CreateWaveData(1, 8, 22050, Data.Length);
-            for (int i = 0; i < Data.Length; i++) {
-                data[i+SoundUtil.WAV_SAMPLES_OFFSET] = (byte) (Data[i] + 128);
+        public readonly void Export(string filename, int sampleRate, double volume) {
+            if (Data != null) {
+                WavFileWriter.Write(filename, Data, sampleRate, volume);
             }
-            using FileStream f = new FileStream(filename, FileMode.Create, FileAccess.Write);
-            f.Write(data);
-            f.Close();
         }
     }
 
@@ -103,8 +99,12 @@ namespace GameEditor.Misc
             sample.LoopLen = 0;
             sample.Volume = 128;
             sample.Finetune = 0;
-            sample.Data = new sbyte[sample.Len];
-            ModUtil.GenerateDefaultSample(sample.Data, 22050);
+            if (len == 0) {
+                sample.Data = null;
+            } else {
+                sample.Data = new sbyte[sample.Len];
+                ModUtil.GenerateDefaultSample(sample.Data, 22050);
+            }
             return sample;
         }
 
@@ -187,9 +187,10 @@ namespace GameEditor.Misc
 
             // read sample data
             for (int i = 0; i < NumSamples; i++) {
-                if (Sample[i].Len == 0) continue;
-                Sample[i].Data = new sbyte[Sample[i].Len];
-                r.ReadSBytes(Sample[i].Data, 0, (int) Sample[i].Len);
+                if (Sample[i].Len == 0) { Sample[i].Data = null; continue; }
+                sbyte[] sampleData = new sbyte[Sample[i].Len];
+                r.ReadSBytes(sampleData, 0, (int) Sample[i].Len);
+                Sample[i].Data = sampleData;
             }
         }
     }

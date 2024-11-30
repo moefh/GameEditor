@@ -39,11 +39,11 @@
             sampleList = new ListBox();
             splitSample = new SplitContainer();
             sampleView = new CustomControls.SoundSampleView();
-            groupBox2 = new GroupBox();
+            groupBoxSampleData = new GroupBox();
             lblSampleLength = new Label();
             label2 = new Label();
             btnExportSample = new Button();
-            groupBox1 = new GroupBox();
+            groupBoxSamplePlay = new GroupBox();
             volPlaySample = new CustomControls.VolumeControl();
             label1 = new Label();
             btnPlaySample = new Button();
@@ -63,8 +63,8 @@
             splitSample.Panel1.SuspendLayout();
             splitSample.Panel2.SuspendLayout();
             splitSample.SuspendLayout();
-            groupBox2.SuspendLayout();
-            groupBox1.SuspendLayout();
+            groupBoxSampleData.SuspendLayout();
+            groupBoxSamplePlay.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)numPlaySampleRate).BeginInit();
             tabPattern.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)patternGrid).BeginInit();
@@ -183,15 +183,15 @@
             // 
             // splitSample.Panel2
             // 
-            splitSample.Panel2.Controls.Add(groupBox2);
-            splitSample.Panel2.Controls.Add(groupBox1);
+            splitSample.Panel2.Controls.Add(groupBoxSampleData);
+            splitSample.Panel2.Controls.Add(groupBoxSamplePlay);
             splitSample.Size = new Size(359, 272);
             splitSample.SplitterDistance = 122;
             splitSample.TabIndex = 0;
             // 
             // sampleView
             // 
-            sampleView.Data = null;
+            sampleView.Samples = null;
             sampleView.Dock = DockStyle.Fill;
             sampleView.Location = new Point(0, 0);
             sampleView.Name = "sampleView";
@@ -199,26 +199,26 @@
             sampleView.TabIndex = 0;
             sampleView.Text = "soundSampleView1";
             // 
-            // groupBox2
+            // groupBoxSampleData
             // 
-            groupBox2.Controls.Add(lblSampleLength);
-            groupBox2.Controls.Add(label2);
-            groupBox2.Controls.Add(btnExportSample);
-            groupBox2.Location = new Point(3, 81);
-            groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(337, 72);
-            groupBox2.TabIndex = 8;
-            groupBox2.TabStop = false;
-            groupBox2.Text = "Data";
+            groupBoxSampleData.Controls.Add(lblSampleLength);
+            groupBoxSampleData.Controls.Add(label2);
+            groupBoxSampleData.Controls.Add(btnExportSample);
+            groupBoxSampleData.Location = new Point(3, 81);
+            groupBoxSampleData.Name = "groupBoxSampleData";
+            groupBoxSampleData.Size = new Size(337, 72);
+            groupBoxSampleData.TabIndex = 8;
+            groupBoxSampleData.TabStop = false;
+            groupBoxSampleData.Text = "Data";
             // 
             // lblSampleLength
             // 
             lblSampleLength.AutoSize = true;
             lblSampleLength.Location = new Point(67, 33);
             lblSampleLength.Name = "lblSampleLength";
-            lblSampleLength.Size = new Size(68, 19);
+            lblSampleLength.Size = new Size(80, 19);
             lblSampleLength.TabIndex = 4;
-            lblSampleLength.Text = "? samples";
+            lblSampleLength.Text = "(no sample)";
             // 
             // label2
             // 
@@ -240,18 +240,18 @@
             btnExportSample.UseVisualStyleBackColor = true;
             btnExportSample.Click += btnExportSample_Click;
             // 
-            // groupBox1
+            // groupBoxSamplePlay
             // 
-            groupBox1.Controls.Add(volPlaySample);
-            groupBox1.Controls.Add(label1);
-            groupBox1.Controls.Add(btnPlaySample);
-            groupBox1.Controls.Add(numPlaySampleRate);
-            groupBox1.Location = new Point(3, 3);
-            groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(337, 72);
-            groupBox1.TabIndex = 7;
-            groupBox1.TabStop = false;
-            groupBox1.Text = "Play";
+            groupBoxSamplePlay.Controls.Add(volPlaySample);
+            groupBoxSamplePlay.Controls.Add(label1);
+            groupBoxSamplePlay.Controls.Add(btnPlaySample);
+            groupBoxSamplePlay.Controls.Add(numPlaySampleRate);
+            groupBoxSamplePlay.Location = new Point(3, 3);
+            groupBoxSamplePlay.Name = "groupBoxSamplePlay";
+            groupBoxSamplePlay.Size = new Size(337, 72);
+            groupBoxSamplePlay.TabIndex = 7;
+            groupBoxSamplePlay.TabStop = false;
+            groupBoxSamplePlay.Text = "Play";
             // 
             // volPlaySample
             // 
@@ -295,7 +295,7 @@
             numPlaySampleRate.TabIndex = 5;
             numPlaySampleRate.TextAlign = HorizontalAlignment.Right;
             tooltip.SetToolTip(numPlaySampleRate, "Play sample rate");
-            numPlaySampleRate.Value = new decimal(new int[] { 22050, 0, 0, 0 });
+            numPlaySampleRate.Value = new decimal(new int[] { 11025, 0, 0, 0 });
             // 
             // tabPattern
             // 
@@ -346,10 +346,10 @@
             splitSample.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)splitSample).EndInit();
             splitSample.ResumeLayout(false);
-            groupBox2.ResumeLayout(false);
-            groupBox2.PerformLayout();
-            groupBox1.ResumeLayout(false);
-            groupBox1.PerformLayout();
+            groupBoxSampleData.ResumeLayout(false);
+            groupBoxSampleData.PerformLayout();
+            groupBoxSamplePlay.ResumeLayout(false);
+            groupBoxSamplePlay.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)numPlaySampleRate).EndInit();
             tabPattern.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)patternGrid).EndInit();
@@ -377,10 +377,10 @@
         private DataGridView patternGrid;
         private Button btnExportSample;
         private CustomControls.VolumeControl volPlaySample;
-        private GroupBox groupBox1;
+        private GroupBox groupBoxSamplePlay;
         private Label label1;
         private NumericUpDown numPlaySampleRate;
-        private GroupBox groupBox2;
+        private GroupBox groupBoxSampleData;
         private Label lblSampleLength;
         private Label label2;
     }

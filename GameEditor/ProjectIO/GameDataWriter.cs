@@ -91,12 +91,13 @@ namespace GameEditor.ProjectIO
 
             // sample data
             for (int spl = 0; spl < file.NumSamples; spl++) {
-                if (file.Sample[spl].Len == 0) continue;
+                sbyte[]? sampleData = file.Sample[spl].Data;
+                if (file.Sample[spl].Len == 0 || sampleData == null) continue;
                 string sampleIdent = identifiers.Add(file.Sample[spl], "mod_samples", mod.Name, $"sample{spl+1:D02}");
                 f.Write($"static const int8_t {sampleIdent}[] = {{");
                 for (int i = 0; i < file.Sample[spl].Len; i++) {
                     if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                    f.Write($"{file.Sample[spl].Data[i]},");
+                    f.Write($"{sampleData[i]},");
                 }
                 f.WriteLine();
                 f.WriteLine("};");
@@ -193,10 +194,10 @@ namespace GameEditor.ProjectIO
 
         protected void WriteSfxData(SfxData sfx) {
             string ident = identifiers.Add(sfx, "sfx_samples", sfx.Name);
-            f.Write($"static const uint8_t {ident}[] = {{");
+            f.Write($"static const int8_t {ident}[] = {{");
             for (int i = 0; i < sfx.NumSamples; i++) {
                 if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                f.Write($"0x{sfx.Data[i+SoundUtil.WAV_SAMPLES_OFFSET]:x02},");
+                f.Write($"{sfx.Samples[i]},");
             }
             f.WriteLine();
             f.WriteLine("};");

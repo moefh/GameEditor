@@ -25,7 +25,7 @@ namespace GameEditor.SfxEditor
             this.sfxItem = sfxItem;
             InitializeComponent();
 
-            sfxView.Sfx = Sfx;
+            soundSampleView.Samples = Sfx.Samples;
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sfx.Name);
             UpdateDataSize();
             player = new SamplePlayer();
@@ -42,7 +42,8 @@ namespace GameEditor.SfxEditor
 
         private void RefreshSfx() {
             UpdateDataSize();
-            sfxView.Invalidate();
+            soundSampleView.Samples = Sfx.Samples;
+            soundSampleView.Invalidate();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
@@ -58,36 +59,30 @@ namespace GameEditor.SfxEditor
         }
 
         private void btnPlay_Click(object sender, EventArgs e) {
-            player.Play(Sfx.Data, sampleVolumeControl.Value, (int) numSampleRate.Value);
+            player.Play(Sfx.Samples, sampleVolumeControl.Value, (int) numSampleRate.Value);
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.FileName = Sfx.FileName ?? "";
-            dlg.RestoreDirectory = true;
-            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
+            SfxExportDialog dlg = new SfxExportDialog();
+            dlg.SampleRate = (int) numSampleRate.Value;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 try {
-                    Sfx.Export(dlg.FileName);
+                    Sfx.Export(dlg.SfxFileName, dlg.SampleRate, dlg.Volume);
                 } catch (Exception ex) {
-                    Util.Log($"ERROR saving WAV to {dlg.FileName}:\n{ex}");
-                    MessageBox.Show(
-                        $"Error saving WAV: {ex.Message}\n\nConsult the log window for more information.",
-                        "Error Exporting Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    Util.ShowError(ex, $"Error saving WAV: {ex.Message}", "Error Exporting SFX");
                     return;
                 }
-                Sfx.FileName = dlg.FileName;
-                Util.Log($"Exported sfx {Sfx.Name} to file {Sfx.FileName}");
+                Util.Log($"Exported sfx {Sfx.Name} to file {dlg.SfxFileName}");
             }
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
             SfxImportDialog dlg = new SfxImportDialog();
-            dlg.SfxFileName = Sfx.FileName ?? "";
+            dlg.SfxFileName = "";
             dlg.UseChannel = SfxImportDialog.Channel.Both;
             dlg.Resample = true;
-            dlg.SampleRate = SfxData.SFX_DEFAULT_SAMPLE_RATE;
-            dlg.Volume = 1;
+            dlg.SampleRate = SfxData.DEFAULT_SAMPLE_RATE;
+            dlg.Volume = 1.0;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 uint channelBits = dlg.UseChannel switch {
@@ -96,13 +91,11 @@ namespace GameEditor.SfxEditor
                     SfxImportDialog.Channel.Right => 0b10,
                     _ => 0b11,
                 };
-                Sfx.Import(dlg.SfxFileName, channelBits, dlg.Resample, dlg.SampleRate, dlg.Volume);
-                Sfx.FileName = dlg.SfxFileName;
+                int sampleRate = dlg.Resample ? dlg.SampleRate : 0;
+                Sfx.Import(dlg.SfxFileName, channelBits, sampleRate, dlg.Volume);
             } catch (Exception ex) {
-                Util.Log($"ERROR loading WAV from {dlg.SfxFileName}:\n{ex}");
-                MessageBox.Show(
-                    $"Error reading WAV: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error Loading Sfx", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                Util.ShowError(ex, $"Error reading WAV: {ex.Message}", "Error Importing SFX");
+                return;
             }
             RefreshSfx();
             Util.Project.SetDirty();

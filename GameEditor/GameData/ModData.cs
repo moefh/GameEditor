@@ -14,19 +14,15 @@ namespace GameEditor.GameData
 
         public ModData(string name) {
             Name = name;
-            FileName = null;
             modFile = new ModFile();
         }
 
         public ModData(string name, ModFile modFile) {
             Name = name;
-            FileName = null;
             this.modFile = modFile;
         }
 
         public string Name { get; set; }
-
-        public string? FileName { get; set; }
 
         public ModFile ModFile { get { return modFile; } }
 
@@ -40,7 +36,7 @@ namespace GameEditor.GameData
             int structSize = modFile.Sample.Length*(sampleStructSize) + 1 + 1 + 128 + 1 + 1 + 4;
 
             // all sample data
-            int samplesData = modFile.Sample.Aggregate(0, (int size, ModSample s) => size + s.Data.Length);
+            int samplesData = modFile.Sample.Aggregate(0, (int size, ModSample s) => size + (s.Data == null ? 0 : s.Data.Length));
 
             // each pattern cell: sample(1) + padding(1) + period(2) + effect(2)
             int patternSize = modFile.Pattern.Length * (1 + 1 + 2 + 2);
@@ -50,7 +46,6 @@ namespace GameEditor.GameData
 
         public void Import(string filename) {
             modFile = new ModFile(filename);
-            this.FileName = filename;
         }
     }
 }

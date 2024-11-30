@@ -28,7 +28,6 @@
             label1 = new Label();
             comboChannel = new ComboBox();
             comboConvertSampleRate = new ComboBox();
-            label2 = new Label();
             numConvertSampleRate = new NumericUpDown();
             lblConvertHz = new Label();
             btnCancel = new Button();
@@ -66,35 +65,27 @@
             // 
             comboConvertSampleRate.DropDownStyle = ComboBoxStyle.DropDownList;
             comboConvertSampleRate.FormattingEnabled = true;
-            comboConvertSampleRate.Location = new Point(163, 93);
+            comboConvertSampleRate.Location = new Point(163, 61);
             comboConvertSampleRate.Name = "comboConvertSampleRate";
             comboConvertSampleRate.Size = new Size(130, 27);
             comboConvertSampleRate.TabIndex = 1;
-            // 
-            // label2
-            // 
-            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label2.Location = new Point(33, 63);
-            label2.Name = "label2";
-            label2.Size = new Size(124, 19);
-            label2.TabIndex = 3;
-            label2.Text = "Sample rate:";
-            label2.TextAlign = ContentAlignment.TopRight;
+            comboConvertSampleRate.SelectedIndexChanged += comboConvertSampleRate_SelectedIndexChanged;
             // 
             // numConvertSampleRate
             // 
-            numConvertSampleRate.Location = new Point(163, 61);
+            numConvertSampleRate.Location = new Point(302, 62);
             numConvertSampleRate.Maximum = new decimal(new int[] { 44100, 0, 0, 0 });
             numConvertSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
             numConvertSampleRate.Name = "numConvertSampleRate";
-            numConvertSampleRate.Size = new Size(130, 26);
+            numConvertSampleRate.Size = new Size(71, 26);
             numConvertSampleRate.TabIndex = 2;
+            numConvertSampleRate.TextAlign = HorizontalAlignment.Right;
             numConvertSampleRate.Value = new decimal(new int[] { 22050, 0, 0, 0 });
             // 
             // lblConvertHz
             // 
             lblConvertHz.AutoSize = true;
-            lblConvertHz.Location = new Point(299, 63);
+            lblConvertHz.Location = new Point(379, 64);
             lblConvertHz.Name = "lblConvertHz";
             lblConvertHz.Size = new Size(25, 19);
             lblConvertHz.TabIndex = 5;
@@ -103,7 +94,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(302, 217);
+            btnCancel.Location = new Point(302, 181);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(97, 33);
             btnCancel.TabIndex = 4;
@@ -113,7 +104,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(405, 217);
+            btnOK.Location = new Point(405, 181);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(97, 33);
             btnOK.TabIndex = 3;
@@ -124,7 +115,7 @@
             // label3
             // 
             label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label3.Location = new Point(33, 161);
+            label3.Location = new Point(33, 129);
             label3.Name = "label3";
             label3.Size = new Size(124, 19);
             label3.TabIndex = 6;
@@ -133,7 +124,7 @@
             // 
             // txtFileName
             // 
-            txtFileName.Location = new Point(163, 158);
+            txtFileName.Location = new Point(163, 126);
             txtFileName.Name = "txtFileName";
             txtFileName.ReadOnly = true;
             txtFileName.Size = new Size(236, 26);
@@ -141,7 +132,7 @@
             // 
             // btnSelectFile
             // 
-            btnSelectFile.Location = new Point(405, 159);
+            btnSelectFile.Location = new Point(405, 127);
             btnSelectFile.Name = "btnSelectFile";
             btnSelectFile.Size = new Size(36, 23);
             btnSelectFile.TabIndex = 8;
@@ -152,7 +143,7 @@
             // label4
             // 
             label4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label4.Location = new Point(33, 128);
+            label4.Location = new Point(33, 96);
             label4.Name = "label4";
             label4.Size = new Size(124, 19);
             label4.TabIndex = 10;
@@ -163,7 +154,7 @@
             // 
             numVolume.DecimalPlaces = 2;
             numVolume.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
-            numVolume.Location = new Point(163, 126);
+            numVolume.Location = new Point(163, 94);
             numVolume.Name = "numVolume";
             numVolume.Size = new Size(130, 26);
             numVolume.TabIndex = 11;
@@ -172,11 +163,11 @@
             // label5
             // 
             label5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label5.Location = new Point(33, 96);
+            label5.Location = new Point(33, 64);
             label5.Name = "label5";
             label5.Size = new Size(124, 19);
             label5.TabIndex = 12;
-            label5.Text = "Convert:";
+            label5.Text = "Sample rate:";
             label5.TextAlign = ContentAlignment.TopRight;
             // 
             // SfxImportDialog
@@ -185,7 +176,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(514, 262);
+            ClientSize = new Size(514, 226);
             Controls.Add(label5);
             Controls.Add(numVolume);
             Controls.Add(label4);
@@ -196,7 +187,6 @@
             Controls.Add(btnCancel);
             Controls.Add(lblConvertHz);
             Controls.Add(numConvertSampleRate);
-            Controls.Add(label2);
             Controls.Add(comboChannel);
             Controls.Add(label1);
             Controls.Add(comboConvertSampleRate);
@@ -217,7 +207,6 @@
         private Label label1;
         private ComboBox comboChannel;
         private ComboBox comboConvertSampleRate;
-        private Label label2;
         private NumericUpDown numConvertSampleRate;
         private Label lblConvertHz;
         private Button btnCancel;

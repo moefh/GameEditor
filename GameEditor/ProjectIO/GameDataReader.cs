@@ -43,7 +43,7 @@ namespace GameEditor.ProjectIO
         private readonly Dictionary<string,List<uint>> gameTilesetData = [];
         private readonly Dictionary<string,List<uint>> gameSpriteData = [];
         private readonly Dictionary<string,List<byte>> gameMapTiles = [];
-        private readonly Dictionary<string,List<byte>> gameSfxSamples = [];
+        private readonly Dictionary<string,List<sbyte>> gameSfxSamples = [];
         private readonly Dictionary<string,List<sbyte>> gameModSamples = [];
         private readonly Dictionary<string,List<ModCell>> gameModPattern = [];
         private readonly List<Sprite> spriteList = [];
@@ -134,19 +134,15 @@ namespace GameEditor.ProjectIO
             return t.Value;
         }
 
-        private long ReadSignedNumber() {
-            Token? t = NextToken();
-            if (t == null) throw new ParseError($"expected '-' or number, got EOF", lastLine);
+        private long ReadSignedNumber(Token t) {
+            if (t.IsNumber()) return t.Num;
 
-            if (t.Value.IsPunct('-')) {
+            if (t.IsPunct('-')) {
                 Token num = ExpectNumber();
-                return -(long)num.Num;
-            }
-            if (t.Value.IsNumber()) {
-                return t.Value.Num;
+                return -num.Num;
             }
             
-            throw new ParseError($"expected '-' or number, got {t.Value}", lastLine);
+            throw new ParseError($"expected '-' or number, got {t}", lastLine);
         }
 
         private static void DecodeColor(byte pixel, out byte red, out byte green, out byte blue) {
@@ -591,12 +587,12 @@ namespace GameEditor.ProjectIO
             ExpectPunct(']');
             ExpectPunct('=');
             ExpectPunct('{');
-            List<byte> data = [];
+            List<sbyte> data = [];
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
-                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
-                data.Add((byte) (next.Num & 0xff));
+                long sample = ReadSignedNumber(next);
+                data.Add((sbyte) sample);
                 ExpectPunct(',');
             }
             ExpectPunct(';');
@@ -620,7 +616,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! gameSfxSamples.TryGetValue(dataIdent.Str, out List<byte>? data)) {
+                if (! gameSfxSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
                     throw new ParseError($"invalid sfx: samples {dataIdent.Str} not found", dataIdent.LineNum);
                 }
                 if (numSamples.Num != data.Count) {
@@ -649,18 +645,8 @@ namespace GameEditor.ProjectIO
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
-                int sign = 1;
-                if (next.IsPunct('-')) {
-                    sign = -1;
-                    next = ExpectToken();
-                    if (! next.IsNumber()) {
-                        throw new ParseError("expecting number", lastLine);
-                    }
-                } else if (! next.IsNumber()) {
-                    throw new ParseError("expecting '}' or number", lastLine);
-                }
-                
-                data.Add((sbyte) (sign * (next.Num & 0x7f)));
+                long sample = ReadSignedNumber(next);
+                data.Add((sbyte) sample);
                 ExpectPunct(',');
             }
             ExpectPunct(';');
@@ -718,7 +704,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token loopLength = ExpectNumber();
                 ExpectPunct(',');
-                int finetune = (int) ReadSignedNumber();
+                int finetune = (int) ReadSignedNumber(ExpectToken());
                 ExpectPunct(',');
                 Token volume = ExpectNumber();
                 ExpectPunct(',');
@@ -748,7 +734,7 @@ namespace GameEditor.ProjectIO
                     if (length.Num != 0) {
                         throw new ParseError($"invalid mod: NULL sample data with non-zero length", dataIdent.LineNum);
                     }
-                    sample.Data = [];
+                    sample.Data = null;
                 }
 
                 samples.Add(sample);

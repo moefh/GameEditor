@@ -14,7 +14,8 @@ namespace GameEditor.SfxEditor
 
     public partial class SfxImportDialog : Form
     {
-        public enum Channel {
+        public enum Channel
+        {
             Left,
             Right,
             Both,
@@ -39,13 +40,13 @@ namespace GameEditor.SfxEditor
         }
 
         public int SampleRate {
-            get { return (int) numConvertSampleRate.Value; }
+            get { return (int)numConvertSampleRate.Value; }
             set { numConvertSampleRate.Value = value; }
         }
 
         public double Volume {
-            get { return (double) numVolume.Value; }
-            set { numVolume.Value = (decimal) value; }
+            get { return (double)numVolume.Value; }
+            set { numVolume.Value = (decimal)value; }
         }
 
         public Channel UseChannel {
@@ -67,8 +68,13 @@ namespace GameEditor.SfxEditor
             }
         }
 
+        private void comboConvertSampleRate_SelectedIndexChanged(object sender, EventArgs e) {
+            numConvertSampleRate.Enabled = Resample;
+        }
+
         private void btnSelectFile_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.RestoreDirectory = true;
             dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             if (dlg.ShowDialog() == DialogResult.OK) {
                 SfxFileName = dlg.FileName;
@@ -83,5 +89,6 @@ namespace GameEditor.SfxEditor
             DialogResult = DialogResult.OK;
             Close();
         }
+
     }
 }

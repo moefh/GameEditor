@@ -40,6 +40,13 @@ namespace GameEditor.Misc
             MainWindow?.AddLog(log + "\r\n");
         }
 
+        public static void ShowError(Exception ex, string message, string title) {
+            Log($"!! {message}:\n{ex}");
+            MessageBox.Show(
+                $"{message}\n\nConsult the log window for more information.",
+                title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
+        }
+
         public static void UpdateGameDataSize() {
             MainWindow?.UpdateDataSize();
         }
