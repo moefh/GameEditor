@@ -89,7 +89,9 @@ namespace GameEditor.ModEditor
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Import MOD File";
             dlg.Filter = "MOD files (*.mod)|*.mod|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Mod.Import(dlg.FileName);

@@ -33,9 +33,10 @@ namespace GameEditor.ModEditor
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
             SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export Sample";
+            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             dlg.FileName = ModSampleFileName;
-            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             if (dlg.ShowDialog() != DialogResult.OK) return;
             ModSampleFileName = dlg.FileName;
         }

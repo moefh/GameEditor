@@ -53,8 +53,8 @@ namespace GameEditor.GameData
             get {
                 int frameSize = 4*((Width+3)/4) * Height;
                 // frames+mirrors(2) * each frame(frameSize) * numFrames +
-                //   width(2)+height(2)+stride(2)+numFrames(2) + data(4)
-                return 2*frameSize*NumFrames + 2+2+2+2 + 4;
+                //   width(4)+height(4)+stride(4)+numFrames(4) + data(4)
+                return 2*frameSize*NumFrames + 4+4+4+4 + 4;
             }
         }
 

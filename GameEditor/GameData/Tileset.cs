@@ -55,7 +55,7 @@ namespace GameEditor.GameData
         }
         
         public int GameDataSize {
-            get { return TILE_SIZE*TILE_SIZE*NumTiles + 4*2 + 4; }
+            get { return TILE_SIZE*TILE_SIZE*NumTiles + 4*4 + 4; }
         }
 
         public void Dispose() {

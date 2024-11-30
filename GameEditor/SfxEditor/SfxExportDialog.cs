@@ -33,9 +33,10 @@ namespace GameEditor.SfxEditor
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
             SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export Sample";
+            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             dlg.FileName = SfxFileName;
-            dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             if (dlg.ShowDialog() != DialogResult.OK) return;
             SfxFileName = dlg.FileName;
         }

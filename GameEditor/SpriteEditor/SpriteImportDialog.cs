@@ -35,9 +35,10 @@ namespace GameEditor.SpriteEditor
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.FileName = FileName;
-            dlg.RestoreDirectory = true;
+            dlg.Title = "Import Sprite";
             dlg.Filter = "Image Files (*.bmp, *.png, *.jpg, *.gif)|*.bmp;*.png;*.jpg;*.gif|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            dlg.FileName = FileName;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 FileName = dlg.FileName;
             }

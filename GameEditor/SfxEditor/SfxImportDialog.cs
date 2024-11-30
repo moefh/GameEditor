@@ -74,8 +74,9 @@ namespace GameEditor.SfxEditor
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.RestoreDirectory = true;
+            dlg.Title = "Import Sample";
             dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 SfxFileName = dlg.FileName;
             }

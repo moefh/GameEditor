@@ -101,6 +101,43 @@ namespace GameEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to // game_data.h
+        ///
+        ///#ifndef ${PREFIX}_DATA_H_FILE
+        ///#define ${PREFIX}_DATA_H_FILE
+        ///
+        ///#include &lt;stddef.h&gt;
+        ///#include &lt;stdint.h&gt;
+        ///
+        ///struct ${PREFIX}_MOD_SAMPLE {
+        ///  uint32_t       len;
+        ///  uint32_t       loop_start;
+        ///  uint32_t       loop_len;
+        ///  int8_t         finetune;
+        ///  uint8_t        volume;
+        ///  const int8_t  *data;
+        ///};
+        ///
+        ///struct ${PREFIX}_MOD_CELL {
+        ///  uint8_t  sample;
+        ///  uint16_t period;
+        ///  uint16_t effect;
+        ///};
+        ///
+        ///struct ${PREFIX}_MOD_DATA {
+        ///  struct ${PREFIX}_MOD_SAMPLE samples[31];
+        ///  uint8_t num_channels;
+        ///
+        ///  uint8_t num_song_positions;
+        ///  uint8_t song_positio [rest of string was truncated]&quot;;.
+        /// </summary>
+        internal static string game_data {
+            get {
+                return ResourceManager.GetString("game_data", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap ImportIcon {

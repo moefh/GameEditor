@@ -35,7 +35,7 @@ namespace GameEditor.TilesetEditor
             if (FileName == "") {
                 MessageBox.Show(
                     "Please select a file name",
-                    "Invalid Data", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    "Error", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
             DialogResult = DialogResult.OK;
@@ -44,9 +44,10 @@ namespace GameEditor.TilesetEditor
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
             SaveFileDialog dlg = new SaveFileDialog();
-            dlg.FileName = FileName;
-            dlg.RestoreDirectory = true;
+            dlg.Title = "Export Tileset";
             dlg.Filter = "Image Files (*.bmp;*.png)|*.bmp;*.png|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            dlg.FileName = FileName;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 FileName = dlg.FileName;
             }

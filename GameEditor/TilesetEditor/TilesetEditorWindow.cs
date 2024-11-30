@@ -60,14 +60,14 @@ namespace GameEditor.TilesetEditor
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Import Tileset";
             dlg.Filter = "Image Files (*.bmp, *.png, *.jpg, *.gif)|*.bmp;*.png;*.jpg;*.gif|All files (*.*)|*.*";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             try {
                 Tileset.ImportBitmap(dlg.FileName);
             } catch (Exception ex) {
-                Util.Log($"ERROR loading bitmap from {dlg.FileName}:\n{ex}");
-                MessageBox.Show(ex.Message, "Error Loading Image", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                Util.ShowError(ex, $"Error reading bitmap from {dlg.FileName}", "Error Importing Image");
                 return;
             }
             Util.Project.SetDirty();
@@ -99,9 +99,7 @@ namespace GameEditor.TilesetEditor
                 try {
                     Tileset.ExportBitmap(dlg.FileName, dlg.NumHorzTiles);
                 } catch (Exception ex) {
-                    Util.Log($"ERROR saving bitmap to {dlg.FileName}:\n{ex}");
-                    MessageBox.Show(ex.Message, "Error Exporting Image",
-                        MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                    Util.ShowError(ex, $"Error writing bitmap to {dlg.FileName}", "Error Exporting Image");
                 }
             }
         }

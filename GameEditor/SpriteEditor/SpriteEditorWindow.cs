@@ -12,6 +12,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.SpriteEditor
 {
@@ -92,10 +93,7 @@ namespace GameEditor.SpriteEditor
             try {
                 Sprite.ExportBitmap(dlg.FileName, dlg.NumHorzFrames);
             } catch (Exception ex) {
-                Util.Log($"ERROR saving bitmap to {dlg.FileName}:\n{ex}");
-                MessageBox.Show(
-                    $"Error exporting sprite: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error Exporting Sprite", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Sprite");
             }
 
         }
@@ -112,10 +110,7 @@ namespace GameEditor.SpriteEditor
                 spriteEditor.Invalidate();
                 spriteFramePicker.ResetSize();
             } catch (Exception ex) {
-                Util.Log($"Error importing sprite ({dlg.SpriteWidth}x{dlg.SpriteHeight}) from {dlg.FileName}:\n{ex}");
-                MessageBox.Show(
-                    $"Error importing sprite: {ex.Message}\n\nConsult the log window for more information.",
-                    "Error Importing Sprite", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Util.ShowError(ex, $"Error importing sprite from {dlg.FileName} with size {dlg.SpriteWidth}x{dlg.SpriteHeight}", "Error Importing Sprite");
             }
         }
 
@@ -157,9 +152,7 @@ namespace GameEditor.SpriteEditor
                 bool transparent = (spriteEditor.RenderFlags & EDITOR_RENDER_TRANSPARENT) != 0;
                 Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
             } catch (Exception ex) {
-                Util.Log($"!! ERROR reading clipboard image: {ex.Message}\n{ex}");
-                MessageBox.Show("Error pasting image. Consult the log for details.",
-                    "Error Pasting Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
             }
             Util.Project.SetDirty();
             spriteEditor.Invalidate();
@@ -173,9 +166,7 @@ namespace GameEditor.SpriteEditor
             try {
                 Clipboard.SetImage(frame);
             } catch (Exception ex) {
-                Util.Log($"!! ERROR setting clipboard image: {ex.Message}\n{ex}");
-                MessageBox.Show("Error copying image. Consult the log for details.",
-                    "Error Copying Image", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
             }
         }
 

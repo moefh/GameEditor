@@ -152,6 +152,7 @@ namespace GameEditor.MainEditor
 
         private string? GetProjectSaveFilename() {
             SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Save Project As";
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return null;
@@ -190,6 +191,7 @@ namespace GameEditor.MainEditor
         private void OpenProject() {
             if (!ConfirmLoseData()) return;
             OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Open Project";
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
