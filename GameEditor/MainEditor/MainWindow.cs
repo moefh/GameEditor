@@ -57,6 +57,7 @@ namespace GameEditor.MainEditor
             UpdateWindowTitle();
             UpdateDataSize();
             UpdateDirtyStatus();
+            Util.Log($"{unchecked((sbyte)(byte)128)}");
         }
 
         public void UpdateDataSize() {

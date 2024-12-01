@@ -44,6 +44,16 @@ namespace GameEditor.Misc
             pos += 4;
         }
 
+        public void WriteString(string s, int len) {
+            for (int i = 0; i < len; i++) {
+                if (i >= s.Length) {
+                    WriteU8(0x20);
+                } else {
+                    WriteU8((byte) s[i]);
+                }
+            }
+        }
+
         public void WriteU32(uint u32) {
             EnsureLength(4);
             switch (mode) {
@@ -81,6 +91,13 @@ namespace GameEditor.Misc
             data[pos++] = u8;
         }
 
+        public void WriteBytes(byte[] data, int offset, int count) {
+            EnsureLength(count);
+            for (int i = 0; i < count; i++) {
+                this.data[pos++] = data[offset+i];
+            }
+        }
+
         public string ReadString(int numBytes) {
             StringBuilder sb = new StringBuilder();
             for (int i = 0; i < numBytes; i++) {
@@ -110,7 +127,9 @@ namespace GameEditor.Misc
 
         public void ReadSBytes(sbyte[] data, int offset, int count) {
             EnsureLength(count);
-            Array.Copy(this.data, pos, data, offset, count);
+            for (int i = 0; i < count; i++) {
+                data[i+offset] = (sbyte) this.data[pos+i];
+            }
             pos += count;
         }
 

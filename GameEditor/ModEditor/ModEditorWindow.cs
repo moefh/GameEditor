@@ -103,6 +103,20 @@ namespace GameEditor.ModEditor
             RefreshMod();
         }
 
+        private void toolStripBtnExport_Click(object sender, EventArgs e) {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export MOD File";
+            dlg.Filter = "MOD files (*.mod)|*.mod|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                Mod.Export(dlg.FileName);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error exporting MOD to {dlg.FileName}", "Error Exporting MOD");
+                return;
+            }
+        }
+
         private void sampleList_SelectedIndexChanged(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
             sbyte[]? sampleData = null;
@@ -240,7 +254,7 @@ namespace GameEditor.ModEditor
 
             int cell = e.RowIndex * ModFile.NumChannels + e.ColumnIndex / 3;
             //Util.Log($"retrieving cell ({e.RowIndex},{e.ColumnIndex}) -> {cell}");
-            if (cell >= 64*ModFile.NumChannels) return;
+            if (cell >= 64 * ModFile.NumChannels) return;
 
             cell += songPosition * 64 * ModFile.NumChannels;
 
@@ -255,5 +269,6 @@ namespace GameEditor.ModEditor
         private void toolStripComboPatternOrder_SelectedIndexChanged(object sender, EventArgs e) {
             patternGrid.Invalidate();
         }
+
     }
 }

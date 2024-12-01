@@ -23,6 +23,18 @@ namespace GameEditor.Misc
                 WavFileWriter.Write(filename, Data, sampleRate, volume);
             }
         }
+
+        public static ModSample Create(int len) {
+            ModSample sample;
+            sample.Title = "";
+            sample.Len = (uint) len;
+            sample.LoopStart = 0;
+            sample.LoopLen = 0;
+            sample.Volume = 128;
+            sample.Finetune = 0;
+            sample.Data = (sample.Len == 0) ? null : new sbyte[sample.Len];
+            return sample;
+        }
     }
 
     public struct ModCell {
@@ -59,10 +71,28 @@ namespace GameEditor.Misc
             songPositions[0] = 0;
             sample = new ModSample[31];
             for (int i = 0; i < sample.Length; i++) {
-                sample[i] = CreateEmptyModSample((i == 0) ? 11025 : 0);
+                int sampleLen = (i < 2) ? 11025 : 0;
+                sample[i] = ModSample.Create(sampleLen);
+                sbyte[]? sampleData = sample[i].Data;
+                if (sampleData != null) {
+                    SoundUtil.MakeChord(sampleData, 0, sampleLen, sampleLen, sampleLen/64, i==0);
+                }
             }
             pattern = new ModCell[64 * numChannels];
+            pattern[numChannels* 0].Period = (ushort) ModUtil.GetNotePeriod(ModUtil.Note.D, 3);
+            pattern[numChannels* 0].Sample = 2;
+            pattern[numChannels* 0].Effect = 0xC40;  // set volume to 0x40 (max)
+            pattern[numChannels* 4].Period = (ushort) ModUtil.GetNotePeriod(ModUtil.Note.G, 2);
+            pattern[numChannels* 4].Sample = 1;
+            pattern[numChannels* 4].Effect = 0;
+            pattern[numChannels* 8].Period = (ushort) ModUtil.GetNotePeriod(ModUtil.Note.C, 3);
+            pattern[numChannels* 8].Sample = 0;
+            pattern[numChannels*12].Effect = 0;
+            pattern[numChannels*12].Period = 0;
+            pattern[numChannels*12].Sample = 0;
+            pattern[numChannels*12].Effect = 0xD00;  // pattern break (end pattern, which ends the song)
         }
+
         public ModFile(int numChannels, List<ModSample> sample, List<byte> songPositions, List<ModCell> pattern) {
             formatId = "M.K.";
             modTitle = "";
@@ -90,23 +120,6 @@ namespace GameEditor.Misc
         public ModCell[] Pattern { get { return pattern; } }
 
         public int NumPatterns { get { return pattern.Length / 64 / numChannels; } }
-
-        private static ModSample CreateEmptyModSample(int len) {
-            ModSample sample;
-            sample.Title = "";
-            sample.Len = (uint) len;
-            sample.LoopStart = 0;
-            sample.LoopLen = 0;
-            sample.Volume = 128;
-            sample.Finetune = 0;
-            if (len == 0) {
-                sample.Data = null;
-            } else {
-                sample.Data = new sbyte[sample.Len];
-                ModUtil.GenerateDefaultSample(sample.Data, 22050);
-            }
-            return sample;
-        }
 
         private void Read(string filename) {
             byte[] data = File.ReadAllBytes(filename);
@@ -193,5 +206,65 @@ namespace GameEditor.Misc
                 Sample[i].Data = sampleData;
             }
         }
+
+        public void Export(string filename) {
+            // ==============
+            // Perpare data with header
+
+            byte[] data = new byte[20 + 30*NumSamples + 2 + 128 + 4];
+            MemoryStreamIO w = new MemoryStreamIO(data, MemoryStreamIO.MODE_BIG_ENDIAN);
+
+            // MOD title
+            w.WriteString("", 20);
+
+            // samples headers
+            for (int i = 0; i < NumSamples; i++) {
+                int finetune = Sample[i].Finetune;
+                if (finetune < 0) finetune += 16;
+                w.WriteString($"sample {i+1}", 22);
+                w.WriteU16((ushort)(Sample[i].Len / 2));
+                w.WriteU8((byte)finetune);
+                w.WriteU8(Sample[i].Volume);
+                w.WriteU16((ushort)(Sample[i].LoopStart / 2));
+                w.WriteU16((ushort)(Sample[i].LoopLen / 2));
+            }
+
+            // sequence control
+            w.WriteU8((byte) numSongPositions); // FIXME: this should account for loops and jumps
+            w.WriteU8(0xff);
+            w.WriteBytes(songPositions, 0, 128);
+            w.WriteTag(formatId);
+
+            // ==============
+            // Write file
+
+            using FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
+
+            // header
+            fs.Write(data, 0, data.Length);
+
+            // patterns
+            for (int cell = 0; cell < pattern.Length; cell++) {
+                byte sample = Pattern[cell].Sample;
+                ushort period = Pattern[cell].Period;
+                ushort effect = Pattern[cell].Effect;
+                fs.WriteByte((byte) (((period >> 8) & 0x0f) | (sample & 0xf0)));
+                fs.WriteByte((byte) (period & 0xff));
+                fs.WriteByte((byte) (((sample & 0x0f) << 4) | ((effect >> 8) & 0x0f)));
+                fs.WriteByte((byte) (effect & 0xff));
+            }
+
+            // sample data
+            for (int s = 0; s < NumSamples; s++) {
+                sbyte[]? sampleData = Sample[s].Data;
+                if (sampleData == null) continue;
+                for (int i = 0; i < Sample[s].Len; i++) {
+                    fs.WriteByte((byte) sampleData[i]);
+                }
+            }
+
+            fs.Close();
+        }
+
     }
 }

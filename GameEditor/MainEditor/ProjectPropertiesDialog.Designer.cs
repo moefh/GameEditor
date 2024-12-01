@@ -98,7 +98,7 @@
             btnExportHeader.Size = new Size(160, 28);
             btnExportHeader.TabIndex = 4;
             btnExportHeader.Text = "Export Header...";
-            toolTip.SetToolTip(btnExportHeader, "Generate header file with struct definitions");
+            toolTip.SetToolTip(btnExportHeader, "Generate header file with struct declarations");
             btnExportHeader.UseVisualStyleBackColor = true;
             btnExportHeader.Click += btnExportHeader_Click;
             // 

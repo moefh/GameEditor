@@ -32,6 +32,7 @@
             toolStrip = new ToolStrip();
             toolStripLabel1 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
+            toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
             mainTabControl = new TabControl();
             tabSamples = new TabPage();
@@ -94,7 +95,7 @@
             // toolStrip
             // 
             toolStrip.AutoSize = false;
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnImport });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(636, 25);
@@ -111,6 +112,18 @@
             toolStripTxtName.Name = "toolStripTxtName";
             toolStripTxtName.Size = new Size(100, 25);
             toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
+            // 
+            // toolStripBtnExport
+            // 
+            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
+            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnExport.Name = "toolStripBtnExport";
+            toolStripBtnExport.Size = new Size(23, 22);
+            toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.ToolTipText = "Export MOD file";
+            toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
             // 
@@ -446,5 +459,6 @@
         private ToolStrip patternToolStrip;
         private ToolStripLabel toolStripLabel2;
         private ToolStripComboBox toolStripComboPatternOrder;
+        private ToolStripButton toolStripBtnExport;
     }
 }

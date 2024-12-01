@@ -47,5 +47,9 @@ namespace GameEditor.GameData
         public void Import(string filename) {
             modFile = new ModFile(filename);
         }
+
+        public void Export(string filename) {
+            modFile.Export(filename);
+        }
     }
 }

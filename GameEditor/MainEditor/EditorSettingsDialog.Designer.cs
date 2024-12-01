@@ -100,7 +100,7 @@
             MinimizeBox = false;
             Name = "EditorSettingsDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "Editor Settings";
+            Text = "Settings";
             groupBoxLogOutput.ResumeLayout(false);
             groupBoxLogOutput.PerformLayout();
             ResumeLayout(false);

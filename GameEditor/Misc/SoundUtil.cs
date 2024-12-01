@@ -33,7 +33,7 @@ namespace GameEditor.Misc
          * Make a crappy triad.
          * Each note has the fundamental and 2 overtones.
          */
-        public static void MakeChord(sbyte[] samples, int start, int count, int sampleRate, double root, bool major, int inversion) {
+        public static void MakeChord(sbyte[] samples, int start, int count, int sampleRate, double root, bool major = true, int inversion = 0) {
             double third = root * Math.Pow(2, (major?4:3) / 12.0) * ((inversion >= 2) ? 2 : 1);
             double fifth = root * Math.Pow(2, 7.0 / 12);
             if (inversion >= 1) root *= 2;

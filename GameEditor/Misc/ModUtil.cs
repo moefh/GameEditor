@@ -8,6 +8,15 @@ namespace GameEditor.Misc
 {
     public static class ModUtil
     {
+        public enum Note {
+            C, CSharp,
+            D, DSharp,
+            E,
+            F, FSharp,
+            G, GSharp,
+            A, ASharp,
+            B,
+        }
         public static readonly string[] NoteNames = [
             "C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"
         ];
@@ -32,24 +41,27 @@ namespace GameEditor.Misc
             return $"<{period}>";
         }
 
-        public static void GenerateDefaultSample(sbyte[] data, int sampleRate) {
-            for (int i = 0; i < data.Length; i++) {
-                double hz = (2 * Math.PI * i) / sampleRate;
-                double sample = Math.Sin(440 * hz);
-                double envelope = Math.Exp(-2.0*i/data.Length);
-                data[i] = (sbyte) (127 * Math.Clamp(sample * envelope, -1, 1));
-            }
-        }
-
         public static int GetPeriodSampleRate(int period) {
             if (period <= 0) return 0;
-            return (int) (7093789.2 / (2*period));
+            //return (int) (7093789.2 / (2*period));   // PAL version
+            return (int) (7159090.5 / (2*period));   // NTSC version
         }
 
         public static int GetNoteSampleRate(int note, int octave) {
             if (octave < 0 || octave >= PeriodTable.GetLength(0)) return 0;
             if (note < 0 || note >= PeriodTable.GetLength(1)) return 0;
             return GetPeriodSampleRate(PeriodTable[octave, note]);
+        }
+
+        public static int GetNoteSampleRate(Note note, int octave) {
+            return GetNoteSampleRate((int)note, octave);
+        }
+
+        public static int GetNotePeriod(Note note, int octave) {
+            int noteNum = (int)note;
+            if (octave < 0 || octave >= PeriodTable.GetLength(0)) return 0;
+            if (noteNum < 0 || noteNum >= PeriodTable.GetLength(1)) return 0;
+            return PeriodTable[octave, noteNum];
         }
     }
 }
