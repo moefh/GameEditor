@@ -9,11 +9,11 @@
     <ForceDesignerDPIUnaware>true</ForceDesignerDPIUnaware>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <IsPublishable>True</IsPublishable>
-    <ApplicationIcon>star.ico</ApplicationIcon>
+    <ApplicationIcon>raspico.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
-    <Content Include="star.ico" />
+    <Content Include="raspico.ico" />
   </ItemGroup>
 
   <ItemGroup>
