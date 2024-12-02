@@ -58,7 +58,6 @@ namespace GameEditor.ModEditor
         public void UpdateMessage() {
             lblMessage.Text = Regex.Replace(originalMessage, @"{([A-Za-z0-9_]+)}", delegate (Match m) {
                 string name = m.Groups[1].ToString();
-                Util.Log($"-> replacing '{name}'");
                 return name switch {
                     "\\n" => "\n",
                     "numImportedSamples" => NumImportedSamples.ToString(),

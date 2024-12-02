@@ -112,6 +112,10 @@ namespace GameEditor.Misc
             MainWindow?.RefreshSpriteAnimationList();
         }
 
+        public static void RefreshFontList() {
+            MainWindow?.RefreshFontList();
+        }
+
         public static void RefreshTilesetUsers(Tileset tileset) {
             foreach (MapDataItem map in Project.MapList) {
                 if (map.Editor != null && map.Map.Tileset == tileset) {

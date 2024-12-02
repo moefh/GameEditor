@@ -15,6 +15,7 @@ using GameEditor.ModEditor;
 using GameEditor.Misc;
 using GameEditor.ProjectIO;
 using System.DirectoryServices.ActiveDirectory;
+using GameEditor.FontEditor;
 
 namespace GameEditor.GameData
 {
@@ -39,6 +40,7 @@ namespace GameEditor.GameData
         private readonly AssetList<SpriteAnimationItem> spriteAnims = [];
         private readonly AssetList<SpriteItem> sprites = [];
         private readonly AssetList<TilesetItem> tilesets = [];
+        private readonly AssetList<FontDataItem> fonts = [];
 
         public ProjectData() {
             IdentifierPrefix = "GAME";
@@ -65,8 +67,22 @@ namespace GameEditor.GameData
         public AssetList<SpriteAnimationItem> SpriteAnimationList { get { return spriteAnims; } }
         public AssetList<SfxDataItem> SfxList { get { return sfxs; } }
         public AssetList<ModDataItem> ModList { get { return mods; } }
+        public AssetList<FontDataItem> FontList { get { return fonts; } }
 
         public void Dispose() {
+            // maps
+            foreach (MapDataItem mi in MapList) {
+                mi.Editor?.Close();
+            }
+            MapList.Clear();
+
+            // sprite animations
+            foreach (SpriteAnimationItem ai in SpriteAnimationList) {
+                ai.Editor?.Close();
+                ai.Animation.Close();  // unregister sprite event
+            }
+            SpriteAnimationList.Clear();
+
             // mods
             foreach (ModDataItem mi in ModList) {
                 mi.Editor?.Close();
@@ -79,12 +95,6 @@ namespace GameEditor.GameData
             }
             SfxList.Clear();
 
-            // maps
-            foreach (MapDataItem mi in MapList) {
-                mi.Editor?.Close();
-            }
-            MapList.Clear();
-
             // tilesets
             foreach (TilesetItem ti in TilesetList) {
                 ti.Editor?.Close();
@@ -92,19 +102,19 @@ namespace GameEditor.GameData
             }
             TilesetList.Clear();
             
-            // sprite animations
-            foreach (SpriteAnimationItem ai in SpriteAnimationList) {
-                ai.Editor?.Close();
-                ai.Animation.Close();  // unregister sprite event
-            }
-            SpriteAnimationList.Clear();
-
             // sprites
             foreach (SpriteItem si in SpriteList) {
                 si.Editor?.Close();
                 si.Sprite.Dispose();   // free bitmap
             }
             SpriteList.Clear();
+
+            // fonts
+            foreach (FontDataItem fi in FontList) {
+                fi.Editor?.Close();
+                fi.Font.Dispose();     // free bitmap
+            }
+            FontList.Clear();
         }
 
         public void SetDirty(bool dirty = true) {
@@ -118,6 +128,12 @@ namespace GameEditor.GameData
             MapDataItem mi = new MapDataItem(mapData);
             maps.Add(mi);
             return mi;
+        }
+
+        public FontDataItem AddFont(FontData fontData) {
+            FontDataItem fi = new FontDataItem(fontData);
+            fonts.Add(fi);
+            return fi;
         }
 
         public TilesetItem AddTileset(Tileset tileset) {
@@ -176,6 +192,7 @@ namespace GameEditor.GameData
             size += spriteAnims.Aggregate(0, (int cur, SpriteAnimationItem si) => cur + si.Animation.GameDataSize);
             size += sprites.Aggregate(0, (int cur, SpriteItem si) => cur + si.Sprite.GameDataSize);
             size += tilesets.Aggregate(0, (int cur, TilesetItem ti) => cur + ti.Tileset.GameDataSize);
+            size += fonts.Aggregate(0, (int cur, FontDataItem fi) => cur + fi.Font.GameDataSize);
             return size;
         }
 
@@ -205,6 +222,7 @@ namespace GameEditor.GameData
                 foreach (MapData m in reader.MapList) AddMap(m);
                 foreach (SfxData s in reader.SfxList) AddSfx(s);
                 foreach (ModData m in reader.ModList) AddMod(m);
+                foreach (FontData f in reader.FontList) AddFont(f);
                 reader.ConsumeData();  // prevent read data from being disposed
                 SetDirty(false);
                 return true;

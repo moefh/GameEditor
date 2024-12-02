@@ -61,4 +61,18 @@ struct ${PREFIX}_SPRITE_ANIMATION {
   struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[4];
 };
 
+struct ${PREFIX}_FONT {
+  uint8_t width;
+  uint8_t height;
+  const uint8_t *data;
+};
+
+extern const struct ${PREFIX}_FONT ${prefix}_fonts[];
+extern const struct ${PREFIX}_MOD_DATA ${prefix}_mods[];
+extern const struct ${PREFIX}_SFX ${prefix}_sfxs[];
+extern const struct ${PREFIX}_IMAGE ${prefix}_tilesets[];
+extern const struct ${PREFIX}_IMAGE ${prefix}_sprites[];
+extern const struct ${PREFIX}_MAP ${prefix}_maps[];
+extern const struct ${PREFIX}_SPRITE_ANIMATION ${prefix}_sprite_animations[];
+
 #endif /* ${PREFIX}_DATA_H_FILE */

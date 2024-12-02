@@ -155,7 +155,8 @@ namespace GameEditor.GameData
             // copy each frame from the original to the new bitmap:
             for (int y = 0; y < ny; y++) {
                 for (int x = 0; x < nx; x++) {
-                    g.DrawImage(bmp, 0, (x + y * nx) * frameHeight,
+                    g.DrawImage(bmp,
+                        new Rectangle(0, (x + y * nx) * frameHeight, frameWidth, frameHeight),
                         new Rectangle(x * frameWidth, y * frameHeight, frameWidth, frameHeight),
                         GraphicsUnit.Pixel);
                 }

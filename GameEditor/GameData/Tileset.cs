@@ -88,7 +88,8 @@ namespace GameEditor.GameData
             // copy each tile:
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
-                    g.DrawImage(bmp, 0, (x + y * w) * TILE_SIZE,
+                    g.DrawImage(bmp,
+                                new Rectangle(0, (x + y * w) * TILE_SIZE, TILE_SIZE, TILE_SIZE),
                                 new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE),
                                 GraphicsUnit.Pixel);
                 }

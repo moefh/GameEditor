@@ -95,7 +95,6 @@ namespace GameEditor.SpriteEditor
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Sprite");
             }
-
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {

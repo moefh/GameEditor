@@ -23,11 +23,13 @@ using GameEditor.Misc;
 using GameEditor.ModEditor;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using GameEditor.FontEditor;
 
 namespace GameEditor.MainEditor
 {
     public partial class MainWindow : Form
     {
+        private readonly FontListEditorWindow fontListEditor;
         private readonly SfxListEditorWindow sfxListEditor;
         private readonly ModListEditorWindow modListEditor;
         private readonly MapListEditorWindow mapListEditor;
@@ -51,13 +53,14 @@ namespace GameEditor.MainEditor
             sfxListEditor.MdiParent = this;
             modListEditor = new ModListEditorWindow();
             modListEditor.MdiParent = this;
+            fontListEditor = new FontListEditorWindow();
+            fontListEditor.MdiParent = this;
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
 
             UpdateWindowTitle();
             UpdateDataSize();
             UpdateDirtyStatus();
-            Util.Log($"{unchecked((sbyte)(byte)128)}");
         }
 
         public void UpdateDataSize() {
@@ -78,12 +81,17 @@ namespace GameEditor.MainEditor
         }
 
         private void RefreshAllAssetLists() {
+            fontListEditor.RefreshFontList();
             sfxListEditor.RefreshSfxList();
             modListEditor.RefreshModList();
             mapListEditor.RefreshMapList();
             spriteListEditor.RefreshSpriteList();
             tilesetListEditor.RefreshTilesetList();
             spriteAnimationListEditor.RefreshSpriteAnimationList();
+        }
+
+        public void RefreshFontList() {
+            fontListEditor.RefreshFontList();
         }
 
         public void RefreshSfxList() {
@@ -126,6 +134,7 @@ namespace GameEditor.MainEditor
             spriteListEditor.Close();
             sfxListEditor.Close();
             modListEditor.Close();
+            fontListEditor.Close();
             logWindow.Close();
 
             base.OnFormClosing(e);
@@ -167,6 +176,7 @@ namespace GameEditor.MainEditor
             if (Util.Project.SpriteAnimationList.Count != 0) spriteAnimationListEditor.Show();
             if (Util.Project.SfxList.Count != 0) sfxListEditor.Show();
             if (Util.Project.ModList.Count != 0) modListEditor.Show();
+            if (Util.Project.FontList.Count != 0) fontListEditor.Show();
         }
 
         private void SaveProject() {
@@ -287,6 +297,10 @@ namespace GameEditor.MainEditor
             modListEditor.AddMod().ShowEditor();
         }
 
+        private void addNewFontToolStripMenuItem_Click(object sender, EventArgs e) {
+            fontListEditor.AddFont().ShowEditor();
+        }
+
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {
             EditorSettingsDialog dlg = new EditorSettingsDialog();
             dlg.ShowDialog();
@@ -332,6 +346,11 @@ namespace GameEditor.MainEditor
         private void toolStripBtnModEditor_Click(object sender, EventArgs e) {
             modListEditor.Show();
             modListEditor.Activate();
+        }
+
+        private void toolStripBtnFontEditor_Click(object sender, EventArgs e) {
+            fontListEditor.Show();
+            fontListEditor.Activate();
         }
 
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {

@@ -598,5 +598,77 @@ namespace GameEditor.Properties {
                 this["LogTargetsSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point FontEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["FontEditorLocation"]));
+            }
+            set {
+                this["FontEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size FontEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["FontEditorSize"]));
+            }
+            set {
+                this["FontEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FontEditorSaved {
+            get {
+                return ((bool)(this["FontEditorSaved"]));
+            }
+            set {
+                this["FontEditorSaved"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point FontListEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["FontListEditorLocation"]));
+            }
+            set {
+                this["FontListEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size FontListEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["FontListEditorSize"]));
+            }
+            set {
+                this["FontListEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool FontListEditorSaved {
+            get {
+                return ((bool)(this["FontListEditorSaved"]));
+            }
+            set {
+                this["FontListEditorSaved"] = value;
+            }
+        }
     }
 }

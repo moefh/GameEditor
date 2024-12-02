@@ -101,9 +101,17 @@ namespace GameEditor.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to // game_data.h
-        ///
-        ///#ifndef ${PREFIX}_DATA_H_FILE
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FontIcon {
+            get {
+                object obj = ResourceManager.GetObject("FontIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to #ifndef ${PREFIX}_DATA_H_FILE
         ///#define ${PREFIX}_DATA_H_FILE
         ///
         ///#include &lt;stddef.h&gt;
@@ -129,7 +137,7 @@ namespace GameEditor.Properties {
         ///  uint8_t num_channels;
         ///
         ///  uint8_t num_song_positions;
-        ///  uint8_t song_positio [rest of string was truncated]&quot;;.
+        ///  uint8_ [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string game_data {
             get {

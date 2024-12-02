@@ -45,6 +45,7 @@
             addSpriteAnimationToolStripMenuItem = new ToolStripMenuItem();
             addSoundEffectToolStripMenuItem = new ToolStripMenuItem();
             addMODToolStripMenuItem = new ToolStripMenuItem();
+            addNewFontToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             propertiesToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
@@ -62,6 +63,7 @@
             toolStripBtnAnimationEditor = new ToolStripButton();
             toolStripBtnSfxEditor = new ToolStripButton();
             toolStripBtnModEditor = new ToolStripButton();
+            toolStripBtnFontEditor = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripBtnLogWindow = new ToolStripButton();
             menuStrip.SuspendLayout();
@@ -154,7 +156,7 @@
             // 
             // projectToolStripMenuItem
             // 
-            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, toolStripSeparator1, propertiesToolStripMenuItem });
+            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, toolStripSeparator1, propertiesToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             projectToolStripMenuItem.Size = new Size(63, 23);
             projectToolStripMenuItem.Text = "&Project";
@@ -207,6 +209,14 @@
             addMODToolStripMenuItem.Text = "Add New M&OD";
             addMODToolStripMenuItem.Click += addMODToolStripMenuItem_Click;
             // 
+            // addNewFontToolStripMenuItem
+            // 
+            addNewFontToolStripMenuItem.Image = Properties.Resources.FontIcon;
+            addNewFontToolStripMenuItem.Name = "addNewFontToolStripMenuItem";
+            addNewFontToolStripMenuItem.Size = new Size(240, 24);
+            addNewFontToolStripMenuItem.Text = "Add New &Font";
+            addNewFontToolStripMenuItem.Click += addNewFontToolStripMenuItem_Click;
+            // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
@@ -257,7 +267,7 @@
             // 
             // toolStrip
             // 
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonOpen, toolStripButtonSave, toolStripSeparator2, toolStripBtnTilesetEditor, toolStripBtnSpriteEditor, toolStripBtnMapEditor, toolStripBtnAnimationEditor, toolStripBtnSfxEditor, toolStripBtnModEditor, toolStripSeparator3, toolStripBtnLogWindow });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonOpen, toolStripButtonSave, toolStripSeparator2, toolStripBtnTilesetEditor, toolStripBtnSpriteEditor, toolStripBtnMapEditor, toolStripBtnAnimationEditor, toolStripBtnSfxEditor, toolStripBtnModEditor, toolStripBtnFontEditor, toolStripSeparator3, toolStripBtnLogWindow });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(870, 26);
@@ -352,6 +362,15 @@
             toolStripBtnModEditor.ToolTipText = "Open MOD List";
             toolStripBtnModEditor.Click += toolStripBtnModEditor_Click;
             // 
+            // toolStripBtnFontEditor
+            // 
+            toolStripBtnFontEditor.Image = Properties.Resources.FontIcon;
+            toolStripBtnFontEditor.ImageTransparentColor = Color.Magenta;
+            toolStripBtnFontEditor.Name = "toolStripBtnFontEditor";
+            toolStripBtnFontEditor.Size = new Size(63, 23);
+            toolStripBtnFontEditor.Text = "Fonts";
+            toolStripBtnFontEditor.Click += toolStripBtnFontEditor_Click;
+            // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Margin = new Padding(5, 0, 5, 0);
@@ -432,5 +451,7 @@
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripMenuItem settingsToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator5;
+        private ToolStripMenuItem addNewFontToolStripMenuItem;
+        private ToolStripButton toolStripBtnFontEditor;
     }
 }

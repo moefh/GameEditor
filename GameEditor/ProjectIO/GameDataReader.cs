@@ -28,6 +28,7 @@ namespace GameEditor.ProjectIO
             "TILESET",
             "SPRITE",
             "MAP",
+            "FONT",
         ];
 
         // parsing stuff:
@@ -41,11 +42,13 @@ namespace GameEditor.ProjectIO
         private string globalPrefixLower;
         private string globalPrefixUpper;
         private readonly Dictionary<string,List<uint>> gameTilesetData = [];
+        private readonly Dictionary<string,List<byte>> gameFontData = [];
         private readonly Dictionary<string,List<uint>> gameSpriteData = [];
         private readonly Dictionary<string,List<byte>> gameMapTiles = [];
         private readonly Dictionary<string,List<sbyte>> gameSfxSamples = [];
         private readonly Dictionary<string,List<sbyte>> gameModSamples = [];
         private readonly Dictionary<string,List<ModCell>> gameModPattern = [];
+        private readonly List<FontData> fontList = [];
         private readonly List<Sprite> spriteList = [];
         private readonly List<Tileset> tilesetList = [];
         private readonly List<MapData> mapList = [];
@@ -61,6 +64,7 @@ namespace GameEditor.ProjectIO
         }
 
         public List<Tileset> TilesetList { get { return tilesetList; } }
+        public List<FontData> FontList { get { return fontList; } }
         public List<Sprite> SpriteList { get { return spriteList; } }
         public List<SpriteAnimation> SpriteAnimationList { get { return spriteAnimationList; } }
         public List<MapData> MapList { get { return mapList; } }
@@ -76,6 +80,7 @@ namespace GameEditor.ProjectIO
             f.Dispose();
             foreach (Tileset t in tilesetList) t.Dispose();
             foreach (Sprite s in spriteList) s.Dispose();
+            foreach (FontData f in fontList) f.Dispose();
             disposed = true;
         }
 
@@ -88,6 +93,7 @@ namespace GameEditor.ProjectIO
             tilesetList.Clear();
             sfxList.Clear();
             modList.Clear();
+            fontList.Clear();
         }
 
         // ======================================================================
@@ -324,6 +330,86 @@ namespace GameEditor.ProjectIO
                 tilesetList.Add(CreateTileset(name, (int) numTiles.Num, data));
 
                 Util.Log($"-> got tileset for {dataIdent.Str} with {numTiles.Num} tiles");
+            }
+            ExpectPunct(';');
+        }
+
+        // ======================================================================
+        // === FONT
+        // ======================================================================
+
+        private void ReadFontData(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<byte> data = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                data.Add((byte) next.Num);
+                ExpectPunct(',');
+            }
+            ExpectPunct(';');
+
+            gameFontData[ident.Str] = data;
+            Util.Log($"-> got font data {ident.Str}");
+        }
+
+        private FontData CreateFont(string name, int width, int height, List<byte> data) {
+            FontData font = new FontData(name, width, height);
+
+            byte[] bmp = new byte[4 * width * height];
+            int bytesPerLine = (width + 7) / 8;
+            for (int ch = 0; ch < FontData.NUM_CHARS; ch++) {
+                for (int y = 0; y < height; y++) {
+                    for (int n = 0; n < bytesPerLine; n++) {
+                        byte dataByte = data[(ch*height+y)*bytesPerLine + n];
+                        int numPixelsInByte = int.Min(8, width-n*8);
+                        for (int p = 0; p < numPixelsInByte; p++) {
+                            int x = n*8 + p;
+                            bool val = (dataByte & (1<<p)) != 0;
+                            bmp[(y*width + x)*4 + 0] = 0;
+                            bmp[(y*width + x)*4 + 1] = (byte) (val ? 0 : 255);
+                            bmp[(y*width + x)*4 + 2] = 0;
+                            bmp[(y*width + x)*4 + 3] = 255;
+                        }
+                    }
+                }
+                font.WriteCharPixels(ch, bmp);
+            }
+            return font;
+        }
+
+        private void ReadFontList(Token start) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                Token width = ExpectNumber();
+                ExpectPunct(',');
+                Token height = ExpectNumber();
+                ExpectPunct(',');
+                Token dataIdent = ExpectIdent();
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                if (! gameFontData.TryGetValue(dataIdent.Str, out List<byte>? data)) {
+                    throw new ParseError($"invalid font: font data {dataIdent.Str} not found", dataIdent.LineNum);
+                }
+                if (FontData.NUM_CHARS * ((width.Num+7)/8) * height.Num != data.Count) {
+                    throw new ParseError($"invalid font: expected {FontData.NUM_CHARS * ((width.Num+7)/8) * height.Num} bytes, got {data.Count}", dataIdent.LineNum);
+                }
+
+                string name = ExtractGlobalLowerName(dataIdent.Str, "font_data");
+                fontList.Add(CreateFont(name, (int) width.Num, (int) height.Num, data));
+
+                Util.Log($"-> got font for {dataIdent.Str} with size {width.Num}x{height.Num}");
             }
             ExpectPunct(';');
         }
@@ -887,6 +973,16 @@ namespace GameEditor.ProjectIO
                     continue;
                 }
 
+                // font stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "font_data")) {
+                    ReadFontData(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "fonts")) {
+                    ReadFontList(t.Value);
+                    continue;
+                }
+
                 // sprite stuff
                 if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sprite_data")) {
                     ReadSpriteData(t.Value);
@@ -935,6 +1031,7 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("uint32_t")) continue;
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "FONT")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SFX")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_DATA")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_CELL")) continue;
@@ -945,9 +1042,6 @@ namespace GameEditor.ProjectIO
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }
 
-            if (TilesetList.Count == 0) {
-                throw new ParseError("ERROR: the project must have at least one tileset", 1);
-            }
             Util.Log($"== finished reading project");
         }
 

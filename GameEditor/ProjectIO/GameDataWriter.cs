@@ -1,4 +1,5 @@
-﻿using GameEditor.GameData;
+﻿using GameEditor.FontEditor;
+using GameEditor.GameData;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using GameEditor.ModEditor;
@@ -12,6 +13,7 @@ using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
+using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -80,6 +82,66 @@ namespace GameEditor.ProjectIO
 
         private string GetUpperGlobal(string name) {
             return $"{globalPrefixUpper}_{IdentifierNamespace.SanitizeName(name)}";
+        }
+
+        // =============================================================
+        // === FONT
+        // =============================================================
+
+        protected void WriteFontData(FontData font) {
+            string ident = identifiers.Add(font, "font_data", font.Name);
+            f.Write($"static const uint8_t {ident}[] = {{");
+
+            byte[] bmp = new byte[4 * font.Width * font.Height];
+            int bytesPerLine = (font.Width + 7) / 8;
+            for (int ch = 0; ch < FontData.NUM_CHARS; ch++) {
+                f.WriteLine();
+                f.Write("  ");
+                font.ReadCharPixels(ch, bmp);
+                for (int y = 0; y < font.Height; y++) {
+                    for (int n = 0; n < bytesPerLine; n++) {
+                        byte data = 0;
+                        int x = n * 8;
+                        int pixelsInByte = int.Min(8, font.Width-x);
+                        for (int p = 0; p < pixelsInByte; p++) {
+                            if (bmp[y*font.Width*4 + (x+p)*4 + 1] == 0) {
+                                data |= (byte) (1<<p);
+                            }
+                        }
+                        f.Write("0x{0:x02},", data);
+                    }
+                }
+                if (ch + 32 < 127) {
+                    f.Write($"  // '{(char)(ch + 32)}'");
+                }
+            }
+
+            f.WriteLine();
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected int WriteFonts() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === FONTS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+            foreach (FontDataItem fi in Util.Project.FontList) {
+                WriteFontData(fi.Font);
+            }
+
+            int dataSize = 0;
+            f.WriteLine($"const struct {GetUpperGlobal("FONT")} {GetLowerGlobal("fonts")}[] = {{");
+            foreach (FontDataItem fi in Util.Project.FontList) {
+                int w = fi.Font.Width;
+                int h = fi.Font.Height;
+                string ident = identifiers.Get(fi.Font);
+                f.WriteLine($"  {{ {w}, {h}, {ident} }},");
+                dataSize += fi.Font.GameDataSize;
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+            return dataSize;
         }
 
         // =============================================================
@@ -485,6 +547,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// ================================================================");
             f.WriteLine();
 
+            WriteDataIdsForType(Util.Project.FontList.GetAssetList(), "FONT");
             WriteDataIdsForType(Util.Project.ModList.GetAssetList(), "MOD");
             WriteDataIdsForType(Util.Project.SfxList.GetAssetList(), "SFX");
             WriteDataIdsForType(Util.Project.TilesetList.GetAssetList(), "TILESET");
@@ -501,6 +564,7 @@ namespace GameEditor.ProjectIO
             WriteHeader();
             WriteDataStart();
             int dataSize = 0;
+            dataSize += WriteFonts();
             dataSize += WriteMods();
             dataSize += WriteSfxs();
             dataSize += WriteTilesets();

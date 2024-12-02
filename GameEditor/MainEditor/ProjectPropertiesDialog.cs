@@ -49,8 +49,16 @@ namespace GameEditor.MainEditor
             dlg.Filter = "C header files (*.h)|*.h|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
-            string content = Regex.Replace(Resources.game_data, """\${PREFIX}""", delegate(Match m) {
-                return IdentifierPrefix;
+
+            string prefixLower = IdentifierPrefix.ToLowerInvariant();
+            string prefixUpper = IdentifierPrefix.ToUpperInvariant();
+            string content = Regex.Replace(Resources.game_data, """\${([A-Za-z0-9_]+)}""", delegate(Match m) {
+                string name = m.Groups[1].ToString();
+                return name switch {
+                    "prefix" => prefixLower,
+                    "PREFIX" => prefixUpper,
+                    _ => "?",
+                };
             });
             content.ReplaceLineEndings("\n");
             try {
