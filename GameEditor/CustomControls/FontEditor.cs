@@ -33,7 +33,7 @@ namespace GameEditor.CustomControls
         public byte SelectedCharacter { get { return selChar; } set { selChar = value; Invalidate(); } }
         public FontData? FontData {
             get { return fontData; }
-            set { fontData = value; selChar = 0; Invalidate(); }
+            set { fontData = value; Invalidate(); }
         }
 
         private bool GetSpriteRenderRect(out int zoom, out Rectangle rect) {
@@ -65,12 +65,12 @@ namespace GameEditor.CustomControls
 
             ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
             if (Util.DesignMode) return;
-            if (FontData == null) return;
+            if (FontData == null || SelectedCharacter > FontData.NUM_CHARS) return;
             if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect)) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
 
-            // sprite image
+            // char image
             FontData.DrawCharAt(pe.Graphics, SelectedCharacter,
                 sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height,
                 (RenderFlags & RENDER_TRANSPARENT) != 0);

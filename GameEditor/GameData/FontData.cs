@@ -12,7 +12,8 @@ namespace GameEditor.GameData
 {
     public class FontData : IDataAsset, IDisposable
     {
-        public const int NUM_CHARS = 128 - 32;
+        public const int FIRST_CHAR = 32;
+        public const int NUM_CHARS = 128 - FIRST_CHAR;
 
         private Bitmap bitmap;
 

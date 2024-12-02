@@ -26,7 +26,7 @@
         /// </summary>
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FontEditorWindow));
-            toolStrip = new ToolStrip();
+            dataToolStrip = new ToolStrip();
             toolStripLabel1 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
             toolStripBtnExport = new ToolStripButton();
@@ -36,27 +36,30 @@
             mainSplit = new SplitContainer();
             fontDisplay = new CustomControls.FontDisplay();
             fontEditor = new CustomControls.FontEditor();
-            toolStrip1 = new ToolStrip();
+            displayToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
-            toolStripTxtEditChar = new ToolStripTextBox();
-            toolStrip.SuspendLayout();
+            toolStripComboSelChar = new ToolStripComboBox();
+            toolStripSeparator1 = new ToolStripSeparator();
+            toolStripLabel2 = new ToolStripLabel();
+            toolStripTxtSample = new ToolStripTextBox();
+            dataToolStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
             mainSplit.Panel1.SuspendLayout();
             mainSplit.Panel2.SuspendLayout();
             mainSplit.SuspendLayout();
-            toolStrip1.SuspendLayout();
+            displayToolStrip.SuspendLayout();
             SuspendLayout();
             // 
-            // toolStrip
+            // dataToolStrip
             // 
-            toolStrip.AutoSize = false;
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
-            toolStrip.Location = new Point(0, 0);
-            toolStrip.Name = "toolStrip";
-            toolStrip.Size = new Size(600, 27);
-            toolStrip.TabIndex = 0;
-            toolStrip.Text = "infoToolStrip";
+            dataToolStrip.AutoSize = false;
+            dataToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
+            dataToolStrip.Location = new Point(0, 0);
+            dataToolStrip.Name = "dataToolStrip";
+            dataToolStrip.Size = new Size(600, 27);
+            dataToolStrip.TabIndex = 0;
+            dataToolStrip.Text = "infoToolStrip";
             // 
             // toolStripLabel1
             // 
@@ -123,7 +126,7 @@
             // 
             mainSplit.Panel2.Controls.Add(fontEditor);
             mainSplit.Size = new Size(600, 215);
-            mainSplit.SplitterDistance = 54;
+            mainSplit.SplitterDistance = 42;
             mainSplit.TabIndex = 2;
             // 
             // fontDisplay
@@ -132,7 +135,7 @@
             fontDisplay.FontData = null;
             fontDisplay.Location = new Point(0, 0);
             fontDisplay.Name = "fontDisplay";
-            fontDisplay.Size = new Size(600, 54);
+            fontDisplay.Size = new Size(600, 42);
             fontDisplay.TabIndex = 0;
             fontDisplay.Text = "fontDisplay1";
             // 
@@ -144,32 +147,52 @@
             fontEditor.Name = "fontEditor";
             fontEditor.RenderFlags = 0U;
             fontEditor.SelectedCharacter = 0;
-            fontEditor.Size = new Size(600, 157);
+            fontEditor.Size = new Size(600, 169);
             fontEditor.TabIndex = 0;
             fontEditor.Text = "fontEditor1";
             fontEditor.ImageChanged += fontEditor_ImageChanged;
             // 
-            // toolStrip1
+            // displayToolStrip
             // 
-            toolStrip1.AutoSize = false;
-            toolStrip1.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtEditChar });
-            toolStrip1.Location = new Point(0, 27);
-            toolStrip1.Name = "toolStrip1";
-            toolStrip1.Size = new Size(600, 27);
-            toolStrip1.TabIndex = 3;
-            toolStrip1.Text = "editToolStrip";
+            displayToolStrip.AutoSize = false;
+            displayToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripComboSelChar, toolStripSeparator1, toolStripLabel2, toolStripTxtSample });
+            displayToolStrip.Location = new Point(0, 27);
+            displayToolStrip.Name = "displayToolStrip";
+            displayToolStrip.Size = new Size(600, 27);
+            displayToolStrip.TabIndex = 3;
+            displayToolStrip.Text = "editToolStrip";
             // 
             // toolStripLabel3
             // 
             toolStripLabel3.Name = "toolStripLabel3";
-            toolStripLabel3.Size = new Size(41, 24);
-            toolStripLabel3.Text = "Char:";
+            toolStripLabel3.Size = new Size(35, 24);
+            toolStripLabel3.Text = "Edit:";
             // 
-            // toolStripTxtEditChar
+            // toolStripComboSelChar
             // 
-            toolStripTxtEditChar.Name = "toolStripTxtEditChar";
-            toolStripTxtEditChar.Size = new Size(100, 27);
-            toolStripTxtEditChar.TextChanged += toolStripTxtEditChar_TextChanged;
+            toolStripComboSelChar.DropDownStyle = ComboBoxStyle.DropDownList;
+            toolStripComboSelChar.Name = "toolStripComboSelChar";
+            toolStripComboSelChar.Size = new Size(75, 27);
+            toolStripComboSelChar.DropDownClosed += toolStripComboSelChar_DropDownClosed;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 27);
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(83, 24);
+            toolStripLabel2.Text = "Sample text:";
+            // 
+            // toolStripTxtSample
+            // 
+            toolStripTxtSample.Font = new Font("Consolas", 10.2F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            toolStripTxtSample.Name = "toolStripTxtSample";
+            toolStripTxtSample.Size = new Size(200, 27);
+            toolStripTxtSample.TextChanged += toolStripTxtSample_TextChanged;
             // 
             // FontEditorWindow
             // 
@@ -177,43 +200,46 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(600, 293);
             Controls.Add(mainSplit);
-            Controls.Add(toolStrip1);
+            Controls.Add(displayToolStrip);
             Controls.Add(statusStrip);
-            Controls.Add(toolStrip);
+            Controls.Add(dataToolStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "FontEditorWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Font";
-            toolStrip.ResumeLayout(false);
-            toolStrip.PerformLayout();
+            dataToolStrip.ResumeLayout(false);
+            dataToolStrip.PerformLayout();
             statusStrip.ResumeLayout(false);
             statusStrip.PerformLayout();
             mainSplit.Panel1.ResumeLayout(false);
             mainSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplit).EndInit();
             mainSplit.ResumeLayout(false);
-            toolStrip1.ResumeLayout(false);
-            toolStrip1.PerformLayout();
+            displayToolStrip.ResumeLayout(false);
+            displayToolStrip.PerformLayout();
             ResumeLayout(false);
             PerformLayout();
         }
 
         #endregion
 
-        private ToolStrip toolStrip;
+        private ToolStrip dataToolStrip;
         private StatusStrip statusStrip;
         private ToolStripStatusLabel lblDataSize;
         private ToolStripLabel toolStripLabel1;
         private ToolStripTextBox toolStripTxtName;
         private SplitContainer mainSplit;
-        private ToolStrip toolStrip1;
+        private ToolStrip displayToolStrip;
         private CustomControls.FontEditor fontEditor;
         private CustomControls.FontDisplay fontDisplay;
         private ToolStripLabel toolStripLabel3;
-        private ToolStripTextBox toolStripTxtEditChar;
+        private ToolStripTextBox toolStripTxtSample;
         private ToolStripButton toolStripBtnExport;
         private ToolStripButton toolStripBtnImport;
+        private ToolStripComboBox toolStripComboSelChar;
+        private ToolStripLabel toolStripLabel2;
+        private ToolStripSeparator toolStripSeparator1;
     }
 }
