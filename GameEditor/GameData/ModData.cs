@@ -10,6 +10,8 @@ namespace GameEditor.GameData
 {
     public class ModData : IDataAsset
     {
+        public const int MAX_SAMPLE_LENGTH = (1<<19) - 1;
+
         private ModFile modFile;
 
         public ModData(string name) {

@@ -6,22 +6,24 @@ using System.Threading.Tasks;
 
 namespace GameEditor.Misc
 {
+    public enum ByteOrder {
+        LittleEndian,
+        BigEndian,
+    }
+
     public class MemoryStreamIO
     {
-        public const int MODE_LITTLE_ENDIAN = 0;
-        public const int MODE_BIG_ENDIAN = 1;
-
         private readonly byte[] data;
-        private readonly int mode;
+        private readonly ByteOrder byteOrder;
         private int pos;
 
         public int Position { get { return pos; } }
         
         public int Length { get { return data.Length; } }
 
-        public MemoryStreamIO(byte[] data, int mode = MODE_LITTLE_ENDIAN) {
+        public MemoryStreamIO(byte[] data, ByteOrder byteOrder) {
             this.data = data;
-            this.mode = mode;
+            this.byteOrder = byteOrder;
             pos = 0;
         }
 
@@ -56,14 +58,14 @@ namespace GameEditor.Misc
 
         public void WriteU32(uint u32) {
             EnsureLength(4);
-            switch (mode) {
-            case MODE_LITTLE_ENDIAN:
+            switch (byteOrder) {
+            case ByteOrder.LittleEndian:
                 data[pos++] = (byte) ((u32 >>  0) & 0xff);
                 data[pos++] = (byte) ((u32 >>  8) & 0xff);
                 data[pos++] = (byte) ((u32 >> 16) & 0xff);
                 data[pos++] = (byte) ((u32 >> 24) & 0xff);
                 break;
-            case MODE_BIG_ENDIAN:
+            case ByteOrder.BigEndian:
                 data[pos++] = (byte) ((u32 >> 24) & 0xff);
                 data[pos++] = (byte) ((u32 >> 16) & 0xff);
                 data[pos++] = (byte) ((u32 >>  8) & 0xff);
@@ -74,12 +76,12 @@ namespace GameEditor.Misc
 
         public void WriteU16(ushort u16) {
             EnsureLength(2);
-            switch (mode) {
-            case MODE_LITTLE_ENDIAN:
+            switch (byteOrder) {
+            case ByteOrder.LittleEndian:
                 data[pos++] = (byte) ((u16 >>  0) & 0xff);
                 data[pos++] = (byte) ((u16 >>  8) & 0xff);
                 break;
-            case MODE_BIG_ENDIAN:
+            case ByteOrder.BigEndian:
                 data[pos++] = (byte) ((u16 >>  8) & 0xff);
                 data[pos++] = (byte) ((u16 >>  0) & 0xff);
                 break;
@@ -135,16 +137,16 @@ namespace GameEditor.Misc
 
         public uint ReadU32() {
             EnsureLength(4);
-            var val = mode switch {
-                MODE_LITTLE_ENDIAN => ((((uint)data[pos + 0]) << 0) |
-                                       (((uint)data[pos + 1]) << 8) |
-                                       (((uint)data[pos + 2]) << 16) |
-                                       (((uint)data[pos + 3]) << 24)),
-                MODE_BIG_ENDIAN => ((((uint)data[pos + 3]) << 0) |
-                                    (((uint)data[pos + 2]) << 8) |
-                                    (((uint)data[pos + 1]) << 16) |
-                                    (((uint)data[pos + 0]) << 24)),
-                _ => (uint)0,
+            uint val = byteOrder switch {
+                ByteOrder.LittleEndian => (((uint)data[pos + 0]) <<  0) |
+                                          (((uint)data[pos + 1]) <<  8) |
+                                          (((uint)data[pos + 2]) << 16) |
+                                          (((uint)data[pos + 3]) << 24),
+                ByteOrder.BigEndian =>    (((uint)data[pos + 3]) <<  0) |
+                                          (((uint)data[pos + 2]) <<  8) |
+                                          (((uint)data[pos + 1]) << 16) |
+                                          (((uint)data[pos + 0]) << 24),
+                _ => 0,
             };
             pos += 4;
             return val;
@@ -152,12 +154,10 @@ namespace GameEditor.Misc
 
         public ushort ReadU16() {
             EnsureLength(2);
-            var val = mode switch {
-                MODE_LITTLE_ENDIAN => (ushort)((((uint)data[pos + 0]) << 0) |
-                                               (((uint)data[pos + 1]) << 8)),
-                MODE_BIG_ENDIAN => (ushort)((((uint)data[pos + 1]) << 0) |
-                                            (((uint)data[pos + 0]) << 8)),
-                _ => (ushort)0,
+            ushort val = byteOrder switch {
+                ByteOrder.LittleEndian => (ushort)((data[pos+0] << 0) | (data[pos+1] << 8)),
+                ByteOrder.BigEndian =>    (ushort)((data[pos+1] << 0) | (data[pos+0] << 8)),
+                _ => 0,
             };
             pos += 2;
             return val;

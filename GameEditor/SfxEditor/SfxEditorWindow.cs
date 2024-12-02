@@ -86,14 +86,8 @@ namespace GameEditor.SfxEditor
             dlg.Volume = 1.0;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
-                uint channelBits = dlg.UseChannel switch {
-                    SfxImportDialog.Channel.Both => 0b11,
-                    SfxImportDialog.Channel.Left => 0b01,
-                    SfxImportDialog.Channel.Right => 0b10,
-                    _ => 0b11,
-                };
                 int sampleRate = dlg.Resample ? dlg.SampleRate : 0;
-                Sfx.Import(dlg.SfxFileName, channelBits, sampleRate, dlg.Volume);
+                Sfx.Import(dlg.SfxFileName, dlg.UseChannelBits, sampleRate, dlg.Volume);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading WAV: {ex.Message}", "Error Importing SFX");
                 return;

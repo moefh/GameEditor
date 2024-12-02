@@ -3,18 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 
 namespace GameEditor.Misc
 {
     public static class ModUtil
     {
         public enum Note {
-            C, CSharp,
-            D, DSharp,
+            C, CSharp, DFlat=CSharp,
+            D, DSharp, EFlat=DSharp,
             E,
-            F, FSharp,
-            G, GSharp,
-            A, ASharp,
+            F, FSharp, GFlat=FSharp,
+            G, GSharp, AFlat=GSharp,
+            A, ASharp, BFlat=ASharp,
             B,
         }
         public static readonly string[] NoteNames = [
@@ -30,7 +31,7 @@ namespace GameEditor.Misc
             {53,50,47,45,42,40,37,35,33,31,30,28},
         };
 
-        public static string GetModNoteName(int period) {
+        public static string GetPeriodNoteName(int period) {
             for (int oct = 0; oct < PeriodTable.Length; oct++) {
                 for (int note = 0; note < 12; note++) {
                     if (period >= PeriodTable[oct,note]) {
@@ -39,6 +40,21 @@ namespace GameEditor.Misc
                 }
             }
             return $"<{period}>";
+        }
+
+        public static bool GetPeriodNote(int period, out Note note, out int octave) {
+            for (int oct = 0; oct < PeriodTable.Length; oct++) {
+                for (int n = 0; n < 12; n++) {
+                    if (period >= PeriodTable[oct,n]) {
+                        note = (Note) n;
+                        octave = oct;
+                        return true;
+                    }
+                }
+            }
+            note = Note.C;
+            octave = 0;
+            return false;
         }
 
         public static int GetPeriodSampleRate(int period) {
@@ -53,15 +69,12 @@ namespace GameEditor.Misc
             return GetPeriodSampleRate(PeriodTable[octave, note]);
         }
 
-        public static int GetNoteSampleRate(Note note, int octave) {
-            return GetNoteSampleRate((int)note, octave);
-        }
-
-        public static int GetNotePeriod(Note note, int octave) {
+        public static ushort GetNotePeriod(Note note, int octave) {
             int noteNum = (int)note;
             if (octave < 0 || octave >= PeriodTable.GetLength(0)) return 0;
             if (noteNum < 0 || noteNum >= PeriodTable.GetLength(1)) return 0;
             return PeriodTable[octave, noteNum];
         }
+
     }
 }

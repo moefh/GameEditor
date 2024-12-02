@@ -30,7 +30,7 @@ namespace GameEditor.Misc
             uint fileSize = 4 + 4 + 4 + fmtChunkSize + dataChunkSize;  // RIFF + len + WAVE + chunks
 
             byte[] wav = new byte[fileSize - (includeSamples ? 0 : bytesPerBlock*numSamples)];
-            MemoryStreamIO w = new MemoryStreamIO(wav);
+            MemoryStreamIO w = new MemoryStreamIO(wav, ByteOrder.LittleEndian);
 
             // master chunk
             w.WriteTag("RIFF");

@@ -59,7 +59,7 @@ namespace GameEditor.MainEditor
                 Util.ShowError(ex, $"Error writing {dlg.FileName}", "Error Exporting Header");
                 return;
             }
-            MessageBox.Show("Created header file with struct definitions.", "Header Exported",
+            MessageBox.Show("Created header file with struct declarations.", "Header Exported",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

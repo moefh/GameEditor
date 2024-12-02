@@ -4,3 +4,5 @@
 - MOD editor:
   - samples tab:
 	- import sample
+
+- MOD file writer: clip sample if larger than max allowed

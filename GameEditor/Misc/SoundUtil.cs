@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
@@ -27,6 +28,15 @@ namespace GameEditor.Misc
                 sample *= envelope / osc.Length;
                 samples[i + start] = (sbyte) Math.Clamp(127 * sample, -128, 127);
             }
+        }
+
+        public static void MakeNote(sbyte[] samples, int start, int count, int sampleRate, int noteFreq) {
+            Oscillator[] note = [
+                new Oscillator(noteFreq*1, 1.0),
+                new Oscillator(noteFreq*2, 0.8),
+                new Oscillator(noteFreq*3, 0.2),
+            ];
+            PlayOscillators(samples, start, count, sampleRate, note, 1.2);
         }
 
         /*
@@ -70,8 +80,8 @@ namespace GameEditor.Misc
             if (start < 0) { num += start; start = 0; }
             if (start + num >= data.Length) num = data.Length - start - 1;
             if (num < 0) return 0;
-            sbyte max = -128;
-            sbyte min = 127;
+            sbyte max = 0;
+            sbyte min = 0;
             for (int i = 0; i < num; i++) {
                 sbyte val = data[start+i];
                 max = sbyte.Max(val, max);

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameEditor.GameData;
+using System;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
 using System.Linq;
@@ -6,6 +7,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.Misc
 {
@@ -18,22 +20,30 @@ namespace GameEditor.Misc
         public byte Volume;
         public sbyte[]? Data;
 
-        public readonly void Export(string filename, int sampleRate, double volume) {
-            if (Data != null) {
-                WavFileWriter.Write(filename, Data, sampleRate, volume);
-            }
-        }
-
         public static ModSample Create(int len) {
             ModSample sample;
             sample.Title = "";
             sample.Len = (uint) len;
             sample.LoopStart = 0;
             sample.LoopLen = 0;
-            sample.Volume = 128;
+            sample.Volume = 64;
             sample.Finetune = 0;
             sample.Data = (sample.Len == 0) ? null : new sbyte[sample.Len];
             return sample;
+        }
+
+        public readonly void Export(string filename, int sampleRate, double volume) {
+            if (Data != null) {
+                WavFileWriter.Write(filename, Data, sampleRate, volume);
+            }
+        }
+
+        public void Import(WaveFileReader wav, uint channelBits, int newSampleRate, double volume) {
+            if (newSampleRate <= 0) newSampleRate = wav.SampleRate;
+            sbyte[] samples = wav.GetSamples(channelBits, newSampleRate, volume);
+            if (samples.Length > ModData.MAX_SAMPLE_LENGTH) throw new Exception("sample is too large");
+            Data = samples;
+            Len = (uint) samples.Length;
         }
     }
 
@@ -45,6 +55,8 @@ namespace GameEditor.Misc
 
     public class ModFile
     {
+        public const int MAX_SAMPLE_LENGTH = (1<<17) - 2;
+
         private string formatId;
         private string modTitle;
         private int numChannels;
@@ -71,26 +83,34 @@ namespace GameEditor.Misc
             songPositions[0] = 0;
             sample = new ModSample[31];
             for (int i = 0; i < sample.Length; i++) {
-                int sampleLen = (i < 2) ? 11025 : 0;
+                int sampleLen = (i == 0) ? 11025 : 0;
                 sample[i] = ModSample.Create(sampleLen);
                 sbyte[]? sampleData = sample[i].Data;
                 if (sampleData != null) {
-                    SoundUtil.MakeChord(sampleData, 0, sampleLen, sampleLen, sampleLen/64, i==0);
+                    SoundUtil.MakeNote(sampleData, 0, sampleLen, sampleLen, sampleLen/64);
                 }
             }
             pattern = new ModCell[64 * numChannels];
-            pattern[numChannels* 0].Period = (ushort) ModUtil.GetNotePeriod(ModUtil.Note.D, 3);
-            pattern[numChannels* 0].Sample = 2;
-            pattern[numChannels* 0].Effect = 0xC40;  // set volume to 0x40 (max)
-            pattern[numChannels* 4].Period = (ushort) ModUtil.GetNotePeriod(ModUtil.Note.G, 2);
-            pattern[numChannels* 4].Sample = 1;
-            pattern[numChannels* 4].Effect = 0;
-            pattern[numChannels* 8].Period = (ushort) ModUtil.GetNotePeriod(ModUtil.Note.C, 3);
-            pattern[numChannels* 8].Sample = 0;
-            pattern[numChannels*12].Effect = 0;
-            pattern[numChannels*12].Period = 0;
-            pattern[numChannels*12].Sample = 0;
-            pattern[numChannels*12].Effect = 0xD00;  // pattern break (end pattern, which ends the song)
+            pattern[numChannels*0+0].Period = ModUtil.GetNotePeriod(ModUtil.Note.D, 3);
+            pattern[numChannels*0+0].Sample = 1;
+            pattern[numChannels*0+0].Effect = 0xC40;  // set volume to 0x40 (max)
+            pattern[numChannels*0+1].Period = ModUtil.GetNotePeriod(ModUtil.Note.F, 3);
+            pattern[numChannels*0+1].Sample = 1;
+            pattern[numChannels*0+1].Effect = 0xC40;  // set volume to 0x40 (max)
+            pattern[numChannels*0+2].Period = ModUtil.GetNotePeriod(ModUtil.Note.A, 3);
+            pattern[numChannels*0+2].Sample = 1;
+            pattern[numChannels*0+2].Effect = 0xC40;  // set volume to 0x40 (max)
+            pattern[numChannels*0+3].Effect = 0xF20;  // set tempo to 32 BMP
+
+            pattern[numChannels*1+0].Period = ModUtil.GetNotePeriod(ModUtil.Note.D, 3);
+            pattern[numChannels*1+1].Period = ModUtil.GetNotePeriod(ModUtil.Note.G, 3);
+            pattern[numChannels*1+2].Period = ModUtil.GetNotePeriod(ModUtil.Note.B, 3);
+
+            pattern[numChannels*2+0].Period = ModUtil.GetNotePeriod(ModUtil.Note.E, 3);
+            pattern[numChannels*2+1].Period = ModUtil.GetNotePeriod(ModUtil.Note.G, 3);
+            pattern[numChannels*2+2].Period = ModUtil.GetNotePeriod(ModUtil.Note.C, 4);
+
+            pattern[numChannels*3].Effect = 0xD00;  // pattern break (end pattern, which ends the song)
         }
 
         public ModFile(int numChannels, List<ModSample> sample, List<byte> songPositions, List<ModCell> pattern) {
@@ -123,9 +143,9 @@ namespace GameEditor.Misc
 
         private void Read(string filename) {
             byte[] data = File.ReadAllBytes(filename);
-            MemoryStreamIO r = new MemoryStreamIO(data, MemoryStreamIO.MODE_BIG_ENDIAN);
+            MemoryStreamIO r = new MemoryStreamIO(data, ByteOrder.BigEndian);
 
-            // read file type to get number of channels and samples
+            // read file type to get number of channels and samples (we only support 4 channels/31 samples)
             r.Seek(1080);
             formatId = r.ReadTag();
             numChannels = 0;
@@ -138,21 +158,8 @@ namespace GameEditor.Misc
                 numChannels = 4;
                 break;
 
-            case "6CHN":
-                sample = new ModSample[31];
-                numChannels = 6;
-                break;
-
-            case "8CHN":
-                sample = new ModSample[31];
-                numChannels = 8;
-                break;
-
             default:
-                sample = new ModSample[15];
-                numChannels = 4;
-                Util.Log($"WARNING: unknown MOD format: '{formatId}', using 15 samples and 4 channels");
-                break;
+                throw new Exception($"unknown MOD format: '{formatId}'");
             }
 
             // read samples
@@ -212,7 +219,7 @@ namespace GameEditor.Misc
             // Perpare data with header
 
             byte[] data = new byte[20 + 30*NumSamples + 2 + 128 + 4];
-            MemoryStreamIO w = new MemoryStreamIO(data, MemoryStreamIO.MODE_BIG_ENDIAN);
+            MemoryStreamIO w = new MemoryStreamIO(data, ByteOrder.BigEndian);
 
             // MOD title
             w.WriteString("", 20);
@@ -230,8 +237,8 @@ namespace GameEditor.Misc
             }
 
             // sequence control
-            w.WriteU8((byte) numSongPositions); // FIXME: this should account for loops and jumps
-            w.WriteU8(0xff);
+            w.WriteU8((byte) numSongPositions);
+            w.WriteU8(0xff);   // ?? (restart song position? 0xff=no restart, possibly?)
             w.WriteBytes(songPositions, 0, 128);
             w.WriteTag(formatId);
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Configuration;
 using System.Data;
 using System.Drawing;
 using System.Linq;
@@ -9,10 +8,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameEditor.SfxEditor
+namespace GameEditor.ModEditor
 {
-
-    public partial class SfxImportDialog : Form
+    public partial class ModSampleImportDialog : Form
     {
         public enum Channel
         {
@@ -21,7 +19,7 @@ namespace GameEditor.SfxEditor
             Both,
         };
 
-        public SfxImportDialog() {
+        public ModSampleImportDialog() {
             InitializeComponent();
             comboChannel.Items.AddRange(["Both (Mix)", "Left", "Right"]);
             comboChannel.SelectedIndex = 0;
@@ -29,7 +27,7 @@ namespace GameEditor.SfxEditor
             comboConvertSampleRate.SelectedIndex = 0;
         }
 
-        public string SfxFileName {
+        public string ModSampleFileName {
             get { return txtFileName.Text; }
             set { txtFileName.Text = value; }
         }
@@ -89,18 +87,17 @@ namespace GameEditor.SfxEditor
             dlg.Filter = "WAV files (*.wav)|*.wav|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() == DialogResult.OK) {
-                SfxFileName = dlg.FileName;
+                ModSampleFileName = dlg.FileName;
             }
         }
 
         private void btnOK_Click(object sender, EventArgs e) {
-            if (SfxFileName == "") {
+            if (ModSampleFileName == "") {
                 MessageBox.Show("Please select a file name.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
             DialogResult = DialogResult.OK;
             Close();
         }
-
     }
 }

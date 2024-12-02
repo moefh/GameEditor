@@ -24,6 +24,22 @@ namespace GameEditor.Misc
         public List<short[]> Channels { get { return channels; } }
         public int NumSamples { get { return channels.Count == 0 ? 0 : channels[0].Length; } }
 
+        public void ClipSamples(int newNumSamples) {
+            for (int c = 0; c < NumChannels; c++) {
+                short[] newSamples = new short[newNumSamples];
+                Array.Copy(Channels[c], newSamples, int.Min(newNumSamples, NumSamples));
+                Channels[c] = newSamples;
+            }
+        }
+
+        public int GetNumSamplesAfterResampling(int newSampleRate) {
+            return (int) (((long)NumSamples * newSampleRate) / SampleRate);
+        }
+
+        public int GetNumSamplesForTargetAfterResampling(int newSampleRate, int targetNumSamples) {
+            return (int) (((long)targetNumSamples * SampleRate) / newSampleRate);
+        }
+
         private static sbyte ConvertSample(int sample, double volume) {
             return (sbyte) ((int)Math.Clamp(sample * volume, short.MinValue, short.MaxValue) >> 8);
         }
@@ -38,7 +54,7 @@ namespace GameEditor.Misc
         }
 
         public sbyte[] GetSamples(uint channelBits, int newSampleRate, double newVolume) {
-            int newNumSamples = (int) (((long)NumSamples * newSampleRate) / SampleRate);
+            int newNumSamples = GetNumSamplesAfterResampling(newSampleRate);
             sbyte[] newSamples = new sbyte[newNumSamples];
 
             // srcAdv and srcPos are fixed point 20.12
