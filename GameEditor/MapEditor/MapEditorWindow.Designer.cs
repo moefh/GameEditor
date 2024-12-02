@@ -162,7 +162,9 @@
             // 
             // toolStripButtonShowGrid
             // 
+            toolStripButtonShowGrid.Checked = true;
             toolStripButtonShowGrid.CheckOnClick = true;
+            toolStripButtonShowGrid.CheckState = CheckState.Checked;
             toolStripButtonShowGrid.Image = (Image)resources.GetObject("toolStripButtonShowGrid.Image");
             toolStripButtonShowGrid.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowGrid.Name = "toolStripButtonShowGrid";

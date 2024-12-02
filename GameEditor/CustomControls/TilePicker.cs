@@ -43,7 +43,7 @@ namespace GameEditor.CustomControls
 
         public Tileset? Tileset {
             get { return tileset; }
-            set { tileset = value; ResetSize(); Invalidate(); }
+            set { if (tileset != value) { tileset = value; ResetSize(); Invalidate(); } }
         }
 
         public bool ShowEmptyTile {

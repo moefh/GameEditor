@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Runtime.CompilerServices;
 using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.Misc;
@@ -19,17 +20,17 @@ namespace GameEditor.MapEditor
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
             map = mapItem;
             InitializeComponent();
-            FixFormTitle();
-            UpdateDataSize();
             tilePicker.Tileset = Map.Tileset;
             mapView.Map = Map;
-            mapView.EnabledRenderLayers = LAYER_FG | LAYER_BG | LAYER_COL | LAYER_GRID;
-            mapView.EditLayer = LAYER_FG;
+            EditLayer = LAYER_FG;
             toolStripComboBoxZoom.SelectedIndex = 1;
             Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Map.Name);
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
             toolStripComboTiles.SelectedIndex = Util.Project.GetTilesetIndex(Map.Tileset);
+            FixFormTitle();
+            UpdateDataSize();
+            UpdateRenderLayers();
         }
 
         public MapData Map {
@@ -39,12 +40,11 @@ namespace GameEditor.MapEditor
         public uint EditLayer {
             get { return mapView.EditLayer; }
             set {
-                uint oldValue = mapView.EditLayer;
                 mapView.EditLayer = value;
                 toolStripButtonEditFG.Checked = (value & LAYER_FG) != 0;
                 toolStripButtonEditBG.Checked = (value & LAYER_BG) != 0;
                 toolStripButtonEditCol.Checked = (value & LAYER_COL) != 0;
-                if ((mapView.EditLayer & LAYER_COL) != 0 && (oldValue & LAYER_COL) == 0) {
+                if ((mapView.EditLayer & LAYER_COL) != 0) {
                     tilePicker.Tileset = ImageUtil.CollisionTileset;
                 } else {
                     tilePicker.Tileset = Map.Tileset;
@@ -71,7 +71,7 @@ namespace GameEditor.MapEditor
             Util.UpdateGameDataSize();
         }
 
-        private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
+        private void UpdateRenderLayers() {
             uint fg = toolStripButtonShowFG.Checked ? LAYER_FG : 0;
             uint bg = toolStripButtonShowBG.Checked ? LAYER_BG : 0;
             uint col = toolStripButtonShowCol.Checked ? LAYER_COL : 0;
@@ -79,6 +79,10 @@ namespace GameEditor.MapEditor
             uint screen = toolStripButtonShowScreen.Checked ? LAYER_SCREEN : 0;
             EnabledRenderLayers = fg | bg | col | grid | screen;
             mapView.Invalidate();
+        }
+
+        private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
+            UpdateRenderLayers();
         }
 
         private void toolStripComboBoxZoom_SelectedIndexChanged(object sender, EventArgs e) {
