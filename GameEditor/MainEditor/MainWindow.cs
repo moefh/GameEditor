@@ -30,34 +30,21 @@ namespace GameEditor.MainEditor
     public partial class MainWindow : Form
     {
         private readonly Dictionary<DataAssetType,ProjectAssetListEditorForm> editors = [];
-        private readonly FontListEditorWindow fontListEditor;
-        private readonly SfxListEditorWindow sfxListEditor;
-        private readonly ModListEditorWindow modListEditor;
-        private readonly MapListEditorWindow mapListEditor;
-        private readonly TilesetListEditorWindow tilesetListEditor;
-        private readonly SpriteListEditorWindow spriteListEditor;
-        private readonly SpriteAnimationListEditorWindow spriteAnimationListEditor;
         private readonly LogWindow logWindow;
 
         public MainWindow() {
             InitializeComponent();
 
-            mapListEditor = new MapListEditorWindow();
-            tilesetListEditor = new TilesetListEditorWindow();
-            spriteListEditor = new SpriteListEditorWindow();
-            spriteAnimationListEditor = new SpriteAnimationListEditorWindow();
-            sfxListEditor = new SfxListEditorWindow();
-            modListEditor = new ModListEditorWindow();
-            fontListEditor = new FontListEditorWindow();
             logWindow = new LogWindow();
-            
-            editors[DataAssetType.Map] = mapListEditor;
-            editors[DataAssetType.Tileset] = tilesetListEditor;
-            editors[DataAssetType.Sprite] = spriteListEditor;
-            editors[DataAssetType.SpriteAnimation] = spriteAnimationListEditor;
-            editors[DataAssetType.Sfx] = sfxListEditor;
-            editors[DataAssetType.Mod] = modListEditor;
-            editors[DataAssetType.Font] = fontListEditor;
+            logWindow.MdiParent = this;
+
+            editors[DataAssetType.Map] = new MapListEditorWindow();
+            editors[DataAssetType.Tileset] = new TilesetListEditorWindow();
+            editors[DataAssetType.Sprite] = new SpriteListEditorWindow();
+            editors[DataAssetType.SpriteAnimation] = new SpriteAnimationListEditorWindow();
+            editors[DataAssetType.Sfx] = new SfxListEditorWindow();
+            editors[DataAssetType.Mod] = new ModListEditorWindow();
+            editors[DataAssetType.Font] = new FontListEditorWindow();
             foreach (ProjectAssetListEditorForm editor in editors.Values) {
                 editor.MdiParent = this;
             }
@@ -85,6 +72,11 @@ namespace GameEditor.MainEditor
             }
             string name = Regex.Replace(Util.Project.FileName, """^(.*?)([^\\/]+)$""", "$2");
             Text = $"{name} - Game Asset Editor";
+        }
+
+        public void ShowListEditorWindow(DataAssetType type) {
+            editors[type].Show();
+            editors[type].Activate();
         }
 
         private void RefreshAllAssetLists() {
@@ -369,38 +361,31 @@ namespace GameEditor.MainEditor
         }
 
         private void toolStripBtnMapEditor_Click(object sender, EventArgs e) {
-            mapListEditor.Show();
-            mapListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.Map);
         }
 
         private void toolStripBtnTilesetEditor_Click(object sender, EventArgs e) {
-            tilesetListEditor.Show();
-            tilesetListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.Tileset);
         }
 
         private void toolStripBtnSpriteEditor_Click(object sender, EventArgs e) {
-            spriteListEditor.Show();
-            spriteListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.Sprite);
         }
 
         private void toolStripBtnAnimationEditor_Click(object sender, EventArgs e) {
-            spriteAnimationListEditor.Show();
-            spriteAnimationListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.SpriteAnimation);
         }
 
         private void toolStripBtnSfxEditor_Click(object sender, EventArgs e) {
-            sfxListEditor.Show();
-            sfxListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.Sfx);
         }
 
         private void toolStripBtnModEditor_Click(object sender, EventArgs e) {
-            modListEditor.Show();
-            modListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.Mod);
         }
 
         private void toolStripBtnFontEditor_Click(object sender, EventArgs e) {
-            fontListEditor.Show();
-            fontListEditor.Activate();
+            ShowListEditorWindow(DataAssetType.Font);
         }
 
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
