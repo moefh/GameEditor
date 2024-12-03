@@ -51,7 +51,8 @@ namespace GameEditor.Misc
                 if (i >= s.Length) {
                     WriteU8(0x20);
                 } else {
-                    WriteU8((byte) s[i]);
+                    byte b = (byte) s[i];
+                    WriteU8(byte.Clamp(b, 0x20, 0x7e));
                 }
             }
         }

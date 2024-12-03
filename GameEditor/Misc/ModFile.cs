@@ -215,7 +215,7 @@ namespace GameEditor.Misc
         }
 
         public void Export(string filename) {
-            // ==============
+            // ===========================
             // Perpare data with header
 
             byte[] data = new byte[20 + 30*NumSamples + 2 + 128 + 4];
@@ -225,15 +225,20 @@ namespace GameEditor.Misc
             w.WriteString("", 20);
 
             // samples headers
-            for (int i = 0; i < NumSamples; i++) {
-                int finetune = Sample[i].Finetune;
+            int[] sampleLength = new int[NumSamples];
+            for (int s = 0; s < NumSamples; s++) {
+                int finetune = Sample[s].Finetune;
                 if (finetune < 0) finetune += 16;
-                w.WriteString($"sample {i+1}", 22);
-                w.WriteU16((ushort)(Sample[i].Len / 2));
+                sampleLength[s] = int.Clamp((int)Sample[s].Len, 0, MAX_SAMPLE_LENGTH) / 2;
+                int loopStart = int.Clamp((int)Sample[s].LoopStart, 0, MAX_SAMPLE_LENGTH) / 2;
+                int loopLen = int.Clamp((int)Sample[s].LoopLen, 0, MAX_SAMPLE_LENGTH) / 2;
+                if (Sample[s].Data == null) sampleLength[s] = loopStart = loopLen = 0;
+                w.WriteString($"sample {s+1}", 22);
+                w.WriteU16((ushort) sampleLength[s]);
                 w.WriteU8((byte)finetune);
-                w.WriteU8(Sample[i].Volume);
-                w.WriteU16((ushort)(Sample[i].LoopStart / 2));
-                w.WriteU16((ushort)(Sample[i].LoopLen / 2));
+                w.WriteU8(Sample[s].Volume);
+                w.WriteU16((ushort) loopStart);
+                w.WriteU16((ushort) loopLen);
             }
 
             // sequence control
@@ -242,7 +247,7 @@ namespace GameEditor.Misc
             w.WriteBytes(songPositions, 0, 128);
             w.WriteTag(formatId);
 
-            // ==============
+            // ===========================
             // Write file
 
             using FileStream fs = new FileStream(filename, FileMode.Create, FileAccess.Write);
@@ -265,7 +270,7 @@ namespace GameEditor.Misc
             for (int s = 0; s < NumSamples; s++) {
                 sbyte[]? sampleData = Sample[s].Data;
                 if (sampleData == null) continue;
-                for (int i = 0; i < Sample[s].Len; i++) {
+                for (int i = 0; i < 2*sampleLength[s]; i++) {
                     fs.WriteByte((byte) sampleData[i]);
                 }
             }

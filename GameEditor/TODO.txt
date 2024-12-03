@@ -1,5 +1,2 @@
 ﻿
 - edit map connections (world editor)
-
-- MOD file writer (MOD export):
-  - clip sample if larger than max allowed

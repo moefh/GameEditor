@@ -109,12 +109,12 @@ namespace GameEditor.GameData
             // read source image:
             using Bitmap bmp = new Bitmap(filename);
             int nx = (bmp.Width + fontWidth - 1) / fontWidth;
-            int ny = (bmp.Height + fontHeight - 1) / fontHeight;
+            int ny = (NUM_CHARS + nx - 1) / nx;
 
             // create empty bitmap:
-            Bitmap font = new Bitmap(fontWidth, nx * ny * fontHeight);
+            Bitmap font = new Bitmap(fontWidth, NUM_CHARS * fontHeight);
             using Graphics g = Graphics.FromImage(font);
-            g.Clear(Color.FromArgb(255, 255, 0));
+            g.Clear(Color.FromArgb(0, 255, 0));
 
             // copy each frame from the original to the new bitmap:
             for (int y = 0; y < ny; y++) {

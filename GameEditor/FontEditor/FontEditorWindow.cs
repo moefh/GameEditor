@@ -82,23 +82,21 @@ namespace GameEditor.FontEditor
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Import Font Image";
-            dlg.Filter = "Image Files (*.bmp;*.png)|*.bmp;*.png|All files (*.*)|*.*";
-            dlg.RestoreDirectory = true;
+            FontImportDialog dlg = new FontImportDialog();
+            dlg.ImportWidth = FontData.Width;
+            dlg.ImportHeight = FontData.Height;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
-                // TODO: create dialog to select size
-                FontData.ImportBitmap(dlg.FileName, 6, 8);
+                FontData.ImportBitmap(dlg.ImportFileName, dlg.ImportWidth, dlg.ImportHeight);
                 fontDisplay.Invalidate();
                 fontEditor.Invalidate();
                 Util.Project.SetDirty();
                 FixFormTitle();
                 UpdateGameDataSize();
                 Util.UpdateGameDataSize();
-                Util.Log($"== Imported font image from {dlg.FileName}");
+                Util.Log($"== Imported font image from {dlg.ImportFileName}");
             } catch (Exception ex) {
-                Util.ShowError(ex, $"ERROR loading bitmap from {dlg.FileName}", "Error Importing Font");
+                Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Font");
             }
         }
 

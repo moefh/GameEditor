@@ -121,7 +121,8 @@ namespace GameEditor.GameData
             using Graphics g = Graphics.FromImage(save);
             for (int y = 0; y < numVertTiles; y++) {
                 for (int x = 0; x < numHorzTiles; x++) {
-                    g.DrawImage(bitmap, x * TILE_SIZE, y * TILE_SIZE,
+                    g.DrawImage(bitmap,
+                        new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE),
                         new Rectangle(0, (x + y * numHorzTiles) * TILE_SIZE, TILE_SIZE, TILE_SIZE),
                         GraphicsUnit.Pixel);
                 }
