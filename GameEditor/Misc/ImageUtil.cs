@@ -80,11 +80,11 @@ namespace GameEditor.Misc
             Color green = Color.FromArgb(0, 255, 0);
             ImageAttributes imageAttr = new ImageAttributes();
             imageAttr.SetColorMatrix(new ColorMatrix([
-               [0.299f, 0.299f, 0.299f,  0,  0],    // red
-               [0.587f, 0.587f, 0.587f,  0,  0],    // green
-               [0.114f, 0.114f, 0.114f,  0,  0],    // blue
-               [     0,      0,      0,  1,  0],    // alpha
-               [     0,      0,      0,  0,  1],    // translations
+               [0.299f, 0.299f, 0.299f,     0,  0],    // red
+               [0.587f, 0.587f, 0.587f,     0,  0],    // green
+               [0.114f, 0.114f, 0.114f,     0,  0],    // blue
+               [     0,      0,      0,  0.5f,  0],    // alpha
+               [     0,      0,      0,     0,  1],    // translations
             ]));
 
             return imageAttr;
@@ -95,11 +95,11 @@ namespace GameEditor.Misc
             ImageAttributes imageAttr = new ImageAttributes();
             imageAttr.SetColorKey(green, green, ColorAdjustType.Default);
             imageAttr.SetColorMatrix(new ColorMatrix([
-               [0.299f, 0.299f, 0.299f,  0,  0],    // red
-               [0.587f, 0.587f, 0.587f,  0,  0],    // green
-               [0.114f, 0.114f, 0.114f,  0,  0],    // blue
-               [     0,      0,      0,  1,  0],    // alpha
-               [     0,      0,      0,  0,  1],    // translations
+               [0.299f, 0.299f, 0.299f,     0,  0],    // red
+               [0.587f, 0.587f, 0.587f,     0,  0],    // green
+               [0.114f, 0.114f, 0.114f,     0,  0],    // blue
+               [     0,      0,      0,  0.5f,  0],    // alpha
+               [     0,      0,      0,     0,  1],    // translations
             ]));
             return imageAttr;
         }
