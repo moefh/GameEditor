@@ -13,6 +13,8 @@ namespace GameEditor.Misc
         private static Bitmap? colorPickerPalette;
         private static Tileset? collisionTileset;
         private static ImageAttributes? transparentGreen;
+        private static ImageAttributes? grayscale;
+        private static ImageAttributes? grayscaleTransparentGreen;
         private static SolidBrush? greenBrush;
 
         public static Bitmap ColorPickerPalette {
@@ -20,6 +22,12 @@ namespace GameEditor.Misc
         }
         public static ImageAttributes TransparentGreen {
             get { transparentGreen ??= CreateTransparentGreenImageAttributes(); return transparentGreen; }
+        }
+        public static ImageAttributes Grayscale {
+            get { grayscale ??= CreateGrayscaleImageAttributes(); return grayscale; }
+        }
+        public static ImageAttributes GrayscaleTransparentGreen {
+            get { grayscaleTransparentGreen ??= CreateGrayscaleTransparentGreenImageAttributes(); return grayscaleTransparentGreen; }
         }
         public static SolidBrush GreenBrush {
             get { greenBrush ??= new SolidBrush(Color.FromArgb(0, 255, 0)); return greenBrush; }
@@ -65,6 +73,34 @@ namespace GameEditor.Misc
             Color green = Color.FromArgb(0, 255, 0);
             ImageAttributes imageAttr = new ImageAttributes();
             imageAttr.SetColorKey(green, green, ColorAdjustType.Default);
+            return imageAttr;
+        }
+
+        private static ImageAttributes CreateGrayscaleImageAttributes() {
+            Color green = Color.FromArgb(0, 255, 0);
+            ImageAttributes imageAttr = new ImageAttributes();
+            imageAttr.SetColorMatrix(new ColorMatrix([
+               [0.299f, 0.299f, 0.299f,  0,  0],    // red
+               [0.587f, 0.587f, 0.587f,  0,  0],    // green
+               [0.114f, 0.114f, 0.114f,  0,  0],    // blue
+               [     0,      0,      0,  1,  0],    // alpha
+               [     0,      0,      0,  0,  1],    // translations
+            ]));
+
+            return imageAttr;
+        }
+
+        private static ImageAttributes CreateGrayscaleTransparentGreenImageAttributes() {
+            Color green = Color.FromArgb(0, 255, 0);
+            ImageAttributes imageAttr = new ImageAttributes();
+            imageAttr.SetColorKey(green, green, ColorAdjustType.Default);
+            imageAttr.SetColorMatrix(new ColorMatrix([
+               [0.299f, 0.299f, 0.299f,  0,  0],    // red
+               [0.587f, 0.587f, 0.587f,  0,  0],    // green
+               [0.114f, 0.114f, 0.114f,  0,  0],    // blue
+               [     0,      0,      0,  1,  0],    // alpha
+               [     0,      0,      0,  0,  1],    // translations
+            ]));
             return imageAttr;
         }
 

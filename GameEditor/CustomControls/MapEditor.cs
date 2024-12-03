@@ -13,7 +13,7 @@ using System.Windows.Forms;
 
 namespace GameEditor.CustomControls
 {
-    public partial class MapView : AbstractPaintedControl
+    public partial class MapEditor : AbstractPaintedControl
     {
         public const uint LAYER_FG = 1 << 0;
         public const uint LAYER_BG = 1 << 1;
@@ -32,7 +32,7 @@ namespace GameEditor.CustomControls
 
         public event EventHandler? Dirtied;
 
-        public MapView() {
+        public MapEditor() {
             InitializeComponent();
             SetDoubleBuffered();
         }
@@ -41,19 +41,21 @@ namespace GameEditor.CustomControls
         public uint EditLayer { get; set; }
         public uint EnabledRenderLayers { get; set; }
         public int SelectedTile { get; set; }
+        public int SelectedCollisionTile { get; set; }
 
         public double Zoom {
             get { return zoom; }
-            set { if (value > 0.5) { zoom = value; Invalidate(); } }
+            set { if (value > 0.5) { zoom = value; ClampScroll(); Invalidate(); } }
         }
 
         private void SetDirty() {
             Dirtied?.Invoke(this, EventArgs.Empty);
         }
 
-        private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent) {
+        private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent, uint layer) {
             if (tile < 0) return;
-            Map?.Tileset.DrawTileAt(pe.Graphics, tile, x - origin.X, y - origin.Y, w, h, transparent);
+            bool grayscale = ((EditLayer & layer) == 0) && ((EditLayer & LAYER_COL) == 0);
+            Map?.Tileset.DrawTileAt(pe.Graphics, tile, x - origin.X, y - origin.Y, w, h, transparent, grayscale);
         }
 
         private void RenderCollision(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent) {
@@ -75,15 +77,14 @@ namespace GameEditor.CustomControls
                 for (int tx = 0; tx < Map.Tiles.Width; tx++) {
                     int x = (int) (tx * TILE_SIZE * zoom) + MARGIN;
                     if ((EnabledRenderLayers & LAYER_BG) != 0) {
-                        RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false);
+                        RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false, LAYER_BG);
                     }
                     if ((EnabledRenderLayers & LAYER_FG) != 0) {
-                        RenderTile(pe, Map.Tiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true);
+                        RenderTile(pe, Map.Tiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true, LAYER_FG);
                     }
                     if ((EnabledRenderLayers & LAYER_COL) != 0) {
                         RenderCollision(pe, Map.Tiles.clip[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true);
                     }
-
                 }
             }
             if ((EnabledRenderLayers & LAYER_GRID) != 0) {
@@ -101,10 +102,8 @@ namespace GameEditor.CustomControls
             if ((EnabledRenderLayers & LAYER_SCREEN) != 0) {
                 int w = (int) (GAME_SCREEN_WIDTH * zoom);
                 int h = (int) (GAME_SCREEN_HEIGHT * zoom);
-                int x = ((int)double.Min(ClientSize.Width, Map.Tiles.Width * TILE_SIZE * zoom) - w) / 2;
-                int y = ((int)double.Min(ClientSize.Height, Map.Tiles.Height * TILE_SIZE * zoom) - h) / 2;
-                if (x < 0) x = 0;
-                if (y < 0) y = 0;
+                int x = (int) (TILE_SIZE / 2 * zoom);
+                int y = (int) (TILE_SIZE / 2 * zoom);
                 Pen[] pens = {
                     Pens.LightGreen,
                     Pens.Black,
@@ -113,8 +112,8 @@ namespace GameEditor.CustomControls
                 for (int i = 0; i < 5; i++) {
                     Pen pen = pens[i%pens.Length];
                     pe.Graphics.DrawLine(pen, x +   i, y +   i, x + w-i, y +   i);
-                    pe.Graphics.DrawLine(pen, x +   i, y + h-i, x + w-i, y + h-i);
                     pe.Graphics.DrawLine(pen, x +   i, y +   i, x +   i, y + h-i);
+                    pe.Graphics.DrawLine(pen, x +   i, y + h-i, x + w-i, y + h-i);
                     pe.Graphics.DrawLine(pen, x + w-i, y +   i, x + w-i, y + h-i);
                 }
             }
@@ -125,24 +124,23 @@ namespace GameEditor.CustomControls
             if (tx < 0 || ty < 0 || tx >= Map.Tiles.Width || ty >= Map.Tiles.Height) return;
             if ((EditLayer & LAYER_BG) != 0) Map.Tiles.bg[tx, ty] = delete ? -1 : SelectedTile;
             if ((EditLayer & LAYER_FG) != 0) Map.Tiles.fg[tx, ty] = delete ? -1 : SelectedTile;
-            if ((EditLayer & LAYER_COL) != 0) Map.Tiles.clip[tx, ty] = delete ? -1 : SelectedTile;
+            if ((EditLayer & LAYER_COL) != 0) Map.Tiles.clip[tx, ty] = delete ? -1 : SelectedCollisionTile;
             Invalidate();
             SetDirty();
         }
 
+        private void ClampScroll() {
+            if (Map == null) return;
+            int w = int.Max((int) (Map.Tiles.Width * TILE_SIZE * zoom), ClientSize.Width-1);
+            int h = int.Max((int) (Map.Tiles.Height * TILE_SIZE * zoom), ClientSize.Height-1);
+            origin.X = int.Clamp(origin.X, 0, w - ClientSize.Width + 1);
+            origin.Y = int.Clamp(origin.Y, 0, h - ClientSize.Height + 1);
+        }
+
         private void ScrollMap(Point amount) {
             if (Map == null) return;
-
             origin.Offset(Point.Empty - new Size(amount));
-            
-            int w = (int) (Map.Tiles.Width*TILE_SIZE*zoom);
-            int h = (int) (Map.Tiles.Height*TILE_SIZE*zoom);
-            if (origin.X > w - Width + 1)  origin.X = w - Width + 1;
-            if (origin.Y > h - Height + 1) origin.Y = h - Height + 1;
-
-            if (origin.X < 0) origin.X = 0;
-            if (origin.Y < 0) origin.Y = 0;
-
+            ClampScroll();
             Invalidate();
         }
 

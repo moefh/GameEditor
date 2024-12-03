@@ -48,7 +48,7 @@
             mainSplit = new SplitContainer();
             tilePickerPanel = new Panel();
             tilePicker = new CustomControls.TilePicker();
-            mapView = new CustomControls.MapView();
+            mapEditor = new CustomControls.MapEditor();
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
             toolStripTxtName = new ToolStripTextBox();
@@ -84,8 +84,6 @@
             // 
             // toolStripButtonEditFG
             // 
-            toolStripButtonEditFG.Checked = true;
-            toolStripButtonEditFG.CheckState = CheckState.Checked;
             toolStripButtonEditFG.Image = (Image)resources.GetObject("toolStripButtonEditFG.Image");
             toolStripButtonEditFG.ImageTransparentColor = Color.Magenta;
             toolStripButtonEditFG.Name = "toolStripButtonEditFG";
@@ -235,7 +233,7 @@
             // 
             // mainSplit.Panel2
             // 
-            mainSplit.Panel2.Controls.Add(mapView);
+            mainSplit.Panel2.Controls.Add(mapEditor);
             mainSplit.Panel2.Padding = new Padding(3);
             mainSplit.Size = new Size(789, 210);
             mainSplit.SplitterDistance = 200;
@@ -269,20 +267,19 @@
             tilePicker.Zoom = 4;
             tilePicker.SelectedTileChanged += tilePicker_SelectedTileChanged;
             // 
-            // mapView
+            // mapEditor
             // 
-            mapView.Dock = DockStyle.Fill;
-            mapView.EditLayer = 0U;
-            mapView.EnabledRenderLayers = 0U;
-            mapView.Location = new Point(3, 3);
-            mapView.Map = null;
-            mapView.Name = "mapView";
-            mapView.Padding = new Padding(3, 3, 2, 2);
-            mapView.SelectedTile = 0;
-            mapView.Size = new Size(578, 204);
-            mapView.TabIndex = 0;
-            mapView.Text = "mapView";
-            mapView.Zoom = 3D;
+            mapEditor.Dock = DockStyle.Fill;
+            mapEditor.EditLayer = 0U;
+            mapEditor.EnabledRenderLayers = 0U;
+            mapEditor.Location = new Point(3, 3);
+            mapEditor.Map = null;
+            mapEditor.Name = "mapEditor";
+            mapEditor.Padding = new Padding(3, 3, 2, 2);
+            mapEditor.SelectedTile = 0;
+            mapEditor.Size = new Size(578, 204);
+            mapEditor.TabIndex = 0;
+            mapEditor.Zoom = 3D;
             // 
             // infoToolStrip
             // 
@@ -370,7 +367,7 @@
         private ToolStrip toolsToolStrip;
         private StatusStrip statusStrip;
         private SplitContainer mainSplit;
-        private CustomControls.MapView mapView;
+        private CustomControls.MapEditor mapEditor;
         private ToolStripButton toolStripButtonShowFG;
         private ToolStripButton toolStripButtonShowBG;
         private ToolStripButton toolStripButtonShowCol;

@@ -101,6 +101,7 @@ namespace GameEditor.CustomControls
             if (FontData == null || e.Button == MouseButtons.None) return;
 
             if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect) || zoom == 0) return;
+            if (! sprRect.Contains(e.Location)) return;
 
             int cx = (e.X - sprRect.X) / zoom;
             int cy = (e.Y - sprRect.Y) / zoom;

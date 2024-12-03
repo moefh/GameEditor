@@ -1,6 +1,6 @@
 ﻿namespace GameEditor.CustomControls
 {
-    partial class MapView
+    partial class MapEditor
     {
         /// <summary>
         /// Required designer variable.

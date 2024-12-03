@@ -64,9 +64,13 @@ namespace GameEditor.GameData
             bitmap.Dispose();
         }
 
-        public void DrawTileAt(Graphics g, int tile, int x, int y, int w, int h, bool transparent) {
-            if (transparent) {
+        public void DrawTileAt(Graphics g, int tile, int x, int y, int w, int h, bool transparent = false, bool grayscale = false) {
+            if (transparent && grayscale) {
+                g.DrawImage(bitmap, new Rectangle(x, y, w, h), 0, tile * TILE_SIZE, TILE_SIZE, TILE_SIZE, GraphicsUnit.Pixel, ImageUtil.GrayscaleTransparentGreen);
+            } else if (transparent) {
                 g.DrawImage(bitmap, new Rectangle(x, y, w, h), 0, tile * TILE_SIZE, TILE_SIZE, TILE_SIZE, GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
+            } else if (grayscale) {
+                g.DrawImage(bitmap, new Rectangle(x, y, w, h), 0, tile * TILE_SIZE, TILE_SIZE, TILE_SIZE, GraphicsUnit.Pixel, ImageUtil.Grayscale);
             } else {
                 g.DrawImage(bitmap, new Rectangle(x, y, w, h), 0, tile * TILE_SIZE, TILE_SIZE, TILE_SIZE, GraphicsUnit.Pixel);
             }
