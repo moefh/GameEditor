@@ -68,7 +68,7 @@
             // 
             lblDataSize.Name = "lblDataSize";
             lblDataSize.Size = new Size(54, 19);
-            lblDataSize.Text = "0 bytes";
+            lblDataSize.Text = "X bytes";
             // 
             // BottomToolStripPanel
             // 
@@ -125,7 +125,6 @@
             // 
             toolStripTxtName.Name = "toolStripTxtName";
             toolStripTxtName.Size = new Size(100, 27);
-            toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
             // toolStripBtnExport
             // 

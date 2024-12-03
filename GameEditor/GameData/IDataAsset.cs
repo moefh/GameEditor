@@ -6,8 +6,21 @@ using System.Threading.Tasks;
 
 namespace GameEditor.GameData
 {
-    public interface IDataAsset
+    public enum DataAssetType {
+        Font,
+        Sfx,
+        Mod,
+        Tileset,
+        Sprite,
+        SpriteAnimation,
+        Map,
+    };
+
+    public interface IDataAsset : IDisposable
     {
-        public string Name { get; }
+        public string Name { get; set; }
+        public DataAssetType AssetType { get; }
+        public int GameDataSize { get; }
+
     }
 }

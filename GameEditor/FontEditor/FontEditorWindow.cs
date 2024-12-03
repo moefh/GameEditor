@@ -21,10 +21,8 @@ namespace GameEditor.FontEditor
         public FontEditorWindow(FontDataItem fontItem) : base(fontItem, "FontEditor") {
             this.fontItem = fontItem;
             InitializeComponent();
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
             SetupCharSelection();
-            FixFormTitle();
-            UpdateDataSize();
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, FontData.Name);
             fontEditor.FontData = FontData;
             fontDisplay.FontData = FontData;
             toolStripTxtSample.Text = "Hello, world!";
@@ -34,13 +32,8 @@ namespace GameEditor.FontEditor
             get { return fontItem.Font; }
         }
 
-        private void FixFormTitle() {
-            Text = $"{FontData.Name} - Font";
-        }
-
-        private void UpdateDataSize() {
-            lblDataSize.Text = $"{FontData.GameDataSize} bytes";
-            Util.UpdateGameDataSize();
+        protected override void FixFormTitle() {
+            Text = $"{FontData.Name} [{FontData.Width}x{FontData.Height}] - Font";
         }
 
         private void SetupCharSelection() {
@@ -54,13 +47,6 @@ namespace GameEditor.FontEditor
             }
             toolStripComboSelChar.SelectedIndex = 1;
             fontEditor.SelectedCharacter = (byte) toolStripComboSelChar.SelectedIndex;
-        }
-
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            FontData.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            FixFormTitle();
-            Util.RefreshFontList();
         }
 
         private void fontEditor_ImageChanged(object sender, EventArgs e) {
@@ -102,10 +88,14 @@ namespace GameEditor.FontEditor
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
+                // TODO: create dialog to select size
                 FontData.ImportBitmap(dlg.FileName, 6, 8);
                 fontDisplay.Invalidate();
                 fontEditor.Invalidate();
                 Util.Project.SetDirty();
+                FixFormTitle();
+                UpdateGameDataSize();
+                Util.UpdateGameDataSize();
                 Util.Log($"== Imported font image from {dlg.FileName}");
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR loading bitmap from {dlg.FileName}", "Error Importing Font");

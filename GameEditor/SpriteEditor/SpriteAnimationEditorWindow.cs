@@ -25,9 +25,7 @@ namespace GameEditor.SpriteEditor
         public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
             this.animationItem = animationItem;
             InitializeComponent();
-            FixFormTitle();
-            UpdateGameDataSize();
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Animation.Name);
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
             RefreshSpriteLoopList();
             spriteListView.Loop = Animation.GetLoop(0);
             spriteListView.SelectedLoopIndex = 0;
@@ -38,7 +36,7 @@ namespace GameEditor.SpriteEditor
             FixRenderFlags();
             toolStripComboSprites.ComboBox.DataSource = Util.Project.SpriteList;
             toolStripComboSprites.ComboBox.DisplayMember = "Name";
-            toolStripComboSprites.SelectedIndex = Util.Project.GetSpriteIndex(Animation.Sprite);
+            toolStripComboSprites.SelectedIndex = Util.Project.GetAssetIndex(Animation.Sprite);
         }
 
         public void RefreshSpriteLoopList() {
@@ -51,12 +49,8 @@ namespace GameEditor.SpriteEditor
             get { return animationItem.Animation; }
         }
 
-        private void FixFormTitle() {
-            Text = $"{Animation.Name} - Sprite Animation";
-        }
-
-        private void UpdateGameDataSize() {
-            lblDataSize.Text = $"{Animation.GameDataSize} bytes";
+        protected override void FixFormTitle() {
+            Text = $"{Animation.Name} [sprite {Animation.Sprite.Name}] - Sprite Animation";
         }
 
         private void FixRenderFlags() {
@@ -68,13 +62,12 @@ namespace GameEditor.SpriteEditor
         public void RefreshSprite() {
             spriteListView.Invalidate();
             spriteEditor.Invalidate();
-        }
-
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            Animation.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            Util.RefreshSpriteAnimationList();
             FixFormTitle();
+
+            toolStripComboSprites.ComboBox.DataSource = null;
+            toolStripComboSprites.ComboBox.DataSource = Util.Project.SpriteList;
+            toolStripComboSprites.ComboBox.DisplayMember = "Name";
+            toolStripComboSprites.SelectedIndex = Util.Project.GetAssetIndex(Animation.Sprite);
         }
 
         private void loopsListBox_SelectedIndexChanged(object sender, EventArgs e) {
@@ -171,7 +164,7 @@ namespace GameEditor.SpriteEditor
                 Util.Log($"WARNING: sprite dropdown has invalid selected index {sel}");
                 return;
             }
-            Animation.Sprite = Util.Project.SpriteList[sel].Sprite;
+            Animation.Sprite = (Sprite) Util.Project.SpriteList[sel].Asset;
             Util.Project.SetDirty();
             spriteEditor.Sprite = Animation.Sprite;
             spriteListView.SelectedLoopIndex = 0;

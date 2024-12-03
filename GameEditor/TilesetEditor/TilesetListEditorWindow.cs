@@ -15,42 +15,20 @@ using System.Windows.Forms;
 
 namespace GameEditor.TilesetEditor
 {
-    public partial class TilesetListEditorWindow : ProjectForm
+    public partial class TilesetListEditorWindow : ProjectAssetListEditorForm
     {
-        public TilesetListEditorWindow() : base("TilesetListEditor") {
+        public TilesetListEditorWindow() : base(DataAssetType.Tileset, "TilesetListEditor") {
             InitializeComponent();
-            RefreshTilesetList();
-        }
-
-        public void RefreshTilesetList() {
-            tilesetList.DataSource = null;
-            tilesetList.DataSource = Util.Project.TilesetList;
-            tilesetList.DisplayMember = "Name";
-        }
-
-        public TilesetItem AddTileset() {
-            TilesetItem ti = Util.Project.AddTileset(new Tileset("new_tileset"));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return ti;
+            SetupAssetListControls(tilesetList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddTileset();
+            Util.MainWindow?.AddTileset();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e) {
             object? item = tilesetList.SelectedItem;
             if (item is not TilesetItem ts) return;
-
-            // check that this is not the last tileset
-            if (Util.Project.TilesetList.Count < 2) {
-                MessageBox.Show(
-                    "Can't remove the last tileset, there must be at least one tileset present.",
-                    "Can't Remove Tileset",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return;
-            }
 
             // check that tileset is not open in an editor
             if (ts.Editor != null) {
@@ -79,13 +57,6 @@ namespace GameEditor.TilesetEditor
             Util.Project.TilesetList.RemoveAt(tilesetList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
-        }
-
-        private void tilesetList_DoubleClick(object sender, EventArgs e) {
-            object? item = tilesetList.SelectedItem;
-            if (item is TilesetItem ts) {
-                ts.ShowEditor();
-            }
         }
     }
 

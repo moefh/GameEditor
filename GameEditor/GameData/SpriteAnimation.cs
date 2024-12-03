@@ -33,6 +33,7 @@ namespace GameEditor.GameData
         }
 
         public SpriteAnimation Animation { get; private set; }
+
         public bool IsImmutable { get { return immutable; } }
 
         public string Name {
@@ -86,6 +87,7 @@ namespace GameEditor.GameData
         }
 
         public string Name { get; set; }
+        public DataAssetType AssetType { get { return DataAssetType.SpriteAnimation; } }
 
         public int NumLoops { get { return loops.Count; } }
 
@@ -100,7 +102,7 @@ namespace GameEditor.GameData
             }
         }
 
-        public void Close() {
+        public void Dispose() {
             Sprite.NumFramesChanged -= HandleNumFramesChanged;
         }
 

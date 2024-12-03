@@ -31,7 +31,10 @@
             contextMenuStrip = new ContextMenuStrip(components);
             addMODToolStripMenuItem = new ToolStripMenuItem();
             deleteMODToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             contextMenuStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // modList
@@ -42,9 +45,8 @@
             modList.IntegralHeight = false;
             modList.Location = new Point(0, 0);
             modList.Name = "modList";
-            modList.Size = new Size(143, 177);
+            modList.Size = new Size(143, 153);
             modList.TabIndex = 0;
-            modList.DoubleClick += modList_DoubleClick;
             // 
             // contextMenuStrip
             // 
@@ -66,12 +68,28 @@
             deleteMODToolStripMenuItem.Text = "Delete MOD";
             deleteMODToolStripMenuItem.Click += deleteMODToolStripMenuItem_Click;
             // 
+            // statusStrip
+            // 
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 153);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(143, 24);
+            statusStrip.TabIndex = 2;
+            statusStrip.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // ModListEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(143, 177);
             Controls.Add(modList);
+            Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
@@ -79,7 +97,10 @@
             StartPosition = FormStartPosition.Manual;
             Text = "MODs";
             contextMenuStrip.ResumeLayout(false);
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -88,5 +109,7 @@
         private ContextMenuStrip contextMenuStrip;
         private ToolStripMenuItem addMODToolStripMenuItem;
         private ToolStripMenuItem deleteMODToolStripMenuItem;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

@@ -32,7 +32,10 @@
             tilesetListContextMenuStrip = new ContextMenuStrip(components);
             newToolStripMenuItem = new ToolStripMenuItem();
             removeToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             tilesetListContextMenuStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // tilesetList
@@ -44,9 +47,8 @@
             tilesetList.Location = new Point(0, 0);
             tilesetList.Name = "tilesetList";
             tilesetList.ScrollAlwaysVisible = true;
-            tilesetList.Size = new Size(188, 265);
+            tilesetList.Size = new Size(157, 143);
             tilesetList.TabIndex = 1;
-            tilesetList.DoubleClick += tilesetList_DoubleClick;
             // 
             // tilesetListContextMenuStrip
             // 
@@ -68,12 +70,28 @@
             removeToolStripMenuItem.Text = "Delete Tileset";
             removeToolStripMenuItem.Click += removeToolStripMenuItem_Click;
             // 
+            // statusStrip
+            // 
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 143);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(157, 24);
+            statusStrip.TabIndex = 2;
+            statusStrip.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // TilesetListEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(188, 265);
+            ClientSize = new Size(157, 167);
             Controls.Add(tilesetList);
+            Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
@@ -81,7 +99,10 @@
             StartPosition = FormStartPosition.Manual;
             Text = "Tilesets";
             tilesetListContextMenuStrip.ResumeLayout(false);
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -90,5 +111,7 @@
         private ContextMenuStrip tilesetListContextMenuStrip;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem removeToolStripMenuItem;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

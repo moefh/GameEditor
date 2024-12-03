@@ -41,6 +41,8 @@ namespace GameEditor.GameData
 
         public string Name { get; set; }
 
+        public DataAssetType AssetType { get { return DataAssetType.Sprite; } }
+
         public string? FileName { get; set; }
 
         public int Width { get { return bitmap.Width; } }

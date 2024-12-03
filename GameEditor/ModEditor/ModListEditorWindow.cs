@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -14,28 +15,15 @@ using System.Windows.Forms;
 
 namespace GameEditor.ModEditor
 {
-    public partial class ModListEditorWindow : ProjectForm
+    public partial class ModListEditorWindow : ProjectAssetListEditorForm
     {
-        public ModListEditorWindow() : base("ModListEditor") {
+        public ModListEditorWindow() : base(DataAssetType.Mod, "ModListEditor") {
             InitializeComponent();
-            RefreshModList();
-        }
-
-        public void RefreshModList() {
-            modList.DataSource = null;
-            modList.DataSource = Util.Project.ModList;
-            modList.DisplayMember = "Name";
-        }
-
-        public ModDataItem AddMod() {
-            ModDataItem mi = Util.Project.AddMod(new ModData("new_mod"));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return mi;
+            SetupAssetListControls(modList, lblDataSize);
         }
 
         private void newMODToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddMod();
+            Util.MainWindow?.AddMod();
         }
 
         private void deleteMODToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -48,16 +36,9 @@ namespace GameEditor.ModEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            Util.Project.ModList.RemoveAt(modList.SelectedIndex);
+            Util.Project.RemoveAssetAt(DataAssetType.Mod, modList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
-        }
-
-        private void modList_DoubleClick(object sender, EventArgs e) {
-            object? item = modList.SelectedItem;
-            if (item is ModDataItem mod) {
-                mod.ShowEditor();
-            }
         }
     }
 }

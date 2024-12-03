@@ -24,9 +24,8 @@ namespace GameEditor.TilesetEditor
         public TilesetEditorWindow(TilesetItem ts) : base(ts, "TilesetEditor") {
             tileset = ts;
             InitializeComponent();
-            FixFormTitle();
-            UpdateGameDataSize();
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Tileset.Name);
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            NameChanged += TilesetEditorWindow_NameChanged;
             tileEditor.Tileset = Tileset;
             tileEditor.SelectedTile = tilePicker.SelectedTile;
             tileEditor.FGPen = colorPicker.FG;
@@ -37,25 +36,18 @@ namespace GameEditor.TilesetEditor
 
         public Tileset Tileset { get { return tileset.Tileset; } }
 
-        private void FixFormTitle() {
-            Text = $"{Tileset.Name} - Tileset";
+        protected override void FixFormTitle() {
+            Text = $"{Tileset.Name} [{Tileset.NumTiles} tiles] - Tileset";
         }
 
-        private void UpdateGameDataSize() {
-            lblDataSize.Text = $"{Tileset.GameDataSize} bytes";
+        private void TilesetEditorWindow_NameChanged(object? sender, EventArgs e) {
+            Util.RefreshTilesetUsers(Tileset);
         }
 
         private void UpdateRenderFlags() {
             tileEditor.RenderFlags =
                 ((toolStripBtnGrid.Checked) ? RENDER_GRID : 0) |
                 ((toolStripBtnTransparent.Checked) ? RENDER_TRANSPARENT : 0);
-        }
-
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            Tileset.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            FixFormTitle();
-            Util.RefreshTilesetList();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -71,7 +63,9 @@ namespace GameEditor.TilesetEditor
                 return;
             }
             Util.Project.SetDirty();
+            FixFormTitle();
             UpdateGameDataSize();
+            Util.UpdateGameDataSize();
 
             tilePicker.Location = new Point(0, 0);
             tilePicker.SelectedTile = 0;
@@ -141,8 +135,9 @@ namespace GameEditor.TilesetEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Tileset.Resize(dlg.NumTiles, colorPicker.BG);
             Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            FixFormTitle();
             UpdateGameDataSize();
+            Util.UpdateGameDataSize();
             tilePicker.ResetSize();
             if (tilePicker.SelectedTile >= Tileset.NumTiles) {
                 tilePicker.SelectedTile = Tileset.NumTiles - 1;

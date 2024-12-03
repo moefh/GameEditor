@@ -102,9 +102,7 @@ namespace GameEditor.ModEditor
         public ModEditorWindow(ModDataItem modItem) : base(modItem, "ModEditor") {
             this.modItem = modItem;
             InitializeComponent();
-            FixFormTitle();
-            UpdateDataSize();
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Mod.Name);
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
             SetupSampleDisplay();
             SetupPatternGridDisplay();
             UpdateModPattern();
@@ -121,12 +119,12 @@ namespace GameEditor.ModEditor
 
         public ModFile ModFile { get { return modItem.Mod.ModFile; } }
 
-        private void FixFormTitle() {
+        protected override void FixFormTitle() {
             Text = $"{Mod.Name} - MOD";
         }
 
         private void UpdateDataSize() {
-            lblDataSize.Text = $"{Mod.GameDataSize} bytes";
+            lblDataSize.Text = $"{Util.FormatNumber(Mod.GameDataSize)} bytes";
         }
 
         private void RefreshMod() {
@@ -140,13 +138,6 @@ namespace GameEditor.ModEditor
         protected override void OnFormClosed(FormClosedEventArgs e) {
             base.OnFormClosed(e);
             player.Dispose();
-        }
-
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            Mod.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            Util.RefreshModList();
-            FixFormTitle();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {

@@ -14,28 +14,15 @@ using System.Windows.Forms;
 
 namespace GameEditor.SfxEditor
 {
-    public partial class SfxListEditorWindow : ProjectForm
+    public partial class SfxListEditorWindow : ProjectAssetListEditorForm
     {
-        public SfxListEditorWindow() : base("SfxListEditor") {
+        public SfxListEditorWindow() : base(DataAssetType.Sfx, "SfxListEditor") {
             InitializeComponent();
-            RefreshSfxList();
-        }
-
-        public void RefreshSfxList() {
-            sfxList.DataSource = null;
-            sfxList.DataSource = Util.Project.SfxList;
-            sfxList.DisplayMember = "Name";
-        }
-
-        public SfxDataItem AddSfx() {
-            SfxDataItem si = Util.Project.AddSfx(new SfxData("new_sfx"));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return si;
+            SetupAssetListControls(sfxList, lblDataSize);
         }
 
         private void newSFXToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddSfx();
+            Util.MainWindow?.AddSfx();
         }
 
         private void deleteSFXToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -51,13 +38,6 @@ namespace GameEditor.SfxEditor
             Util.Project.SfxList.RemoveAt(sfxList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
-        }
-
-        private void sfxList_DoubleClick(object sender, EventArgs e) {
-            object? item = sfxList.SelectedItem;
-            if (item is SfxDataItem sfx) {
-                sfx.ShowEditor();
-            }
         }
     }
 }

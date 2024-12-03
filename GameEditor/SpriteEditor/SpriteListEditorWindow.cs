@@ -15,28 +15,15 @@ using System.Windows.Forms;
 
 namespace GameEditor.SpriteEditor
 {
-    public partial class SpriteListEditorWindow : ProjectForm
+    public partial class SpriteListEditorWindow : ProjectAssetListEditorForm
     {
-        public SpriteListEditorWindow() : base("SpriteListEditor") {
+        public SpriteListEditorWindow() : base(DataAssetType.Sprite, "SpriteListEditor") {
             InitializeComponent();
-            RefreshSpriteList();
-        }
-
-        public void RefreshSpriteList() {
-            spriteList.DataSource = null;
-            spriteList.DataSource = Util.Project.SpriteList;
-            spriteList.DisplayMember = "Name";
-        }
-
-        public SpriteItem AddSprite() {
-            SpriteItem si = Util.Project.AddSprite(new Sprite("new_sprite"));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return si;
+            SetupAssetListControls(spriteList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddSprite();
+            Util.MainWindow?.AddSprite();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -70,13 +57,6 @@ namespace GameEditor.SpriteEditor
             Util.Project.SpriteList.RemoveAt(spriteList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
-        }
-
-        private void spriteList_DoubleClick(object sender, EventArgs e) {
-            object? item = spriteList.SelectedItem;
-            if (item is SpriteItem sprite) {
-                sprite.ShowEditor();
-            }
         }
     }
 }

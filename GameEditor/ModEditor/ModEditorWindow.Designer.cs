@@ -130,7 +130,6 @@
             // 
             toolStripTxtName.Name = "toolStripTxtName";
             toolStripTxtName.Size = new Size(100, 25);
-            toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
             // toolStripBtnExport
             // 

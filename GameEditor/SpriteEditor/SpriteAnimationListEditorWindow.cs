@@ -14,35 +14,15 @@ using System.Windows.Forms;
 
 namespace GameEditor.SpriteEditor
 {
-    public partial class SpriteAnimationListEditorWindow : ProjectForm
+    public partial class SpriteAnimationListEditorWindow : ProjectAssetListEditorForm
     {
-        public SpriteAnimationListEditorWindow() : base("SpriteAnimationListEditor") {
+        public SpriteAnimationListEditorWindow() : base(DataAssetType.SpriteAnimation, "SpriteAnimationListEditor") {
             InitializeComponent();
-            RefreshSpriteAnimationList();
-        }
-
-        public void RefreshSpriteAnimationList() {
-            animationList.DataSource = null;
-            animationList.DataSource = Util.Project.SpriteAnimationList;
-            animationList.DisplayMember = "Name";
-        }
-
-        public SpriteAnimationItem? AddSpriteAnimation() {
-            if (Util.Project.SpriteList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one sprite to create an animation.",
-                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            Sprite sprite = Util.Project.SpriteList[0].Sprite;
-            SpriteAnimationItem ai = Util.Project.AddSpriteAnimation(new SpriteAnimation(sprite, "new_animation"));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return ai;
+            SetupAssetListControls(animationList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddSpriteAnimation();
+            Util.MainWindow?.AddSpriteAnimation();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -55,17 +35,10 @@ namespace GameEditor.SpriteEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            ai.Animation.Close();  // unregister sprite event
+            ai.Animation.Dispose();  // unregister sprite event
             Util.Project.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
-        }
-
-        private void spriteList_DoubleClick(object sender, EventArgs e) {
-            object? item = animationList.SelectedItem;
-            if (item is SpriteAnimationItem anim) {
-                anim.ShowEditor();
-            }
         }
 
     }

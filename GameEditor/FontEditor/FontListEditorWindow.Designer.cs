@@ -31,7 +31,10 @@
             fontListContextMenuStrip = new ContextMenuStrip(components);
             newFontToolStripMenuItem = new ToolStripMenuItem();
             deleteFontToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             fontListContextMenuStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // fontList
@@ -45,7 +48,6 @@
             fontList.ScrollAlwaysVisible = true;
             fontList.Size = new Size(160, 195);
             fontList.TabIndex = 0;
-            fontList.DoubleClick += fontList_DoubleClick;
             // 
             // fontListContextMenuStrip
             // 
@@ -67,11 +69,27 @@
             deleteFontToolStripMenuItem.Text = "Delete Font";
             deleteFontToolStripMenuItem.Click += deleteToolStripMenuItem_Click;
             // 
+            // statusStrip
+            // 
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 171);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(160, 24);
+            statusStrip.TabIndex = 1;
+            statusStrip.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // FontListEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(160, 195);
+            Controls.Add(statusStrip);
             Controls.Add(fontList);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
@@ -80,7 +98,10 @@
             StartPosition = FormStartPosition.Manual;
             Text = "Fonts";
             fontListContextMenuStrip.ResumeLayout(false);
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -89,5 +110,7 @@
         private ContextMenuStrip fontListContextMenuStrip;
         private ToolStripMenuItem newFontToolStripMenuItem;
         private ToolStripMenuItem deleteFontToolStripMenuItem;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

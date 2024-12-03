@@ -96,7 +96,6 @@
             // 
             toolStripTxtName.Name = "toolStripTxtName";
             toolStripTxtName.Size = new Size(100, 27);
-            toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
             // toolStripSeparator1
             // 

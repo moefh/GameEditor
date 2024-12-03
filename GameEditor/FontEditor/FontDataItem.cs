@@ -33,6 +33,10 @@ namespace GameEditor.FontEditor
             }
         }
 
+        public void CloseEditor() {
+            Editor?.Close();
+        }
+
         public void EditorClosed() {
             Editor = null;
         }

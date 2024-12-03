@@ -25,10 +25,15 @@ namespace GameEditor.GameData
         }
 
         public string Name { get; set; }
+        public DataAssetType AssetType { get { return DataAssetType.Mod; } }
 
         public ModFile ModFile { get { return modFile; } }
 
         public int GameDataSize { get { return CalcGameDataSize(); } }
+
+        public void Dispose() {
+        }
+
 
         private int CalcGameDataSize() {
             // sample struct: len(4) + loopStart(4) + loopLen(4) + finetune(1) + volume(1) + padding(2) + dataPointer(4)

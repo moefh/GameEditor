@@ -24,24 +24,24 @@ namespace GameEditor.SfxEditor
         public SfxEditorWindow(SfxDataItem sfxItem) : base(sfxItem, "SfxEditor") {
             this.sfxItem = sfxItem;
             InitializeComponent();
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
 
             soundSampleView.Samples = Sfx.Samples;
             numSampleRate.Value = SfxData.DEFAULT_SAMPLE_RATE;
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sfx.Name);
-            UpdateDataSize();
             player = new SamplePlayer();
         }
 
         public SfxData Sfx { get { return sfxItem.Sfx; } }
 
-        private void FixFormTitle() {
-            Text = $"{Sfx.Name} - Sound Effect";
+        protected override void FixFormTitle() {
+            Text = $"{Sfx.Name} [length {Sfx.NumSamples}] - Sound Effect";
         }
         private void UpdateDataSize() {
-            lblDataSize.Text = $"{Sfx.GameDataSize} bytes";
+            lblDataSize.Text = $"{Util.FormatNumber(Sfx.GameDataSize)} bytes";
         }
 
         private void RefreshSfx() {
+            FixFormTitle();
             UpdateDataSize();
             soundSampleView.Samples = Sfx.Samples;
             soundSampleView.Invalidate();
@@ -50,13 +50,6 @@ namespace GameEditor.SfxEditor
         protected override void OnFormClosed(FormClosedEventArgs e) {
             base.OnFormClosed(e);
             player.Dispose();
-        }
-
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            Sfx.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            Util.RefreshSfxList();
-            FixFormTitle();
         }
 
         private void btnPlay_Click(object sender, EventArgs e) {

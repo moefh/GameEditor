@@ -13,6 +13,7 @@ using GameEditor.SpriteEditor;
 using GameEditor.MapEditor;
 using System.Windows.Forms;
 using System.Xml.Linq;
+using System.Globalization;
 
 namespace GameEditor.Misc
 {
@@ -88,32 +89,8 @@ namespace GameEditor.Misc
             MainWindow?.UpdateDataSize();
         }
 
-        public static void RefreshSfxList() {
-            MainWindow?.RefreshSfxList();
-        }
-
-        public static void RefreshModList() {
-            MainWindow?.RefreshModList();
-        }
-
-        public static void RefreshMapList() {
-            MainWindow?.RefreshMapList();
-        }
-
-        public static void RefreshTilesetList() {
-            MainWindow?.RefreshTilesetList();
-        }
-
-        public static void RefreshSpriteList() {
-            MainWindow?.RefreshSpriteList();
-        }
-
-        public static void RefreshSpriteAnimationList() {
-            MainWindow?.RefreshSpriteAnimationList();
-        }
-
-        public static void RefreshFontList() {
-            MainWindow?.RefreshFontList();
+        public static void RefreshAssetList(DataAssetType type) {
+            MainWindow?.RefreshAssetList(type);
         }
 
         public static void RefreshTilesetUsers(Tileset tileset) {
@@ -191,6 +168,23 @@ namespace GameEditor.Misc
                 tb.Text = text;
                 tb.ReadOnly = false;
             }
+        }
+
+        public static string FormatNumber(int num) {
+            string s = num.ToString();
+            StringBuilder sb = new StringBuilder();
+            int addComma = s.Length % 3;
+            char[] ch = s.ToCharArray();
+            for (int i = 0; i < ch.Length; i++) {
+                if (addComma == 0) {
+                    if (i > 0) sb.Append(',');
+                    addComma = 2;
+                } else {
+                    addComma--;
+                }
+                sb.Append(ch[i]);
+            }
+            return sb.ToString();
         }
 
     }

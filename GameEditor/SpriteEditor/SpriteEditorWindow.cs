@@ -28,9 +28,8 @@ namespace GameEditor.SpriteEditor
         public SpriteEditorWindow(SpriteItem spriteItem) : base(spriteItem, "SpriteEditor") {
             this.spriteItem = spriteItem;
             InitializeComponent();
-            FixFormTitle();
-            UpdateGameDataSize();
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Sprite.Name);
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            NameChanged += SpriteEditorWindow_NameChanged;
             spriteFramePicker.Sprite = Sprite;
             spriteFramePicker.SelectedFrame = 0;
             spriteEditor.Sprite = Sprite;
@@ -45,12 +44,8 @@ namespace GameEditor.SpriteEditor
             get { return spriteItem.Sprite; }
         }
 
-        private void FixFormTitle() {
-            Text = $"{Sprite.Name} - Sprite";
-        }
-
-        private void UpdateGameDataSize() {
-            lblDataSize.Text = $"{Sprite.GameDataSize} bytes";
+        protected override void FixFormTitle() {
+            Text = $"{Sprite.Name} - {Sprite.Width}x{Sprite.Height} [{Sprite.NumFrames} frames] - Sprite";
         }
 
         private void FixRenderFlags() {
@@ -62,11 +57,8 @@ namespace GameEditor.SpriteEditor
             spriteFramePicker.RenderFlags = pickerRenderTransparent;
         }
 
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            Sprite.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            Util.RefreshSpriteList();
-            FixFormTitle();
+        private void SpriteEditorWindow_NameChanged(object? sender, EventArgs e) {
+            Util.RefreshSpriteUsers(Sprite, null);
         }
 
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
@@ -78,6 +70,7 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
             Util.Project.SetDirty();
+            FixFormTitle();
             Util.UpdateGameDataSize();
             UpdateGameDataSize();
             spriteFramePicker.ResetSize();
@@ -105,7 +98,9 @@ namespace GameEditor.SpriteEditor
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
                 Util.Project.SetDirty();
+                FixFormTitle();
                 UpdateGameDataSize();
+                Util.UpdateGameDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.ResetSize();
             } catch (Exception ex) {

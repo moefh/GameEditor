@@ -463,16 +463,16 @@ namespace GameEditor.ProjectIO
                 WriteMapTiles(mi.Map);
             }
 
-            Dictionary<Tileset, int>? tsIndices = new Dictionary<Tileset, int>();
+            Dictionary<IDataAsset, int>? tsIndices = [];
             foreach (var (ti, index) in Util.Project.TilesetList.Zip(Enumerable.Range(0, Util.Project.TilesetList.Count))) {
-                tsIndices[ti.Tileset] = index;
+                tsIndices[ti.Asset] = index;
             }
 
             int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("MAP")} {GetLowerGlobal("maps")}[] = {{");
             foreach (MapDataItem mi in Util.Project.MapList) {
                 string tilesetsIdent = GetLowerGlobal("tilesets");
-                int tilesetIndex = Util.Project.GetTilesetIndex(mi.Map.Tileset);
+                int tilesetIndex = Util.Project.GetAssetIndex(mi.Map.Tileset);
                 string tileset = $"&{tilesetsIdent}[{tilesetIndex}]";
                 string tiles = identifiers.Get(mi.Map);
                 f.WriteLine($"  {{ {mi.Map.Tiles.Width}, {mi.Map.Tiles.Height}, {tileset}, {tiles} }},");
@@ -493,16 +493,16 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// ================================================================");
             f.WriteLine();
 
-            Dictionary<Sprite, int>? sprIndices = new Dictionary<Sprite, int>();
+            Dictionary<IDataAsset, int>? sprIndices = [];
             foreach (var (si, index) in Util.Project.SpriteList.Zip(Enumerable.Range(0, Util.Project.SpriteList.Count))) {
-                sprIndices[si.Sprite] = index;
+                sprIndices[si.Asset] = index;
             }
 
             int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("SPRITE_ANIMATION")} {GetLowerGlobal("sprite_animations")}[] = {{");
             foreach (SpriteAnimationItem ai in Util.Project.SpriteAnimationList) {
                 string spritesIdent = GetLowerGlobal("sprites");
-                int spriteIndex = Util.Project.GetSpriteIndex(ai.Animation.Sprite);
+                int spriteIndex = Util.Project.GetAssetIndex(ai.Animation.Sprite);
                 f.WriteLine($"  {{  // {ai.Animation.Name}");
                 f.WriteLine($"    &{spritesIdent}[{spriteIndex}],");
                 f.WriteLine($"    {ai.Animation.NumLoops-1},");

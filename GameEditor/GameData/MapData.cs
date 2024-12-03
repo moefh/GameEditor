@@ -12,26 +12,23 @@ namespace GameEditor.GameData
 {
     public class MapData : IDataAsset
     {
-        private string name;
         private Tileset tileset;
         private readonly MapTiles tiles;
 
         public MapData(int width, int height, Tileset ts) {
-            name = "new_map";
+            Name = "new_map";
             tiles = new MapTiles(width, height);
             tileset = ts;
         }
 
         public MapData(string name, int width, int height, Tileset ts, List<byte> tileData) {
-            this.name = name;
+            Name = name;
             tiles = new MapTiles(width, height, tileData);
             tileset = ts;
         }
 
-        public string Name {
-            get { return name; }
-            set { name = value; }
-        }
+        public string Name { get; set; }
+        public DataAssetType AssetType { get { return DataAssetType.Map; } }
 
         public MapTiles Tiles {
             get { return tiles; }
@@ -46,6 +43,8 @@ namespace GameEditor.GameData
             get { return 3 * Tiles.Width * Tiles.Height + 2*2 + 2*4; }
         }
 
+        public void Dispose() {
+        }
 
         public void Resize(int width, int height) {
             tiles.Resize(width, height);

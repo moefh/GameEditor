@@ -31,7 +31,10 @@
             contextMenuStrip = new ContextMenuStrip(components);
             newSFXToolStripMenuItem = new ToolStripMenuItem();
             deleteSFXToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             contextMenuStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // sfxList
@@ -42,9 +45,8 @@
             sfxList.IntegralHeight = false;
             sfxList.Location = new Point(0, 0);
             sfxList.Name = "sfxList";
-            sfxList.Size = new Size(145, 193);
+            sfxList.Size = new Size(145, 169);
             sfxList.TabIndex = 0;
-            sfxList.DoubleClick += sfxList_DoubleClick;
             // 
             // contextMenuStrip
             // 
@@ -66,12 +68,28 @@
             deleteSFXToolStripMenuItem.Text = "Delete SFX";
             deleteSFXToolStripMenuItem.Click += deleteSFXToolStripMenuItem_Click;
             // 
+            // statusStrip
+            // 
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 169);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(145, 24);
+            statusStrip.TabIndex = 2;
+            statusStrip.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // SfxListEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(145, 193);
             Controls.Add(sfxList);
+            Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
@@ -79,7 +97,10 @@
             StartPosition = FormStartPosition.Manual;
             Text = "SFX List";
             contextMenuStrip.ResumeLayout(false);
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -88,5 +109,7 @@
         private ContextMenuStrip contextMenuStrip;
         private ToolStripMenuItem newSFXToolStripMenuItem;
         private ToolStripMenuItem deleteSFXToolStripMenuItem;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

@@ -14,28 +14,15 @@ using System.Windows.Forms;
 
 namespace GameEditor.FontEditor
 {
-    public partial class FontListEditorWindow : ProjectForm
+    public partial class FontListEditorWindow : ProjectAssetListEditorForm
     {
-        public FontListEditorWindow() : base("FontListEditor") {
+        public FontListEditorWindow() : base(DataAssetType.Font, "FontListEditor") {
             InitializeComponent();
-            RefreshFontList();
-        }
-
-        public void RefreshFontList() {
-            fontList.DataSource = null;
-            fontList.DataSource = Util.Project.FontList;
-            fontList.DisplayMember = "Name";
-        }
-
-        public FontDataItem AddFont() {
-            FontDataItem fi = Util.Project.AddFont(new FontData("new_font"));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return fi;
+            SetupAssetListControls(fontList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddFont();
+            Util.MainWindow?.AddFont();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -56,11 +43,5 @@ namespace GameEditor.FontEditor
             Util.UpdateGameDataSize();
         }
 
-        private void fontList_DoubleClick(object sender, EventArgs e) {
-            object? item = fontList.SelectedItem;
-            if (item is FontDataItem fi) {
-                fi.ShowEditor();
-            }
-        }
     }
 }

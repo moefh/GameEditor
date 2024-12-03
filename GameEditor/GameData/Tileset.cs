@@ -48,6 +48,8 @@ namespace GameEditor.GameData
 
         public string Name { get; set; }
 
+        public DataAssetType AssetType { get { return DataAssetType.Tileset; } }
+
         public string? FileName { get; set; }
 
         public int NumTiles {

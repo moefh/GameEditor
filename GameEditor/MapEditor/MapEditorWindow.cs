@@ -20,16 +20,14 @@ namespace GameEditor.MapEditor
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
             map = mapItem;
             InitializeComponent();
+            SetupAssetListControls(toolStripTxtName, lblDataSize);
             tilePicker.Tileset = Map.Tileset;
             mapView.Map = Map;
             EditLayer = LAYER_FG;
             toolStripComboBoxZoom.SelectedIndex = 1;
-            Util.ChangeTextBoxWithoutDirtying(toolStripTxtName, Map.Name);
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
-            toolStripComboTiles.SelectedIndex = Util.Project.GetTilesetIndex(Map.Tileset);
-            FixFormTitle();
-            UpdateDataSize();
+            toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
             UpdateRenderLayers();
         }
 
@@ -62,13 +60,12 @@ namespace GameEditor.MapEditor
             set { tilePicker.SelectedTile = value; }
         }
 
-        private void FixFormTitle() {
-            Text = $"{Map.Name} - Map";
+        protected override void FixFormTitle() {
+            Text = $"{Map.Name} [tileset {Map.Tileset.Name}] - Map";
         }
 
         private void UpdateDataSize() {
-            lblDataSize.Text = $"{Map.GameDataSize} bytes";
-            Util.UpdateGameDataSize();
+            lblDataSize.Text = $"{Util.FormatNumber(Map.GameDataSize)} bytes";
         }
 
         private void UpdateRenderLayers() {
@@ -100,6 +97,11 @@ namespace GameEditor.MapEditor
             tilePicker.ResetSize();
             tilePicker.Invalidate();
             mapView.Invalidate();
+            FixFormTitle();
+            toolStripComboTiles.ComboBox.DataSource = null;
+            toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
+            toolStripComboTiles.ComboBox.DisplayMember = "Name";
+            toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
         }
 
         private void btnProperties_Click(object sender, EventArgs e) {
@@ -108,28 +110,25 @@ namespace GameEditor.MapEditor
             dlg.MapHeight = Map.Tiles.Height;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 Map.Resize(dlg.MapWidth, dlg.MapHeight);
-                UpdateDataSize();
                 Util.Project.SetDirty();
+                FixFormTitle();
+                UpdateDataSize();
+                Util.UpdateGameDataSize();
                 mapView.Invalidate();
             }
         }
 
         private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
+            AssetList<IDataAssetItem> tilesetList = Util.Project.TilesetList;
             int sel = toolStripComboTiles.SelectedIndex;
-            if (sel < 0 || sel >= Util.Project.TilesetList.Count) {
+            if (sel < 0 || sel >= tilesetList.Count) {
                 Util.Log($"WARNING: tileset dropdown has invalid selected index {sel}");
                 return;
             }
-            Map.Tileset = Util.Project.TilesetList[sel].Tileset;
+            Map.Tileset = (Tileset) tilesetList[sel].Asset;
             tilePicker.Tileset = Map.Tileset;
             mapView.Invalidate();
             tilePicker.Invalidate();
-        }
-
-        private void toolStripTxtName_TextChanged(object sender, EventArgs e) {
-            Map.Name = toolStripTxtName.Text;
-            if (!toolStripTxtName.ReadOnly) Util.Project.SetDirty();
-            Util.RefreshMapList();
             FixFormTitle();
         }
 

@@ -29,6 +29,7 @@ namespace GameEditor.MainEditor
 {
     public partial class MainWindow : Form
     {
+        private readonly Dictionary<DataAssetType,ProjectAssetListEditorForm> editors = [];
         private readonly FontListEditorWindow fontListEditor;
         private readonly SfxListEditorWindow sfxListEditor;
         private readonly ModListEditorWindow modListEditor;
@@ -42,21 +43,24 @@ namespace GameEditor.MainEditor
             InitializeComponent();
 
             mapListEditor = new MapListEditorWindow();
-            mapListEditor.MdiParent = this;
             tilesetListEditor = new TilesetListEditorWindow();
-            tilesetListEditor.MdiParent = this;
             spriteListEditor = new SpriteListEditorWindow();
-            spriteListEditor.MdiParent = this;
             spriteAnimationListEditor = new SpriteAnimationListEditorWindow();
-            spriteAnimationListEditor.MdiParent = this;
             sfxListEditor = new SfxListEditorWindow();
-            sfxListEditor.MdiParent = this;
             modListEditor = new ModListEditorWindow();
-            modListEditor.MdiParent = this;
             fontListEditor = new FontListEditorWindow();
-            fontListEditor.MdiParent = this;
             logWindow = new LogWindow();
-            logWindow.MdiParent = this;
+            
+            editors[DataAssetType.Map] = mapListEditor;
+            editors[DataAssetType.Tileset] = tilesetListEditor;
+            editors[DataAssetType.Sprite] = spriteListEditor;
+            editors[DataAssetType.SpriteAnimation] = spriteAnimationListEditor;
+            editors[DataAssetType.Sfx] = sfxListEditor;
+            editors[DataAssetType.Mod] = modListEditor;
+            editors[DataAssetType.Font] = fontListEditor;
+            foreach (ProjectAssetListEditorForm editor in editors.Values) {
+                editor.MdiParent = this;
+            }
 
             UpdateWindowTitle();
             UpdateDataSize();
@@ -64,7 +68,10 @@ namespace GameEditor.MainEditor
         }
 
         public void UpdateDataSize() {
-            lblDataSize.Text = $"{Util.Project.GetGameDataSize()} bytes";
+            lblDataSize.Text = $"{Util.FormatNumber(Util.Project.GetGameDataSize())} bytes";
+            foreach (ProjectAssetListEditorForm editor in editors.Values) {
+                editor.UpdateDataSize();
+            }
         }
 
         public void UpdateDirtyStatus() {
@@ -81,41 +88,13 @@ namespace GameEditor.MainEditor
         }
 
         private void RefreshAllAssetLists() {
-            fontListEditor.RefreshFontList();
-            sfxListEditor.RefreshSfxList();
-            modListEditor.RefreshModList();
-            mapListEditor.RefreshMapList();
-            spriteListEditor.RefreshSpriteList();
-            tilesetListEditor.RefreshTilesetList();
-            spriteAnimationListEditor.RefreshSpriteAnimationList();
+            foreach (ProjectAssetListEditorForm editor in editors.Values) {
+                editor.RefreshAssetList();
+            }
         }
 
-        public void RefreshFontList() {
-            fontListEditor.RefreshFontList();
-        }
-
-        public void RefreshSfxList() {
-            sfxListEditor.RefreshSfxList();
-        }
-
-        public void RefreshModList() {
-            modListEditor.RefreshModList();
-        }
-
-        public void RefreshMapList() {
-            mapListEditor.RefreshMapList();
-        }
-
-        public void RefreshSpriteList() {
-            spriteListEditor.RefreshSpriteList();
-        }
-
-        public void RefreshTilesetList() {
-            tilesetListEditor.RefreshTilesetList();
-        }
-
-        public void RefreshSpriteAnimationList() {
-            spriteAnimationListEditor.RefreshSpriteAnimationList();
+        public void RefreshAssetList(DataAssetType type) {
+            editors[type].RefreshAssetList();
         }
 
         public void AddLog(string log) {
@@ -129,12 +108,9 @@ namespace GameEditor.MainEditor
             }
 
             Util.SaveMainWindowPosition(this, "MainWindow");
-            mapListEditor.Close();
-            tilesetListEditor.Close();
-            spriteListEditor.Close();
-            sfxListEditor.Close();
-            modListEditor.Close();
-            fontListEditor.Close();
+            foreach (ProjectAssetListEditorForm editor in editors.Values) {
+                editor.Close();
+            }
             logWindow.Close();
 
             base.OnFormClosing(e);
@@ -170,13 +146,11 @@ namespace GameEditor.MainEditor
         }
 
         private void OpenFilledListWindows() {
-            if (Util.Project.TilesetList.Count != 0) tilesetListEditor.Show();
-            if (Util.Project.SpriteList.Count != 0) spriteListEditor.Show();
-            if (Util.Project.MapList.Count != 0) mapListEditor.Show();
-            if (Util.Project.SpriteAnimationList.Count != 0) spriteAnimationListEditor.Show();
-            if (Util.Project.SfxList.Count != 0) sfxListEditor.Show();
-            if (Util.Project.ModList.Count != 0) modListEditor.Show();
-            if (Util.Project.FontList.Count != 0) fontListEditor.Show();
+            foreach (DataAssetType type in Util.Project.AssetTypes) {
+                if (Util.Project.GetAssetList(type).Count != 0) {
+                    editors[type].Show();
+                }
+            }
         }
 
         private void SaveProject() {
@@ -228,6 +202,82 @@ namespace GameEditor.MainEditor
         }
 
         // ======================================================================
+        // === ASSET CREATION
+        // ======================================================================
+
+        public TilesetItem AddTileset() {
+            TilesetItem ti = new TilesetItem(new Tileset("new_tileset"));
+            Util.Project.AddAssetItem(ti);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return ti;
+        }
+
+        public SpriteItem AddSprite() {
+            SpriteItem si = new SpriteItem(new Sprite("new_sprite"));
+            Util.Project.AddAssetItem(si);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return si;
+        }
+
+        public MapDataItem? AddMap() {
+            AssetList<IDataAssetItem> tilesetList = Util.Project.TilesetList;
+            if (tilesetList.Count == 0) {
+                MessageBox.Show(
+                    "You need at least one tileset to create a map.",
+                    "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            MapDataItem mi = new MapDataItem(new MapData(24, 16, (Tileset)tilesetList[0].Asset));
+            Util.Project.AddAssetItem(mi);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return mi;
+        }
+
+        public SpriteAnimationItem? AddSpriteAnimation() {
+            if (Util.Project.SpriteList.Count == 0) {
+                MessageBox.Show(
+                    "You need at least one sprite to create an animation.",
+                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            Sprite sprite = (Sprite) Util.Project.SpriteList[0].Asset;
+            SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, "new_animation"));
+            Util.Project.AddAssetItem(ai);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return ai;
+        }
+
+        public SfxDataItem AddSfx() {
+            SfxDataItem si = new SfxDataItem(new SfxData("new_sfx"));
+            Util.Project.AddAssetItem(si);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return si;
+        }
+
+        public ModDataItem AddMod() {
+            ModDataItem mi = new ModDataItem(new ModData("new_mod"));
+            Util.Project.AddAssetItem(mi);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return mi;
+        }
+
+        public FontDataItem AddFont() {
+            FontDataItem fi = new FontDataItem(new FontData("new_font"));
+            Util.Project.AddAssetItem(fi);
+            Util.Project.SetDirty();
+            Util.UpdateGameDataSize();
+            return fi;
+        }
+
+
+
+        // ======================================================================
         // === MENU
         // ======================================================================
 
@@ -274,31 +324,31 @@ namespace GameEditor.MainEditor
         }
 
         private void addTilesetToolStripMenuItem_Click(object sender, EventArgs e) {
-            tilesetListEditor.AddTileset().ShowEditor();
+            AddTileset().ShowEditor();
         }
 
         private void addSpriteToolStripMenuItem_Click(object sender, EventArgs e) {
-            spriteListEditor.AddSprite().ShowEditor();
+            AddSprite().ShowEditor();
         }
 
         private void addMapToolStripMenuItem_Click(object sender, EventArgs e) {
-            mapListEditor.AddMap()?.ShowEditor();
+            AddMap()?.ShowEditor();
         }
 
         private void addSpriteAnimationToolStripMenuItem_Click(object sender, EventArgs e) {
-            spriteAnimationListEditor.AddSpriteAnimation()?.ShowEditor(); ;
+            AddSpriteAnimation()?.ShowEditor(); ;
         }
 
         private void addSoundEffectToolStripMenuItem_Click(object sender, EventArgs e) {
-            sfxListEditor.AddSfx().ShowEditor();
+            AddSfx().ShowEditor();
         }
 
         private void addMODToolStripMenuItem_Click(object sender, EventArgs e) {
-            modListEditor.AddMod().ShowEditor();
+            AddMod().ShowEditor();
         }
 
         private void addNewFontToolStripMenuItem_Click(object sender, EventArgs e) {
-            fontListEditor.AddFont().ShowEditor();
+            AddFont().ShowEditor();
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {

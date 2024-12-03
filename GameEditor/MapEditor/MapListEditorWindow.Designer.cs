@@ -32,7 +32,10 @@
             mapListContextMenuStrip = new ContextMenuStrip(components);
             newToolStripMenuItem = new ToolStripMenuItem();
             removeToolStripMenuItem = new ToolStripMenuItem();
+            statusStrip = new StatusStrip();
+            lblDataSize = new ToolStripStatusLabel();
             mapListContextMenuStrip.SuspendLayout();
+            statusStrip.SuspendLayout();
             SuspendLayout();
             // 
             // mapList
@@ -44,9 +47,8 @@
             mapList.Location = new Point(0, 0);
             mapList.Name = "mapList";
             mapList.ScrollAlwaysVisible = true;
-            mapList.Size = new Size(164, 188);
+            mapList.Size = new Size(164, 164);
             mapList.TabIndex = 0;
-            mapList.DoubleClick += mapList_DoubleClick;
             // 
             // mapListContextMenuStrip
             // 
@@ -68,12 +70,28 @@
             removeToolStripMenuItem.Text = "Delete Map";
             removeToolStripMenuItem.Click += removeToolStripMenuItem_Click;
             // 
+            // statusStrip
+            // 
+            statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip.Location = new Point(0, 164);
+            statusStrip.Name = "statusStrip";
+            statusStrip.Size = new Size(164, 24);
+            statusStrip.TabIndex = 2;
+            statusStrip.Text = "statusStrip1";
+            // 
+            // lblDataSize
+            // 
+            lblDataSize.Name = "lblDataSize";
+            lblDataSize.Size = new Size(54, 19);
+            lblDataSize.Text = "X bytes";
+            // 
             // MapListEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(164, 188);
             Controls.Add(mapList);
+            Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;
@@ -81,7 +99,10 @@
             StartPosition = FormStartPosition.Manual;
             Text = "Maps";
             mapListContextMenuStrip.ResumeLayout(false);
+            statusStrip.ResumeLayout(false);
+            statusStrip.PerformLayout();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -90,5 +111,7 @@
         private ContextMenuStrip mapListContextMenuStrip;
         private ToolStripMenuItem newToolStripMenuItem;
         private ToolStripMenuItem removeToolStripMenuItem;
+        private StatusStrip statusStrip;
+        private ToolStripStatusLabel lblDataSize;
     }
 }

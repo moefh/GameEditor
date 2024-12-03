@@ -28,6 +28,7 @@ namespace GameEditor.GameData
         }
 
         public string Name { get; set; }
+        public DataAssetType AssetType { get { return DataAssetType.Font; } }
 
         public int Width { get { return bitmap.Width; } }
         public int Height { get { return bitmap.Height / NUM_CHARS; } }

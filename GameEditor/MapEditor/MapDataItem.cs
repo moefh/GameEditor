@@ -32,6 +32,10 @@ namespace GameEditor.MapEditor
             }
         }
 
+        public void CloseEditor() {
+            Editor?.Close();
+        }
+
         public void EditorClosed() {
             Editor = null;
         }

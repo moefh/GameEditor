@@ -16,6 +16,7 @@ using GameEditor.Misc;
 using GameEditor.ProjectIO;
 using System.DirectoryServices.ActiveDirectory;
 using GameEditor.FontEditor;
+using System.Security.Cryptography.Pkcs;
 
 namespace GameEditor.GameData
 {
@@ -34,6 +35,7 @@ namespace GameEditor.GameData
 
     public class ProjectData : IDisposable
     {
+        /*
         private readonly AssetList<SfxDataItem> sfxs = [];
         private readonly AssetList<ModDataItem> mods = [];
         private readonly AssetList<MapDataItem> maps = [];
@@ -41,12 +43,15 @@ namespace GameEditor.GameData
         private readonly AssetList<SpriteItem> sprites = [];
         private readonly AssetList<TilesetItem> tilesets = [];
         private readonly AssetList<FontDataItem> fonts = [];
+        */
+        private readonly Dictionary<DataAssetType, AssetList<IDataAssetItem>> assets = [];
 
         public ProjectData() {
             IdentifierPrefix = "GAME";
             VgaSyncBits = 0xc0;
             FileName = null;
             IsDirty = false;
+            CreateAssetLists();
         }
 
         public ProjectData(string filename) {
@@ -54,6 +59,7 @@ namespace GameEditor.GameData
             VgaSyncBits = 0x00;
             IsDirty = false;
             FileName = filename;
+            CreateAssetLists();
             if (! LoadProject(filename)) throw new Exception("Error loading project");
         }
 
@@ -61,60 +67,38 @@ namespace GameEditor.GameData
         public string IdentifierPrefix { get; set; }
         public byte VgaSyncBits { get; set; }
         public bool IsDirty { get; private set; }
-        public AssetList<TilesetItem> TilesetList { get { return tilesets; } }
-        public AssetList<MapDataItem> MapList { get { return maps; } }
-        public AssetList<SpriteItem> SpriteList { get { return sprites; } }
-        public AssetList<SpriteAnimationItem> SpriteAnimationList { get { return spriteAnims; } }
-        public AssetList<SfxDataItem> SfxList { get { return sfxs; } }
-        public AssetList<ModDataItem> ModList { get { return mods; } }
-        public AssetList<FontDataItem> FontList { get { return fonts; } }
+        public IEnumerable<DataAssetType> AssetTypes { get { return assets.Keys; } }
+
+        public AssetList<IDataAssetItem> TilesetList { get { return assets[DataAssetType.Tileset]; } }
+        public AssetList<IDataAssetItem> MapList { get { return assets[DataAssetType.Map]; } }
+        public AssetList<IDataAssetItem> SpriteList { get { return assets[DataAssetType.Sprite]; } }
+        public AssetList<IDataAssetItem> SpriteAnimationList { get { return assets[DataAssetType.SpriteAnimation]; } }
+        public AssetList<IDataAssetItem> SfxList { get { return assets[DataAssetType.Sfx]; } }
+        public AssetList<IDataAssetItem> ModList { get { return assets[DataAssetType.Mod]; } }
+        public AssetList<IDataAssetItem> FontList { get { return assets[DataAssetType.Font]; } }
+
+        public AssetList<IDataAssetItem> GetAssetList(DataAssetType type) {
+            return assets[type];
+        }
+
+        private void CreateAssetLists() {
+            assets[DataAssetType.Font] = [];
+            assets[DataAssetType.Mod] = [];
+            assets[DataAssetType.Sfx] = [];
+            assets[DataAssetType.Sprite] = [];
+            assets[DataAssetType.SpriteAnimation] = [];
+            assets[DataAssetType.Tileset] = [];
+            assets[DataAssetType.Map] = [];
+        }
 
         public void Dispose() {
-            // maps
-            foreach (MapDataItem mi in MapList) {
-                mi.Editor?.Close();
+            foreach (AssetList<IDataAssetItem> list in assets.Values) {
+                foreach (IDataAssetItem asset in list) {
+                    asset.Asset.Dispose();
+                    asset.CloseEditor();
+                }
+                list.Clear();
             }
-            MapList.Clear();
-
-            // sprite animations
-            foreach (SpriteAnimationItem ai in SpriteAnimationList) {
-                ai.Editor?.Close();
-                ai.Animation.Close();  // unregister sprite event
-            }
-            SpriteAnimationList.Clear();
-
-            // mods
-            foreach (ModDataItem mi in ModList) {
-                mi.Editor?.Close();
-            }
-            ModList.Clear();
-
-            // sfx
-            foreach (SfxDataItem si in SfxList) {
-                si.Editor?.Close();
-            }
-            SfxList.Clear();
-
-            // tilesets
-            foreach (TilesetItem ti in TilesetList) {
-                ti.Editor?.Close();
-                ti.Tileset.Dispose();  // free bitmap
-            }
-            TilesetList.Clear();
-            
-            // sprites
-            foreach (SpriteItem si in SpriteList) {
-                si.Editor?.Close();
-                si.Sprite.Dispose();   // free bitmap
-            }
-            SpriteList.Clear();
-
-            // fonts
-            foreach (FontDataItem fi in FontList) {
-                fi.Editor?.Close();
-                fi.Font.Dispose();     // free bitmap
-            }
-            FontList.Clear();
         }
 
         public void SetDirty(bool dirty = true) {
@@ -124,48 +108,65 @@ namespace GameEditor.GameData
             }
         }
 
+        public void AddAssetItem(IDataAssetItem item) {
+            assets[item.Asset.AssetType].Add(item);
+        }
+
+        /*
         public MapDataItem AddMap(MapData mapData) {
             MapDataItem mi = new MapDataItem(mapData);
-            maps.Add(mi);
+            AddAssetItem(mi);
             return mi;
         }
 
         public FontDataItem AddFont(FontData fontData) {
             FontDataItem fi = new FontDataItem(fontData);
-            fonts.Add(fi);
+            AddAssetItem(fi);
             return fi;
         }
 
         public TilesetItem AddTileset(Tileset tileset) {
             TilesetItem ti = new TilesetItem(tileset);
-            tilesets.Add(ti);
+            AddAssetItem(ti);
             return ti;
         }
 
         public SpriteItem AddSprite(Sprite sprite) {
             SpriteItem si = new SpriteItem(sprite);
-            sprites.Add(si);
+            AddAssetItem(si);
             return si;
         }
 
         public SpriteAnimationItem AddSpriteAnimation(SpriteAnimation animation) {
             SpriteAnimationItem ai = new SpriteAnimationItem(animation);
-            spriteAnims.Add(ai);
+            AddAssetItem(ai);
             return ai;
         }
 
         public SfxDataItem AddSfx(SfxData sfx) {
             SfxDataItem si = new SfxDataItem(sfx);
-            sfxs.Add(si);
+            AddAssetItem(si);
             return si;
         }
 
         public ModDataItem AddMod(ModData mod) {
             ModDataItem mi = new ModDataItem(mod);
-            mods.Add(mi);
+            AddAssetItem(mi);
             return mi;
         }
+        */
 
+        public int GetAssetIndex(IDataAsset item) {
+            AssetList<IDataAssetItem> list = assets[item.AssetType];
+            for (int i = 0; i < list.Count; i++) {
+                if (list[i].Asset == item) {
+                    return i;
+                }
+            }
+            return -1;
+        }
+
+        /*
         public int GetTilesetIndex(Tileset tileset) {
             for (int i = 0; i < TilesetList.Count; i++) {
                 if (TilesetList[i].Tileset == tileset) {
@@ -183,17 +184,18 @@ namespace GameEditor.GameData
             }
             return -1;
         }
+        */
 
         public int GetGameDataSize() {
             int size = 0;
-            size += sfxs.Aggregate(0, (int cur, SfxDataItem si) => cur + si.Sfx.GameDataSize);
-            size += mods.Aggregate(0, (int cur, ModDataItem mi) => cur + mi.Mod.GameDataSize);
-            size += maps.Aggregate(0, (int cur, MapDataItem mi) => cur + mi.Map.GameDataSize);
-            size += spriteAnims.Aggregate(0, (int cur, SpriteAnimationItem si) => cur + si.Animation.GameDataSize);
-            size += sprites.Aggregate(0, (int cur, SpriteItem si) => cur + si.Sprite.GameDataSize);
-            size += tilesets.Aggregate(0, (int cur, TilesetItem ti) => cur + ti.Tileset.GameDataSize);
-            size += fonts.Aggregate(0, (int cur, FontDataItem fi) => cur + fi.Font.GameDataSize);
+            foreach (AssetList<IDataAssetItem> list in assets.Values) {
+                size += list.Aggregate(0, (int cur, IDataAssetItem si) => cur + si.Asset.GameDataSize);
+            }
             return size;
+        }
+
+        public int GetGameDataSize(DataAssetType type) {
+            return assets[type].Aggregate(0, (int cur, IDataAssetItem si) => cur + si.Asset.GameDataSize);
         }
 
         public bool SaveProject(string filename) {
@@ -216,13 +218,13 @@ namespace GameEditor.GameData
 
                 VgaSyncBits = (byte) reader.VgaSyncBits;
                 IdentifierPrefix = reader.GlobalPrefixUpper;
-                foreach (Tileset t in reader.TilesetList) AddTileset(t);
-                foreach (Sprite s in reader.SpriteList) AddSprite(s);
-                foreach (SpriteAnimation a in reader.SpriteAnimationList) AddSpriteAnimation(a);
-                foreach (MapData m in reader.MapList) AddMap(m);
-                foreach (SfxData s in reader.SfxList) AddSfx(s);
-                foreach (ModData m in reader.ModList) AddMod(m);
-                foreach (FontData f in reader.FontList) AddFont(f);
+                foreach (Tileset t in reader.TilesetList) AddAssetItem(new TilesetItem(t));
+                foreach (Sprite s in reader.SpriteList) AddAssetItem(new SpriteItem(s));
+                foreach (SpriteAnimation a in reader.SpriteAnimationList) AddAssetItem(new SpriteAnimationItem(a));
+                foreach (MapData m in reader.MapList) AddAssetItem(new MapDataItem(m));
+                foreach (SfxData s in reader.SfxList) AddAssetItem(new SfxDataItem(s));
+                foreach (ModData m in reader.ModList) AddAssetItem(new ModDataItem(m));
+                foreach (FontData f in reader.FontList) AddAssetItem(new FontDataItem(f));
                 reader.ConsumeData();  // prevent read data from being disposed
                 SetDirty(false);
                 return true;
@@ -233,5 +235,10 @@ namespace GameEditor.GameData
             }
             return false;
         }
+
+        public void RemoveAssetAt(DataAssetType type, int index) {
+            assets[type].RemoveAt(index);
+        }
+
     }
 }

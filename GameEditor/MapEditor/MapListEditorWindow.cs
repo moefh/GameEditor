@@ -13,41 +13,15 @@ using System.Windows.Forms;
 
 namespace GameEditor.MapEditor
 {
-    public partial class MapListEditorWindow : ProjectForm
+    public partial class MapListEditorWindow : ProjectAssetListEditorForm
     {
-        public MapListEditorWindow() : base("MapListEditor") {
+        public MapListEditorWindow() : base(DataAssetType.Map, "MapListEditor") {
             InitializeComponent();
-            RefreshMapList();
-        }
-
-        public void RefreshMapList() {
-            mapList.DataSource = null;
-            mapList.DataSource = Util.Project.MapList;
-            mapList.DisplayMember = "Name";
-        }
-
-        public MapDataItem? AddMap() {
-            if (Util.Project.TilesetList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one tileset to create a map.",
-                    "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            MapDataItem mi = Util.Project.AddMap(new MapData(24, 16, Util.Project.TilesetList[0].Tileset));
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return mi;
-        }
-
-        private void mapList_DoubleClick(object sender, EventArgs e) {
-            object? item = mapList.SelectedItem;
-            if (item is MapDataItem map) {
-                map.ShowEditor();
-            }
+            SetupAssetListControls(mapList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddMap();
+            Util.MainWindow?.AddMap();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -60,7 +34,7 @@ namespace GameEditor.MapEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            Util.Project.MapList.RemoveAt(mapList.SelectedIndex);
+            Util.Project.RemoveAssetAt(DataAssetType.Map, mapList.SelectedIndex);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
         }

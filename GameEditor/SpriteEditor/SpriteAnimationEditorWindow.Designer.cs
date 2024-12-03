@@ -101,7 +101,6 @@
             // 
             toolStripTxtName.Name = "toolStripTxtName";
             toolStripTxtName.Size = new Size(150, 27);
-            toolStripTxtName.TextChanged += toolStripTxtName_TextChanged;
             // 
             // toolStripLabel2
             // 
