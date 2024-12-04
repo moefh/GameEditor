@@ -92,20 +92,20 @@ namespace GameEditor.GameData
             clip = Resize(clip, width, height, EMPTY_CLIP);
         }
 
-        public void AddTile(int tile) {
+        public void InsertedTiles(int index, int count) {
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
-                    if (fg[x,y] >= tile) fg[x,y]++;
-                    if (bg[x,y] >= tile) bg[x,y]++;
+                    if (fg[x,y] >= index) fg[x,y] += count;
+                    if (bg[x,y] >= index) bg[x,y] += count;
                 }
             }
         }
 
-        public void RemoveTile(int tile) {
+        public void RemovedTiles(int index, int count) {
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
-                    if (fg[x,y] >= tile) fg[x,y]--;
-                    if (bg[x,y] >= tile) bg[x,y]--;
+                    if (fg[x,y] >= index) fg[x,y] -= count;
+                    if (bg[x,y] >= index) bg[x,y] -= count;
                 }
             }
         }

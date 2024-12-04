@@ -114,6 +114,7 @@ namespace GameEditor.Misc
                 g.DrawLine(Pens.Black, i, 0, s - 1, s - 1 - i);
                 g.DrawLine(Pens.Black, s - 1 - i, s - 1, 0, i);
             }
+            //g.DrawRectangle(Pens.Black, 0, 0, size.Width-1, size.Height-1);
         }
 
         public static void ForceToGamePalette(byte[] pixels) {

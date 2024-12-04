@@ -24,6 +24,7 @@ namespace GameEditor.MapEditor
             tilePicker.Tileset = Map.Tileset;
             tilePicker.LeftSelectionColor = ConfigUtil.TilePickerLeftColor;
             tilePicker.RightSelectionColor = ConfigUtil.TilePickerRightColor;
+            tilePicker.AllowRightSelection = true;
             mapEditor.Map = Map;
             mapEditor.GridColor = ConfigUtil.MapEditorGridColor;
             EditLayer = LAYER_FG;
@@ -48,10 +49,10 @@ namespace GameEditor.MapEditor
                 toolStripButtonEditCol.Checked = (value & LAYER_COL) != 0;
                 if ((mapEditor.EditLayer & LAYER_COL) != 0) {
                     tilePicker.Tileset = ImageUtil.CollisionTileset;
-                    tilePicker.SelectedTileLeft = mapEditor.SelectedCollisionTileLeft;
+                    tilePicker.LeftSelectedTile = mapEditor.SelectedCollisionTileLeft;
                 } else {
                     tilePicker.Tileset = Map.Tileset;
-                    tilePicker.SelectedTileLeft = mapEditor.SelectedTileLeft;
+                    tilePicker.LeftSelectedTile = mapEditor.SelectedTileLeft;
                 }
             }
         }
@@ -135,11 +136,11 @@ namespace GameEditor.MapEditor
 
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
             if ((EditLayer & LAYER_COL) != 0) {
-                mapEditor.SelectedCollisionTileLeft = tilePicker.SelectedTileLeft;
-                mapEditor.SelectedCollisionTileRight = tilePicker.SelectedTileRight;
+                mapEditor.SelectedCollisionTileLeft = tilePicker.LeftSelectedTile;
+                mapEditor.SelectedCollisionTileRight = tilePicker.RightSelectedTile;
             } else {
-                mapEditor.SelectedTileLeft = tilePicker.SelectedTileLeft;
-                mapEditor.SelectedTileRight = tilePicker.SelectedTileRight;
+                mapEditor.SelectedTileLeft = tilePicker.LeftSelectedTile;
+                mapEditor.SelectedTileRight = tilePicker.RightSelectedTile;
             }
         }
 
@@ -170,6 +171,10 @@ namespace GameEditor.MapEditor
 
         private void mapEditor_MapChanged(object sender, EventArgs e) {
             Util.Project.SetDirty();
+        }
+
+        private void mainSplit_SplitterMoved(object sender, SplitterEventArgs e) {
+
         }
     }
 }

@@ -1,2 +1,10 @@
 ﻿
-- edit map connections (world editor)
+- import/export map:
+  - export map (from map editor)
+  - import map (from tileset list editor: "Import Maps On This Tileset...")
+    -> file must contain only map data ("game_map_tiles_XXX[]" and "game_maps[]")
+	-> all imported maps will reference the tileset they were imported on
+
+- project lint (check errors, like too many tiles in tileset)
+
+- make editor for map connections (world editor)

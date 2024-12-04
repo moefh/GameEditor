@@ -50,12 +50,12 @@ namespace GameEditor.GameData
             tiles.Resize(width, height);
         }
 
-        public void AddTile(int tile) {
-            tiles.AddTile(tile);
+        public void InsertedTile(int index, int count) {
+            tiles.InsertedTiles(index, count);
         }
 
-        public void RemoveTile(int tile) {
-            tiles.RemoveTile(tile);
+        public void RemovedTiles(int index, int count) {
+            tiles.RemovedTiles(index, count);
         }
     }
 }

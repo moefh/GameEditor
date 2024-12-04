@@ -1,4 +1,6 @@
-﻿namespace GameEditor.MapEditor
+﻿using GameEditor.CustomControls;
+
+namespace GameEditor.MapEditor
 {
     partial class MapEditorWindow
     {
@@ -47,8 +49,8 @@
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
-            tilePickerPanel = new Panel();
-            tilePicker = new CustomControls.TilePicker();
+            tilePicker = new TilePicker();
+            tilePickerScroll = new VScrollBar();
             mapEditor = new CustomControls.MapEditor();
             infoToolStrip = new ToolStrip();
             toolStripLabel3 = new ToolStripLabel();
@@ -63,7 +65,6 @@
             mainSplit.Panel1.SuspendLayout();
             mainSplit.Panel2.SuspendLayout();
             mainSplit.SuspendLayout();
-            tilePickerPanel.SuspendLayout();
             infoToolStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -197,7 +198,7 @@
             // 
             toolStripComboBoxZoom.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboBoxZoom.DropDownWidth = 20;
-            toolStripComboBoxZoom.Items.AddRange(new object[] { "1x", "2x", "3x", "4x" });
+            toolStripComboBoxZoom.Items.AddRange(new object[] { "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x" });
             toolStripComboBoxZoom.Name = "toolStripComboBoxZoom";
             toolStripComboBoxZoom.Size = new Size(75, 27);
             toolStripComboBoxZoom.Tag = "";
@@ -237,7 +238,8 @@
             // mainSplit.Panel1
             // 
             mainSplit.Panel1.AutoScroll = true;
-            mainSplit.Panel1.Controls.Add(tilePickerPanel);
+            mainSplit.Panel1.Controls.Add(tilePicker);
+            mainSplit.Panel1.Controls.Add(tilePickerScroll);
             mainSplit.Panel1.Padding = new Padding(3);
             mainSplit.Panel1MinSize = 100;
             // 
@@ -246,39 +248,38 @@
             mainSplit.Panel2.Controls.Add(mapEditor);
             mainSplit.Panel2.Padding = new Padding(3);
             mainSplit.Size = new Size(850, 210);
-            mainSplit.SplitterDistance = 200;
+            mainSplit.SplitterDistance = 205;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
-            // 
-            // tilePickerPanel
-            // 
-            tilePickerPanel.AutoScroll = true;
-            tilePickerPanel.Controls.Add(tilePicker);
-            tilePickerPanel.Dock = DockStyle.Fill;
-            tilePickerPanel.Location = new Point(3, 3);
-            tilePickerPanel.MinimumSize = new Size(64, 64);
-            tilePickerPanel.Name = "tilePickerPanel";
-            tilePickerPanel.Size = new Size(194, 204);
-            tilePickerPanel.TabIndex = 0;
-            tilePickerPanel.SizeChanged += tilePickerPanel_SizeChanged;
+            mainSplit.SplitterMoved += mainSplit_SplitterMoved;
             // 
             // tilePicker
             // 
-            tilePicker.Anchor = AnchorStyles.Top;
-            tilePicker.Location = new Point(9, 0);
+            tilePicker.AllowRightSelection = false;
+            tilePicker.Dock = DockStyle.Fill;
+            tilePicker.LeftSelectionColor = Color.FromArgb(255, 0, 0);
+            tilePicker.Location = new Point(3, 3);
             tilePicker.MinimumSize = new Size(64, 64);
             tilePicker.Name = "tilePicker";
-            tilePicker.LeftSelectionColor = Color.FromArgb(255, 0, 0);
             tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
-            tilePicker.SelectedTileLeft = 0;
-            tilePicker.SelectedTileRight = -1;
+            tilePicker.Scrollbar = tilePickerScroll;
+            tilePicker.LeftSelectedTile = 0;
+            tilePicker.RightSelectedTile = -1;
             tilePicker.ShowEmptyTile = true;
-            tilePicker.Size = new Size(194, 204);
+            tilePicker.Size = new Size(182, 204);
             tilePicker.TabIndex = 0;
             tilePicker.Text = "tilePicker";
             tilePicker.Tileset = null;
             tilePicker.Zoom = 4;
             tilePicker.SelectedTileChanged += tilePicker_SelectedTileChanged;
+            // 
+            // tilePickerScroll
+            // 
+            tilePickerScroll.Dock = DockStyle.Right;
+            tilePickerScroll.Location = new Point(185, 3);
+            tilePickerScroll.Name = "tilePickerScroll";
+            tilePickerScroll.Size = new Size(17, 204);
+            tilePickerScroll.TabIndex = 1;
             // 
             // mapEditor
             // 
@@ -291,8 +292,10 @@
             mapEditor.Name = "mapEditor";
             mapEditor.Padding = new Padding(3, 3, 2, 2);
             mapEditor.SelectedCollisionTileLeft = 0;
+            mapEditor.SelectedCollisionTileRight = 0;
             mapEditor.SelectedTileLeft = 0;
-            mapEditor.Size = new Size(639, 204);
+            mapEditor.SelectedTileRight = 0;
+            mapEditor.Size = new Size(634, 204);
             mapEditor.TabIndex = 0;
             mapEditor.Zoom = 3D;
             mapEditor.MapChanged += mapEditor_MapChanged;
@@ -372,7 +375,6 @@
             mainSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplit).EndInit();
             mainSplit.ResumeLayout(false);
-            tilePickerPanel.ResumeLayout(false);
             infoToolStrip.ResumeLayout(false);
             infoToolStrip.PerformLayout();
             ResumeLayout(false);
@@ -400,7 +402,6 @@
         private ToolStripLabel toolStripLabel2;
         private ToolStripSeparator toolStripSeparator1;
         private CustomControls.TilePicker tilePicker;
-        private Panel tilePickerPanel;
         private ToolStripStatusLabel lblDataSize;
         private ToolStripButton toolStripButtonEditFG;
         private ToolStripButton toolStripButtonEditBG;
@@ -409,5 +410,6 @@
         private ToolStripLabel toolStripLabel5;
         private ToolStripButton toolStripButtonShowScreen;
         private ToolStripButton toolStripBtnGridColor;
+        private VScrollBar tilePickerScroll;
     }
 }
