@@ -18,7 +18,6 @@ namespace GameEditor.CustomControls
         public const uint RENDER_TRANSPARENT = 1<<0;
 
         private const int SEL_BORDER = 2;
-        private const int MAX_HORZ_FRAMES = 5;
 
         private struct RenderInfo(int emptyFrameSpace, int zoomedFrameWidth, int zoomedFrameHeight, int numHorzFrames, int numVertFrames)
         {
@@ -78,7 +77,6 @@ namespace GameEditor.CustomControls
             int zoomeFrameHeight = spr.Height * zoom;
             int numHorzFrames = (ClientSize.Width - 2*SEL_BORDER) / (zoomeFrameWidth + 2*SEL_BORDER);
             if (numHorzFrames <= 0) numHorzFrames = 1;
-            if (numHorzFrames > MAX_HORZ_FRAMES) numHorzFrames = MAX_HORZ_FRAMES;
             int numVertFrames = (spr.NumFrames + numHorzFrames - (ShowEmptyFrame ? 0 : 1)) / numHorzFrames;
 
             return new RenderInfo(
@@ -98,12 +96,30 @@ namespace GameEditor.CustomControls
             }
         }
 
-        public void ScrollToTile(int tile) {
+        public void ScrollToFrame(int frame) {
             if (Sprite == null) return;
             RenderInfo ri = GetRenderInfo(Sprite);
-            int y = ((SelectedFrame+ri.EmptyFrameSpace) / ri.NumHorzFrames) * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
+            int y = ((frame+ri.EmptyFrameSpace) / ri.NumHorzFrames) * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
             SetScrollPosition(y - 2*SEL_BORDER);
             Invalidate();
+        }
+
+        public void ScrollTileIntoView(int tile) {
+            if (Sprite == null) return;
+            RenderInfo ri = GetRenderInfo(Sprite);
+            int y = (tile+ri.EmptyFrameSpace) / ri.NumHorzFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
+
+            if (y + 2*SEL_BORDER + ri.ZoomedFrameHeight < scrollValue) {
+                // tile is above the scolled area, we must scroll up
+                SetScrollPosition(y - 2*SEL_BORDER);
+                Invalidate();
+            }
+
+            if (y > scrollValue + ClientSize.Height) {
+                // tile is below the scolled area, we must scroll down
+                SetScrollPosition(y + ri.ZoomedFrameHeight + 2*SEL_BORDER - (ClientSize.Width + 1));
+                Invalidate();
+            }
         }
 
         protected override void OnPaint(PaintEventArgs pe) {

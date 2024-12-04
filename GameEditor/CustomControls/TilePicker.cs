@@ -72,12 +72,12 @@ namespace GameEditor.CustomControls
 
         public int LeftSelectedTile {
             get { return leftSelectedTile; }
-            set { leftSelectedTile = value; SelectedTileChanged?.Invoke(this, EventArgs.Empty); }
+            set { leftSelectedTile = value; Invalidate(); }
         }
 
         public int RightSelectedTile {
             get { return rightSelectedTile; }
-            set { rightSelectedTile = value; SelectedTileChanged?.Invoke(this, EventArgs.Empty); }
+            set { rightSelectedTile = value; Invalidate(); }
         }
 
         public Color LeftSelectionColor { get; set; }
@@ -102,7 +102,7 @@ namespace GameEditor.CustomControls
             Invalidate();
         }
 
-        public void BringTileIntoView(int tile) {
+        public void ScrollTileIntoView(int tile) {
             if (Tileset == null) return;
             RenderInfo ri = GetRenderInfo(Tileset);
             int y = (tile+ri.EmptyTileSpace) / ri.NumHorzTiles * (ri.ZoomedTileSize + 2*SEL_BORDER) + 1;
@@ -222,6 +222,7 @@ namespace GameEditor.CustomControls
                 } else if (AllowRightSelection) {
                     RightSelectedTile = newTile;
                 }
+                SelectedTileChanged?.Invoke(this, EventArgs.Empty);
             }
             Invalidate();
         }

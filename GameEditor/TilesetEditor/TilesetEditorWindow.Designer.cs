@@ -51,7 +51,6 @@
             insertTilesFromFileToolStripMenuItem = new ToolStripMenuItem();
             appendTilesFromFileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            toolStripLabel2 = new ToolStripLabel();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
             infoToolStrip.SuspendLayout();
@@ -244,7 +243,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel2, toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
@@ -254,12 +253,11 @@
             // toolStripDropDownEdit
             // 
             toolStripDropDownEdit.AutoToolTip = false;
-            toolStripDropDownEdit.DisplayStyle = ToolStripItemDisplayStyle.Text;
             toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { insertTileToolStripMenuItem, appendTileToolStripMenuItem, deleteTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem });
-            toolStripDropDownEdit.Image = (Image)resources.GetObject("toolStripDropDownEdit.Image");
+            toolStripDropDownEdit.Image = Properties.Resources.PenIcon;
             toolStripDropDownEdit.ImageTransparentColor = Color.Magenta;
             toolStripDropDownEdit.Name = "toolStripDropDownEdit";
-            toolStripDropDownEdit.Size = new Size(45, 24);
+            toolStripDropDownEdit.Size = new Size(61, 24);
             toolStripDropDownEdit.Text = "Edit";
             // 
             // insertTileToolStripMenuItem
@@ -308,22 +306,17 @@
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
             // 
-            // toolStripLabel2
-            // 
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(56, 24);
-            toolStripLabel2.Text = "Display:";
-            // 
             // toolStripBtnGrid
             // 
             toolStripBtnGrid.Checked = true;
             toolStripBtnGrid.CheckOnClick = true;
             toolStripBtnGrid.CheckState = CheckState.Checked;
-            toolStripBtnGrid.Image = (Image)resources.GetObject("toolStripBtnGrid.Image");
+            toolStripBtnGrid.Image = Properties.Resources.EyeIcon;
             toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
             toolStripBtnGrid.Name = "toolStripBtnGrid";
             toolStripBtnGrid.Size = new Size(55, 24);
             toolStripBtnGrid.Text = "Grid";
+            toolStripBtnGrid.ToolTipText = "Display grid";
             toolStripBtnGrid.Click += toolStripBtnGrid_Click;
             // 
             // toolStripBtnTransparent
@@ -331,11 +324,12 @@
             toolStripBtnTransparent.Checked = true;
             toolStripBtnTransparent.CheckOnClick = true;
             toolStripBtnTransparent.CheckState = CheckState.Checked;
-            toolStripBtnTransparent.Image = (Image)resources.GetObject("toolStripBtnTransparent.Image");
+            toolStripBtnTransparent.Image = Properties.Resources.EyeIcon;
             toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
             toolStripBtnTransparent.Name = "toolStripBtnTransparent";
             toolStripBtnTransparent.Size = new Size(101, 24);
             toolStripBtnTransparent.Text = "Transparent";
+            toolStripBtnTransparent.ToolTipText = "Display with transparency";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
             // 
             // TilesetEditorWindow
@@ -389,7 +383,6 @@
         private CustomControls.ColorPicker colorPicker;
         private ToolStripButton toolStripBtnProperties;
         private ToolStripStatusLabel lblDataSize;
-        private ToolStripLabel toolStripLabel2;
         private ToolStripDropDownButton toolStripDropDownEdit;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem insertTileToolStripMenuItem;

@@ -189,7 +189,7 @@ namespace GameEditor.TilesetEditor
             }
             OnTilesetResized();
             tilePicker.LeftSelectedTile = index;
-            tilePicker.BringTileIntoView(tilePicker.LeftSelectedTile);
+            tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
             Util.RefreshTilesetUsers(Tileset);
@@ -215,7 +215,7 @@ namespace GameEditor.TilesetEditor
 
             OnTilesetResized();
             tilePicker.LeftSelectedTile = index;
-            tilePicker.BringTileIntoView(tilePicker.LeftSelectedTile);
+            tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
             Util.RefreshTilesetUsers(Tileset);
@@ -247,7 +247,7 @@ namespace GameEditor.TilesetEditor
                 }
             }
             OnTilesetResized();
-            tilePicker.BringTileIntoView(tilePicker.LeftSelectedTile);
+            tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
         }
 
         private void insertTilesFromFileToolStripMenuItem_Click(object sender, EventArgs e) {

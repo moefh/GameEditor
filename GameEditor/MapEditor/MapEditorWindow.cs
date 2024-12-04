@@ -27,8 +27,11 @@ namespace GameEditor.MapEditor
             tilePicker.AllowRightSelection = true;
             mapEditor.Map = Map;
             mapEditor.GridColor = ConfigUtil.MapEditorGridColor;
+            mapEditor.MinZoom = 1;
+            mapEditor.MaxZoom = toolStripComboBoxZoom.Items.Count;
+            UpdateMapZoom();
             EditLayer = LAYER_FG;
-            toolStripComboBoxZoom.SelectedIndex = 1;
+            toolStripComboBoxZoom.SelectedIndex = 2;
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
             toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
@@ -49,10 +52,10 @@ namespace GameEditor.MapEditor
                 toolStripButtonEditCol.Checked = (value & LAYER_COL) != 0;
                 if ((mapEditor.EditLayer & LAYER_COL) != 0) {
                     tilePicker.Tileset = ImageUtil.CollisionTileset;
-                    tilePicker.LeftSelectedTile = mapEditor.SelectedCollisionTileLeft;
+                    tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
                 } else {
                     tilePicker.Tileset = Map.Tileset;
-                    tilePicker.LeftSelectedTile = mapEditor.SelectedTileLeft;
+                    tilePicker.LeftSelectedTile = mapEditor.LeftSelectedTile;
                 }
             }
         }
@@ -70,6 +73,17 @@ namespace GameEditor.MapEditor
             lblDataSize.Text = $"{Util.FormatNumber(Map.GameDataSize)} bytes";
         }
 
+        private void UpdateMapZoom() {
+            string? text = toolStripComboBoxZoom.SelectedItem?.ToString();
+            if (text == null) return;
+            if (text.EndsWith('x')) text = text.Substring(0, text.Length - 1);
+
+            double zoom;
+            if (double.TryParse(text, out zoom)) {
+                mapEditor.Zoom = zoom;
+            }
+        }
+
         private void UpdateRenderLayers() {
             uint fg = toolStripButtonShowFG.Checked ? LAYER_FG : 0;
             uint bg = toolStripButtonShowBG.Checked ? LAYER_BG : 0;
@@ -85,14 +99,8 @@ namespace GameEditor.MapEditor
         }
 
         private void toolStripComboBoxZoom_SelectedIndexChanged(object sender, EventArgs e) {
-            string? text = toolStripComboBoxZoom.SelectedItem?.ToString();
-            if (text == null) return;
-            if (text.EndsWith('x')) text = text.Substring(0, text.Length - 1);
-
-            double zoom;
-            if (double.TryParse(text, out zoom)) {
-                mapEditor.Zoom = zoom;
-            }
+            if (! toolStripComboBoxZoom.Enabled) return;
+            UpdateMapZoom();
         }
 
         public void RefreshTileset() {
@@ -127,8 +135,12 @@ namespace GameEditor.MapEditor
                 Util.Log($"WARNING: tileset dropdown has invalid selected index {sel}");
                 return;
             }
-            Map.Tileset = (Tileset)tilesetList[sel].Asset;
+            Tileset newTileset = (Tileset)tilesetList[sel].Asset;
+            if (newTileset == Map.Tileset) return;
+
+            Map.Tileset = newTileset;
             tilePicker.Tileset = Map.Tileset;
+            Util.Project.SetDirty();
             mapEditor.Invalidate();
             tilePicker.Invalidate();
             FixFormTitle();
@@ -136,11 +148,11 @@ namespace GameEditor.MapEditor
 
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
             if ((EditLayer & LAYER_COL) != 0) {
-                mapEditor.SelectedCollisionTileLeft = tilePicker.LeftSelectedTile;
-                mapEditor.SelectedCollisionTileRight = tilePicker.RightSelectedTile;
+                mapEditor.LeftSelectedCollisionTile = tilePicker.LeftSelectedTile;
+                mapEditor.RightSelectedCollisionTile = tilePicker.RightSelectedTile;
             } else {
-                mapEditor.SelectedTileLeft = tilePicker.LeftSelectedTile;
-                mapEditor.SelectedTileRight = tilePicker.RightSelectedTile;
+                mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
+                mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
             }
         }
 
@@ -173,8 +185,28 @@ namespace GameEditor.MapEditor
             Util.Project.SetDirty();
         }
 
-        private void mainSplit_SplitterMoved(object sender, SplitterEventArgs e) {
-
+        private void mapEditor_SelectedTilesChanged(object sender, EventArgs e) {
+            if ((EditLayer & LAYER_COL) != 0) {
+                tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
+                tilePicker.RightSelectedTile = mapEditor.RightSelectedCollisionTile;
+            } else {
+                tilePicker.LeftSelectedTile = mapEditor.LeftSelectedTile;
+                tilePicker.RightSelectedTile = mapEditor.RightSelectedTile;
+            }
+            if (tilePicker.LeftSelectedTile >= 0) tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
+            if (tilePicker.RightSelectedTile >= 0) tilePicker.ScrollTileIntoView(tilePicker.RightSelectedTile);
+            if (tilePicker.LeftSelectedTile >= 0) tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
+            tilePicker.Invalidate();
         }
+
+        private void mapEditor_ZoomChanged(object sender, EventArgs e) {
+            int zoomIndex = (int) (mapEditor.Zoom * 2) - 2;
+            if (toolStripComboBoxZoom.SelectedIndex != zoomIndex) {
+                toolStripComboBoxZoom.Enabled = false;
+                toolStripComboBoxZoom.SelectedIndex = zoomIndex;
+                toolStripComboBoxZoom.Enabled = true;
+            }
+        }
+
     }
 }

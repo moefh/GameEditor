@@ -31,12 +31,10 @@ namespace GameEditor.MapEditor
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MapEditorWindow));
             toolsToolStrip = new ToolStrip();
-            toolStripLabel5 = new ToolStripLabel();
             toolStripButtonEditFG = new ToolStripButton();
             toolStripButtonEditBG = new ToolStripButton();
             toolStripButtonEditCol = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
-            toolStripLabel4 = new ToolStripLabel();
             toolStripButtonShowFG = new ToolStripButton();
             toolStripButtonShowBG = new ToolStripButton();
             toolStripButtonShowCol = new ToolStripButton();
@@ -71,70 +69,60 @@ namespace GameEditor.MapEditor
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom, toolStripBtnGridColor });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom, toolStripBtnGridColor });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(850, 27);
             toolsToolStrip.TabIndex = 2;
             toolsToolStrip.Text = "toolStrip";
             // 
-            // toolStripLabel5
-            // 
-            toolStripLabel5.Name = "toolStripLabel5";
-            toolStripLabel5.Size = new Size(35, 24);
-            toolStripLabel5.Text = "Edit:";
-            // 
             // toolStripButtonEditFG
             // 
-            toolStripButtonEditFG.Image = (Image)resources.GetObject("toolStripButtonEditFG.Image");
+            toolStripButtonEditFG.Image = Properties.Resources.PenIcon;
             toolStripButtonEditFG.ImageTransparentColor = Color.Magenta;
             toolStripButtonEditFG.Name = "toolStripButtonEditFG";
             toolStripButtonEditFG.Size = new Size(46, 24);
             toolStripButtonEditFG.Text = "FG";
-            toolStripButtonEditFG.ToolTipText = "Foreground Tiles";
+            toolStripButtonEditFG.ToolTipText = "Edit foreground tiles";
             toolStripButtonEditFG.Click += toolStripButtonEditFG_Click;
             // 
             // toolStripButtonEditBG
             // 
-            toolStripButtonEditBG.Image = (Image)resources.GetObject("toolStripButtonEditBG.Image");
+            toolStripButtonEditBG.Image = Properties.Resources.PenIcon;
             toolStripButtonEditBG.ImageTransparentColor = Color.Magenta;
             toolStripButtonEditBG.Name = "toolStripButtonEditBG";
             toolStripButtonEditBG.Size = new Size(47, 24);
             toolStripButtonEditBG.Text = "BG";
-            toolStripButtonEditBG.ToolTipText = "Background Tiles";
+            toolStripButtonEditBG.ToolTipText = "Edit background tiles";
             toolStripButtonEditBG.Click += toolStripButtonEditBG_Click;
             // 
             // toolStripButtonEditCol
             // 
-            toolStripButtonEditCol.Image = (Image)resources.GetObject("toolStripButtonEditCol.Image");
+            toolStripButtonEditCol.Image = Properties.Resources.PenIcon;
             toolStripButtonEditCol.ImageTransparentColor = Color.Magenta;
             toolStripButtonEditCol.Name = "toolStripButtonEditCol";
             toolStripButtonEditCol.Size = new Size(80, 24);
             toolStripButtonEditCol.Text = "Collision";
+            toolStripButtonEditCol.ToolTipText = "Edit collision tiles";
             toolStripButtonEditCol.Click += toolStripButtonEditCol_Click;
             // 
             // toolStripSeparator2
             // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
-            // 
-            // toolStripLabel4
-            // 
-            toolStripLabel4.Name = "toolStripLabel4";
-            toolStripLabel4.Size = new Size(56, 24);
-            toolStripLabel4.Text = "Display:";
             // 
             // toolStripButtonShowFG
             // 
             toolStripButtonShowFG.Checked = true;
             toolStripButtonShowFG.CheckOnClick = true;
             toolStripButtonShowFG.CheckState = CheckState.Checked;
-            toolStripButtonShowFG.Image = (Image)resources.GetObject("toolStripButtonShowFG.Image");
+            toolStripButtonShowFG.Image = Properties.Resources.EyeIcon;
             toolStripButtonShowFG.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowFG.Name = "toolStripButtonShowFG";
             toolStripButtonShowFG.Size = new Size(46, 24);
             toolStripButtonShowFG.Text = "FG";
-            toolStripButtonShowFG.ToolTipText = "Foreground Tiles";
+            toolStripButtonShowFG.ToolTipText = "Display foreground tiles";
             toolStripButtonShowFG.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowBG
@@ -142,22 +130,23 @@ namespace GameEditor.MapEditor
             toolStripButtonShowBG.Checked = true;
             toolStripButtonShowBG.CheckOnClick = true;
             toolStripButtonShowBG.CheckState = CheckState.Checked;
-            toolStripButtonShowBG.Image = (Image)resources.GetObject("toolStripButtonShowBG.Image");
+            toolStripButtonShowBG.Image = Properties.Resources.EyeIcon;
             toolStripButtonShowBG.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowBG.Name = "toolStripButtonShowBG";
             toolStripButtonShowBG.Size = new Size(47, 24);
             toolStripButtonShowBG.Text = "BG";
-            toolStripButtonShowBG.ToolTipText = "Background Tiles";
+            toolStripButtonShowBG.ToolTipText = "Display background tiles";
             toolStripButtonShowBG.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowCol
             // 
             toolStripButtonShowCol.CheckOnClick = true;
-            toolStripButtonShowCol.Image = (Image)resources.GetObject("toolStripButtonShowCol.Image");
+            toolStripButtonShowCol.Image = Properties.Resources.EyeIcon;
             toolStripButtonShowCol.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowCol.Name = "toolStripButtonShowCol";
             toolStripButtonShowCol.Size = new Size(80, 24);
             toolStripButtonShowCol.Text = "Collision";
+            toolStripButtonShowCol.ToolTipText = "Display collision tiles";
             toolStripButtonShowCol.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowGrid
@@ -165,21 +154,23 @@ namespace GameEditor.MapEditor
             toolStripButtonShowGrid.Checked = true;
             toolStripButtonShowGrid.CheckOnClick = true;
             toolStripButtonShowGrid.CheckState = CheckState.Checked;
-            toolStripButtonShowGrid.Image = (Image)resources.GetObject("toolStripButtonShowGrid.Image");
+            toolStripButtonShowGrid.Image = Properties.Resources.EyeIcon;
             toolStripButtonShowGrid.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowGrid.Name = "toolStripButtonShowGrid";
             toolStripButtonShowGrid.Size = new Size(55, 24);
             toolStripButtonShowGrid.Text = "Grid";
+            toolStripButtonShowGrid.ToolTipText = "Display grid";
             toolStripButtonShowGrid.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripButtonShowScreen
             // 
             toolStripButtonShowScreen.CheckOnClick = true;
-            toolStripButtonShowScreen.Image = (Image)resources.GetObject("toolStripButtonShowScreen.Image");
+            toolStripButtonShowScreen.Image = Properties.Resources.EyeIcon;
             toolStripButtonShowScreen.ImageTransparentColor = Color.Magenta;
             toolStripButtonShowScreen.Name = "toolStripButtonShowScreen";
             toolStripButtonShowScreen.Size = new Size(69, 24);
             toolStripButtonShowScreen.Text = "Screen";
+            toolStripButtonShowScreen.ToolTipText = "Display screen size";
             toolStripButtonShowScreen.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
             // toolStripSeparator3
@@ -198,10 +189,11 @@ namespace GameEditor.MapEditor
             // 
             toolStripComboBoxZoom.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboBoxZoom.DropDownWidth = 20;
-            toolStripComboBoxZoom.Items.AddRange(new object[] { "1x", "2x", "3x", "4x", "5x", "6x", "7x", "8x" });
+            toolStripComboBoxZoom.Items.AddRange(new object[] { "1.0x", "1.5x", "2.0x", "2.5x", "3.0x", "3.5x", "4.0x", "4.5x", "5.0x", "5.5x", "6.0x", "6.5x", "7.0x", "7.5x", "8.0x" });
             toolStripComboBoxZoom.Name = "toolStripComboBoxZoom";
             toolStripComboBoxZoom.Size = new Size(75, 27);
             toolStripComboBoxZoom.Tag = "";
+            toolStripComboBoxZoom.ToolTipText = "Set zoom level (Mouse Wheel)";
             toolStripComboBoxZoom.SelectedIndexChanged += toolStripComboBoxZoom_SelectedIndexChanged;
             // 
             // toolStripBtnGridColor
@@ -211,6 +203,7 @@ namespace GameEditor.MapEditor
             toolStripBtnGridColor.Name = "toolStripBtnGridColor";
             toolStripBtnGridColor.Size = new Size(92, 24);
             toolStripBtnGridColor.Text = "Grid Color";
+            toolStripBtnGridColor.ToolTipText = "Change grid color";
             toolStripBtnGridColor.Click += toolStripBtnGridColor_Click;
             // 
             // statusStrip
@@ -251,20 +244,19 @@ namespace GameEditor.MapEditor
             mainSplit.SplitterDistance = 205;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
-            mainSplit.SplitterMoved += mainSplit_SplitterMoved;
             // 
             // tilePicker
             // 
             tilePicker.AllowRightSelection = false;
             tilePicker.Dock = DockStyle.Fill;
+            tilePicker.LeftSelectedTile = 0;
             tilePicker.LeftSelectionColor = Color.FromArgb(255, 0, 0);
             tilePicker.Location = new Point(3, 3);
             tilePicker.MinimumSize = new Size(64, 64);
             tilePicker.Name = "tilePicker";
+            tilePicker.RightSelectedTile = -1;
             tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
             tilePicker.Scrollbar = tilePickerScroll;
-            tilePicker.LeftSelectedTile = 0;
-            tilePicker.RightSelectedTile = -1;
             tilePicker.ShowEmptyTile = true;
             tilePicker.Size = new Size(182, 204);
             tilePicker.TabIndex = 0;
@@ -287,18 +279,23 @@ namespace GameEditor.MapEditor
             mapEditor.EditLayer = 0U;
             mapEditor.EnabledRenderLayers = 0U;
             mapEditor.GridColor = Color.FromArgb(0, 0, 0);
+            mapEditor.LeftSelectedCollisionTile = 0;
+            mapEditor.LeftSelectedTile = 0;
             mapEditor.Location = new Point(3, 3);
             mapEditor.Map = null;
+            mapEditor.MaxZoom = 0D;
+            mapEditor.MinZoom = 0D;
             mapEditor.Name = "mapEditor";
             mapEditor.Padding = new Padding(3, 3, 2, 2);
-            mapEditor.SelectedCollisionTileLeft = 0;
-            mapEditor.SelectedCollisionTileRight = 0;
-            mapEditor.SelectedTileLeft = 0;
-            mapEditor.SelectedTileRight = 0;
+            mapEditor.RightSelectedCollisionTile = 0;
+            mapEditor.RightSelectedTile = 0;
             mapEditor.Size = new Size(634, 204);
             mapEditor.TabIndex = 0;
-            mapEditor.Zoom = 3D;
+            mapEditor.Zoom = 0D;
+            mapEditor.ZoomStep = 0.5D;
             mapEditor.MapChanged += mapEditor_MapChanged;
+            mapEditor.SelectedTilesChanged += mapEditor_SelectedTilesChanged;
+            mapEditor.ZoomChanged += mapEditor_ZoomChanged;
             // 
             // infoToolStrip
             // 
@@ -406,8 +403,6 @@ namespace GameEditor.MapEditor
         private ToolStripButton toolStripButtonEditFG;
         private ToolStripButton toolStripButtonEditBG;
         private ToolStripButton toolStripButtonEditCol;
-        private ToolStripLabel toolStripLabel4;
-        private ToolStripLabel toolStripLabel5;
         private ToolStripButton toolStripButtonShowScreen;
         private ToolStripButton toolStripBtnGridColor;
         private VScrollBar tilePickerScroll;

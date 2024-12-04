@@ -40,7 +40,6 @@
             copyFrameToolStripMenuItem = new ToolStripMenuItem();
             pasteToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            toolStripLabel1 = new ToolStripLabel();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
             mainSplit = new SplitContainer();
@@ -142,7 +141,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator2, toolStripLabel1, toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -153,7 +152,7 @@
             // 
             toolStripDropDownButton1.AutoToolTip = false;
             toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { copyFrameToolStripMenuItem, pasteToolStripMenuItem });
-            toolStripDropDownButton1.Image = (Image)resources.GetObject("toolStripDropDownButton1.Image");
+            toolStripDropDownButton1.Image = Properties.Resources.PenIcon;
             toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
             toolStripDropDownButton1.Name = "toolStripDropDownButton1";
             toolStripDropDownButton1.Size = new Size(69, 24);
@@ -183,23 +182,17 @@
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
             // 
-            // toolStripLabel1
-            // 
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(56, 24);
-            toolStripLabel1.Text = "Display:";
-            // 
             // toolStripBtnGrid
             // 
             toolStripBtnGrid.Checked = true;
             toolStripBtnGrid.CheckOnClick = true;
             toolStripBtnGrid.CheckState = CheckState.Checked;
-            toolStripBtnGrid.Image = (Image)resources.GetObject("toolStripBtnGrid.Image");
+            toolStripBtnGrid.Image = Properties.Resources.EyeIcon;
             toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
             toolStripBtnGrid.Name = "toolStripBtnGrid";
             toolStripBtnGrid.Size = new Size(55, 24);
             toolStripBtnGrid.Text = "Grid";
-            toolStripBtnGrid.ToolTipText = "Show grid";
+            toolStripBtnGrid.ToolTipText = "Display grid";
             toolStripBtnGrid.CheckedChanged += toolStripBtnGrid_CheckedChanged;
             // 
             // toolStripBtnTransparent
@@ -207,12 +200,12 @@
             toolStripBtnTransparent.Checked = true;
             toolStripBtnTransparent.CheckOnClick = true;
             toolStripBtnTransparent.CheckState = CheckState.Checked;
-            toolStripBtnTransparent.Image = (Image)resources.GetObject("toolStripBtnTransparent.Image");
+            toolStripBtnTransparent.Image = Properties.Resources.EyeIcon;
             toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
             toolStripBtnTransparent.Name = "toolStripBtnTransparent";
             toolStripBtnTransparent.Size = new Size(101, 24);
             toolStripBtnTransparent.Text = "Transparent";
-            toolStripBtnTransparent.ToolTipText = "Show transparency";
+            toolStripBtnTransparent.ToolTipText = "Display with transparency";
             toolStripBtnTransparent.CheckedChanged += toolStripBtnTransparent_CheckedChanged;
             // 
             // mainSplit
@@ -365,7 +358,6 @@
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripDropDownButton toolStripDropDownButton1;
         private ToolStripMenuItem pasteToolStripMenuItem;
-        private ToolStripLabel toolStripLabel1;
         private ToolStripMenuItem copyFrameToolStripMenuItem;
         private ToolStripButton toolStripBtnExport;
         private VScrollBar framePickerScroll;
