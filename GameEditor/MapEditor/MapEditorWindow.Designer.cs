@@ -55,8 +55,11 @@ namespace GameEditor.MapEditor
             toolStripTxtName = new ToolStripTextBox();
             toolStripSeparator1 = new ToolStripSeparator();
             btnProperties = new ToolStripButton();
-            toolStripComboTiles = new ToolStripComboBox();
+            toolStripSeparator4 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
+            toolStripComboTiles = new ToolStripComboBox();
+            toolStripBtnExport = new ToolStripButton();
+            toolStripBtnImport = new ToolStripButton();
             toolsToolStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -300,7 +303,7 @@ namespace GameEditor.MapEditor
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, btnProperties, toolStripComboTiles, toolStripLabel2 });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, btnProperties, toolStripSeparator4, toolStripLabel2, toolStripComboTiles, toolStripBtnExport, toolStripBtnImport });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(850, 27);
@@ -335,20 +338,48 @@ namespace GameEditor.MapEditor
             btnProperties.ToolTipText = "Edit map properties";
             btnProperties.Click += btnProperties_Click;
             // 
-            // toolStripComboTiles
+            // toolStripSeparator4
             // 
-            toolStripComboTiles.Alignment = ToolStripItemAlignment.Right;
-            toolStripComboTiles.DropDownStyle = ComboBoxStyle.DropDownList;
-            toolStripComboTiles.Name = "toolStripComboTiles";
-            toolStripComboTiles.Size = new Size(100, 27);
-            toolStripComboTiles.DropDownClosed += toolStripComboTiles_DropdownClosed;
+            toolStripSeparator4.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(6, 27);
             // 
             // toolStripLabel2
             // 
-            toolStripLabel2.Alignment = ToolStripItemAlignment.Right;
             toolStripLabel2.Name = "toolStripLabel2";
             toolStripLabel2.Size = new Size(50, 24);
             toolStripLabel2.Text = "Tileset:";
+            // 
+            // toolStripComboTiles
+            // 
+            toolStripComboTiles.DropDownStyle = ComboBoxStyle.DropDownList;
+            toolStripComboTiles.Name = "toolStripComboTiles";
+            toolStripComboTiles.Size = new Size(200, 27);
+            toolStripComboTiles.DropDownClosed += toolStripComboTiles_DropdownClosed;
+            // 
+            // toolStripBtnExport
+            // 
+            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
+            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnExport.Name = "toolStripBtnExport";
+            toolStripBtnExport.Size = new Size(23, 24);
+            toolStripBtnExport.Text = "Export";
+            toolStripBtnExport.ToolTipText = "Export map to file";
+            toolStripBtnExport.Click += toolStripBtnExport_Click;
+            // 
+            // toolStripBtnImport
+            // 
+            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
+            toolStripBtnImport.ImageTransparentColor = Color.Magenta;
+            toolStripBtnImport.Name = "toolStripBtnImport";
+            toolStripBtnImport.Size = new Size(23, 24);
+            toolStripBtnImport.Text = "Import";
+            toolStripBtnImport.ToolTipText = "Import map from file";
+            toolStripBtnImport.Click += toolStripBtnImport_Click;
             // 
             // MapEditorWindow
             // 
@@ -406,5 +437,8 @@ namespace GameEditor.MapEditor
         private ToolStripButton toolStripButtonShowScreen;
         private ToolStripButton toolStripBtnGridColor;
         private VScrollBar tilePickerScroll;
+        private ToolStripSeparator toolStripSeparator4;
+        private ToolStripButton toolStripBtnExport;
+        private ToolStripButton toolStripBtnImport;
     }
 }

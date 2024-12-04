@@ -15,7 +15,7 @@ namespace GameEditor.MapEditor
         }
 
         public IDataAsset Asset { get { return Map; } }
-        public MapData Map { get; }
+        public MapData Map { get; set; }
         public MapEditorWindow? Editor { get; private set; }
         public string Name { get { return Map.Name; } }
 

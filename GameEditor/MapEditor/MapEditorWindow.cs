@@ -1,9 +1,11 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.Misc;
+using GameEditor.ProjectIO;
 
 namespace GameEditor.MapEditor
 {
@@ -15,10 +17,10 @@ namespace GameEditor.MapEditor
         const uint LAYER_GRID = CustomControls.MapEditor.LAYER_GRID;
         const uint LAYER_SCREEN = CustomControls.MapEditor.LAYER_SCREEN;
 
-        private readonly MapDataItem map;
+        private readonly MapDataItem mapDataItem;
 
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
-            map = mapItem;
+            mapDataItem = mapItem;
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
             tilePicker.Tileset = Map.Tileset;
@@ -39,7 +41,7 @@ namespace GameEditor.MapEditor
         }
 
         public MapData Map {
-            get { return map.Map; }
+            get { return mapDataItem.Map; }
         }
 
         public uint EditLayer {
@@ -94,15 +96,6 @@ namespace GameEditor.MapEditor
             mapEditor.Invalidate();
         }
 
-        private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
-            UpdateRenderLayers();
-        }
-
-        private void toolStripComboBoxZoom_SelectedIndexChanged(object sender, EventArgs e) {
-            if (! toolStripComboBoxZoom.Enabled) return;
-            UpdateMapZoom();
-        }
-
         public void RefreshTileset() {
             tilePicker.ResetSize();
             tilePicker.Invalidate();
@@ -112,20 +105,6 @@ namespace GameEditor.MapEditor
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
             toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
-        }
-
-        private void btnProperties_Click(object sender, EventArgs e) {
-            MapPropertiesDialog dlg = new MapPropertiesDialog();
-            dlg.MapWidth = Map.Tiles.Width;
-            dlg.MapHeight = Map.Tiles.Height;
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                Map.Resize(dlg.MapWidth, dlg.MapHeight);
-                Util.Project.SetDirty();
-                FixFormTitle();
-                UpdateDataSize();
-                Util.UpdateGameDataSize();
-                mapEditor.Invalidate();
-            }
         }
 
         private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
@@ -156,31 +135,6 @@ namespace GameEditor.MapEditor
             }
         }
 
-        private void toolStripButtonEditFG_Click(object sender, EventArgs e) {
-            EditLayer = LAYER_FG;
-        }
-
-        private void toolStripButtonEditBG_Click(object sender, EventArgs e) {
-            EditLayer = LAYER_BG;
-        }
-
-        private void toolStripButtonEditCol_Click(object sender, EventArgs e) {
-            EditLayer = LAYER_COL;
-        }
-
-        private void tilePickerPanel_SizeChanged(object sender, EventArgs e) {
-            tilePicker.ResetSize();
-        }
-
-        private void toolStripBtnGridColor_Click(object sender, EventArgs e) {
-            ColorDialog dlg = new ColorDialog();
-            dlg.Color = mapEditor.GridColor;
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                mapEditor.GridColor = dlg.Color;
-                mapEditor.Invalidate();
-            }
-        }
-
         private void mapEditor_MapChanged(object sender, EventArgs e) {
             Util.Project.SetDirty();
         }
@@ -200,7 +154,7 @@ namespace GameEditor.MapEditor
         }
 
         private void mapEditor_ZoomChanged(object sender, EventArgs e) {
-            int zoomIndex = (int) (mapEditor.Zoom * 2) - 2;
+            int zoomIndex = (int)(mapEditor.Zoom * 2) - 2;
             if (toolStripComboBoxZoom.SelectedIndex != zoomIndex) {
                 toolStripComboBoxZoom.Enabled = false;
                 toolStripComboBoxZoom.SelectedIndex = zoomIndex;
@@ -208,5 +162,90 @@ namespace GameEditor.MapEditor
             }
         }
 
+        // ====================================================================
+        // === TOOLSTRIP BUTTONS
+        // ====================================================================
+
+        private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
+            UpdateRenderLayers();
+        }
+
+        private void toolStripComboBoxZoom_SelectedIndexChanged(object sender, EventArgs e) {
+            if (!toolStripComboBoxZoom.Enabled) return;
+            UpdateMapZoom();
+        }
+
+        private void toolStripButtonEditFG_Click(object sender, EventArgs e) {
+            EditLayer = LAYER_FG;
+        }
+
+        private void toolStripButtonEditBG_Click(object sender, EventArgs e) {
+            EditLayer = LAYER_BG;
+        }
+
+        private void toolStripButtonEditCol_Click(object sender, EventArgs e) {
+            EditLayer = LAYER_COL;
+        }
+
+        private void btnProperties_Click(object sender, EventArgs e) {
+            MapPropertiesDialog dlg = new MapPropertiesDialog();
+            dlg.MapWidth = Map.Tiles.Width;
+            dlg.MapHeight = Map.Tiles.Height;
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                Map.Resize(dlg.MapWidth, dlg.MapHeight);
+                Util.Project.SetDirty();
+                FixFormTitle();
+                UpdateDataSize();
+                Util.UpdateGameDataSize();
+                mapEditor.Invalidate();
+            }
+        }
+
+        private void toolStripBtnGridColor_Click(object sender, EventArgs e) {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = mapEditor.GridColor;
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                mapEditor.GridColor = dlg.Color;
+                mapEditor.Invalidate();
+            }
+        }
+
+        private void toolStripBtnImport_Click(object sender, EventArgs e) {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Export Map";
+            dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                using GameDataReader r = new GameDataReader(dlg.FileName, "PREFIX");
+                r.ReadSingleMap(Map.Tileset);
+                if (r.MapList.Count != 1) throw new Exception("invalid map file: must contain exactly one map");
+                mapDataItem.Map = r.MapList[0];
+                mapEditor.Map = Map;
+                r.ConsumeData();
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error importing map from {dlg.FileName}", "Error Importing Map");
+                return;
+            }
+            Util.Project.SetDirty();
+            FixFormTitle();
+            UpdateDataSize();
+            Util.UpdateGameDataSize();
+            mapEditor.Invalidate();
+        }
+
+        private void toolStripBtnExport_Click(object sender, EventArgs e) {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export Map";
+            dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                using GameDataWriter w = new GameDataWriter(dlg.FileName, "PREFIX");
+                w.WriteMap(Map);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error exporting map to {dlg.FileName}", "Error Exporting Map");
+            }
+        }
     }
 }

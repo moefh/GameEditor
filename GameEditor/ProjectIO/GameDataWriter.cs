@@ -454,6 +454,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine("};");
             f.WriteLine();
         }
+
         protected int WriteMaps() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === MAPS");
@@ -481,6 +482,17 @@ namespace GameEditor.ProjectIO
             f.WriteLine("};");
             f.WriteLine();
             return dataSize;
+        }
+
+        public void WriteMap(MapData map) {
+            WriteMapTiles(map);
+            f.WriteLine($"const struct {GetUpperGlobal("MAP")} {GetLowerGlobal("maps")}[] = {{");
+            string tileset = $"&{GetLowerGlobal("tilesets")}[0]";
+            string tiles = identifiers.Get(map);
+            f.WriteLine($"  {{ {map.Tiles.Width}, {map.Tiles.Height}, {tileset}, {tiles} }},");
+            f.WriteLine("};");
+            f.WriteLine();
+            f.Close();
         }
 
         // =============================================================

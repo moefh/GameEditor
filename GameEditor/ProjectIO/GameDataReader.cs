@@ -63,6 +63,13 @@ namespace GameEditor.ProjectIO
             globalPrefixUpper = "";
         }
 
+        public GameDataReader(string filename, string prefix) {
+            f = new StreamReader(filename, Encoding.UTF8);
+            tokenizer = new Tokenizer(f);
+            globalPrefixLower = prefix.ToLowerInvariant();
+            globalPrefixUpper = prefix.ToUpperInvariant();
+        }
+
         public List<Tileset> TilesetList { get { return tilesetList; } }
         public List<FontData> FontList { get { return fontList; } }
         public List<Sprite> SpriteList { get { return spriteList; } }
@@ -537,7 +544,7 @@ namespace GameEditor.ProjectIO
             Util.Log($"-> got map tiles {ident.Str}");
         }
 
-        private void ReadMapList(Token start) {
+        private void ReadMapList(Token start, List<Tileset> tilesetList) {
             ExpectPunct('[');
             ExpectPunct(']');
             ExpectPunct('=');
@@ -919,8 +926,35 @@ namespace GameEditor.ProjectIO
         }
 
         // ======================================================================
-        // === PROJECT
+        // === PUBLIC READERS
         // ======================================================================
+
+        public void ReadSingleMap(Tileset tileset) {
+            // we can't use the normal tilesetList because it will be disposed on error:
+            List<Tileset> importTilesetList = [ tileset ];
+
+            while (true) {
+                Token? t = NextToken();
+                if (t == null) break;
+
+                if (t.Value.IsIdent("static")) continue;
+                if (t.Value.IsIdent("const")) continue;
+                if (t.Value.IsIdent("uint8_t")) continue;
+                if (t.Value.IsIdent("struct")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MAP")) continue;
+
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "map_tiles")) {
+                    ReadMapTiles(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "maps")) {
+                    ReadMapList(t.Value, importTilesetList);
+                    continue;
+                }
+
+                throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
+            }
+        }
 
         public void ReadProject() {
             Util.Log($"== started reading project");
@@ -999,7 +1033,7 @@ namespace GameEditor.ProjectIO
                     continue;
                 }
                 if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "maps")) {
-                    ReadMapList(t.Value);
+                    ReadMapList(t.Value, tilesetList);
                     continue;
                 }
 
