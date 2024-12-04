@@ -29,7 +29,6 @@ namespace GameEditor.SpriteEditor
             this.spriteItem = spriteItem;
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
-            NameChanged += SpriteEditorWindow_NameChanged;
             spriteFramePicker.Sprite = Sprite;
             spriteFramePicker.SelectedFrame = 0;
             spriteEditor.Sprite = Sprite;
@@ -58,8 +57,63 @@ namespace GameEditor.SpriteEditor
             spriteFramePicker.RenderFlags = pickerRenderTransparent;
         }
 
-        private void SpriteEditorWindow_NameChanged(object? sender, EventArgs e) {
+        public void RefreshSprite() {
+            spriteEditor.Invalidate();
+            spriteFramePicker.Invalidate();
+        }
+
+        protected override void OnNameChanged(EventArgs e) {
+            base.OnNameChanged(e);
             Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
+            spriteEditor.ForePen = colorPicker.SelectedForeColor;
+            spriteEditor.BackPen = colorPicker.SelectedBackColor;
+        }
+
+        private void spriteEditor_SelectedColorsChanged(object sender, EventArgs e) {
+            colorPicker.SelectedForeColor = spriteEditor.ForePen;
+            colorPicker.SelectedBackColor = spriteEditor.BackPen;
+        }
+
+        private void spriteEditor_ImageChanged(object sender, EventArgs e) {
+            spriteFramePicker.Invalidate();
+            Util.Project.SetDirty();
+            Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
+            spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
+        }
+
+        // =====================================================================
+        // === TOOLSTRIP BUTTONS
+        // =====================================================================
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
+            try {
+                Image? img = Clipboard.GetImage();
+                if (img == null) return;
+                bool transparent = (spriteEditor.RenderFlags & EDITOR_RENDER_TRANSPARENT) != 0;
+                Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
+            }
+            Util.Project.SetDirty();
+            spriteEditor.Invalidate();
+            spriteFramePicker.Invalidate();
+            Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
+            using Bitmap frame = Sprite.CopyFrame(spriteEditor.SelectedFrame, 0, 0,
+                                                  Sprite.Width, Sprite.Height);
+            try {
+                Clipboard.SetImage(frame);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
+            }
         }
 
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
@@ -115,59 +169,6 @@ namespace GameEditor.SpriteEditor
 
         private void toolStripBtnTransparent_CheckedChanged(object sender, EventArgs e) {
             FixRenderFlags();
-        }
-
-        private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
-            spriteEditor.ForePen = colorPicker.SelectedForeColor;
-            spriteEditor.BackPen = colorPicker.SelectedBackColor;
-        }
-
-        private void spriteEditor_ImageChanged(object sender, EventArgs e) {
-            spriteFramePicker.Invalidate();
-            Util.Project.SetDirty();
-            Util.RefreshSpriteUsers(Sprite, null);
-        }
-
-        private void spriteEditor_SelectedColorsChanged(object sender, EventArgs e) {
-            colorPicker.SelectedForeColor = spriteEditor.ForePen;
-            colorPicker.SelectedBackColor = spriteEditor.BackPen;
-        }
-
-        private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
-            spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
-        }
-        private void mainSplit_Panel1_SizeChanged(object sender, EventArgs e) {
-            spriteFramePicker.ResetSize();
-        }
-
-        public void RefreshSprite() {
-            spriteEditor.Invalidate();
-            spriteFramePicker.Invalidate();
-        }
-
-        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
-            try {
-                Image? img = Clipboard.GetImage();
-                if (img == null) return;
-                bool transparent = (spriteEditor.RenderFlags & EDITOR_RENDER_TRANSPARENT) != 0;
-                Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
-            }
-            Util.Project.SetDirty();
-            spriteEditor.Invalidate();
-            spriteFramePicker.Invalidate();
-            Util.RefreshSpriteUsers(Sprite, null);
-        }
-
-        private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
-            using Bitmap frame = Sprite.CopyFrame(spriteEditor.SelectedFrame, 0, 0,
-                                                  Sprite.Width, Sprite.Height);
-            try {
-                Clipboard.SetImage(frame);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
-            }
         }
 
     }

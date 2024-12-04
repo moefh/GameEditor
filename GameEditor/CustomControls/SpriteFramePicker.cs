@@ -29,10 +29,15 @@ namespace GameEditor.CustomControls
             public int NumVertFrames = numVertFrames;
         }
 
-        protected int zoom = 4;
-        protected int selectedFrame;
-        protected bool showEmptyFrame;
-        protected uint renderFlags;
+        private ScrollBar? scrollbar;
+        private int zoom = 4;
+        private int selectedFrame;
+        private bool showEmptyFrame;
+        private uint renderFlags;
+        private int scrollMin;
+        private int scrollMax;
+        private int scrollValue;
+        private int scrollClientHeight;
         public event EventHandler? SelectedFrameChanged;
 
         public SpriteFramePicker()
@@ -42,6 +47,11 @@ namespace GameEditor.CustomControls
         }
 
         public Sprite? Sprite { get; internal set; }
+
+        public ScrollBar? Scrollbar {
+            get { return scrollbar; }
+            set { scrollbar = value; ResetSize(); Invalidate(); }
+        }
 
         public uint RenderFlags {
             get { return renderFlags; }
@@ -63,10 +73,10 @@ namespace GameEditor.CustomControls
             set { selectedFrame = value; Invalidate(); SelectedFrameChanged?.Invoke(this, EventArgs.Empty); }
         }
 
-        private RenderInfo GetRenderInfo(Sprite spr, Size parentClientSize) {
+        private RenderInfo GetRenderInfo(Sprite spr) {
             int zoomeFrameWidth = spr.Width * zoom;
             int zoomeFrameHeight = spr.Height * zoom;
-            int numHorzFrames = (parentClientSize.Width - 2*SEL_BORDER - 2) / (zoomeFrameWidth + SEL_BORDER);
+            int numHorzFrames = (ClientSize.Width - 2*SEL_BORDER) / (zoomeFrameWidth + 2*SEL_BORDER);
             if (numHorzFrames <= 0) numHorzFrames = 1;
             if (numHorzFrames > MAX_HORZ_FRAMES) numHorzFrames = MAX_HORZ_FRAMES;
             int numVertFrames = (spr.NumFrames + numHorzFrames - (ShowEmptyFrame ? 0 : 1)) / numHorzFrames;
@@ -80,35 +90,74 @@ namespace GameEditor.CustomControls
             );
         }
 
+        public void SetScrollPosition(int pos) {
+            if (Scrollbar != null) {
+                Scrollbar.Value = int.Clamp(pos, Scrollbar.Minimum, Scrollbar.Maximum - (Scrollbar.LargeChange - 1));
+            } else {
+                scrollValue = int.Clamp(pos, scrollMin, scrollMax);
+            }
+        }
+
+        public void ScrollToTile(int tile) {
+            if (Sprite == null) return;
+            RenderInfo ri = GetRenderInfo(Sprite);
+            int y = ((SelectedFrame+ri.EmptyFrameSpace) / ri.NumHorzFrames) * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
+            SetScrollPosition(y - 2*SEL_BORDER);
+            Invalidate();
+        }
+
         protected override void OnPaint(PaintEventArgs pe) {
             base.OnPaint(pe);
             if (Util.DesignMode) { ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize); return; }
             if (Sprite == null || Parent == null) return;
 
             ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
-            RenderInfo ri = GetRenderInfo(Sprite, Parent.ClientSize);
+            RenderInfo ri = GetRenderInfo(Sprite);
             bool transparent = (RenderFlags & RENDER_TRANSPARENT) != 0;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
+
+            // draw tiles
             for (int i = 0; i < Sprite.NumFrames; i++) {
                 int x = ((i+ri.EmptyFrameSpace) % ri.NumHorzFrames) * (ri.ZoomedFrameWidth + 2*SEL_BORDER) + 1;
                 int y = ((i+ri.EmptyFrameSpace) / ri.NumHorzFrames) * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
-                Sprite.DrawFrameAt(pe.Graphics, i, x+SEL_BORDER, y+SEL_BORDER, ri.ZoomedFrameWidth, ri.ZoomedFrameHeight, transparent);
+                if (y + 2*SEL_BORDER + ri.ZoomedFrameHeight < scrollValue || y > scrollValue + ClientSize.Height) continue;
+                Sprite.DrawFrameAt(pe.Graphics, i, x+SEL_BORDER, y+SEL_BORDER-scrollValue, ri.ZoomedFrameWidth, ri.ZoomedFrameHeight, transparent);
             }
+
+            // draw selection
             int sx = ((SelectedFrame+ri.EmptyFrameSpace) % ri.NumHorzFrames) * (ri.ZoomedFrameWidth + 2*SEL_BORDER);
             int sy = ((SelectedFrame+ri.EmptyFrameSpace) / ri.NumHorzFrames) * (ri.ZoomedFrameHeight + 2*SEL_BORDER);
-            for (int i = 0; i <= SEL_BORDER; i++) {
-                pe.Graphics.DrawRectangle(Pens.Black, sx+SEL_BORDER-i+1, sy+SEL_BORDER-i+1, ri.ZoomedFrameWidth + SEL_BORDER*i, ri.ZoomedFrameHeight + SEL_BORDER*i);
+            if (! (sy + 4*SEL_BORDER + ri.ZoomedFrameHeight < scrollValue || sy - 2*SEL_BORDER > scrollValue + ClientSize.Height)) {
+                for (int i = 0; i <= SEL_BORDER; i++) {
+                    pe.Graphics.DrawRectangle(Pens.Black, sx+SEL_BORDER-i+1, sy+SEL_BORDER-i+1-scrollValue, ri.ZoomedFrameWidth + SEL_BORDER*i, ri.ZoomedFrameHeight + SEL_BORDER*i);
+                }
             }
         }
 
         public void ResetSize() {
             if (Sprite == null || Parent == null) return;
-            RenderInfo ri = GetRenderInfo(Sprite, Parent.ClientSize);
-            Width = MAX_HORZ_FRAMES * (ri.ZoomedFrameWidth + SEL_BORDER) + 2*SEL_BORDER + 10;
-            Height = ri.NumVertFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 2*SEL_BORDER + 10;
-            Location = new Point(0, Location.Y);
-            Parent.PerformLayout();
+            RenderInfo ri = GetRenderInfo(Sprite);
+            scrollClientHeight = ri.NumVertFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 2*SEL_BORDER + 1;
+            scrollMin = 0;
+            scrollMax = int.Max(scrollClientHeight - ClientSize.Height - 1, 0);
+            scrollValue = int.Clamp(scrollValue, scrollMin, scrollMax);
+            if (Scrollbar != null) {
+                Scrollbar.ValueChanged -= ScrolledByScrollbar;
+                Scrollbar.SmallChange = 1;
+                Scrollbar.LargeChange = Sprite.Height + 2*SEL_BORDER;
+                Scrollbar.Minimum = 0;
+                Scrollbar.Maximum = scrollMax + Scrollbar.LargeChange - 1;
+                Scrollbar.Enabled = scrollMax != 0;
+                Scrollbar.Value = int.Clamp(scrollValue, Scrollbar.Minimum, Scrollbar.Maximum);
+                Scrollbar.ValueChanged += ScrolledByScrollbar;
+            }
+            Invalidate();
+        }
+
+        protected void ScrolledByScrollbar(object? sender, EventArgs e) {
+            if (Scrollbar == null) return;
+            scrollValue = Scrollbar.Value;
             Invalidate();
         }
 
@@ -117,17 +166,21 @@ namespace GameEditor.CustomControls
             ResetSize();
         }
 
+        protected override void OnMouseWheel(MouseEventArgs e) {
+            base.OnMouseWheel(e);
+            SetScrollPosition(scrollValue - e.Delta);
+            Invalidate();
+        }
+
         protected override void OnMouseClick(MouseEventArgs e) {
             base.OnMouseClick(e);
             if (Util.DesignMode) return;
             if (e.Button != MouseButtons.Left) return;
             if (Sprite == null || Parent == null) return;
 
-            RenderInfo ri = GetRenderInfo(Sprite, Parent.ClientSize);
-            int x = (e.X - 2) / (ri.ZoomedFrameWidth + 2*SEL_BORDER);
-            int y = (e.Y - 2) / (ri.ZoomedFrameHeight + 2*SEL_BORDER);
-            if (x < 0) x = 0;
-            if (y < 0) y = 0;
+            RenderInfo ri = GetRenderInfo(Sprite);
+            int x = int.Max((e.X - SEL_BORDER) / (ri.ZoomedFrameWidth + 2*SEL_BORDER), 0);
+            int y = int.Max((e.Y - SEL_BORDER + scrollValue) / (ri.ZoomedFrameHeight + 2*SEL_BORDER), 0);
 
             int emptyTileSpace = ShowEmptyFrame ? 1 : 0;
             int newTile = y * ri.NumHorzFrames + (x % ri.NumHorzFrames) - emptyTileSpace;

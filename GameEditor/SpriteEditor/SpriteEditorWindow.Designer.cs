@@ -45,6 +45,7 @@
             toolStripBtnTransparent = new ToolStripButton();
             mainSplit = new SplitContainer();
             spriteFramePicker = new CustomControls.SpriteFramePicker();
+            framePickerScroll = new VScrollBar();
             spriteLoopSplitter = new SplitContainer();
             spriteEditor = new CustomControls.SpriteEditor();
             colorPicker = new CustomControls.ColorPicker();
@@ -224,9 +225,8 @@
             // 
             // mainSplit.Panel1
             // 
-            mainSplit.Panel1.AutoScroll = true;
             mainSplit.Panel1.Controls.Add(spriteFramePicker);
-            mainSplit.Panel1.SizeChanged += mainSplit_Panel1_SizeChanged;
+            mainSplit.Panel1.Controls.Add(framePickerScroll);
             mainSplit.Panel1MinSize = 100;
             // 
             // mainSplit.Panel2
@@ -239,16 +239,25 @@
             // 
             // spriteFramePicker
             // 
-            spriteFramePicker.Anchor = AnchorStyles.Top;
+            spriteFramePicker.Dock = DockStyle.Fill;
             spriteFramePicker.Location = new Point(0, 0);
             spriteFramePicker.Name = "spriteFramePicker";
             spriteFramePicker.RenderFlags = 0U;
+            spriteFramePicker.Scrollbar = framePickerScroll;
             spriteFramePicker.SelectedFrame = 0;
             spriteFramePicker.ShowEmptyFrame = false;
-            spriteFramePicker.Size = new Size(100, 251);
+            spriteFramePicker.Size = new Size(83, 251);
             spriteFramePicker.TabIndex = 0;
             spriteFramePicker.Zoom = 4;
             spriteFramePicker.SelectedFrameChanged += spriteFramePicker_SelectedFrameChanged;
+            // 
+            // framePickerScroll
+            // 
+            framePickerScroll.Dock = DockStyle.Right;
+            framePickerScroll.Location = new Point(83, 0);
+            framePickerScroll.Name = "framePickerScroll";
+            framePickerScroll.Size = new Size(17, 251);
+            framePickerScroll.TabIndex = 1;
             // 
             // spriteLoopSplitter
             // 
@@ -359,5 +368,6 @@
         private ToolStripLabel toolStripLabel1;
         private ToolStripMenuItem copyFrameToolStripMenuItem;
         private ToolStripButton toolStripBtnExport;
+        private VScrollBar framePickerScroll;
     }
 }

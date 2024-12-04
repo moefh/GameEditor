@@ -26,7 +26,6 @@ namespace GameEditor.TilesetEditor
             tileset = ts;
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
-            NameChanged += TilesetEditorWindow_NameChanged;
             tileEditor.Tileset = Tileset;
             tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
             tileEditor.ForePen = colorPicker.SelectedForeColor;
@@ -44,7 +43,8 @@ namespace GameEditor.TilesetEditor
             Text = $"{Tileset.Name} [{Tileset.NumTiles} tiles] - Tileset";
         }
 
-        private void TilesetEditorWindow_NameChanged(object? sender, EventArgs e) {
+        protected override void OnNameChanged(EventArgs e) {
+            base.OnNameChanged(e);
             Util.RefreshTilesetUsers(Tileset);
         }
 

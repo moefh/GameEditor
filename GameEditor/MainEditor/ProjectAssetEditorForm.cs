@@ -18,7 +18,6 @@ namespace GameEditor.MainEditor
         protected IDataAssetItem? assetItem;
         protected ToolStripTextBox? assetNameTextBox;
         protected ToolStripStatusLabel? assetDataSizeLabel;
-        protected event EventHandler? NameChanged;
 
         public ProjectAssetEditorForm(IDataAssetItem assetItem, string propName) : base(propName) {
             this.assetItem = assetItem;
@@ -53,7 +52,14 @@ namespace GameEditor.MainEditor
             if (!assetNameTextBox.ReadOnly) Util.Project.SetDirty();
             FixFormTitle();
             Util.RefreshAssetList(assetItem.Asset.AssetType);
-            NameChanged?.Invoke(this, EventArgs.Empty);
+            OnNameChanged(EventArgs.Empty);
+        }
+
+        /// <summary>
+        /// Called whenever the asset name is changed by the user
+        /// </summary>
+        /// <param name="e">Empty event args</param>
+        protected virtual void OnNameChanged(EventArgs e) {
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e) {
