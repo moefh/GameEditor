@@ -148,6 +148,7 @@
             // 
             mainSplit.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             mainSplit.FixedPanel = FixedPanel.Panel1;
+            mainSplit.Font = new Font("Segoe UI", 12F, FontStyle.Bold, GraphicsUnit.Point, 0);
             mainSplit.Location = new Point(0, 57);
             mainSplit.Name = "mainSplit";
             // 
@@ -156,7 +157,6 @@
             mainSplit.Panel1.AutoScroll = true;
             mainSplit.Panel1.Controls.Add(tilePicker);
             mainSplit.Panel1.Controls.Add(tilePickerScroll);
-            mainSplit.Panel1.SizeChanged += mainSplit_Panel1_SizeChanged;
             mainSplit.Panel1MinSize = 110;
             // 
             // mainSplit.Panel2
@@ -170,14 +170,14 @@
             // 
             tilePicker.AllowRightSelection = false;
             tilePicker.Dock = DockStyle.Fill;
+            tilePicker.LeftSelectedTile = 0;
             tilePicker.LeftSelectionColor = Color.FromArgb(255, 0, 0);
             tilePicker.Location = new Point(0, 0);
             tilePicker.MinimumSize = new Size(64, 64);
             tilePicker.Name = "tilePicker";
+            tilePicker.RightSelectedTile = -1;
             tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
             tilePicker.Scrollbar = tilePickerScroll;
-            tilePicker.LeftSelectedTile = 0;
-            tilePicker.RightSelectedTile = -1;
             tilePicker.ShowEmptyTile = false;
             tilePicker.Size = new Size(227, 211);
             tilePicker.TabIndex = 0;
@@ -213,9 +213,9 @@
             // 
             // tileEditor
             // 
-            tileEditor.BGPen = Color.Empty;
+            tileEditor.BackPen = Color.Empty;
             tileEditor.Dock = DockStyle.Fill;
-            tileEditor.FGPen = Color.Empty;
+            tileEditor.ForePen = Color.Empty;
             tileEditor.GridColor = Color.Empty;
             tileEditor.Location = new Point(0, 0);
             tileEditor.Name = "tileEditor";
@@ -225,15 +225,17 @@
             tileEditor.TabIndex = 4;
             tileEditor.Tileset = null;
             tileEditor.ImageChanged += tileEditor_ImageChanged;
+            tileEditor.SelectedColorsChanged += tileEditor_SelectedColorsChanged;
             // 
             // colorPicker
             // 
-            colorPicker.BG = Color.FromArgb(0, 0, 255);
             colorPicker.Color = Color.FromArgb(255, 0, 0);
             colorPicker.Dock = DockStyle.Fill;
-            colorPicker.FG = Color.FromArgb(255, 0, 0);
+            colorPicker.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             colorPicker.Location = new Point(0, 0);
             colorPicker.Name = "colorPicker";
+            colorPicker.SelectedBackColor = Color.FromArgb(0, 0, 255);
+            colorPicker.SelectedForeColor = Color.FromArgb(255, 0, 0);
             colorPicker.SingleSelection = false;
             colorPicker.Size = new Size(178, 211);
             colorPicker.TabIndex = 0;

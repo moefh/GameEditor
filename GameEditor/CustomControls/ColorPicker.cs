@@ -34,8 +34,8 @@ namespace GameEditor.CustomControls
         {
             InitializeComponent();
             SetDoubleBuffered();
-            FG = Color.FromArgb(255,0,0);
-            BG = Color.FromArgb(0,0,255);
+            SelectedForeColor = Color.FromArgb(255,0,0);
+            SelectedBackColor = Color.FromArgb(0,0,255);
         }
 
         public bool SingleSelection {
@@ -45,17 +45,17 @@ namespace GameEditor.CustomControls
 
         public Color Color {
             get { return fg; }
-            set { fg = value; Invalidate(); }
+            set { fg = PaletteUtil.ForceToGamePalette(value); Invalidate(); }
         }
 
-        public Color FG {
+        public Color SelectedForeColor {
             get { return fg; }
-            set { fg = value; Invalidate(); }
+            set { fg = PaletteUtil.ForceToGamePalette(value); Invalidate(); }
         }
 
-        public Color BG {
+        public Color SelectedBackColor {
             get { return bg; }
-            set { bg = value; Invalidate(); }
+            set { bg = PaletteUtil.ForceToGamePalette(value); Invalidate(); }
         }
 
         protected static Color GetMostContrastingColor(Color c) {
@@ -88,14 +88,14 @@ namespace GameEditor.CustomControls
             return Color.FromArgb(ir, ig, ib);
         }
 
-        protected static void DrawSelectedColor(PaintEventArgs pe, int x, int y, int w, int h, Color c, string label) {
+        protected void DrawSelectedColor(PaintEventArgs pe, int x, int y, int w, int h, Color c, string label) {
             using SolidBrush paint = new SolidBrush(c);
             using SolidBrush text = new SolidBrush(GetMostContrastingColor(c));
             pe.Graphics.FillRectangle(paint, x, y, w, h);
             StringFormat fmt = new StringFormat();
             fmt.LineAlignment = StringAlignment.Center;
             fmt.Alignment = StringAlignment.Center;
-            pe.Graphics.DrawString(label, SystemFonts.DialogFont, text, new Rectangle(x, y, w, h), fmt);
+            pe.Graphics.DrawString(label, Font, text, new Rectangle(x, y, w, h), fmt);
         }
 
         protected static void DrawGradient(PaintEventArgs pe, int x, int y, int size, int[] steps, int max, Color start, Color end) {
@@ -113,14 +113,14 @@ namespace GameEditor.CustomControls
             int size = ClientSize.Width;
             int blob = size / 8;
             if (singleSelection) {
-                DrawSelectedColor(pe, 0, 0, 8*blob, 2*blob, FG, "Selected");
+                DrawSelectedColor(pe, 0, 0, 8*blob, 2*blob, SelectedForeColor, "Selected");
             } else {
-                DrawSelectedColor(pe, 0, 0, 4*blob, 2*blob, FG, "FG");
-                DrawSelectedColor(pe, 4*blob, 0, 4*blob, 2*blob, BG, "BG");
+                DrawSelectedColor(pe, 0, 0, 4*blob, 2*blob, SelectedForeColor, "FG");
+                DrawSelectedColor(pe, 4*blob, 0, 4*blob, 2*blob, SelectedBackColor, "BG");
             }
 
             // full palette
-            pe.Graphics.DrawImage(ImageUtil.ColorPickerPalette,
+            pe.Graphics.DrawImage(PaletteUtil.ColorPickerPalette,
                 new Rectangle(0, 3*blob, size, size), new Rectangle(0, 0, 8, 8),
                 GraphicsUnit.Pixel);
 
@@ -133,8 +133,8 @@ namespace GameEditor.CustomControls
 
         private void SetSelectedColor(Color c, MouseButtons button) {
             switch (button) {
-            case MouseButtons.Left:  FG = c; break;
-            case MouseButtons.Right: BG = c; break;
+            case MouseButtons.Left:  SelectedForeColor = c; break;
+            case MouseButtons.Right: SelectedBackColor = c; break;
             default: return;
             }
             SelectedColorChanged?.Invoke(this, EventArgs.Empty);
@@ -151,7 +151,7 @@ namespace GameEditor.CustomControls
             if (e.X >= 0 && e.X < 8*blob && e.Y >= 3*blob && e.Y < 11*blob) {
                 int x = e.X / blob;
                 int y = (e.Y - 3*blob) / blob;
-                SetSelectedColor(ImageUtil.ColorPickerPalette.GetPixel(x, y), e.Button);
+                SetSelectedColor(PaletteUtil.ColorPickerPalette.GetPixel(x, y), e.Button);
                 return;
             }
 

@@ -34,10 +34,10 @@ namespace GameEditor.SpriteEditor
             spriteFramePicker.SelectedFrame = 0;
             spriteEditor.Sprite = Sprite;
             spriteEditor.SelectedFrame = 0;
-            spriteEditor.FGPen = colorPicker.FG;
-            spriteEditor.BGPen = colorPicker.BG;
+            spriteEditor.ForePen = colorPicker.SelectedForeColor;
+            spriteEditor.BackPen = colorPicker.SelectedBackColor;
             spriteEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
-            mainSplit.SplitterDistance = int.Max(Sprite.Width*spriteFramePicker.Zoom + 30, mainSplit.SplitterDistance);
+            mainSplit.SplitterDistance = int.Max(Sprite.Width * spriteFramePicker.Zoom + 30, mainSplit.SplitterDistance);
             FixRenderFlags();
         }
 
@@ -118,14 +118,19 @@ namespace GameEditor.SpriteEditor
         }
 
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
-            spriteEditor.FGPen = colorPicker.FG;
-            spriteEditor.BGPen = colorPicker.BG;
+            spriteEditor.ForePen = colorPicker.SelectedForeColor;
+            spriteEditor.BackPen = colorPicker.SelectedBackColor;
         }
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteFramePicker.Invalidate();
             Util.Project.SetDirty();
             Util.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void spriteEditor_SelectedColorsChanged(object sender, EventArgs e) {
+            colorPicker.SelectedForeColor = spriteEditor.ForePen;
+            colorPicker.SelectedBackColor = spriteEditor.BackPen;
         }
 
         private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {

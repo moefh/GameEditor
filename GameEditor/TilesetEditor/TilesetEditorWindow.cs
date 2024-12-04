@@ -29,8 +29,8 @@ namespace GameEditor.TilesetEditor
             NameChanged += TilesetEditorWindow_NameChanged;
             tileEditor.Tileset = Tileset;
             tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
-            tileEditor.FGPen = colorPicker.FG;
-            tileEditor.BGPen = colorPicker.BG;
+            tileEditor.ForePen = colorPicker.SelectedForeColor;
+            tileEditor.BackPen = colorPicker.SelectedBackColor;
             tileEditor.GridColor = ConfigUtil.TileEditorGridColor;
             tilePicker.Tileset = Tileset;
             tilePicker.LeftSelectionColor = ConfigUtil.TilePickerLeftColor;
@@ -52,6 +52,56 @@ namespace GameEditor.TilesetEditor
             tileEditor.RenderFlags =
                 ((toolStripBtnGrid.Checked) ? RENDER_GRID : 0) |
                 ((toolStripBtnTransparent.Checked) ? RENDER_TRANSPARENT : 0);
+        }
+
+
+        private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
+            tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
+        }
+
+        private void tileEditor_ImageChanged(object sender, EventArgs e) {
+            tilePicker.Invalidate();
+            Util.Project.SetDirty();
+            Util.RefreshTilesetUsers(Tileset);
+        }
+
+        private void tileEditor_SelectedColorsChanged(object sender, EventArgs e) {
+            colorPicker.SelectedForeColor = tileEditor.ForePen;
+            colorPicker.SelectedBackColor = tileEditor.BackPen;
+        }
+
+        private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
+            tileEditor.ForePen = colorPicker.SelectedForeColor;
+            tileEditor.BackPen = colorPicker.SelectedBackColor;
+        }
+
+        private void OnTilesetResized() {
+            Util.Project.SetDirty();
+            FixFormTitle();
+            UpdateGameDataSize();
+            Util.UpdateGameDataSize();
+            tilePicker.ResetSize();
+            if (tilePicker.LeftSelectedTile >= Tileset.NumTiles) {
+                tilePicker.LeftSelectedTile = Tileset.NumTiles - 1;
+                tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
+            } else {
+                tileEditor.Invalidate();
+            }
+            tilePicker.Invalidate();
+            Util.RefreshTilesetUsers(Tileset);
+        }
+
+        // ====================================================================
+        // === TOOLSTRIP BUTTONS
+        // ====================================================================
+
+        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
+            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
+            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
+            dlg.NumTiles = Tileset.NumTiles;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Tileset.Resize(dlg.NumTiles, colorPicker.SelectedBackColor);
+            OnTilesetResized();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -108,59 +158,12 @@ namespace GameEditor.TilesetEditor
             }
         }
 
-        private void mainSplit_Panel1_SizeChanged(object sender, EventArgs e) {
-            tilePicker.ResetSize();
-        }
-        private void tilePickerPanel_SizeChanged(object sender, EventArgs e) {
-            tilePicker.ResetSize();
-        }
-
         private void toolStripBtnGrid_Click(object sender, EventArgs e) {
             UpdateRenderFlags();
         }
 
         private void toolStripBtnTransparent_Click(object sender, EventArgs e) {
             UpdateRenderFlags();
-        }
-
-        private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
-            tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
-        }
-
-        private void tileEditor_ImageChanged(object sender, EventArgs e) {
-            tilePicker.Invalidate();
-            Util.Project.SetDirty();
-            Util.RefreshTilesetUsers(Tileset);
-        }
-
-        private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
-            tileEditor.FGPen = colorPicker.FG;
-            tileEditor.BGPen = colorPicker.BG;
-        }
-
-        private void OnTilesetResized() {
-            Util.Project.SetDirty();
-            FixFormTitle();
-            UpdateGameDataSize();
-            Util.UpdateGameDataSize();
-            tilePicker.ResetSize();
-            if (tilePicker.LeftSelectedTile >= Tileset.NumTiles) {
-                tilePicker.LeftSelectedTile = Tileset.NumTiles - 1;
-                tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
-            } else {
-                tileEditor.Invalidate();
-            }
-            tilePicker.Invalidate();
-            Util.RefreshTilesetUsers(Tileset);
-        }
-
-        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
-            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
-            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
-            dlg.NumTiles = Tileset.NumTiles;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            Tileset.Resize(dlg.NumTiles, colorPicker.BG);
-            OnTilesetResized();
         }
 
         // ====================================================================
@@ -178,7 +181,7 @@ namespace GameEditor.TilesetEditor
 
         private void InsertTileAt(int index) {
             int oldNumTiles = Tileset.NumTiles;
-            Tileset.AddTiles(index, 1, colorPicker.BG);
+            Tileset.AddTiles(index, 1, colorPicker.SelectedBackColor);
             foreach (MapDataItem map in Util.Project.MapList) {
                 if (map.Map.Tileset == Tileset) {
                     map.Map.InsertedTile(index, 1);

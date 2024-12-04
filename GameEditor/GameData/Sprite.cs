@@ -135,12 +135,16 @@ namespace GameEditor.GameData
 
             byte[] pixels = new byte[Width*Height*4];
             ReadFramePixels(frame, pixels);
-            ImageUtil.ForceToGamePalette(pixels);
+            PaletteUtil.ForceToGamePalette(pixels);
             WriteFramePixels(frame, pixels);
         }
 
         public void SetFramePixel(int frame, int x, int y, Color color) {
             bitmap.SetPixel(x, y + frame * Height, color);
+        }
+
+        public Color GetFramePixel(int frame, int x, int y) {
+            return bitmap.GetPixel(x, y + frame * Height);
         }
 
         public void ImportBitmap(string filename, int frameWidth, int frameHeight) {
@@ -174,7 +178,7 @@ namespace GameEditor.GameData
             byte[] pixels = new byte[Width*Height*4];
             for (int f = 0; f < NumFrames; f++) {
                 ReadFramePixels(f, pixels);
-                ImageUtil.ForceToGamePalette(pixels);
+                PaletteUtil.ForceToGamePalette(pixels);
                 WriteFramePixels(f, pixels);
             }
 

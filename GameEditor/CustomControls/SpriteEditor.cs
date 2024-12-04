@@ -23,6 +23,7 @@ namespace GameEditor.CustomControls
         private uint renderFlags;
 
         public event EventHandler? ImageChanged;
+        public event EventHandler? SelectedColorsChanged;
 
         public SpriteEditor() {
             InitializeComponent();
@@ -32,8 +33,8 @@ namespace GameEditor.CustomControls
         public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
         public int SelectedFrame { get { return selFrame; } set { selFrame = value; Invalidate(); } }
         public bool ReadOnly { get; set; }
-        public Color FGPen { get; set; }
-        public Color BGPen { get; set; }
+        public Color ForePen { get; set; }
+        public Color BackPen { get; set; }
         public Color GridColor { get; set; }
 
         public Sprite? Sprite {
@@ -99,6 +100,17 @@ namespace GameEditor.CustomControls
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        private void PickColor(int x, int y, bool foreground) {
+            if (Sprite == null) return;
+            Color c = Sprite.GetFramePixel(SelectedFrame, x, y);
+            if (foreground) {
+                ForePen = c;
+            } else {
+                BackPen = c;
+            }
+            SelectedColorsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         private void RunMouseDraw(MouseEventArgs e) {
             if (Util.DesignMode) return;
             if (Sprite == null || e.Button == MouseButtons.None) return;
@@ -109,9 +121,16 @@ namespace GameEditor.CustomControls
             int fy = (e.Y - sprRect.Y) / zoom;
             if (fx < 0 || fy < 0 || fx >= Sprite.Width || fy >= Sprite.Height) return;
 
-            switch (e.Button) {
-            case MouseButtons.Left:  SetPixel(FGPen, fx, fy); break;
-            case MouseButtons.Right: SetPixel(BGPen, fx, fy); break;
+            if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
+                switch (e.Button) {
+                case MouseButtons.Left:  PickColor(fx, fy, true); break;
+                case MouseButtons.Right: PickColor(fx, fy, false); break;
+                }
+            } else {
+                switch (e.Button) {
+                case MouseButtons.Left:  SetPixel(ForePen, fx, fy); break;
+                case MouseButtons.Right: SetPixel(BackPen, fx, fy); break;
+                }
             }
         }
 

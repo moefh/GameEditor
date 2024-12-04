@@ -1,4 +1,8 @@
 ﻿
+- tile editor/sprite editor: pick color with CTRL+mouse
+
+- map editor: pick tile with CTRL+mouse
+
 - import/export map:
   - export map (from map editor)
   - import map (from tileset list editor: "Import Maps On This Tileset...")

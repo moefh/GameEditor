@@ -31,8 +31,8 @@ namespace GameEditor.SpriteEditor
             spriteListView.SelectedLoopIndex = 0;
             spriteEditor.Sprite = Animation.Sprite;
             spriteEditor.SelectedFrame = 0;
-            spriteEditor.FGPen = colorPicker.FG;
-            spriteEditor.BGPen = colorPicker.BG;
+            spriteEditor.ForePen = colorPicker.SelectedForeColor;
+            spriteEditor.BackPen = colorPicker.SelectedBackColor;
             FixRenderFlags();
             toolStripComboSprites.ComboBox.DataSource = Util.Project.SpriteList;
             toolStripComboSprites.ComboBox.DisplayMember = "Name";
@@ -147,8 +147,8 @@ namespace GameEditor.SpriteEditor
         }
 
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
-            spriteEditor.FGPen = colorPicker.FG;
-            spriteEditor.BGPen = colorPicker.BG;
+            spriteEditor.ForePen = colorPicker.SelectedForeColor;
+            spriteEditor.BackPen = colorPicker.SelectedBackColor;
         }
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {

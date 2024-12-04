@@ -40,7 +40,7 @@ namespace GameEditor.MainEditor
 
         private bool ShowColorDialog(Color color, out Color selected) {
             ColorDialog dlg = new ColorDialog();
-            dlg.Color = lblMapEditorGridColor.BackColor;
+            dlg.Color = color;
             dlg.AnyColor = true;
             dlg.AllowFullOpen = true;
             dlg.FullOpen = true;

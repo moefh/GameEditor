@@ -10,16 +10,12 @@ namespace GameEditor.Misc
 {
     public static class ImageUtil
     {
-        private static Bitmap? colorPickerPalette;
         private static Tileset? collisionTileset;
         private static ImageAttributes? transparentGreen;
         private static ImageAttributes? grayscale;
         private static ImageAttributes? grayscaleTransparentGreen;
         private static SolidBrush? greenBrush;
 
-        public static Bitmap ColorPickerPalette {
-            get { colorPickerPalette ??= CreateColorPickerPaletteBitmap(); return colorPickerPalette; }
-        }
         public static ImageAttributes TransparentGreen {
             get { transparentGreen ??= CreateTransparentGreenImageAttributes(); return transparentGreen; }
         }
@@ -50,23 +46,6 @@ namespace GameEditor.Misc
             //g.FillRectangle(GreenBrush, 0, 0, bmp.Width, bmp.Height);
             //return new Tileset("collision", bmp);
             return new Tileset("collision", Properties.Resources.CollisionBitmap);
-        }
-
-        private static Bitmap CreateColorPickerPaletteBitmap() {
-            static int cc(int c) => c << 6 | c << 4 | c << 2 | c;
-
-            Bitmap bmp = new Bitmap(8, 8);
-            for (int r = 0; r < 4; r++) {
-                for (int g = 0; g < 4; g++) {
-                    for (int b = 0; b < 4; b++) {
-                        int n = r * 16 + g * 4 + b;
-                        int x = n % 8;
-                        int y = (n / 8 & 6) >> 1 | (n / 8 & 1) << 2;
-                        bmp.SetPixel(x, y, Color.FromArgb(cc(r), cc(g), cc(b)));
-                    }
-                }
-            }
-            return bmp;
         }
 
         private static ImageAttributes CreateTransparentGreenImageAttributes() {
@@ -115,13 +94,6 @@ namespace GameEditor.Misc
                 g.DrawLine(Pens.Black, s - 1 - i, s - 1, 0, i);
             }
             //g.DrawRectangle(Pens.Black, 0, 0, size.Width-1, size.Height-1);
-        }
-
-        public static void ForceToGamePalette(byte[] pixels) {
-            for (int i = 0; i < pixels.Length; i++) {
-                uint c = ((uint)pixels[i] & 0xc0) >> 6;
-                pixels[i] = (byte) ((c<<6)|(c<<4)|(c<<2)|c);
-            }
         }
 
     }

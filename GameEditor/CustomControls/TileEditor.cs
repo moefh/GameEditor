@@ -23,12 +23,13 @@ namespace GameEditor.CustomControls
         protected uint renderFlags;
 
         public event EventHandler? ImageChanged;
+        public event EventHandler? SelectedColorsChanged;
 
         public Tileset? Tileset { get { return tileset; } set { tileset = value; Invalidate(); } }
         public int SelectedTile { get { return selectedTile; } set { selectedTile = value; Invalidate(); } }
         public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
-        public Color FGPen { get; set; }
-        public Color BGPen { get; set; }
+        public Color ForePen { get; set; }
+        public Color BackPen { get; set; }
         public Color GridColor { get; set; }
 
         public TileEditor()
@@ -89,6 +90,17 @@ namespace GameEditor.CustomControls
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
+        private void PickColor(int x, int y, bool foreground) {
+            if (Tileset == null) return;
+            Color c = Tileset.GetTilePixel(SelectedTile, x, y);
+            if (foreground) {
+                ForePen = c;
+            } else {
+                BackPen = c;
+            }
+            SelectedColorsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         private void RunMouseDraw(MouseEventArgs e) {
             if (Util.DesignMode) return;
             if (Tileset == null) return;
@@ -98,9 +110,16 @@ namespace GameEditor.CustomControls
             int ty = (e.Y - tileRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= TILE_SIZE || ty >= TILE_SIZE) return;
 
-            switch (e.Button) {
-            case MouseButtons.Left:  SetPixel(FGPen, tx, ty); break;
-            case MouseButtons.Right: SetPixel(BGPen, tx, ty); break;
+            if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
+                switch (e.Button) {
+                case MouseButtons.Left:  PickColor(tx, ty, true); break;
+                case MouseButtons.Right: PickColor(tx, ty, false); break;
+                }
+            } else {
+                switch (e.Button) {
+                case MouseButtons.Left:  SetPixel(ForePen, tx, ty); break;
+                case MouseButtons.Right: SetPixel(BackPen, tx, ty); break;
+                }
             }
         }
 

@@ -134,7 +134,7 @@ namespace GameEditor.GameData
             byte[] pixels = new byte[TILE_SIZE*TILE_SIZE*4];
             for (int t = 0; t < w * h; t++) {
                 ReadTilePixelsFrom(tiles, t, pixels);
-                ImageUtil.ForceToGamePalette(pixels);
+                PaletteUtil.ForceToGamePalette(pixels);
                 WriteTilePixelsTo(tiles, t, pixels);
             }
             return tiles;
@@ -172,6 +172,10 @@ namespace GameEditor.GameData
 
         public void SetTilePixel(int tile, int x, int y, Color color) {
             bitmap.SetPixel(x, y + tile * TILE_SIZE, color);
+        }
+
+        public Color GetTilePixel(int tile, int x, int y) {
+            return bitmap.GetPixel(x, y + tile * TILE_SIZE);
         }
 
         public void ImportBitmap(string filename, int border, int spaceBetweenTiles) {

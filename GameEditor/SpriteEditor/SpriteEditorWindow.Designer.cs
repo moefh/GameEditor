@@ -272,9 +272,10 @@
             // 
             // spriteEditor
             // 
-            spriteEditor.BGPen = Color.Empty;
+            spriteEditor.BackPen = Color.Empty;
             spriteEditor.Dock = DockStyle.Fill;
-            spriteEditor.FGPen = Color.Empty;
+            spriteEditor.ForePen = Color.Empty;
+            spriteEditor.GridColor = Color.Empty;
             spriteEditor.Location = new Point(0, 0);
             spriteEditor.Name = "spriteEditor";
             spriteEditor.ReadOnly = false;
@@ -285,15 +286,16 @@
             spriteEditor.TabIndex = 0;
             spriteEditor.Text = "spriteEditor";
             spriteEditor.ImageChanged += spriteEditor_ImageChanged;
+            spriteEditor.SelectedColorsChanged += spriteEditor_SelectedColorsChanged;
             // 
             // colorPicker
             // 
-            colorPicker.BG = Color.Lime;
-            colorPicker.Color = Color.Black;
+            colorPicker.Color = Color.FromArgb(0, 0, 0);
             colorPicker.Dock = DockStyle.Fill;
-            colorPicker.FG = Color.Black;
             colorPicker.Location = new Point(0, 0);
             colorPicker.Name = "colorPicker";
+            colorPicker.SelectedBackColor = Color.FromArgb(0, 255, 0);
+            colorPicker.SelectedForeColor = Color.FromArgb(0, 0, 0);
             colorPicker.SingleSelection = false;
             colorPicker.Size = new Size(144, 251);
             colorPicker.TabIndex = 0;
