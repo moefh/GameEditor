@@ -34,6 +34,7 @@ namespace GameEditor.CustomControls
         public bool ReadOnly { get; set; }
         public Color FGPen { get; set; }
         public Color BGPen { get; set; }
+        public Color GridColor { get; set; }
 
         public Sprite? Sprite {
             get { return sprite; }
@@ -79,13 +80,14 @@ namespace GameEditor.CustomControls
 
             // grid
             if ((RenderFlags & RENDER_GRID) != 0) {
+                using Pen grid = new Pen(GridColor);
                 for (int ty = 0; ty < Sprite.Height + 1; ty++) {
                     int y = ty * zoom;
-                    pe.Graphics.DrawLine(Pens.Black, sprRect.X, y + sprRect.Y, sprRect.X + sprRect.Width, y + sprRect.Y);
+                    pe.Graphics.DrawLine(grid, sprRect.X, y + sprRect.Y, sprRect.X + sprRect.Width, y + sprRect.Y);
                 }
                 for (int tx = 0; tx < Sprite.Width + 1; tx++) {
                     int x = tx * zoom;
-                    pe.Graphics.DrawLine(Pens.Black, x + sprRect.X, sprRect.Y, x + sprRect.X, sprRect.Y + sprRect.Height);
+                    pe.Graphics.DrawLine(grid, x + sprRect.X, sprRect.Y, x + sprRect.X, sprRect.Y + sprRect.Height);
                 }
             }
         }

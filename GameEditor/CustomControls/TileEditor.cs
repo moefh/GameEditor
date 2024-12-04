@@ -29,6 +29,7 @@ namespace GameEditor.CustomControls
         public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
         public Color FGPen { get; set; }
         public Color BGPen { get; set; }
+        public Color GridColor { get; set; }
 
         public TileEditor()
         {
@@ -70,13 +71,14 @@ namespace GameEditor.CustomControls
 
             // grid
             if ((RenderFlags & RENDER_GRID) != 0) {
+                using Pen grid = new Pen(GridColor);
                 for (int ty = 0; ty < TILE_SIZE + 1; ty++) {
                     int y = (int) (ty * zoom);
-                    pe.Graphics.DrawLine(Pens.Black, tileRect.X, tileRect.Y + y, tileRect.X + zoomedTileSize, tileRect.Y + y);
+                    pe.Graphics.DrawLine(grid, tileRect.X, tileRect.Y + y, tileRect.X + zoomedTileSize, tileRect.Y + y);
                 }
                 for (int tx = 0; tx < TILE_SIZE + 1; tx++) {
                     int x = (int) (tx * zoom);
-                    pe.Graphics.DrawLine(Pens.Black, tileRect.X + x, tileRect.Y, tileRect.X + x, tileRect.Y + zoomedTileSize);
+                    pe.Graphics.DrawLine(grid, tileRect.X + x, tileRect.Y, tileRect.X + x, tileRect.Y + zoomedTileSize);
                 }
             }
         }

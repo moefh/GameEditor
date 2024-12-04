@@ -49,5 +49,13 @@ namespace GameEditor.GameData
         public void Resize(int width, int height) {
             tiles.Resize(width, height);
         }
+
+        public void AddTile(int tile) {
+            tiles.AddTile(tile);
+        }
+
+        public void RemoveTile(int tile) {
+            tiles.RemoveTile(tile);
+        }
     }
 }

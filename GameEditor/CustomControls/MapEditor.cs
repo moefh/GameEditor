@@ -30,7 +30,7 @@ namespace GameEditor.CustomControls
         private Point scrollOrigin;
         private Point origin;
 
-        public event EventHandler? Dirtied;
+        public event EventHandler? MapChanged;
 
         public MapEditor() {
             InitializeComponent();
@@ -40,8 +40,11 @@ namespace GameEditor.CustomControls
         public MapData? Map { get; set; }
         public uint EditLayer { get; set; }
         public uint EnabledRenderLayers { get; set; }
-        public int SelectedTile { get; set; }
-        public int SelectedCollisionTile { get; set; }
+        public int SelectedTileLeft { get; set; }
+        public int SelectedTileRight { get; set; }
+        public int SelectedCollisionTileLeft { get; set; }
+        public int SelectedCollisionTileRight { get; set; }
+        public Color GridColor { get; set; }
 
         public double Zoom {
             get { return zoom; }
@@ -49,7 +52,7 @@ namespace GameEditor.CustomControls
         }
 
         private void SetDirty() {
-            Dirtied?.Invoke(this, EventArgs.Empty);
+            MapChanged?.Invoke(this, EventArgs.Empty);
         }
 
         private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent, uint layer) {
@@ -88,15 +91,16 @@ namespace GameEditor.CustomControls
                 }
             }
             if ((EnabledRenderLayers & LAYER_GRID) != 0) {
+                using Pen gridPen = new Pen(GridColor);
                 int w = (int) (Map.Tiles.Width * TILE_SIZE * zoom);
                 int h = (int) (Map.Tiles.Height * TILE_SIZE * zoom);
                 for (int ty = 0; ty < Map.Tiles.Height + 1; ty++) {
                     int y = (int) (ty * TILE_SIZE * zoom) - origin.Y;
-                    pe.Graphics.DrawLine(Pens.Black, MARGIN, y + MARGIN, w, y + MARGIN);
+                    pe.Graphics.DrawLine(gridPen, MARGIN, y + MARGIN, w, y + MARGIN);
                 }
                 for (int tx = 0; tx < Map.Tiles.Width + 1; tx++) {
                     int x = (int) (tx * TILE_SIZE * zoom) - origin.X;
-                    pe.Graphics.DrawLine(Pens.Black, x + MARGIN, MARGIN, x + MARGIN, h);
+                    pe.Graphics.DrawLine(gridPen, x + MARGIN, MARGIN, x + MARGIN, h);
                 }
             }
             if ((EnabledRenderLayers & LAYER_SCREEN) != 0) {
@@ -119,12 +123,12 @@ namespace GameEditor.CustomControls
             }
         }
 
-        private void SetTile(int tx, int ty, bool delete) {
+        private void SetTile(int tx, int ty, bool left) {
             if (Map == null) return;
             if (tx < 0 || ty < 0 || tx >= Map.Tiles.Width || ty >= Map.Tiles.Height) return;
-            if ((EditLayer & LAYER_BG) != 0) Map.Tiles.bg[tx, ty] = delete ? -1 : SelectedTile;
-            if ((EditLayer & LAYER_FG) != 0) Map.Tiles.fg[tx, ty] = delete ? -1 : SelectedTile;
-            if ((EditLayer & LAYER_COL) != 0) Map.Tiles.clip[tx, ty] = delete ? -1 : SelectedCollisionTile;
+            if ((EditLayer & LAYER_BG) != 0) Map.Tiles.bg[tx, ty] = left ? SelectedTileLeft : SelectedTileRight;
+            if ((EditLayer & LAYER_FG) != 0) Map.Tiles.fg[tx, ty] = left ? SelectedTileLeft : SelectedTileRight;
+            if ((EditLayer & LAYER_COL) != 0) Map.Tiles.clip[tx, ty] = left ? SelectedCollisionTileLeft : SelectedCollisionTileRight;
             Invalidate();
             SetDirty();
         }
@@ -144,6 +148,11 @@ namespace GameEditor.CustomControls
             Invalidate();
         }
 
+        protected override void OnResize(EventArgs e) {
+            ClampScroll();
+            base.OnResize(e);
+        }
+
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
             if (Util.DesignMode) return;
@@ -152,11 +161,9 @@ namespace GameEditor.CustomControls
             int tx = (int) ((e.X + origin.X - MARGIN) / TILE_SIZE / zoom);
             int ty = (int) ((e.Y + origin.Y - MARGIN) / TILE_SIZE / zoom);
 
-            
-
             switch (e.Button) {
-            case MouseButtons.Left:   SetTile(tx, ty, false); break;
-            case MouseButtons.Right:  SetTile(tx, ty, true); break;
+            case MouseButtons.Left:   SetTile(tx, ty, true); break;
+            case MouseButtons.Right:  SetTile(tx, ty, false); break;
             case MouseButtons.Middle: scrollOrigin = e.Location; break;
             }
         }
@@ -170,8 +177,8 @@ namespace GameEditor.CustomControls
             int ty = (int) ((e.Y + origin.Y - MARGIN) / TILE_SIZE / zoom);
 
             switch (e.Button) {
-            case MouseButtons.Left:   SetTile(tx, ty, false); break;
-            case MouseButtons.Right:  SetTile(tx, ty, true); break;
+            case MouseButtons.Left:   SetTile(tx, ty, true); break;
+            case MouseButtons.Right:  SetTile(tx, ty, false); break;
             case MouseButtons.Middle: ScrollMap(e.Location - new Size(scrollOrigin)); scrollOrigin = e.Location; break;
             }
         }

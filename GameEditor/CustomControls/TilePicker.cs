@@ -28,10 +28,11 @@ namespace GameEditor.CustomControls
             public int NumVertTiles = numVertTiles;
         }
 
-        protected Tileset? tileset;
-        protected int zoom = 4;
-        protected int selectedTile;
-        protected bool showEmptyTile;
+        private Tileset? tileset;
+        private int zoom = 4;
+        private int selectedTileLeft;
+        private int selectedTileRight;
+        private bool showEmptyTile;
         public event EventHandler? SelectedTileChanged;
 
         public TilePicker()
@@ -39,6 +40,10 @@ namespace GameEditor.CustomControls
             InitializeComponent();
             SetDoubleBuffered();
             ResetSize();
+            LeftSelectionColor = Color.FromArgb(255,0,0);
+            SelectedTileLeft = 0;
+            RightSelectionColor = Color.FromArgb(0,255,0);
+            SelectedTileRight = -1;
         }
 
         public Tileset? Tileset {
@@ -56,10 +61,19 @@ namespace GameEditor.CustomControls
             set { if (value > 0) zoom = value; ResetSize(); Invalidate(); }
         }
 
-        public int SelectedTile {
-            get { return selectedTile; }
-            set { selectedTile = value; SelectedTileChanged?.Invoke(this, EventArgs.Empty); }
+        public int SelectedTileLeft {
+            get { return selectedTileLeft; }
+            set { selectedTileLeft = value; SelectedTileChanged?.Invoke(this, EventArgs.Empty); }
         }
+
+        public int SelectedTileRight {
+            get { return selectedTileRight; }
+            set { selectedTileRight = value; SelectedTileChanged?.Invoke(this, EventArgs.Empty); }
+        }
+
+        public Color LeftSelectionColor { get; set; }
+
+        public Color RightSelectionColor { get; set; }
 
         private RenderInfo GetRenderInfo(Tileset ts, Size parentClientSize) {
             int zoomedTileSize = TILE_SIZE * zoom;
@@ -78,23 +92,33 @@ namespace GameEditor.CustomControls
 
         protected override void OnPaint(PaintEventArgs pe) {
             base.OnPaint(pe);
-            if (Util.DesignMode) { ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize); return; }
+            ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
+            if (Util.DesignMode) return;
             if (Tileset == null || Parent == null) return;
 
             RenderInfo ri = GetRenderInfo(Tileset, Parent.ClientSize);
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
+
+            // draw tiles
             for (int i = 0; i < Tileset.NumTiles; i++) {
                 int x = ((i+ri.EmptyTileSpace) % ri.NumHorzTiles) * (ri.ZoomedTileSize + 2*SEL_BORDER) + 1;
                 int y = ((i+ri.EmptyTileSpace) / ri.NumHorzTiles) * (ri.ZoomedTileSize + 2*SEL_BORDER) + 1;
                 Tileset.DrawTileAt(pe.Graphics, i, x+SEL_BORDER, y+SEL_BORDER,
                                     ri.ZoomedTileSize, ri.ZoomedTileSize, false);
             }
-            int sx = ((SelectedTile+ri.EmptyTileSpace) % ri.NumHorzTiles) * (ri.ZoomedTileSize + 2*SEL_BORDER);
-            int sy = ((SelectedTile+ri.EmptyTileSpace) / ri.NumHorzTiles) * (ri.ZoomedTileSize + 2*SEL_BORDER);
-            for (int i = 0; i <= SEL_BORDER; i++) {
-                pe.Graphics.DrawRectangle(Pens.Black, sx+SEL_BORDER-i+1, sy+SEL_BORDER-i+1,
-                                            ri.ZoomedTileSize + SEL_BORDER*i, ri.ZoomedTileSize + SEL_BORDER*i);
+
+            // draw selection rectangle
+            foreach ((int, Color) sel in ((int,Color)[])[(SelectedTileRight, RightSelectionColor), (SelectedTileLeft, LeftSelectionColor)]) {
+                int tile = sel.Item1;
+                if (tile < 0 && ! ShowEmptyTile) continue;
+                using Pen color = new Pen(sel.Item2);
+                int sx = ((tile+ri.EmptyTileSpace) % ri.NumHorzTiles) * (ri.ZoomedTileSize + 2*SEL_BORDER);
+                int sy = ((tile+ri.EmptyTileSpace) / ri.NumHorzTiles) * (ri.ZoomedTileSize + 2*SEL_BORDER);
+                for (int i = 0; i < 2*SEL_BORDER; i++) {
+                    pe.Graphics.DrawRectangle(color, sx+SEL_BORDER-i+1, sy+SEL_BORDER-i+1,
+                                              ri.ZoomedTileSize + SEL_BORDER*i, ri.ZoomedTileSize + SEL_BORDER*i);
+                }
             }
         }
 
@@ -115,19 +139,21 @@ namespace GameEditor.CustomControls
         protected override void OnMouseClick(MouseEventArgs e) {
             base.OnMouseClick(e);
             if (Util.DesignMode) return;
-            if (e.Button != MouseButtons.Left) return;
+            if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
             if (Tileset == null || Parent == null) return;
 
             RenderInfo ri = GetRenderInfo(Tileset, Parent.ClientSize);
-            int x = (e.X - SEL_BORDER) / (ri.ZoomedTileSize + 2*SEL_BORDER);
-            int y = (e.Y - SEL_BORDER) / (ri.ZoomedTileSize + 2*SEL_BORDER);
-            if (x < 0) x = 0;
-            if (y < 0) y = 0;
+            int x = int.Max((e.X - SEL_BORDER) / (ri.ZoomedTileSize + 2*SEL_BORDER), 0);
+            int y = int.Max((e.Y - SEL_BORDER) / (ri.ZoomedTileSize + 2*SEL_BORDER), 0);
 
             int emptyTileSpace = ShowEmptyTile ? 1 : 0;
             int newTile = y * ri.NumHorzTiles + (x % ri.NumHorzTiles) - emptyTileSpace;
             if (newTile >= -emptyTileSpace && newTile < Tileset.NumTiles) {
-                SelectedTile = newTile;
+                if (e.Button == MouseButtons.Left) {
+                    SelectedTileLeft = newTile;
+                } else {
+                    SelectedTileRight = newTile;
+                }
             }
             Invalidate();
         }

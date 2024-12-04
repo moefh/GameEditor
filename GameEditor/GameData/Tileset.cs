@@ -80,11 +80,12 @@ namespace GameEditor.GameData
             bitmap.SetPixel(x, y + tile * TILE_SIZE, color);
         }
 
-        public void ImportBitmap(string filename) {
+        public void ImportBitmap(string filename, int border, int spaceBetweenTiles) {
             // read source image:
             using Bitmap bmp = new Bitmap(filename);
-            int w = (bmp.Width + TILE_SIZE - 1) / TILE_SIZE;
-            int h = (bmp.Height + TILE_SIZE - 1) / TILE_SIZE;
+            int roundUp = TILE_SIZE + spaceBetweenTiles - 1;
+            int w = (bmp.Width - 2*border + spaceBetweenTiles + roundUp) / (TILE_SIZE + spaceBetweenTiles);
+            int h = (bmp.Height - 2*border + spaceBetweenTiles + roundUp) / (TILE_SIZE + spaceBetweenTiles);
 
             // create empty bitmap:
             Bitmap tiles = new Bitmap(TILE_SIZE, w * h * TILE_SIZE);
@@ -92,11 +93,12 @@ namespace GameEditor.GameData
             g.Clear(Color.FromArgb(0, 255, 0));
 
             // copy each tile:
+            int srcTileStride = TILE_SIZE + spaceBetweenTiles;
             for (int y = 0; y < h; y++) {
                 for (int x = 0; x < w; x++) {
                     g.DrawImage(bmp,
                                 new Rectangle(0, (x + y * w) * TILE_SIZE, TILE_SIZE, TILE_SIZE),
-                                new Rectangle(x * TILE_SIZE, y * TILE_SIZE, TILE_SIZE, TILE_SIZE),
+                                new Rectangle(border + x * srcTileStride, border + y * srcTileStride, TILE_SIZE, TILE_SIZE),
                                 GraphicsUnit.Pixel);
                 }
             }
@@ -183,6 +185,43 @@ namespace GameEditor.GameData
             int copyNumTiles = Math.Min(newNumTiles, NumTiles);
             for (int t = 0; t < copyNumTiles; t++) {
                 DrawTileAt(g, t, 0, t * TILE_SIZE, TILE_SIZE, TILE_SIZE, false);
+            }
+
+            bitmap.Dispose();
+            bitmap = tiles;
+        }
+
+        public void AddTile(int index, Color newTileBackground) {
+            Bitmap tiles = new Bitmap(TILE_SIZE, TILE_SIZE * (NumTiles + 1));
+            using Graphics g = Graphics.FromImage(tiles);
+            g.Clear(newTileBackground);
+
+            // copy tiles before new tile
+            for (int t = 0; t < index; t++) {
+                DrawTileAt(g, t, 0, t * TILE_SIZE, TILE_SIZE, TILE_SIZE, false);
+            }
+            // copy tiles after new tile
+            for (int t = index; t < NumTiles; t++) {
+                DrawTileAt(g, t, 0, (t+1) * TILE_SIZE, TILE_SIZE, TILE_SIZE, false);
+            }
+
+            bitmap.Dispose();
+            bitmap = tiles;
+        }
+
+        public void DeleteTile(int index) {
+            if (NumTiles == 1) return;
+
+            Bitmap tiles = new Bitmap(TILE_SIZE, TILE_SIZE * (NumTiles - 1));
+            using Graphics g = Graphics.FromImage(tiles);
+
+            // copy tiles before deleted tile
+            for (int t = 0; t < index; t++) {
+                DrawTileAt(g, t, 0, t * TILE_SIZE, TILE_SIZE, TILE_SIZE, false);
+            }
+            // copy tiles after deleted tile
+            for (int t = index+1; t < NumTiles; t++) {
+                DrawTileAt(g, t, 0, (t-1) * TILE_SIZE, TILE_SIZE, TILE_SIZE, false);
             }
 
             bitmap.Dispose();

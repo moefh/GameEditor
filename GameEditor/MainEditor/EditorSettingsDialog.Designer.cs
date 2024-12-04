@@ -30,13 +30,24 @@
             checkBoxLogDotNet = new CheckBox();
             btnCancel = new Button();
             btnOK = new Button();
+            lblMapEditorGridColor = new Label();
+            label2 = new Label();
+            label3 = new Label();
+            groupBox1 = new GroupBox();
+            lblSpriteEditorGridColor = new Label();
+            label6 = new Label();
+            lblTileEditorGridColor = new Label();
+            label4 = new Label();
+            lblTilePickerLeftColor = new Label();
+            lblTilePickerRightColor = new Label();
             groupBoxLogOutput.SuspendLayout();
+            groupBox1.SuspendLayout();
             SuspendLayout();
             // 
             // checkBoxLogWindow
             // 
             checkBoxLogWindow.AutoSize = true;
-            checkBoxLogWindow.Location = new Point(28, 36);
+            checkBoxLogWindow.Location = new Point(28, 29);
             checkBoxLogWindow.Name = "checkBoxLogWindow";
             checkBoxLogWindow.Size = new Size(102, 23);
             checkBoxLogWindow.TabIndex = 0;
@@ -45,11 +56,12 @@
             // 
             // groupBoxLogOutput
             // 
+            groupBoxLogOutput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBoxLogOutput.Controls.Add(checkBoxLogDotNet);
             groupBoxLogOutput.Controls.Add(checkBoxLogWindow);
-            groupBoxLogOutput.Location = new Point(12, 12);
+            groupBoxLogOutput.Location = new Point(12, 185);
             groupBoxLogOutput.Name = "groupBoxLogOutput";
-            groupBoxLogOutput.Size = new Size(246, 110);
+            groupBoxLogOutput.Size = new Size(306, 93);
             groupBoxLogOutput.TabIndex = 2;
             groupBoxLogOutput.TabStop = false;
             groupBoxLogOutput.Text = "Log output";
@@ -57,7 +69,7 @@
             // checkBoxLogDotNet
             // 
             checkBoxLogDotNet.AutoSize = true;
-            checkBoxLogDotNet.Location = new Point(28, 65);
+            checkBoxLogDotNet.Location = new Point(28, 58);
             checkBoxLogDotNet.Name = "checkBoxLogDotNet";
             checkBoxLogDotNet.Size = new Size(98, 23);
             checkBoxLogDotNet.TabIndex = 1;
@@ -67,7 +79,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(150, 161);
+            btnCancel.Location = new Point(116, 296);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(98, 37);
             btnCancel.TabIndex = 3;
@@ -77,7 +89,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(254, 161);
+            btnOK.Location = new Point(220, 296);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(98, 37);
             btnOK.TabIndex = 2;
@@ -85,13 +97,124 @@
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += btnOK_Click;
             // 
+            // lblMapEditorGridColor
+            // 
+            lblMapEditorGridColor.BackColor = Color.Red;
+            lblMapEditorGridColor.BorderStyle = BorderStyle.FixedSingle;
+            lblMapEditorGridColor.ForeColor = Color.Black;
+            lblMapEditorGridColor.Location = new Point(170, 62);
+            lblMapEditorGridColor.Name = "lblMapEditorGridColor";
+            lblMapEditorGridColor.Size = new Size(40, 23);
+            lblMapEditorGridColor.TabIndex = 4;
+            lblMapEditorGridColor.Click += lblMapEditorGridColor_Click;
+            // 
+            // label2
+            // 
+            label2.Location = new Point(6, 63);
+            label2.Name = "label2";
+            label2.Size = new Size(158, 23);
+            label2.TabIndex = 5;
+            label2.Text = "Map editor grid:";
+            label2.TextAlign = ContentAlignment.TopRight;
+            // 
+            // label3
+            // 
+            label3.Location = new Point(6, 30);
+            label3.Name = "label3";
+            label3.Size = new Size(158, 23);
+            label3.TabIndex = 6;
+            label3.Text = "Tile picker selection:";
+            label3.TextAlign = ContentAlignment.TopRight;
+            // 
+            // groupBox1
+            // 
+            groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(lblSpriteEditorGridColor);
+            groupBox1.Controls.Add(label6);
+            groupBox1.Controls.Add(lblTileEditorGridColor);
+            groupBox1.Controls.Add(label4);
+            groupBox1.Controls.Add(lblTilePickerLeftColor);
+            groupBox1.Controls.Add(lblTilePickerRightColor);
+            groupBox1.Controls.Add(label3);
+            groupBox1.Controls.Add(lblMapEditorGridColor);
+            groupBox1.Controls.Add(label2);
+            groupBox1.Location = new Point(12, 12);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(306, 167);
+            groupBox1.TabIndex = 7;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Colors";
+            // 
+            // lblSpriteEditorGridColor
+            // 
+            lblSpriteEditorGridColor.BackColor = Color.Red;
+            lblSpriteEditorGridColor.BorderStyle = BorderStyle.FixedSingle;
+            lblSpriteEditorGridColor.ForeColor = Color.Black;
+            lblSpriteEditorGridColor.Location = new Point(170, 126);
+            lblSpriteEditorGridColor.Name = "lblSpriteEditorGridColor";
+            lblSpriteEditorGridColor.Size = new Size(40, 23);
+            lblSpriteEditorGridColor.TabIndex = 11;
+            lblSpriteEditorGridColor.Click += lblSpriteEditorGridColor_Click;
+            // 
+            // label6
+            // 
+            label6.Location = new Point(6, 126);
+            label6.Name = "label6";
+            label6.Size = new Size(158, 23);
+            label6.TabIndex = 12;
+            label6.Text = "Sprite editor grid:";
+            label6.TextAlign = ContentAlignment.TopRight;
+            // 
+            // lblTileEditorGridColor
+            // 
+            lblTileEditorGridColor.BackColor = Color.Red;
+            lblTileEditorGridColor.BorderStyle = BorderStyle.FixedSingle;
+            lblTileEditorGridColor.ForeColor = Color.Black;
+            lblTileEditorGridColor.Location = new Point(170, 94);
+            lblTileEditorGridColor.Name = "lblTileEditorGridColor";
+            lblTileEditorGridColor.Size = new Size(40, 23);
+            lblTileEditorGridColor.TabIndex = 9;
+            lblTileEditorGridColor.Click += lblTileEditorGridColor_Click;
+            // 
+            // label4
+            // 
+            label4.Location = new Point(6, 94);
+            label4.Name = "label4";
+            label4.Size = new Size(158, 23);
+            label4.TabIndex = 10;
+            label4.Text = "Tile editor grid:";
+            label4.TextAlign = ContentAlignment.TopRight;
+            // 
+            // lblTilePickerLeftColor
+            // 
+            lblTilePickerLeftColor.BackColor = Color.Red;
+            lblTilePickerLeftColor.BorderStyle = BorderStyle.FixedSingle;
+            lblTilePickerLeftColor.ForeColor = Color.Black;
+            lblTilePickerLeftColor.Location = new Point(170, 29);
+            lblTilePickerLeftColor.Name = "lblTilePickerLeftColor";
+            lblTilePickerLeftColor.Size = new Size(40, 23);
+            lblTilePickerLeftColor.TabIndex = 8;
+            lblTilePickerLeftColor.Click += lblTilePickerLeftColor_Click;
+            // 
+            // lblTilePickerRightColor
+            // 
+            lblTilePickerRightColor.BackColor = Color.Red;
+            lblTilePickerRightColor.BorderStyle = BorderStyle.FixedSingle;
+            lblTilePickerRightColor.ForeColor = Color.Black;
+            lblTilePickerRightColor.Location = new Point(216, 29);
+            lblTilePickerRightColor.Name = "lblTilePickerRightColor";
+            lblTilePickerRightColor.Size = new Size(40, 23);
+            lblTilePickerRightColor.TabIndex = 7;
+            lblTilePickerRightColor.Click += lblTilePickerRightColor_Click;
+            // 
             // EditorSettingsDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(364, 210);
+            ClientSize = new Size(330, 345);
+            Controls.Add(groupBox1);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(groupBoxLogOutput);
@@ -103,6 +226,7 @@
             Text = "Settings";
             groupBoxLogOutput.ResumeLayout(false);
             groupBoxLogOutput.PerformLayout();
+            groupBox1.ResumeLayout(false);
             ResumeLayout(false);
         }
 
@@ -113,5 +237,15 @@
         private CheckBox checkBoxLogDotNet;
         private Button btnCancel;
         private Button btnOK;
+        private Label lblMapEditorGridColor;
+        private Label label2;
+        private Label label3;
+        private GroupBox groupBox1;
+        private Label lblTilePickerLeftColor;
+        private Label lblTilePickerRightColor;
+        private Label lblTileEditorGridColor;
+        private Label label4;
+        private Label lblSpriteEditorGridColor;
+        private Label label6;
     }
 }

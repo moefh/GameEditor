@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
+using System.Xml;
 
 namespace GameEditor.GameData
 {
@@ -36,9 +37,9 @@ namespace GameEditor.GameData
             clip = new int[width, height];
             for (int y = 0; y < height; y++) {
                 for (int x = 0; x < width; x++) {
-                    bg[x, y] = data[y * width + x];
-                    fg[x, y] = data[width * height + y * width + x];
-                    clip[x, y] = data[2 * width * height + y * width + x];
+                    bg[x, y] = ByteToTile(data[y * width + x]);
+                    fg[x, y] = ByteToTile(data[width * height + y * width + x]);
+                    clip[x, y] = ByteToTile(data[2 * width * height + y * width + x]);
                 }
             }
         }
@@ -49,6 +50,11 @@ namespace GameEditor.GameData
 
         public int Height {
             get { return fg.GetLength(1); }
+        }
+
+        private int ByteToTile(byte b) {
+            if (b == 0xff) return -1;
+            return b;
         }
 
         private static int[,] Resize(int[,] block, int newW, int newH, int empty) {
@@ -84,6 +90,24 @@ namespace GameEditor.GameData
             fg = Resize(fg, width, height, EMPTY_FG);
             bg = Resize(bg, width, height, EMPTY_BG);
             clip = Resize(clip, width, height, EMPTY_CLIP);
+        }
+
+        public void AddTile(int tile) {
+            for (int y = 0; y < Height; y++) {
+                for (int x = 0; x < Width; x++) {
+                    if (fg[x,y] >= tile) fg[x,y]++;
+                    if (bg[x,y] >= tile) bg[x,y]++;
+                }
+            }
+        }
+
+        public void RemoveTile(int tile) {
+            for (int y = 0; y < Height; y++) {
+                for (int x = 0; x < Width; x++) {
+                    if (fg[x,y] >= tile) fg[x,y]--;
+                    if (bg[x,y] >= tile) bg[x,y]--;
+                }
+            }
         }
     }
 }

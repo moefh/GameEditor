@@ -35,15 +35,6 @@ namespace GameEditor.GameData
 
     public class ProjectData : IDisposable
     {
-        /*
-        private readonly AssetList<SfxDataItem> sfxs = [];
-        private readonly AssetList<ModDataItem> mods = [];
-        private readonly AssetList<MapDataItem> maps = [];
-        private readonly AssetList<SpriteAnimationItem> spriteAnims = [];
-        private readonly AssetList<SpriteItem> sprites = [];
-        private readonly AssetList<TilesetItem> tilesets = [];
-        private readonly AssetList<FontDataItem> fonts = [];
-        */
         private readonly Dictionary<DataAssetType, AssetList<IDataAssetItem>> assets = [];
 
         public ProjectData() {
@@ -112,50 +103,6 @@ namespace GameEditor.GameData
             assets[item.Asset.AssetType].Add(item);
         }
 
-        /*
-        public MapDataItem AddMap(MapData mapData) {
-            MapDataItem mi = new MapDataItem(mapData);
-            AddAssetItem(mi);
-            return mi;
-        }
-
-        public FontDataItem AddFont(FontData fontData) {
-            FontDataItem fi = new FontDataItem(fontData);
-            AddAssetItem(fi);
-            return fi;
-        }
-
-        public TilesetItem AddTileset(Tileset tileset) {
-            TilesetItem ti = new TilesetItem(tileset);
-            AddAssetItem(ti);
-            return ti;
-        }
-
-        public SpriteItem AddSprite(Sprite sprite) {
-            SpriteItem si = new SpriteItem(sprite);
-            AddAssetItem(si);
-            return si;
-        }
-
-        public SpriteAnimationItem AddSpriteAnimation(SpriteAnimation animation) {
-            SpriteAnimationItem ai = new SpriteAnimationItem(animation);
-            AddAssetItem(ai);
-            return ai;
-        }
-
-        public SfxDataItem AddSfx(SfxData sfx) {
-            SfxDataItem si = new SfxDataItem(sfx);
-            AddAssetItem(si);
-            return si;
-        }
-
-        public ModDataItem AddMod(ModData mod) {
-            ModDataItem mi = new ModDataItem(mod);
-            AddAssetItem(mi);
-            return mi;
-        }
-        */
-
         public int GetAssetIndex(IDataAsset item) {
             AssetList<IDataAssetItem> list = assets[item.AssetType];
             for (int i = 0; i < list.Count; i++) {
@@ -165,26 +112,6 @@ namespace GameEditor.GameData
             }
             return -1;
         }
-
-        /*
-        public int GetTilesetIndex(Tileset tileset) {
-            for (int i = 0; i < TilesetList.Count; i++) {
-                if (TilesetList[i].Tileset == tileset) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-
-        public int GetSpriteIndex(Sprite sprite) {
-            for (int i = 0; i < SpriteList.Count; i++) {
-                if (SpriteList[i].Sprite == sprite) {
-                    return i;
-                }
-            }
-            return -1;
-        }
-        */
 
         public int GetGameDataSize() {
             int size = 0;

@@ -670,5 +670,65 @@ namespace GameEditor.Properties {
                 this["FontListEditorSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color MapEditorGridColor {
+            get {
+                return ((global::System.Drawing.Color)(this["MapEditorGridColor"]));
+            }
+            set {
+                this["MapEditorGridColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Blue")]
+        public global::System.Drawing.Color TilePickerLeftColor {
+            get {
+                return ((global::System.Drawing.Color)(this["TilePickerLeftColor"]));
+            }
+            set {
+                this["TilePickerLeftColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public global::System.Drawing.Color TilePickerRightColor {
+            get {
+                return ((global::System.Drawing.Color)(this["TilePickerRightColor"]));
+            }
+            set {
+                this["TilePickerRightColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color SpriteEditorGridColor {
+            get {
+                return ((global::System.Drawing.Color)(this["SpriteEditorGridColor"]));
+            }
+            set {
+                this["SpriteEditorGridColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Black")]
+        public global::System.Drawing.Color TileEditorGridColor {
+            get {
+                return ((global::System.Drawing.Color)(this["TileEditorGridColor"]));
+            }
+            set {
+                this["TileEditorGridColor"] = value;
+            }
+        }
     }
 }

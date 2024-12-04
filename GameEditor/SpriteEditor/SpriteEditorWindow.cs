@@ -36,6 +36,7 @@ namespace GameEditor.SpriteEditor
             spriteEditor.SelectedFrame = 0;
             spriteEditor.FGPen = colorPicker.FG;
             spriteEditor.BGPen = colorPicker.BG;
+            spriteEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
             mainSplit.SplitterDistance = int.Max(Sprite.Width*spriteFramePicker.Zoom + 30, mainSplit.SplitterDistance);
             FixRenderFlags();
         }

@@ -27,10 +27,13 @@ namespace GameEditor.TilesetEditor
             SetupAssetListControls(toolStripTxtName, lblDataSize);
             NameChanged += TilesetEditorWindow_NameChanged;
             tileEditor.Tileset = Tileset;
-            tileEditor.SelectedTile = tilePicker.SelectedTile;
+            tileEditor.SelectedTile = tilePicker.SelectedTileLeft;
             tileEditor.FGPen = colorPicker.FG;
             tileEditor.BGPen = colorPicker.BG;
+            tileEditor.GridColor = ConfigUtil.TileEditorGridColor;
             tilePicker.Tileset = Tileset;
+            tilePicker.LeftSelectionColor = ConfigUtil.TilePickerLeftColor;
+            tilePicker.RightSelectionColor = ConfigUtil.TilePickerRightColor;
             UpdateRenderFlags();
         }
 
@@ -51,13 +54,11 @@ namespace GameEditor.TilesetEditor
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Import Tileset";
-            dlg.Filter = "Image Files (*.bmp, *.png, *.jpg, *.gif)|*.bmp;*.png;*.jpg;*.gif|All files (*.*)|*.*";
+            TilesetImportDialog dlg = new TilesetImportDialog();
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             try {
-                Tileset.ImportBitmap(dlg.FileName);
+                Tileset.ImportBitmap(dlg.FileName, dlg.ImportBorder, dlg.ImportSpaceBetweenTiles);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading bitmap from {dlg.FileName}", "Error Importing Image");
                 return;
@@ -68,7 +69,7 @@ namespace GameEditor.TilesetEditor
             Util.UpdateGameDataSize();
 
             tilePicker.Location = new Point(0, 0);
-            tilePicker.SelectedTile = 0;
+            tilePicker.SelectedTileLeft = 0;
             tilePicker.ResetSize();
             tilePicker.Invalidate();
 
@@ -114,7 +115,7 @@ namespace GameEditor.TilesetEditor
         }
 
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
-            tileEditor.SelectedTile = tilePicker.SelectedTile;
+            tileEditor.SelectedTile = tilePicker.SelectedTileLeft;
         }
 
         private void tileEditor_ImageChanged(object sender, EventArgs e) {
@@ -128,20 +129,15 @@ namespace GameEditor.TilesetEditor
             tileEditor.BGPen = colorPicker.BG;
         }
 
-        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
-            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
-            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
-            dlg.NumTiles = Tileset.NumTiles;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            Tileset.Resize(dlg.NumTiles, colorPicker.BG);
+        private void OnTilesetResized() {
             Util.Project.SetDirty();
             FixFormTitle();
             UpdateGameDataSize();
             Util.UpdateGameDataSize();
             tilePicker.ResetSize();
-            if (tilePicker.SelectedTile >= Tileset.NumTiles) {
-                tilePicker.SelectedTile = Tileset.NumTiles - 1;
-                tileEditor.SelectedTile = tilePicker.SelectedTile;
+            if (tilePicker.SelectedTileLeft >= Tileset.NumTiles) {
+                tilePicker.SelectedTileLeft = Tileset.NumTiles - 1;
+                tileEditor.SelectedTile = tilePicker.SelectedTileLeft;
             } else {
                 tilePicker.Invalidate();
                 tileEditor.Invalidate();
@@ -149,5 +145,47 @@ namespace GameEditor.TilesetEditor
             Util.RefreshTilesetUsers(Tileset);
         }
 
+        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
+            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
+            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
+            dlg.NumTiles = Tileset.NumTiles;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Tileset.Resize(dlg.NumTiles, colorPicker.BG);
+            OnTilesetResized();
+        }
+
+        private void addTileToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Tileset.NumTiles >= Tileset.MAX_NUM_TILES) {
+                MessageBox.Show($"This tileset already contains the maximum numer of allowed tiles ({Tileset.MAX_NUM_TILES})",
+                                "Can't Add Tile", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            Tileset.AddTile(tilePicker.SelectedTileLeft, colorPicker.BG);
+            foreach (MapDataItem map in Util.Project.MapList) {
+                if (map.Map.Tileset == Tileset) {
+                    map.Map.AddTile(tilePicker.SelectedTileLeft);
+                }
+            }
+            OnTilesetResized();
+        }
+
+        private void deleteTileToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Tileset.NumTiles <= 0) {
+                MessageBox.Show($"The tileset must have at least one tile.", "Can't Remove Tile",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (MessageBox.Show("Are you sure you want do delete this nice tile?", "Delete Tile",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) {
+                return;
+            }
+            Tileset.DeleteTile(tilePicker.SelectedTileLeft);
+            foreach (MapDataItem map in Util.Project.MapList) {
+                if (map.Map.Tileset == Tileset) {
+                    map.Map.RemoveTile(tilePicker.SelectedTileLeft);
+                }
+            }
+            OnTilesetResized();
+        }
     }
 }

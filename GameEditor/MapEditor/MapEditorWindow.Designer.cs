@@ -43,6 +43,7 @@
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripLabel1 = new ToolStripLabel();
             toolStripComboBoxZoom = new ToolStripComboBox();
+            toolStripBtnGridColor = new ToolStripButton();
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
@@ -69,10 +70,10 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom, toolStripBtnGridColor });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
-            toolsToolStrip.Size = new Size(789, 27);
+            toolsToolStrip.Size = new Size(850, 27);
             toolsToolStrip.TabIndex = 2;
             toolsToolStrip.Text = "toolStrip";
             // 
@@ -202,12 +203,21 @@
             toolStripComboBoxZoom.Tag = "";
             toolStripComboBoxZoom.SelectedIndexChanged += toolStripComboBoxZoom_SelectedIndexChanged;
             // 
+            // toolStripBtnGridColor
+            // 
+            toolStripBtnGridColor.Image = (Image)resources.GetObject("toolStripBtnGridColor.Image");
+            toolStripBtnGridColor.ImageTransparentColor = Color.Magenta;
+            toolStripBtnGridColor.Name = "toolStripBtnGridColor";
+            toolStripBtnGridColor.Size = new Size(92, 24);
+            toolStripBtnGridColor.Text = "Grid Color";
+            toolStripBtnGridColor.Click += toolStripBtnGridColor_Click;
+            // 
             // statusStrip
             // 
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
             statusStrip.Location = new Point(0, 264);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(789, 24);
+            statusStrip.Size = new Size(850, 24);
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip";
             // 
@@ -235,7 +245,7 @@
             // 
             mainSplit.Panel2.Controls.Add(mapEditor);
             mainSplit.Panel2.Padding = new Padding(3);
-            mainSplit.Size = new Size(789, 210);
+            mainSplit.Size = new Size(850, 210);
             mainSplit.SplitterDistance = 200;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
@@ -258,7 +268,10 @@
             tilePicker.Location = new Point(9, 0);
             tilePicker.MinimumSize = new Size(64, 64);
             tilePicker.Name = "tilePicker";
-            tilePicker.SelectedTile = 0;
+            tilePicker.LeftSelectionColor = Color.FromArgb(255, 0, 0);
+            tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
+            tilePicker.SelectedTileLeft = 0;
+            tilePicker.SelectedTileRight = -1;
             tilePicker.ShowEmptyTile = true;
             tilePicker.Size = new Size(194, 204);
             tilePicker.TabIndex = 0;
@@ -272,14 +285,17 @@
             mapEditor.Dock = DockStyle.Fill;
             mapEditor.EditLayer = 0U;
             mapEditor.EnabledRenderLayers = 0U;
+            mapEditor.GridColor = Color.FromArgb(0, 0, 0);
             mapEditor.Location = new Point(3, 3);
             mapEditor.Map = null;
             mapEditor.Name = "mapEditor";
             mapEditor.Padding = new Padding(3, 3, 2, 2);
-            mapEditor.SelectedTile = 0;
-            mapEditor.Size = new Size(578, 204);
+            mapEditor.SelectedCollisionTileLeft = 0;
+            mapEditor.SelectedTileLeft = 0;
+            mapEditor.Size = new Size(639, 204);
             mapEditor.TabIndex = 0;
             mapEditor.Zoom = 3D;
+            mapEditor.MapChanged += mapEditor_MapChanged;
             // 
             // infoToolStrip
             // 
@@ -287,7 +303,7 @@
             infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripSeparator1, btnProperties, toolStripComboTiles, toolStripLabel2 });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
-            infoToolStrip.Size = new Size(789, 27);
+            infoToolStrip.Size = new Size(850, 27);
             infoToolStrip.TabIndex = 7;
             infoToolStrip.Text = "toolStrip1";
             // 
@@ -338,7 +354,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(789, 288);
+            ClientSize = new Size(850, 288);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
@@ -392,5 +408,6 @@
         private ToolStripLabel toolStripLabel4;
         private ToolStripLabel toolStripLabel5;
         private ToolStripButton toolStripButtonShowScreen;
+        private ToolStripButton toolStripBtnGridColor;
     }
 }

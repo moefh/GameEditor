@@ -43,9 +43,13 @@
             tileEditor = new CustomControls.TileEditor();
             colorPicker = new CustomControls.ColorPicker();
             toolsToolStrip = new ToolStrip();
+            toolStripDropDownEdit = new ToolStripDropDownButton();
+            addTileToolStripMenuItem = new ToolStripMenuItem();
+            deleteTileToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
+            toolStripLabel2 = new ToolStripLabel();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
-            toolStripLabel2 = new ToolStripLabel();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -173,10 +177,13 @@
             // tilePicker
             // 
             tilePicker.Anchor = AnchorStyles.Top;
+            tilePicker.LeftSelectionColor = Color.FromArgb(255, 0, 0);
             tilePicker.Location = new Point(0, 0);
             tilePicker.MinimumSize = new Size(64, 64);
             tilePicker.Name = "tilePicker";
-            tilePicker.SelectedTile = 0;
+            tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
+            tilePicker.SelectedTileLeft = 0;
+            tilePicker.SelectedTileRight = -1;
             tilePicker.ShowEmptyTile = false;
             tilePicker.Size = new Size(200, 211);
             tilePicker.TabIndex = 0;
@@ -207,6 +214,7 @@
             tileEditor.BGPen = Color.Empty;
             tileEditor.Dock = DockStyle.Fill;
             tileEditor.FGPen = Color.Empty;
+            tileEditor.GridColor = Color.Empty;
             tileEditor.Location = new Point(0, 0);
             tileEditor.Name = "tileEditor";
             tileEditor.RenderFlags = 0U;
@@ -232,12 +240,49 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel2, toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
             toolsToolStrip.TabIndex = 3;
             toolsToolStrip.Text = "toolStrip1";
+            // 
+            // toolStripDropDownEdit
+            // 
+            toolStripDropDownEdit.AutoToolTip = false;
+            toolStripDropDownEdit.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { addTileToolStripMenuItem, deleteTileToolStripMenuItem });
+            toolStripDropDownEdit.Image = (Image)resources.GetObject("toolStripDropDownEdit.Image");
+            toolStripDropDownEdit.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownEdit.Name = "toolStripDropDownEdit";
+            toolStripDropDownEdit.Size = new Size(45, 24);
+            toolStripDropDownEdit.Text = "Edit";
+            // 
+            // addTileToolStripMenuItem
+            // 
+            addTileToolStripMenuItem.Name = "addTileToolStripMenuItem";
+            addTileToolStripMenuItem.Size = new Size(180, 24);
+            addTileToolStripMenuItem.Text = "Add Tile";
+            addTileToolStripMenuItem.Click += addTileToolStripMenuItem_Click;
+            // 
+            // deleteTileToolStripMenuItem
+            // 
+            deleteTileToolStripMenuItem.Name = "deleteTileToolStripMenuItem";
+            deleteTileToolStripMenuItem.Size = new Size(180, 24);
+            deleteTileToolStripMenuItem.Text = "Delete Tile";
+            deleteTileToolStripMenuItem.Click += deleteTileToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 27);
+            // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(56, 24);
+            toolStripLabel2.Text = "Display:";
             // 
             // toolStripBtnGrid
             // 
@@ -262,12 +307,6 @@
             toolStripBtnTransparent.Size = new Size(101, 24);
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
-            // 
-            // toolStripLabel2
-            // 
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(56, 24);
-            toolStripLabel2.Text = "Display:";
             // 
             // TilesetEditorWindow
             // 
@@ -323,5 +362,9 @@
         private ToolStripButton toolStripBtnProperties;
         private ToolStripStatusLabel lblDataSize;
         private ToolStripLabel toolStripLabel2;
+        private ToolStripDropDownButton toolStripDropDownEdit;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem addTileToolStripMenuItem;
+        private ToolStripMenuItem deleteTileToolStripMenuItem;
     }
 }

@@ -33,16 +33,22 @@
             txtFileName = new TextBox();
             btnSelectFile = new Button();
             numHorzTilesSpinner = new NumericUpDown();
+            numBetweenTiles = new NumericUpDown();
+            label3 = new Label();
+            numBorder = new NumericUpDown();
+            label4 = new Label();
             ((System.ComponentModel.ISupportInitialize)numHorzTilesSpinner).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numBetweenTiles).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)numBorder).BeginInit();
             SuspendLayout();
             // 
             // btnOk
             // 
             btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOk.Location = new Point(259, 114);
+            btnOk.Location = new Point(277, 173);
             btnOk.Name = "btnOk";
             btnOk.Size = new Size(88, 36);
-            btnOk.TabIndex = 3;
+            btnOk.TabIndex = 5;
             btnOk.Text = "OK";
             btnOk.UseVisualStyleBackColor = true;
             btnOk.Click += btnOk_Click;
@@ -51,17 +57,17 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(165, 114);
+            btnCancel.Location = new Point(183, 173);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(88, 36);
-            btnCancel.TabIndex = 2;
+            btnCancel.TabIndex = 6;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(88, 65);
+            label1.Location = new Point(88, 119);
             label1.Name = "label1";
             label1.Size = new Size(32, 19);
             label1.TabIndex = 6;
@@ -78,21 +84,19 @@
             // 
             // txtFileName
             // 
-            txtFileName.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            txtFileName.Location = new Point(126, 62);
+            txtFileName.Location = new Point(126, 116);
             txtFileName.Name = "txtFileName";
             txtFileName.ReadOnly = true;
             txtFileName.Size = new Size(184, 26);
-            txtFileName.TabIndex = 7;
+            txtFileName.TabIndex = 3;
             txtFileName.TabStop = false;
             // 
             // btnSelectFile
             // 
-            btnSelectFile.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            btnSelectFile.Location = new Point(317, 63);
+            btnSelectFile.Location = new Point(317, 117);
             btnSelectFile.Name = "btnSelectFile";
             btnSelectFile.Size = new Size(30, 23);
-            btnSelectFile.TabIndex = 1;
+            btnSelectFile.TabIndex = 4;
             btnSelectFile.Text = "...";
             btnSelectFile.UseVisualStyleBackColor = true;
             btnSelectFile.Click += btnSelectFile_Click;
@@ -101,8 +105,40 @@
             // 
             numHorzTilesSpinner.Location = new Point(126, 20);
             numHorzTilesSpinner.Name = "numHorzTilesSpinner";
-            numHorzTilesSpinner.Size = new Size(70, 26);
+            numHorzTilesSpinner.Size = new Size(53, 26);
             numHorzTilesSpinner.TabIndex = 0;
+            // 
+            // numBetweenTiles
+            // 
+            numBetweenTiles.Location = new Point(126, 84);
+            numBetweenTiles.Name = "numBetweenTiles";
+            numBetweenTiles.Size = new Size(53, 26);
+            numBetweenTiles.TabIndex = 2;
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(28, 86);
+            label3.Name = "label3";
+            label3.Size = new Size(92, 19);
+            label3.TabIndex = 20;
+            label3.Text = "Between tiles:";
+            // 
+            // numBorder
+            // 
+            numBorder.Location = new Point(126, 52);
+            numBorder.Name = "numBorder";
+            numBorder.Size = new Size(53, 26);
+            numBorder.TabIndex = 1;
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(67, 54);
+            label4.Name = "label4";
+            label4.Size = new Size(53, 19);
+            label4.TabIndex = 18;
+            label4.Text = "Border:";
             // 
             // TilesetExportDialog
             // 
@@ -110,7 +146,11 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(359, 162);
+            ClientSize = new Size(377, 221);
+            Controls.Add(numBetweenTiles);
+            Controls.Add(label3);
+            Controls.Add(numBorder);
+            Controls.Add(label4);
             Controls.Add(numHorzTilesSpinner);
             Controls.Add(btnSelectFile);
             Controls.Add(txtFileName);
@@ -125,6 +165,8 @@
             StartPosition = FormStartPosition.CenterParent;
             Text = "Export Tileset";
             ((System.ComponentModel.ISupportInitialize)numHorzTilesSpinner).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numBetweenTiles).EndInit();
+            ((System.ComponentModel.ISupportInitialize)numBorder).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -138,5 +180,9 @@
         private TextBox txtFileName;
         private Button btnSelectFile;
         private NumericUpDown numHorzTilesSpinner;
+        private NumericUpDown numBetweenTiles;
+        private Label label3;
+        private NumericUpDown numBorder;
+        private Label label4;
     }
 }

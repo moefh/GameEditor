@@ -10,9 +10,9 @@ using System.Windows.Forms;
 
 namespace GameEditor.TilesetEditor
 {
-    public partial class TilesetExportDialog : Form
+    public partial class TilesetImportDialog : Form
     {
-        public TilesetExportDialog() {
+        public TilesetImportDialog() {
             InitializeComponent();
         }
 
@@ -21,23 +21,13 @@ namespace GameEditor.TilesetEditor
             set { txtFileName.Text = value; }
         }
 
-        public int NumHorzTiles {
-            get { return (int) numHorzTilesSpinner.Value; }
-            set { numHorzTilesSpinner.Value = value; }
-        }
-
-        public int MaxHorzTiles {
-            get { return (int) numHorzTilesSpinner.Maximum; }
-            set { numHorzTilesSpinner.Maximum = value; }
-        }
-
         public int ImportBorder {
-            get { return (int) numBorder.Value; }
+            get { return (int)numBorder.Value; }
             set { numBorder.Value = value; }
         }
 
         public int ImportSpaceBetweenTiles {
-            get { return (int) numBetweenTiles.Value; }
+            get { return (int)numBetweenTiles.Value; }
             set { numBetweenTiles.Value = value; }
         }
 
@@ -53,9 +43,9 @@ namespace GameEditor.TilesetEditor
         }
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Export Tileset";
-            dlg.Filter = "Image Files (*.bmp;*.png)|*.bmp;*.png|All files (*.*)|*.*";
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Import Tileset";
+            dlg.Filter = "Image Files (*.bmp, *.png, *.jpg, *.gif)|*.bmp;*.png;*.jpg;*.gif|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             dlg.FileName = FileName;
             if (dlg.ShowDialog() == DialogResult.OK) {
