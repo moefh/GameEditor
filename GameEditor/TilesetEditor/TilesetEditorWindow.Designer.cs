@@ -302,7 +302,7 @@
             // 
             deleteTileToolStripMenuItem.Name = "deleteTileToolStripMenuItem";
             deleteTileToolStripMenuItem.Size = new Size(225, 24);
-            deleteTileToolStripMenuItem.Text = "Delete Selected Tile";
+            deleteTileToolStripMenuItem.Text = "Delete Tile";
             deleteTileToolStripMenuItem.Click += deleteTileToolStripMenuItem_Click;
             // 
             // toolStripSeparator3

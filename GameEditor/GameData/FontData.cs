@@ -84,5 +84,14 @@ namespace GameEditor.GameData
             images.ExportBitmap(filename, numHorzChars);
         }
 
+        public Bitmap CopyFromChar(int ch) {
+            return images.CopyFromImage(ch, 0, 0, Width, Height);
+        }
+
+        public void PasteIntoChar(Image image, int ch) {
+            images.PasteIntoImage(image, ch, 0, 0, false);
+        }
+
+
     }
 }

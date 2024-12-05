@@ -31,12 +31,18 @@
             toolStripTxtName = new ToolStripTextBox();
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
+            toolStripSeparator3 = new ToolStripSeparator();
+            toolStripBtnProperties = new ToolStripButton();
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
             fontDisplay = new CustomControls.FontDisplay();
             fontEditor = new CustomControls.FontEditor();
             displayToolStrip = new ToolStrip();
+            editToolStripDropDownButton = new ToolStripDropDownButton();
+            copyImageToolStripMenuItem = new ToolStripMenuItem();
+            pasteImageToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
             toolStripLabel3 = new ToolStripLabel();
             toolStripComboSelChar = new ToolStripComboBox();
             toolStripSeparator1 = new ToolStripSeparator();
@@ -54,7 +60,7 @@
             // dataToolStrip
             // 
             dataToolStrip.AutoSize = false;
-            dataToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
+            dataToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnExport, toolStripBtnImport, toolStripSeparator3, toolStripBtnProperties });
             dataToolStrip.Location = new Point(0, 0);
             dataToolStrip.Name = "dataToolStrip";
             dataToolStrip.Size = new Size(600, 27);
@@ -93,6 +99,23 @@
             toolStripBtnImport.Size = new Size(23, 24);
             toolStripBtnImport.Text = "Import font image from file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(6, 27);
+            // 
+            // toolStripBtnProperties
+            // 
+            toolStripBtnProperties.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnProperties.Image = Properties.Resources.PropertiesIcon;
+            toolStripBtnProperties.ImageTransparentColor = Color.Magenta;
+            toolStripBtnProperties.Name = "toolStripBtnProperties";
+            toolStripBtnProperties.Size = new Size(23, 24);
+            toolStripBtnProperties.Text = "Properties";
+            toolStripBtnProperties.ToolTipText = "Edit font properties";
+            toolStripBtnProperties.Click += toolStripBtnProperties_Click;
             // 
             // statusStrip
             // 
@@ -154,18 +177,49 @@
             // displayToolStrip
             // 
             displayToolStrip.AutoSize = false;
-            displayToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripComboSelChar, toolStripSeparator1, toolStripLabel2, toolStripTxtSample });
+            displayToolStrip.Items.AddRange(new ToolStripItem[] { editToolStripDropDownButton, toolStripSeparator2, toolStripLabel3, toolStripComboSelChar, toolStripSeparator1, toolStripLabel2, toolStripTxtSample });
             displayToolStrip.Location = new Point(0, 27);
             displayToolStrip.Name = "displayToolStrip";
             displayToolStrip.Size = new Size(600, 27);
             displayToolStrip.TabIndex = 3;
             displayToolStrip.Text = "editToolStrip";
             // 
+            // editToolStripDropDownButton
+            // 
+            editToolStripDropDownButton.DropDownItems.AddRange(new ToolStripItem[] { copyImageToolStripMenuItem, pasteImageToolStripMenuItem });
+            editToolStripDropDownButton.Image = Properties.Resources.PenIcon;
+            editToolStripDropDownButton.ImageTransparentColor = Color.Magenta;
+            editToolStripDropDownButton.Name = "editToolStripDropDownButton";
+            editToolStripDropDownButton.Size = new Size(61, 24);
+            editToolStripDropDownButton.Text = "Edit";
+            // 
+            // copyImageToolStripMenuItem
+            // 
+            copyImageToolStripMenuItem.Name = "copyImageToolStripMenuItem";
+            copyImageToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
+            copyImageToolStripMenuItem.Size = new Size(161, 24);
+            copyImageToolStripMenuItem.Text = "Copy";
+            copyImageToolStripMenuItem.Click += copyImageToolStripMenuItem_Click;
+            // 
+            // pasteImageToolStripMenuItem
+            // 
+            pasteImageToolStripMenuItem.Name = "pasteImageToolStripMenuItem";
+            pasteImageToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
+            pasteImageToolStripMenuItem.Size = new Size(161, 24);
+            pasteImageToolStripMenuItem.Text = "Paste";
+            pasteImageToolStripMenuItem.Click += pasteImageToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 27);
+            // 
             // toolStripLabel3
             // 
             toolStripLabel3.Name = "toolStripLabel3";
-            toolStripLabel3.Size = new Size(35, 24);
-            toolStripLabel3.Text = "Edit:";
+            toolStripLabel3.Size = new Size(62, 24);
+            toolStripLabel3.Text = "Selected:";
             // 
             // toolStripComboSelChar
             // 
@@ -233,12 +287,18 @@
         private ToolStrip displayToolStrip;
         private CustomControls.FontEditor fontEditor;
         private CustomControls.FontDisplay fontDisplay;
-        private ToolStripLabel toolStripLabel3;
         private ToolStripTextBox toolStripTxtSample;
         private ToolStripButton toolStripBtnExport;
         private ToolStripButton toolStripBtnImport;
         private ToolStripComboBox toolStripComboSelChar;
         private ToolStripLabel toolStripLabel2;
         private ToolStripSeparator toolStripSeparator1;
+        private ToolStripDropDownButton editToolStripDropDownButton;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem copyImageToolStripMenuItem;
+        private ToolStripMenuItem pasteImageToolStripMenuItem;
+        private ToolStripLabel toolStripLabel3;
+        private ToolStripSeparator toolStripSeparator3;
+        private ToolStripButton toolStripBtnProperties;
     }
 }

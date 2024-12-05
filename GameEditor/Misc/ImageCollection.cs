@@ -198,12 +198,13 @@ namespace GameEditor.Misc
         // IMPORT/EXPORT
         // ===============================================================
 
-        private static Bitmap ReadBitmapToImport(string filename, int imageW, int imageH, int border, int spaceBetweenTiles) {
+        private static Bitmap ReadBitmapToImport(string filename, int imageW, int imageH, int border, int spaceBetweenImages) {
             // read source image:
             using Bitmap bmp = new Bitmap(filename);
-            int roundUp = imageW + spaceBetweenTiles - 1;
-            int nx = (bmp.Width - 2*border + spaceBetweenTiles + roundUp) / (imageW + spaceBetweenTiles);
-            int ny = (bmp.Height - 2*border + spaceBetweenTiles + roundUp) / (imageH + spaceBetweenTiles);
+            int roundUpW = imageW + spaceBetweenImages - 1;
+            int roundUpH = imageH + spaceBetweenImages - 1;
+            int nx = (bmp.Width - 2*border + spaceBetweenImages + roundUpW) / (imageW + spaceBetweenImages);
+            int ny = (bmp.Height - 2*border + spaceBetweenImages + roundUpH) / (imageH + spaceBetweenImages);
 
             // create empty bitmap:
             Bitmap imported = new Bitmap(imageW, nx * ny * imageH);
@@ -211,12 +212,13 @@ namespace GameEditor.Misc
             g.Clear(Color.FromArgb(0, 255, 0));
 
             // copy each tile:
-            int srcTileStride = imageW + spaceBetweenTiles;
+            int srcTileStrideW = imageW + spaceBetweenImages;
+            int srcTileStrideH = imageH + spaceBetweenImages;
             for (int y = 0; y < ny; y++) {
                 for (int x = 0; x < nx; x++) {
                     g.DrawImage(bmp,
                                 new Rectangle(0, (x + y * nx) * imageH, imageW, imageH),
-                                new Rectangle(border + x * srcTileStride, border + y * srcTileStride, imageW, imageH),
+                                new Rectangle(border + x * srcTileStrideW, border + y * srcTileStrideH, imageW, imageH),
                                 GraphicsUnit.Pixel);
                 }
             }

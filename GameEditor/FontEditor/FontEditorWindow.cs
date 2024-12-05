@@ -46,7 +46,7 @@ namespace GameEditor.FontEditor
                 }
             }
             toolStripComboSelChar.SelectedIndex = 1;
-            fontEditor.SelectedCharacter = (byte) toolStripComboSelChar.SelectedIndex;
+            fontEditor.SelectedCharacter = (byte)toolStripComboSelChar.SelectedIndex;
         }
 
         private void fontEditor_ImageChanged(object sender, EventArgs e) {
@@ -55,7 +55,7 @@ namespace GameEditor.FontEditor
         }
 
         private void toolStripComboSelChar_DropDownClosed(object sender, EventArgs e) {
-            fontEditor.SelectedCharacter = (byte) toolStripComboSelChar.SelectedIndex;
+            fontEditor.SelectedCharacter = (byte)toolStripComboSelChar.SelectedIndex;
         }
 
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
@@ -64,11 +64,6 @@ namespace GameEditor.FontEditor
                 int index = -1;
                 if (keyData == Keys.Left || keyData == Keys.Right) {
                     index = fontEditor.SelectedCharacter + ((keyData == Keys.Left) ? -1 : 1);
-                //} else if ((int)keyData >= 32 && (int)keyData <= 128) {
-                //    index = (int)keyData - 32;
-                }
-
-                if (index >= 0) {
                     index = (index + FontData.NUM_CHARS) % FontData.NUM_CHARS;
                     fontEditor.SelectedCharacter = (byte)index;
                     toolStripComboSelChar.SelectedIndex = index;
@@ -79,6 +74,24 @@ namespace GameEditor.FontEditor
 
         private void toolStripTxtSample_TextChanged(object sender, EventArgs e) {
             fontDisplay.Text = toolStripTxtSample.Text;
+        }
+
+        // ===================================================================
+        // TOOLSTRIP BUTTONS
+        // ===================================================================
+
+        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
+            FontPropertiesDialog dlg = new FontPropertiesDialog();
+            dlg.FontDataWidth = FontData.Width;
+            dlg.FontDataHeight = FontData.Height;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            FontData.Resize(dlg.FontDataWidth, dlg.FontDataHeight);
+            fontDisplay.Invalidate();
+            fontEditor.Invalidate();
+            Util.Project.SetDirty();
+            FixFormTitle();
+            UpdateGameDataSize();
+            Util.UpdateGameDataSize();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -112,6 +125,33 @@ namespace GameEditor.FontEditor
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Font");
             }
+        }
+
+        // ===================================================================
+        // TOOLSTRIP MENU
+        // ===================================================================
+
+        private void copyImageToolStripMenuItem_Click(object sender, EventArgs e) {
+            using Bitmap tile = FontData.CopyFromChar(fontEditor.SelectedCharacter);
+            try {
+                Clipboard.SetImage(tile);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
+            }
+        }
+
+        private void pasteImageToolStripMenuItem_Click(object sender, EventArgs e) {
+            try {
+                Image? img = Clipboard.GetImage();
+                if (img == null) return;
+                FontData.PasteIntoChar(img, fontEditor.SelectedCharacter);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
+                return;
+            }
+            Util.Project.SetDirty();
+            fontEditor.Invalidate();
+            fontDisplay.Invalidate();
         }
 
     }
