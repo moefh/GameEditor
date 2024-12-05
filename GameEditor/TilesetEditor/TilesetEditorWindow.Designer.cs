@@ -44,6 +44,9 @@
             colorPicker = new CustomControls.ColorPicker();
             toolsToolStrip = new ToolStrip();
             toolStripDropDownEdit = new ToolStripDropDownButton();
+            copyToolStripMenuItem = new ToolStripMenuItem();
+            pasteToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator4 = new ToolStripSeparator();
             insertTileToolStripMenuItem = new ToolStripMenuItem();
             appendTileToolStripMenuItem = new ToolStripMenuItem();
             deleteTileToolStripMenuItem = new ToolStripMenuItem();
@@ -253,12 +256,33 @@
             // toolStripDropDownEdit
             // 
             toolStripDropDownEdit.AutoToolTip = false;
-            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { insertTileToolStripMenuItem, appendTileToolStripMenuItem, deleteTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem });
+            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, insertTileToolStripMenuItem, appendTileToolStripMenuItem, deleteTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem });
             toolStripDropDownEdit.Image = Properties.Resources.PenIcon;
             toolStripDropDownEdit.ImageTransparentColor = Color.Magenta;
             toolStripDropDownEdit.Name = "toolStripDropDownEdit";
             toolStripDropDownEdit.Size = new Size(61, 24);
             toolStripDropDownEdit.Text = "Edit";
+            // 
+            // copyToolStripMenuItem
+            // 
+            copyToolStripMenuItem.Name = "copyToolStripMenuItem";
+            copyToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
+            copyToolStripMenuItem.Size = new Size(225, 24);
+            copyToolStripMenuItem.Text = "Copy";
+            copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
+            // 
+            // pasteToolStripMenuItem
+            // 
+            pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
+            pasteToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
+            pasteToolStripMenuItem.Size = new Size(225, 24);
+            pasteToolStripMenuItem.Text = "Paste";
+            pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator4
+            // 
+            toolStripSeparator4.Name = "toolStripSeparator4";
+            toolStripSeparator4.Size = new Size(222, 6);
             // 
             // insertTileToolStripMenuItem
             // 
@@ -392,5 +416,8 @@
         private ToolStripMenuItem insertTilesFromFileToolStripMenuItem;
         private ToolStripMenuItem appendTileToolStripMenuItem;
         private ToolStripMenuItem appendTilesFromFileToolStripMenuItem;
+        private ToolStripMenuItem copyToolStripMenuItem;
+        private ToolStripMenuItem pasteToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator4;
     }
 }

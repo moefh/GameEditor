@@ -1,4 +1,5 @@
-﻿using GameEditor.GameData;
+﻿using GameEditor.CustomControls;
+using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
@@ -170,6 +171,31 @@ namespace GameEditor.TilesetEditor
         // === MENU
         // ====================================================================
 
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
+            using Bitmap tile = Tileset.CopyFromTile(tileEditor.SelectedTile, 0, 0, Tileset.TILE_SIZE, Tileset.TILE_SIZE);
+            try {
+                Clipboard.SetImage(tile);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
+            }
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
+            try {
+                Image? img = Clipboard.GetImage();
+                if (img == null) return;
+                bool transparent = (tileEditor.RenderFlags & RENDER_TRANSPARENT) != 0;
+                Tileset.PasteIntoTile(img, tileEditor.SelectedTile, 0, 0, transparent);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
+                return;
+            }
+            Util.Project.SetDirty();
+            tileEditor.Invalidate();
+            tilePicker.Invalidate();
+            Util.RefreshTilesetUsers(Tileset);
+        }
+
         private void CheckTooManyTiles() {
             if (Tileset.NumTiles <= Tileset.MAX_NUM_TILES || warnedAboutTooManyTiles) return;
             warnedAboutTooManyTiles = true;
@@ -187,8 +213,9 @@ namespace GameEditor.TilesetEditor
                     map.Map.InsertedTile(index, 1);
                 }
             }
-            OnTilesetResized();
             tilePicker.LeftSelectedTile = index;
+            tileEditor.SelectedTile = index;
+            OnTilesetResized();
             tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
