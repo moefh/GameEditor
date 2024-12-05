@@ -44,6 +44,7 @@ namespace GameEditor.MapEditor
             toolStripLabel1 = new ToolStripLabel();
             toolStripComboBoxZoom = new ToolStripComboBox();
             toolStripBtnGridColor = new ToolStripButton();
+            toolStripLblMapCoords = new ToolStripLabel();
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
@@ -72,7 +73,7 @@ namespace GameEditor.MapEditor
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom, toolStripBtnGridColor });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonEditFG, toolStripButtonEditBG, toolStripButtonEditCol, toolStripSeparator2, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator3, toolStripLabel1, toolStripComboBoxZoom, toolStripBtnGridColor, toolStripLblMapCoords });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(850, 27);
@@ -209,6 +210,13 @@ namespace GameEditor.MapEditor
             toolStripBtnGridColor.ToolTipText = "Change grid color";
             toolStripBtnGridColor.Click += toolStripBtnGridColor_Click;
             // 
+            // toolStripLblMapCoords
+            // 
+            toolStripLblMapCoords.Alignment = ToolStripItemAlignment.Right;
+            toolStripLblMapCoords.Name = "toolStripLblMapCoords";
+            toolStripLblMapCoords.Size = new Size(40, 24);
+            toolStripLblMapCoords.Text = "(X, Y)";
+            // 
             // statusStrip
             // 
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
@@ -299,6 +307,7 @@ namespace GameEditor.MapEditor
             mapEditor.MapChanged += mapEditor_MapChanged;
             mapEditor.SelectedTilesChanged += mapEditor_SelectedTilesChanged;
             mapEditor.ZoomChanged += mapEditor_ZoomChanged;
+            mapEditor.MouseOver += mapEditor_MouseOver;
             // 
             // infoToolStrip
             // 
@@ -440,5 +449,6 @@ namespace GameEditor.MapEditor
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripButton toolStripBtnExport;
         private ToolStripButton toolStripBtnImport;
+        private ToolStripLabel toolStripLblMapCoords;
     }
 }

@@ -1,4 +1,2 @@
 ﻿
-- project lint (check errors, like too many tiles in tileset)
-
 - make editor for map connections (world editor)

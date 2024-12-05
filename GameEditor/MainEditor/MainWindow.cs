@@ -29,14 +29,18 @@ namespace GameEditor.MainEditor
 {
     public partial class MainWindow : Form
     {
-        private readonly Dictionary<DataAssetType,ProjectAssetListEditorForm> editors = [];
+        private readonly Dictionary<DataAssetType, ProjectAssetListEditorForm> editors = [];
         private readonly LogWindow logWindow;
+        private readonly CheckerWindow checkerWindow;
 
         public MainWindow() {
             InitializeComponent();
 
             logWindow = new LogWindow();
             logWindow.MdiParent = this;
+
+            checkerWindow = new CheckerWindow();
+            checkerWindow.MdiParent = this;
 
             editors[DataAssetType.Map] = new MapListEditorWindow();
             editors[DataAssetType.Tileset] = new TilesetListEditorWindow();
@@ -119,7 +123,7 @@ namespace GameEditor.MainEditor
         }
 
         // ======================================================================
-        // === SAVE/LOAD STUFF
+        // === NEW/SAVE/LOAD STUFF
         // ======================================================================
 
         private bool ConfirmLoseData() {
@@ -143,6 +147,16 @@ namespace GameEditor.MainEditor
                     editors[type].Show();
                 }
             }
+        }
+
+        public void NewProject() {
+            if (!ConfirmLoseData()) return;
+            Util.Project = new ProjectData();
+            UpdateWindowTitle();
+            RefreshAllAssetLists();
+            checkerWindow.ClearResults();
+            Util.UpdateGameDataSize();
+            Util.Log("== created new project");
         }
 
         private void SaveProject() {
@@ -181,6 +195,7 @@ namespace GameEditor.MainEditor
                 Util.Project = p;
                 UpdateWindowTitle();
                 RefreshAllAssetLists();
+                checkerWindow.ClearResults();
                 UpdateDirtyStatus();
                 Util.UpdateGameDataSize();
                 OpenFilledListWindows();
@@ -235,7 +250,7 @@ namespace GameEditor.MainEditor
                     "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-            Sprite sprite = (Sprite) Util.Project.SpriteList[0].Asset;
+            Sprite sprite = (Sprite)Util.Project.SpriteList[0].Asset;
             SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, "new_animation"));
             Util.Project.AddAssetItem(ai);
             Util.Project.SetDirty();
@@ -282,12 +297,7 @@ namespace GameEditor.MainEditor
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            if (!ConfirmLoseData()) return;
-            Util.Project = new ProjectData();
-            UpdateWindowTitle();
-            RefreshAllAssetLists();
-            Util.UpdateGameDataSize();
-            Util.Log("== created new project");
+            NewProject();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -341,6 +351,12 @@ namespace GameEditor.MainEditor
 
         private void addNewFontToolStripMenuItem_Click(object sender, EventArgs e) {
             AddFont().ShowEditor();
+        }
+
+        private void runCheckToolStripMenuItem_Click(object sender, EventArgs e) {
+            checkerWindow.Show();
+            //checkerWindow.Activate();
+            checkerWindow.RunCheck();
         }
 
         private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {

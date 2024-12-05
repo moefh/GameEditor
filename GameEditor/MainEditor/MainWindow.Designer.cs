@@ -47,6 +47,8 @@
             addMODToolStripMenuItem = new ToolStripMenuItem();
             addNewFontToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
+            runCheckToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator6 = new ToolStripSeparator();
             propertiesToolStripMenuItem = new ToolStripMenuItem();
             helpToolStripMenuItem = new ToolStripMenuItem();
             aboutToolStripMenuItem = new ToolStripMenuItem();
@@ -156,7 +158,7 @@
             // 
             // projectToolStripMenuItem
             // 
-            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, toolStripSeparator1, propertiesToolStripMenuItem });
+            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, toolStripSeparator1, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             projectToolStripMenuItem.Size = new Size(63, 23);
             projectToolStripMenuItem.Text = "&Project";
@@ -221,6 +223,19 @@
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(237, 6);
+            // 
+            // runCheckToolStripMenuItem
+            // 
+            runCheckToolStripMenuItem.Name = "runCheckToolStripMenuItem";
+            runCheckToolStripMenuItem.ShortcutKeys = Keys.F5;
+            runCheckToolStripMenuItem.Size = new Size(240, 24);
+            runCheckToolStripMenuItem.Text = "&Run Check";
+            runCheckToolStripMenuItem.Click += runCheckToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new Size(237, 6);
             // 
             // propertiesToolStripMenuItem
             // 
@@ -453,5 +468,7 @@
         private ToolStripSeparator toolStripSeparator5;
         private ToolStripMenuItem addNewFontToolStripMenuItem;
         private ToolStripButton toolStripBtnFontEditor;
+        private ToolStripMenuItem runCheckToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator6;
     }
 }

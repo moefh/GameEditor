@@ -33,6 +33,7 @@ namespace GameEditor.CustomControls
         public event EventHandler? MapChanged;
         public event EventHandler? SelectedTilesChanged;
         public event EventHandler? ZoomChanged;
+        public event EventHandler<Point>? MouseOver;
 
         public MapEditor() {
             InitializeComponent();
@@ -221,6 +222,7 @@ namespace GameEditor.CustomControls
                 case MouseButtons.Middle: ScrollMap(e.Location - new Size(scrollOrigin)); scrollOrigin = e.Location; break;
                 }
             }
+            MouseOver?.Invoke(this, new Point(tx, ty));
         }
 
         protected override void OnMouseWheel(MouseEventArgs e) {

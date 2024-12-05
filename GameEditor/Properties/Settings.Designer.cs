@@ -730,5 +730,41 @@ namespace GameEditor.Properties {
                 this["TileEditorGridColor"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point ValidatorWindowLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["ValidatorWindowLocation"]));
+            }
+            set {
+                this["ValidatorWindowLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size ValidatorWindowSize {
+            get {
+                return ((global::System.Drawing.Size)(this["ValidatorWindowSize"]));
+            }
+            set {
+                this["ValidatorWindowSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ValidatorWindowSaved {
+            get {
+                return ((bool)(this["ValidatorWindowSaved"]));
+            }
+            set {
+                this["ValidatorWindowSaved"] = value;
+            }
+        }
     }
 }

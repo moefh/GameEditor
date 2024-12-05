@@ -31,6 +31,8 @@ namespace GameEditor.MapEditor
             mapEditor.GridColor = ConfigUtil.MapEditorGridColor;
             mapEditor.MinZoom = 1;
             mapEditor.MaxZoom = toolStripComboBoxZoom.Items.Count;
+            mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
+            mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
             UpdateMapZoom();
             EditLayer = LAYER_FG;
             toolStripComboBoxZoom.SelectedIndex = 2;
@@ -162,6 +164,14 @@ namespace GameEditor.MapEditor
             }
         }
 
+        private void mapEditor_MouseOver(object sender, Point p) {
+            if (p.X < 0 || p.Y < 0 || p.X >= Map.Tiles.Width || p.Y >= Map.Tiles.Height) {
+                toolStripLblMapCoords.Text = "";
+            } else {
+                toolStripLblMapCoords.Text = $"({p.X}, {p.Y})";
+            }
+        }
+
         // ====================================================================
         // === TOOLSTRIP BUTTONS
         // ====================================================================
@@ -204,6 +214,10 @@ namespace GameEditor.MapEditor
         private void toolStripBtnGridColor_Click(object sender, EventArgs e) {
             ColorDialog dlg = new ColorDialog();
             dlg.Color = mapEditor.GridColor;
+            dlg.AnyColor = true;
+            dlg.AllowFullOpen = true;
+            dlg.FullOpen = true;
+            dlg.SolidColorOnly = true;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 mapEditor.GridColor = dlg.Color;
                 mapEditor.Invalidate();
@@ -247,5 +261,6 @@ namespace GameEditor.MapEditor
                 Util.ShowError(ex, $"Error exporting map to {dlg.FileName}", "Error Exporting Map");
             }
         }
+
     }
 }
