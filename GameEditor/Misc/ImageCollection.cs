@@ -15,17 +15,17 @@ namespace GameEditor.Misc
         private Bitmap bitmap;
         private int height;
 
-        public ImageCollection(int w, int h, int numImages) {
-            bitmap = new Bitmap(w, h * numImages);
-            height = h;
+        public ImageCollection(int width, int height, int numImages) {
+            bitmap = new Bitmap(width, height * numImages);
+            this.height = height;
         }
 
-        public ImageCollection(Bitmap bmp, int h) {
-            if (bmp.Height % h != 0) {
-                throw new Exception($"invalid bitmap height: {bmp.Height} is not a multiple of {h}");
+        public ImageCollection(Bitmap bmp, int height) {
+            if (bmp.Height % height != 0) {
+                throw new Exception($"invalid bitmap height: {bmp.Height} is not a multiple of {height}");
             }
             bitmap = bmp;
-            height = h;
+            this.height = height;
         }
 
         public int Width { get { return bitmap.Width; } }
@@ -231,8 +231,8 @@ namespace GameEditor.Misc
             return imported;
         }
 
-        public void ImportBitmap(string filename, int imageW, int imageH, int border, int spaceBetweenTiles) {
-            Bitmap imported = ReadBitmapToImport(filename, imageW, imageH, border, spaceBetweenTiles);
+        public void ImportBitmap(string filename, int imageW, int imageH, int border, int spaceBetweenImages) {
+            Bitmap imported = ReadBitmapToImport(filename, imageW, imageH, border, spaceBetweenImages);
             bitmap.Dispose();
             bitmap = imported;
             height = imageH;
