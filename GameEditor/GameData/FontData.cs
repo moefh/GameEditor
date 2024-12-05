@@ -15,23 +15,26 @@ namespace GameEditor.GameData
         public const int FIRST_CHAR = 32;
         public const int NUM_CHARS = 128 - FIRST_CHAR;
 
-        private Bitmap bitmap;
+        private const int DEFAULT_WIDTH = 6;
+        private const int DEFAULT_HEIGHT = 8;
+
+        private ImageCollection images;
 
         public FontData(string name) {
             Name = name;
-            bitmap = CreateDefaultBitmap(6, 8);
+            images = CreateDefaultImages(DEFAULT_WIDTH, DEFAULT_HEIGHT);
         }
 
         public FontData(string name, int width, int height) {
             Name = name;
-            bitmap = CreateDefaultBitmap(width, height);
+            images = CreateDefaultImages(width, height);
         }
 
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.Font; } }
 
-        public int Width { get { return bitmap.Width; } }
-        public int Height { get { return bitmap.Height / NUM_CHARS; } }
+        public int Width { get { return images.Width; } }
+        public int Height { get { return images.Height; } }
 
         public int GameDataSize {
             get {
@@ -43,125 +46,42 @@ namespace GameEditor.GameData
         }
 
         public void Dispose() {
-            bitmap.Dispose();
+            images.Dispose();
         }
 
         public void DrawCharAt(Graphics g, byte ch, int x, int y, int w, int h, bool transparent) {
-            if (transparent) {
-                g.DrawImage(bitmap, new Rectangle(x, y, w, h), 0, ch * Height, Width, Height, GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
-            } else {
-                g.DrawImage(bitmap, new Rectangle(x, y, w, h), 0, ch * Height, Width, Height, GraphicsUnit.Pixel);
-            }
+            images.DrawImageAt(g, ch, x, y, w, h, transparent, false);
         }
 
         public void SetCharPixel(byte ch, int x, int y, Color color) {
-            bitmap.SetPixel(x, y + ch * Height, color);
+            images.SetImagePixel(ch, x, y, color);
         }
 
-        private static Bitmap CreateDefaultBitmap(int w, int h) {
+        private static ImageCollection CreateDefaultImages(int w, int h) {
             Bitmap bmp = new Bitmap(w, h * NUM_CHARS);
             using Graphics g = Graphics.FromImage(bmp);
             g.Clear(Color.FromArgb(0,255,0));
-            return bmp;
+            return new ImageCollection(bmp, h);
         }
 
         public void WriteCharPixels(int ch, byte[] pixels) {
-            Rectangle rect = new Rectangle(0, ch * Height, Width, Height);
-            BitmapData data = bitmap.LockBits(rect, ImageLockMode.WriteOnly, PixelFormat.Format32bppArgb);
-            try {
-                for (int y = 0; y < Height; y++) {
-                    Marshal.Copy(pixels, y * 4 * Width, data.Scan0 + y * data.Stride, 4 * Width);
-                }
-            } finally {
-                bitmap.UnlockBits(data);
-            }
+            images.WriteImagePixels(ch, pixels);
         }
 
         public void ReadCharPixels(int ch, byte[] pixels) {
-            Rectangle rect = new Rectangle(0, ch * Height, Width, Height);
-            BitmapData data = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
-            try {
-                for (int y = 0; y < Height; y++) {
-                    Marshal.Copy(data.Scan0 + y * data.Stride, pixels, y * 4 * Width, 4 * Width);
-                }
-            } finally {
-                bitmap.UnlockBits(data);
-            }
+            images.ReadImagePixels(ch, pixels);
         }
 
         public void Resize(int newWidth, int newHeight) {
-            Bitmap font = new Bitmap(newWidth, newHeight * NUM_CHARS);
-            using Graphics g = Graphics.FromImage(font);
-            g.Clear(Color.FromArgb(0,255,0));
-
-            int copyWidth = Math.Min(newWidth, Width);
-            int copyHeight = Math.Min(newHeight, Height);
-            for (int ch = 0; ch < NUM_CHARS; ch++) {
-                Rectangle dest = new Rectangle(0, ch*newHeight, copyWidth, copyHeight);
-                g.DrawImage(bitmap, dest, 0, ch * Height, copyWidth, copyHeight, GraphicsUnit.Pixel);
-            }
-
-            bitmap.Dispose();
-            bitmap = font;
+            images.Resize(newWidth, newHeight, NUM_CHARS, Color.FromArgb(0,255,0));
         }
 
         public void ImportBitmap(string filename, int fontWidth, int fontHeight) {
-            // read source image:
-            using Bitmap bmp = new Bitmap(filename);
-            int nx = (bmp.Width + fontWidth - 1) / fontWidth;
-            int ny = (NUM_CHARS + nx - 1) / nx;
-
-            // create empty bitmap:
-            Bitmap font = new Bitmap(fontWidth, NUM_CHARS * fontHeight);
-            using Graphics g = Graphics.FromImage(font);
-            g.Clear(Color.FromArgb(0, 255, 0));
-
-            // copy each frame from the original to the new bitmap:
-            for (int y = 0; y < ny; y++) {
-                for (int x = 0; x < nx; x++) {
-                    g.DrawImage(bmp,
-                        new Rectangle(0, (x + y * nx) * fontHeight, fontWidth, fontHeight),
-                        new Rectangle(x * fontWidth, y * fontHeight, fontWidth, fontHeight),
-                        GraphicsUnit.Pixel);
-                }
-            }
-
-            // use the new bitmap:
-            bitmap.Dispose();
-            bitmap = font;
-
-            // force each character to transparent green or black:
-            byte[] pixels = new byte[Width*Height*4];
-            for (int ch = 0; ch < NUM_CHARS; ch++) {
-                ReadCharPixels(ch, pixels);
-                for (int i = 0; i < pixels.Length/4; i++) {
-                    bool bg = (pixels[4*i+3] < 128) || (pixels[4*i+1] > 128);
-                    pixels[4*i+0] = 0;
-                    pixels[4*i+1] = (byte) (bg ? 255 : 0);
-                    pixels[4*i+2] = 0;
-                    pixels[4*i+3] = 255;
-                }
-                WriteCharPixels(ch, pixels);
-            }
+            images.ImportBitmap(filename, fontWidth, fontHeight, 0, 0);
         }
 
-        public void ExportBitmap(string filename, int numHorzTiles) {
-            if (numHorzTiles <= 0 || numHorzTiles > NUM_CHARS) {
-                throw new Exception("Invalid number of horizontal tiles");
-            }
-            int numVertTiles = (NUM_CHARS + numHorzTiles - 1) / numHorzTiles;
-
-            using Bitmap save = new Bitmap(numHorzTiles * Width, numVertTiles * Height);
-            using Graphics g = Graphics.FromImage(save);
-            for (int y = 0; y < numVertTiles; y++) {
-                for (int x = 0; x < numHorzTiles; x++) {
-                    g.DrawImage(bitmap,
-                        new Rectangle(x * Width, y * Height, Width, Height),
-                        new Rectangle(0, (x + y * numHorzTiles) * Height, Width, Height),
-                        GraphicsUnit.Pixel);
-                }
-            }
-            save.Save(filename);
+        public void ExportBitmap(string filename, int numHorzChars) {
+            images.ExportBitmap(filename, numHorzChars);
         }
 
     }
