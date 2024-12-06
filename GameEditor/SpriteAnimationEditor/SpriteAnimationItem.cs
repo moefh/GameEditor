@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEditor.SpriteEditor
+namespace GameEditor.SpriteAnimationEditor
 {
     public class SpriteAnimationItem : IDataAssetItem
     {

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -6,61 +7,64 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace GameEditor.GameData
 {
+
     public sealed class SpriteAnimationLoop {
+        public struct Frame(int headIndex, int footIndex) {
+            public static readonly Frame Empty = new Frame();
+            public int HeadIndex = headIndex;
+            public int FootIndex = footIndex;
+        }
+
         public const int MAX_NUM_FRAMES = 16;
-        public const string ALL_FRAMES_LOOP_NAME = "(all frames)";
-        public const string NEW_LOOP_NAME = "new_loop";
 
-        private string name;
-        private readonly List<int> indices;
-        private readonly bool immutable;
-
-        public SpriteAnimationLoop(SpriteAnimation anim, string name, bool immutable, int size) {
+        public SpriteAnimationLoop(SpriteAnimation anim, string name) {
             Animation = anim;
-            this.name = name;
-            this.immutable = immutable;
-            indices = new List<int>(Enumerable.Range(0, size));
+            Name = name;
+            Indices = [Frame.Empty];
         }
 
-        public SpriteAnimationLoop(SpriteAnimation anim, string name, bool immutable, List<int> indices) {
+        public SpriteAnimationLoop(SpriteAnimation anim, string name, List<Frame> indices) {
             Animation = anim;
-            this.name = name;
-            this.immutable = immutable;
-            this.indices = new List<int>(indices);
+            Name = name;
+            Indices = new List<Frame>(indices);
         }
 
-        public SpriteAnimation Animation { get; private set; }
+        public SpriteAnimation Animation { get; }
 
-        public bool IsImmutable { get { return immutable; } }
-
-        public string Name {
-            get { return name; }
-            set { if (! immutable) name = value; }
-        }
+        public string Name { get; set; }
 
         public int NumFrames {
-            get { return indices.Count; }
+            get { return Indices.Count; }
         }
 
-        public int Frame(int i) { return indices[i]; }
-        public void SetFrame(int i, int frame) { if (! immutable) indices[i] = frame; }
+        public List<Frame> Indices { get; }
 
         public void Resize(int newNumFrames) {
-            if (immutable || newNumFrames <= 0) return;
-            if (newNumFrames > indices.Count) {
-                indices.AddRange(Enumerable.Repeat(0, newNumFrames - indices.Count));
+            if (newNumFrames > Indices.Count) {
+                Indices.AddRange(Enumerable.Repeat(Frame.Empty, newNumFrames - Indices.Count));
             } else {
-                indices.RemoveRange(newNumFrames, indices.Count - newNumFrames);
+                Indices.RemoveRange(newNumFrames, Indices.Count - newNumFrames);
             }
         }
 
-        public void SetFrames(IList<int> frames) {
+        public void SetFrames(IList<Frame> frames) {
             Resize(frames.Count);
             for (int i = 0; i < frames.Count; i++) {
-                SetFrame(i, frames[i]);
+                Indices[i] = frames[i];
+            }
+        }
+
+        public void FixFrameReferences() {
+            int numSprFrames = Animation.Sprite.NumFrames;
+            for (int i = 0; i < Indices.Count; i++) {
+                if (Indices[i].HeadIndex >= numSprFrames || Indices[i].FootIndex >= numSprFrames) {
+                    Indices[i] = new Frame(int.Min(Indices[i].HeadIndex, numSprFrames),
+                                           int.Min(Indices[i].FootIndex, numSprFrames));
+                }
             }
         }
 
@@ -68,35 +72,56 @@ namespace GameEditor.GameData
 
     public class SpriteAnimation : IDataAsset
     {
-        public const int MAX_NUM_LOOPS = 4;
-
-        private readonly BindingList<SpriteAnimationLoop> loops;
-
-        private Sprite sprite;
+        private Sprite spr;
 
         public SpriteAnimation(Sprite sprite, string name) {
-            this.sprite = sprite;
+            spr = sprite;
+            spr.NumFramesChanged += HandleNumFramesChanged;
             Name = name;
-            Sprite.NumFramesChanged += HandleNumFramesChanged;
-            loops = [ new SpriteAnimationLoop(this, SpriteAnimationLoop.ALL_FRAMES_LOOP_NAME, true, Sprite.NumFrames) ];
+            Loops = [
+                new SpriteAnimationLoop(this, "stand"),
+                new SpriteAnimationLoop(this, "stand_shoot_n"),
+                new SpriteAnimationLoop(this, "stand_shoot_ne"),
+                new SpriteAnimationLoop(this, "stand_shoot_e"),
+                new SpriteAnimationLoop(this, "stand_shoot_se"),
+                new SpriteAnimationLoop(this, "crouch"),
+                new SpriteAnimationLoop(this, "crouch_shoot_ne"),
+                new SpriteAnimationLoop(this, "crouch_shoot_e"),
+                new SpriteAnimationLoop(this, "crouch_shoot_se"),
+                new SpriteAnimationLoop(this, "run"),
+                new SpriteAnimationLoop(this, "run_shoot_ne"),
+                new SpriteAnimationLoop(this, "run_shoot_e"),
+                new SpriteAnimationLoop(this, "run_shoot_se"),
+                new SpriteAnimationLoop(this, "jump"),
+                new SpriteAnimationLoop(this, "jump_spin"),
+                new SpriteAnimationLoop(this, "jump_shoot_n"),
+                new SpriteAnimationLoop(this, "jump_shoot_ne"),
+                new SpriteAnimationLoop(this, "jump_shoot_e"),
+                new SpriteAnimationLoop(this, "jump_shoot_se"),
+                new SpriteAnimationLoop(this, "jump_shoot_s"),
+            ];
+            FixLoopFrameReferences();
         }
 
         public Sprite Sprite {
-            get { return sprite; }
-            set { sprite = value; FixLoopFrameReferences(); }
+            get { return spr; }
+            set {
+                spr.NumFramesChanged -= HandleNumFramesChanged;
+                spr = value;
+                spr.NumFramesChanged += HandleNumFramesChanged;
+                FixLoopFrameReferences();
+            }
         }
+
+        public int FootOverlap { get; set; }
+        public SpriteAnimationLoop[] Loops { get; }
 
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.SpriteAnimation; } }
 
-        public int NumLoops { get { return loops.Count; } }
-
-        public BindingList<SpriteAnimationLoop> GetAllLoops() { return loops; }
-
-        public SpriteAnimationLoop GetLoop(int i) { return loops[i]; }
-
         public int GameDataSize {
             get {
+                // FIXME
                 // spriteImage(4) + numLoops(1) + MAX_LOOPS(4)*(numFrames(1) + MAX_LOOP_FRAMES(16))
                 return 4 + 1 + 4 * (1 + 16);
             }
@@ -106,35 +131,9 @@ namespace GameEditor.GameData
             Sprite.NumFramesChanged -= HandleNumFramesChanged;
         }
 
-        public void AddLoop() {
-            loops.Add(new SpriteAnimationLoop(this, SpriteAnimationLoop.NEW_LOOP_NAME, false, 1));
-        }
-
-        public void AddLoop(List<int> frameIndices) {
-            loops.Add(new SpriteAnimationLoop(this, SpriteAnimationLoop.NEW_LOOP_NAME, false, frameIndices));
-        }
-
-        public bool RemoveLoop(SpriteAnimationLoop remove) {
-            if (remove == loops[0]) return false;  // can't remove full loop
-            return loops.Remove(remove);
-        }
-
         public void FixLoopFrameReferences() {
-            if (NumLoops == 0) return;
-
-            // rebuild first loop (the full one) since it's immutable
-            if (GetLoop(0).NumFrames != Sprite.NumFrames) {
-                loops[0] = new SpriteAnimationLoop(this, SpriteAnimationLoop.ALL_FRAMES_LOOP_NAME, true, Sprite.NumFrames);
-            }
-
-            // every other loop will simply have their indices clamped to the valid range
-            for (int l = 1; l < loops.Count; l++) {
-                SpriteAnimationLoop loop = GetLoop(l);
-                for (int i = 0; i < loop.NumFrames; i++) {
-                    if (loop.Frame(i) >= Sprite.NumFrames) {
-                        loop.SetFrame(i, Sprite.NumFrames - 1);
-                    }
-                }
+            foreach (SpriteAnimationLoop loop in Loops) {
+                loop.FixFrameReferences();
             }
         }
 

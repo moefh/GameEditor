@@ -633,6 +633,7 @@ namespace GameEditor.ProjectIO
             ExpectPunct(']');
             ExpectPunct('=');
             ExpectPunct('{');
+            /*
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
@@ -667,6 +668,7 @@ namespace GameEditor.ProjectIO
                 spriteAnimationList.Add(anim);
                 Util.Log($"-> got sprite animation for {sprite.Name} with {loops.Count} loops");
             }
+            */
             ExpectPunct(';');
         }
 

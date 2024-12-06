@@ -1,4 +1,4 @@
-﻿namespace GameEditor.SpriteEditor
+﻿namespace GameEditor.SpriteAnimationEditor
 {
     partial class SpriteAnimationListEditorWindow
     {

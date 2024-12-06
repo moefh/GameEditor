@@ -4,6 +4,7 @@ using GameEditor.MapEditor;
 using GameEditor.Misc;
 using GameEditor.ModEditor;
 using GameEditor.SfxEditor;
+using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
 using System;
@@ -514,6 +515,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine($"const struct {GetUpperGlobal("SPRITE_ANIMATION")} {GetLowerGlobal("sprite_animations")}[] = {{");
             foreach (SpriteAnimationItem ai in Util.Project.SpriteAnimationList) {
                 string spritesIdent = GetLowerGlobal("sprites");
+                /*
                 int spriteIndex = Util.Project.GetAssetIndex(ai.Animation.Sprite);
                 f.WriteLine($"  {{  // {ai.Animation.Name}");
                 f.WriteLine($"    &{spritesIdent}[{spriteIndex}],");
@@ -529,6 +531,7 @@ namespace GameEditor.ProjectIO
                 }
                 f.WriteLine("    },");
                 f.WriteLine("  },");
+                */
                 dataSize += ai.Animation.GameDataSize;
             }
             f.WriteLine("};");

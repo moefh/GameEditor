@@ -30,10 +30,10 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Update="SpriteEditor\SpriteAnimationEditorWindow.cs">
+    <Compile Update="SpriteAnimationEditor\SpriteAnimationEditorWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="SpriteEditor\SpriteAnimationListEditorWindow.cs">
+    <Compile Update="SpriteAnimationEditor\SpriteAnimationListEditorWindow.cs">
       <SubType>Form</SubType>
     </Compile>
   </ItemGroup>

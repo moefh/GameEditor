@@ -1,5 +1,8 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MapEditor;
 using GameEditor.MainEditor;
+using GameEditor.SpriteAnimationEditor;
+using GameEditor.SpriteEditor;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -9,8 +12,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using GameEditor.SpriteEditor;
-using GameEditor.MapEditor;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Globalization;
@@ -95,8 +96,8 @@ namespace GameEditor.Misc
 
         public static void RefreshTilesetUsers(Tileset tileset) {
             foreach (MapDataItem map in Project.MapList) {
-                if (map.Editor != null && map.Map.Tileset == tileset) {
-                    map.Editor.RefreshTileset();
+                if (map.Editor != null) {
+                    map.Editor.RefreshTileset(tileset);
                 }
             }
         }
@@ -111,8 +112,8 @@ namespace GameEditor.Misc
 
         public static void RefreshSpriteUsers(Sprite sprite, SpriteAnimationItem? exceptAnimationItem) {
             foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
-                if (ai.Editor != null && ai != exceptAnimationItem && ai.Animation.Sprite == sprite) {
-                    ai.Editor.RefreshSprite();
+                if (ai.Editor != null && ai != exceptAnimationItem) {
+                    ai.Editor.RefreshSprite(sprite);
                 }
             }
         }

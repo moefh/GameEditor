@@ -80,7 +80,7 @@ namespace GameEditor.GameData
             fmt.Alignment = StringAlignment.Center;
             for (int i = 0; i < numFrames; i++) {
                 g.FillRectangle(ImageUtil.GreenBrush, 0, height * i, width, height);
-                g.DrawString((i + 1).ToString(), SystemFonts.DefaultFont, Brushes.Black,
+                g.DrawString(i.ToString(), SystemFonts.DefaultFont, Brushes.Black,
                     new Rectangle(0, 1 + height * i, width, height - 1), fmt);
             }
             return new ImageCollection(frames, height);

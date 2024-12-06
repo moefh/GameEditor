@@ -12,7 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameEditor.SpriteEditor
+namespace GameEditor.SpriteAnimationEditor
 {
     public partial class SpriteAnimationListEditorWindow : ProjectAssetListEditorForm
     {

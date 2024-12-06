@@ -186,6 +186,7 @@
             // 
             // editToolStripDropDownButton
             // 
+            editToolStripDropDownButton.AutoToolTip = false;
             editToolStripDropDownButton.DropDownItems.AddRange(new ToolStripItem[] { copyImageToolStripMenuItem, pasteImageToolStripMenuItem });
             editToolStripDropDownButton.Image = Properties.Resources.PenIcon;
             editToolStripDropDownButton.ImageTransparentColor = Color.Magenta;
@@ -197,7 +198,7 @@
             // 
             copyImageToolStripMenuItem.Name = "copyImageToolStripMenuItem";
             copyImageToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
-            copyImageToolStripMenuItem.Size = new Size(161, 24);
+            copyImageToolStripMenuItem.Size = new Size(180, 24);
             copyImageToolStripMenuItem.Text = "Copy";
             copyImageToolStripMenuItem.Click += copyImageToolStripMenuItem_Click;
             // 
@@ -205,7 +206,7 @@
             // 
             pasteImageToolStripMenuItem.Name = "pasteImageToolStripMenuItem";
             pasteImageToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
-            pasteImageToolStripMenuItem.Size = new Size(161, 24);
+            pasteImageToolStripMenuItem.Size = new Size(180, 24);
             pasteImageToolStripMenuItem.Text = "Paste";
             pasteImageToolStripMenuItem.Click += pasteImageToolStripMenuItem_Click;
             // 
@@ -257,7 +258,6 @@
             Controls.Add(statusStrip);
             Controls.Add(dataToolStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
             MinimizeBox = false;
             Name = "FontEditorWindow";
             StartPosition = FormStartPosition.Manual;

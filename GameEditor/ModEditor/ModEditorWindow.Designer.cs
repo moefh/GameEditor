@@ -562,7 +562,6 @@
             Controls.Add(toolStrip);
             Controls.Add(statusStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(300, 200);
             Name = "ModEditorWindow";

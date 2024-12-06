@@ -2,6 +2,7 @@
 using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
+using GameEditor.SpriteAnimationEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

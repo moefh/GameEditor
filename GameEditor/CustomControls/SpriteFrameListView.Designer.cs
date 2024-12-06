@@ -1,6 +1,6 @@
 ﻿namespace GameEditor.CustomControls
 {
-    partial class SpriteAnimationLoopView
+    partial class SpriteFrameListView
     {
         /// <summary>
         /// Required designer variable.

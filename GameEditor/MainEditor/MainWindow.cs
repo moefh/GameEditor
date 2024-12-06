@@ -1,8 +1,12 @@
-﻿using GameEditor.GameData;
+﻿using GameEditor.FontEditor;
+using GameEditor.GameData;
 using GameEditor.MapEditor;
+using GameEditor.Misc;
+using GameEditor.ModEditor;
 using GameEditor.ProjectIO;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteEditor;
+using GameEditor.SpriteAnimationEditor;
 using GameEditor.TilesetEditor;
 using Microsoft.VisualBasic.Devices;
 using System;
@@ -19,11 +23,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
-using GameEditor.Misc;
-using GameEditor.ModEditor;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using GameEditor.FontEditor;
 
 namespace GameEditor.MainEditor
 {
@@ -212,8 +213,21 @@ namespace GameEditor.MainEditor
         // === ASSET CREATION
         // ======================================================================
 
+        private static string GetNewAssetName(DataAssetType type, string baseName) {
+            string name = baseName;
+            int next = 1;
+            while (true) {
+                name = $"{baseName}{next++}";
+                if (! Util.Project.GetAssetList(type).Any((IDataAssetItem item) => item.Name == name)) {
+                    break;
+                }
+            }
+            return name;
+        }
+
         public TilesetItem AddTileset() {
-            TilesetItem ti = new TilesetItem(new Tileset("new_tileset"));
+            string name = GetNewAssetName(DataAssetType.Tileset, "tileset");
+            TilesetItem ti = new TilesetItem(new Tileset(name));
             Util.Project.AddAssetItem(ti);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
@@ -221,7 +235,8 @@ namespace GameEditor.MainEditor
         }
 
         public SpriteItem AddSprite() {
-            SpriteItem si = new SpriteItem(new Sprite("new_sprite"));
+            string name = GetNewAssetName(DataAssetType.Sprite, "sprite");
+            SpriteItem si = new SpriteItem(new Sprite(name));
             Util.Project.AddAssetItem(si);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
@@ -236,7 +251,8 @@ namespace GameEditor.MainEditor
                     "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
-            MapDataItem mi = new MapDataItem(new MapData(24, 16, (Tileset)tilesetList[0].Asset));
+            string name = GetNewAssetName(DataAssetType.Map, "map");
+            MapDataItem mi = new MapDataItem(new MapData(name, 24, 16, (Tileset)tilesetList[0].Asset));
             Util.Project.AddAssetItem(mi);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
@@ -250,8 +266,9 @@ namespace GameEditor.MainEditor
                     "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return null;
             }
+            string name = GetNewAssetName(DataAssetType.SpriteAnimation, "sprite_animation");
             Sprite sprite = (Sprite)Util.Project.SpriteList[0].Asset;
-            SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, "new_animation"));
+            SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, name));
             Util.Project.AddAssetItem(ai);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
@@ -259,7 +276,8 @@ namespace GameEditor.MainEditor
         }
 
         public SfxDataItem AddSfx() {
-            SfxDataItem si = new SfxDataItem(new SfxData("new_sfx"));
+            string name = GetNewAssetName(DataAssetType.Sfx, "sfx");
+            SfxDataItem si = new SfxDataItem(new SfxData(name));
             Util.Project.AddAssetItem(si);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
@@ -267,6 +285,7 @@ namespace GameEditor.MainEditor
         }
 
         public ModDataItem AddMod() {
+            string name = GetNewAssetName(DataAssetType.Mod, "mod");
             ModDataItem mi = new ModDataItem(new ModData("new_mod"));
             Util.Project.AddAssetItem(mi);
             Util.Project.SetDirty();
@@ -275,13 +294,13 @@ namespace GameEditor.MainEditor
         }
 
         public FontDataItem AddFont() {
-            FontDataItem fi = new FontDataItem(new FontData("new_font"));
+            string name = GetNewAssetName(DataAssetType.Font, "font");
+            FontDataItem fi = new FontDataItem(new FontData(name));
             Util.Project.AddAssetItem(fi);
             Util.Project.SetDirty();
             Util.UpdateGameDataSize();
             return fi;
         }
-
 
 
         // ======================================================================

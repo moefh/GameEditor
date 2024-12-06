@@ -98,11 +98,13 @@ namespace GameEditor.MapEditor
             mapEditor.Invalidate();
         }
 
-        public void RefreshTileset() {
-            tilePicker.ResetSize();
-            tilePicker.Invalidate();
-            mapEditor.Invalidate();
-            FixFormTitle();
+        public void RefreshTileset(Tileset tileset) {
+            if (Map.Tileset == tileset) {
+                tilePicker.ResetSize();
+                tilePicker.Invalidate();
+                mapEditor.Invalidate();
+                FixFormTitle();
+            }
             toolStripComboTiles.ComboBox.DataSource = null;
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";

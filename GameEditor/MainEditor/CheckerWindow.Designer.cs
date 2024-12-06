@@ -82,6 +82,7 @@
             ClientSize = new Size(418, 202);
             Controls.Add(txtLog);
             Controls.Add(toolStrip);
+            MinimizeBox = false;
             Name = "CheckerWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Project Checker";

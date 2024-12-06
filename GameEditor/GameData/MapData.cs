@@ -15,8 +15,8 @@ namespace GameEditor.GameData
         private Tileset tileset;
         private readonly MapTiles tiles;
 
-        public MapData(int width, int height, Tileset ts) {
-            Name = "new_map";
+        public MapData(string name, int width, int height, Tileset ts) {
+            Name = name;
             tiles = new MapTiles(width, height);
             tileset = ts;
         }

@@ -1,7 +1,12 @@
-﻿using GameEditor.MapEditor;
+﻿using GameEditor.FontEditor;
+using GameEditor.MapEditor;
+using GameEditor.ModEditor;
+using GameEditor.Misc;
+using GameEditor.ProjectIO;
+using GameEditor.SfxEditor;
+using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
-using GameEditor.SfxEditor;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -11,11 +16,7 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using GameEditor.ModEditor;
-using GameEditor.Misc;
-using GameEditor.ProjectIO;
 using System.DirectoryServices.ActiveDirectory;
-using GameEditor.FontEditor;
 using System.Security.Cryptography.Pkcs;
 
 namespace GameEditor.GameData

@@ -177,7 +177,9 @@
             soundSampleView.Dock = DockStyle.Fill;
             soundSampleView.Location = new Point(0, 0);
             soundSampleView.Name = "soundSampleView";
+            soundSampleView.NumMarkers = 0;
             soundSampleView.Samples = null;
+            soundSampleView.SelectedMarker = 0;
             soundSampleView.Size = new Size(469, 139);
             soundSampleView.TabIndex = 0;
             // 
@@ -235,7 +237,6 @@
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
             MinimizeBox = false;
             MinimumSize = new Size(300, 200);
             Name = "SfxEditorWindow";

@@ -36,7 +36,7 @@
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
             toolsToolStrip = new ToolStrip();
-            toolStripDropDownButton1 = new ToolStripDropDownButton();
+            editToolStripDropDownButton = new ToolStripDropDownButton();
             copyFrameToolStripMenuItem = new ToolStripMenuItem();
             pasteToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
@@ -141,22 +141,22 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { editToolStripDropDownButton, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
             toolsToolStrip.TabIndex = 2;
             toolsToolStrip.Text = "toolStrip2";
             // 
-            // toolStripDropDownButton1
+            // editToolStripDropDownButton
             // 
-            toolStripDropDownButton1.AutoToolTip = false;
-            toolStripDropDownButton1.DropDownItems.AddRange(new ToolStripItem[] { copyFrameToolStripMenuItem, pasteToolStripMenuItem });
-            toolStripDropDownButton1.Image = Properties.Resources.PenIcon;
-            toolStripDropDownButton1.ImageTransparentColor = Color.Magenta;
-            toolStripDropDownButton1.Name = "toolStripDropDownButton1";
-            toolStripDropDownButton1.Size = new Size(69, 24);
-            toolStripDropDownButton1.Text = "Tools";
+            editToolStripDropDownButton.AutoToolTip = false;
+            editToolStripDropDownButton.DropDownItems.AddRange(new ToolStripItem[] { copyFrameToolStripMenuItem, pasteToolStripMenuItem });
+            editToolStripDropDownButton.Image = Properties.Resources.PenIcon;
+            editToolStripDropDownButton.ImageTransparentColor = Color.Magenta;
+            editToolStripDropDownButton.Name = "editToolStripDropDownButton";
+            editToolStripDropDownButton.Size = new Size(61, 24);
+            editToolStripDropDownButton.Text = "Edit";
             // 
             // copyFrameToolStripMenuItem
             // 
@@ -314,7 +314,6 @@
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
             MinimizeBox = false;
             Name = "SpriteEditorWindow";
             StartPosition = FormStartPosition.Manual;
@@ -356,7 +355,7 @@
         private CustomControls.SpriteFramePicker spriteFramePicker;
         private ToolStripStatusLabel lblDataSize;
         private ToolStripSeparator toolStripSeparator2;
-        private ToolStripDropDownButton toolStripDropDownButton1;
+        private ToolStripDropDownButton editToolStripDropDownButton;
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripMenuItem copyFrameToolStripMenuItem;
         private ToolStripButton toolStripBtnExport;
