@@ -239,7 +239,7 @@
             spriteSplit.Panel2.Controls.Add(animLoopView);
             spriteSplit.Panel2MinSize = 70;
             spriteSplit.Size = new Size(312, 249);
-            spriteSplit.SplitterDistance = 172;
+            spriteSplit.SplitterDistance = 159;
             spriteSplit.TabIndex = 0;
             // 
             // animEditor
@@ -255,7 +255,7 @@
             animEditor.RenderFlags = 0U;
             animEditor.SelectedIndex = 0;
             animEditor.SelectedLoop = 0;
-            animEditor.Size = new Size(312, 172);
+            animEditor.Size = new Size(312, 159);
             animEditor.TabIndex = 0;
             // 
             // animLoopView
@@ -268,7 +268,7 @@
             animLoopView.Name = "animLoopView";
             animLoopView.RepeatFrames = false;
             animLoopView.SelectedIndex = 0;
-            animLoopView.Size = new Size(312, 73);
+            animLoopView.Size = new Size(312, 86);
             animLoopView.Sprite = null;
             animLoopView.TabIndex = 0;
             animLoopView.SelectedLoopIndexChanged += spriteListView_SelectedLoopIndexChanged;

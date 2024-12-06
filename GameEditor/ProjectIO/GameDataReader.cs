@@ -7,6 +7,7 @@ using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
@@ -27,6 +28,7 @@ namespace GameEditor.ProjectIO
             "SFX",
             "TILESET",
             "SPRITE",
+            "SPRITE_ANIMATION",
             "MAP",
             "FONT",
         ];
@@ -41,13 +43,14 @@ namespace GameEditor.ProjectIO
         private uint vgaSyncBits;
         private string globalPrefixLower;
         private string globalPrefixUpper;
-        private readonly Dictionary<string,List<uint>> gameTilesetData = [];
-        private readonly Dictionary<string,List<byte>> gameFontData = [];
-        private readonly Dictionary<string,List<uint>> gameSpriteData = [];
-        private readonly Dictionary<string,List<byte>> gameMapTiles = [];
-        private readonly Dictionary<string,List<sbyte>> gameSfxSamples = [];
-        private readonly Dictionary<string,List<sbyte>> gameModSamples = [];
-        private readonly Dictionary<string,List<ModCell>> gameModPattern = [];
+        private readonly Dictionary<string,List<uint>> tilesetData = [];
+        private readonly Dictionary<string,List<byte>> fontData = [];
+        private readonly Dictionary<string,List<uint>> spriteData = [];
+        private readonly Dictionary<string,List<byte>> mapTiles = [];
+        private readonly Dictionary<string,List<byte>> spriteAnimationFrames = [];
+        private readonly Dictionary<string,List<sbyte>> sfxSamples = [];
+        private readonly Dictionary<string,List<sbyte>> modSamples = [];
+        private readonly Dictionary<string,List<ModCell>> modPattern = [];
         private readonly List<FontData> fontList = [];
         private readonly List<Sprite> spriteList = [];
         private readonly List<Tileset> tilesetList = [];
@@ -271,7 +274,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameTilesetData[ident.Str] = data;
+            tilesetData[ident.Str] = data;
             Util.Log($"-> got tileset data {ident.Str}");
         }
 
@@ -326,7 +329,7 @@ namespace GameEditor.ProjectIO
                 if (stride.Num != Tileset.TILE_SIZE/4) {
                     throw new ParseError($"invalid tileset: stride must be {Tileset.TILE_SIZE/4}", stride.LineNum);
                 }
-                if (! gameTilesetData.TryGetValue(dataIdent.Str, out List<uint>? data)) {
+                if (! tilesetData.TryGetValue(dataIdent.Str, out List<uint>? data)) {
                     throw new ParseError($"invalid tileset: tileset data {dataIdent.Str} not found", dataIdent.LineNum);
                 }
                 if (numTiles.Num * width.Num * height.Num != data.Count*4) {
@@ -360,7 +363,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameFontData[ident.Str] = data;
+            fontData[ident.Str] = data;
             Util.Log($"-> got font data {ident.Str}");
         }
 
@@ -406,7 +409,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! gameFontData.TryGetValue(dataIdent.Str, out List<byte>? data)) {
+                if (! fontData.TryGetValue(dataIdent.Str, out List<byte>? data)) {
                     throw new ParseError($"invalid font: font data {dataIdent.Str} not found", dataIdent.LineNum);
                 }
                 if (FontData.NUM_CHARS * ((width.Num+7)/8) * height.Num != data.Count) {
@@ -440,7 +443,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameSpriteData[ident.Str] = data;
+            spriteData[ident.Str] = data;
             Util.Log($"-> got sprite data {ident.Str}");
         }
 
@@ -494,7 +497,7 @@ namespace GameEditor.ProjectIO
                 if ((width.Num+3)/4 != stride.Num) {
                     throw new ParseError($"invalid sprite: stride {stride.Num} doesn't match width {(width.Num+3)/4}", dataIdent.LineNum);
                 }
-                if (! gameSpriteData.TryGetValue(dataIdent.Str, out List<uint>? data)) {
+                if (! spriteData.TryGetValue(dataIdent.Str, out List<uint>? data)) {
                     throw new ParseError($"invalid sprite: sprite data {dataIdent.Str} not found", dataIdent.LineNum);
                 }
 
@@ -540,7 +543,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameMapTiles[ident.Str] = data;
+            mapTiles[ident.Str] = data;
             Util.Log($"-> got map tiles {ident.Str}");
         }
 
@@ -560,7 +563,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('&');
                 ExpectIdent($"{GlobalPrefixLower}_tilesets");
                 ExpectPunct('[');
-                Token tilesetIndex= ExpectNumber();
+                Token tilesetIndex = ExpectNumber();
                 ExpectPunct(']');
                 ExpectPunct(',');
                 Token mapTilesDataIdent = ExpectIdent();
@@ -570,7 +573,7 @@ namespace GameEditor.ProjectIO
                 if (tilesetIndex.Num >= tilesetList.Count) {
                     throw new ParseError($"tileset {tilesetIndex.Num} doesn't exist", tilesetIndex.LineNum);
                 }
-                if (! gameMapTiles.TryGetValue(mapTilesDataIdent.Str, out List<byte>? tiles)) {
+                if (! mapTiles.TryGetValue(mapTilesDataIdent.Str, out List<byte>? tiles)) {
                     throw new ParseError($"game map tile {mapTilesDataIdent.Str} doesn't exist", mapTilesDataIdent.LineNum);
                 }
 
@@ -586,46 +589,40 @@ namespace GameEditor.ProjectIO
         // === SPRITE ANIMATION
         // ======================================================================
 
-        private void ReadSpriteAnimationIds(Token ident) {
+        private void ReadSpriteAnimationFrames(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
             ExpectPunct('{');
-            int nextId = 0;
+            List<byte> data = [];
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
-                if (nextId < 0) {
-                    throw new ParseError($"expected end of enum after COUNT member", lastLine);
-                }
-                if (next.IsIdent() && MatchesGlobalUpperName(next.Str, "SPRITE_ANIMATION_ID")) {
-                    string name = ExtractGlobalUpperName(next.Str, "SPRITE_ANIMATION_ID");
-                    if (nextId < spriteAnimationList.Count) {
-                        spriteAnimationList[nextId++].Name = name.ToLowerInvariant();
-                    } else {
-                        Util.Log($"!! WARNING: got animation id {next.Str} without corresponding animation");
-                    }
-                } else if (next.IsIdent() && IsGlobalUpperName(next.Str, "SPRITE_ANIMATION", "COUNT")) {
-                    nextId = -1;
-                } else {
-                    throw new ParseError($"expecting '${GlobalPrefixUpper}_SPRITE_ANIMATION_COUNT' or identifier starting with '${GlobalPrefixUpper}_SPRITE_ANIMATION_ID_', got {next}", lastLine);
-                }
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                data.Add((byte) next.Num);
                 ExpectPunct(',');
             }
             ExpectPunct(';');
+
+            spriteAnimationFrames[ident.Str] = data;
+            Util.Log($"-> got sprite animation frames {ident.Str}");
         }
 
-        private List<int> ReadSpriteAnimationLoopFrames() {
-            List<int> frames = [];
+        private List<(int,int)> ReadSpriteAnimationLoops() {
+            List<(int,int)> ret = [];
             ExpectPunct('{');
-            Token numFrames = ExpectNumber();
-            ExpectPunct(',');
-            ExpectPunct('{');
-            for (int i = 0; i < numFrames.Num; i++) {
-                Token frame = ExpectNumber();
-                frames.Add((int) frame.Num);
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                Token offset = ExpectNumber();
                 ExpectPunct(',');
+                Token length = ExpectNumber();
+                ExpectPunct('}');
+                ExpectPunct(',');
+                ret.Add(((int)offset.Num, (int)length.Num));
             }
-            ExpectPunct('}');
-            ExpectPunct('}');
-            return frames;
+            return ret;
         }
 
         private void ReadSpriteAnimationList(Token ident) {
@@ -633,42 +630,45 @@ namespace GameEditor.ProjectIO
             ExpectPunct(']');
             ExpectPunct('=');
             ExpectPunct('{');
-            /*
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                Token spriteAnimationIdent = ExpectIdent();
+                ExpectPunct(',');
                 ExpectPunct('&');
                 ExpectIdent($"{GlobalPrefixLower}_sprites");
                 ExpectPunct('[');
                 Token spriteIndex = ExpectNumber();
                 ExpectPunct(']');
                 ExpectPunct(',');
-                Token numLoops = ExpectNumber();
-                ExpectPunct(',');
-                ExpectPunct('{');  // open loops
-                List<List<int>> loops = [];
-                for (int i = 0; i < numLoops.Num; i++) {
-                    loops.Add(ReadSpriteAnimationLoopFrames());
-                    ExpectPunct(',');
-                }
-                ExpectPunct('}');  // close loops
-                ExpectPunct(',');
-                ExpectPunct('}');  // close animation
+                List<(int,int)> loopOffsetAndLengths = ReadSpriteAnimationLoops();
+                ExpectPunct('}');
                 ExpectPunct(',');
 
+                if (! spriteAnimationFrames.TryGetValue(spriteAnimationIdent.Str, out List<byte>? frames)) {
+                    throw new ParseError($"sprite animation data {spriteAnimationIdent.Str} doesn't exist", spriteAnimationIdent.LineNum);
+                }
                 if (spriteIndex.Num >= spriteList.Count) {
                     throw new ParseError($"sprite {spriteIndex.Num} doesn't exist", spriteIndex.LineNum);
                 }
+                string name = ExtractGlobalLowerName(spriteAnimationIdent.Str, "sprite_animation_frames");
                 Sprite sprite = spriteList[(int) spriteIndex.Num];
-                SpriteAnimation anim = new SpriteAnimation(sprite, "new_animation");
-                foreach (List<int> loopFrames in loops) {
-                    anim.AddLoop(loopFrames);
+                SpriteAnimation anim = new SpriteAnimation(sprite, name);
+                for (int loop = 0; loop < loopOffsetAndLengths.Count; loop++) {
+                    if (loop >= anim.Loops.Length) throw new Exception($"too many loops in animation {spriteAnimationIdent.Str}");
+                    (int offset, int length) = loopOffsetAndLengths[loop];
+                    if (offset % 2 != 0 || length % 2 != 0) {
+                        throw new ParseError($"loop {loop} has invalid offset/length: {offset} and {length} are expected to be even", spriteAnimationIdent.LineNum);
+                    }
+                    if (offset + length > frames.Count) {
+                        throw new ParseError($"loop {loop} has invalid offset/length: {offset + length} is larger than the frame data size {frames.Count}", spriteAnimationIdent.LineNum);
+                    }
+                    anim.Loops[loop].LoadIndicesFromData(frames, offset, length);
                 }
                 spriteAnimationList.Add(anim);
-                Util.Log($"-> got sprite animation for {sprite.Name} with {loops.Count} loops");
+                Util.Log($"-> got sprite animation for {sprite.Name}");
             }
-            */
             ExpectPunct(';');
         }
 
@@ -692,7 +692,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameSfxSamples[ident.Str] = data;
+            sfxSamples[ident.Str] = data;
             Util.Log($"-> got sfx samples {ident.Str}");
         }
 
@@ -711,7 +711,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! gameSfxSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
+                if (! sfxSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
                     throw new ParseError($"invalid sfx: samples {dataIdent.Str} not found", dataIdent.LineNum);
                 }
                 if (numSamples.Num != data.Count) {
@@ -746,7 +746,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameModSamples[ident.Str] = data;
+            modSamples[ident.Str] = data;
             Util.Log($"-> got MOD sample {ident.Str}");
         }
 
@@ -779,7 +779,7 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
 
-            gameModPattern[ident.Str] = data;
+            modPattern[ident.Str] = data;
             Util.Log($"-> got MOD pattern {ident.Str}");
         }
 
@@ -818,7 +818,7 @@ namespace GameEditor.ProjectIO
                 sample.Title = dataIdent.Str;
 
                 if (dataIdent.Str != "NULL") {
-                    if (! gameModSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
+                    if (! modSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
                         throw new ParseError($"invalid mod: samples {dataIdent.Str} not found", dataIdent.LineNum);
                     }
                     if (length.Num != data.Count) {
@@ -880,7 +880,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! gameModPattern.TryGetValue(patternIdent.Str, out List<ModCell>? pattern)) {
+                if (! modPattern.TryGetValue(patternIdent.Str, out List<ModCell>? pattern)) {
                     throw new ParseError($"invalid mod: samples {patternIdent.Str} not found", patternIdent.LineNum);
                 }
                 if (pattern.Count % (64 * numChannels.Num) != 0) {
@@ -1040,8 +1040,8 @@ namespace GameEditor.ProjectIO
                 }
 
                 // sprite animation stuff
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SPRITE_ANIMATION_IDS")) {
-                    ReadSpriteAnimationIds(t.Value);
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sprite_animation_frames")) {
+                    ReadSpriteAnimationFrames(t.Value);
                     continue;
                 }
                 if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "sprite_animations")) {

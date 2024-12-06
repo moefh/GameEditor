@@ -43,18 +43,14 @@ namespace GameEditor.GameData
 
         public List<Frame> Indices { get; }
 
-        public void Resize(int newNumFrames) {
-            if (newNumFrames > Indices.Count) {
-                Indices.AddRange(Enumerable.Repeat(Frame.Empty, newNumFrames - Indices.Count));
-            } else {
-                Indices.RemoveRange(newNumFrames, Indices.Count - newNumFrames);
-            }
-        }
-
-        public void SetFrames(IList<Frame> frames) {
-            Resize(frames.Count);
-            for (int i = 0; i < frames.Count; i++) {
-                Indices[i] = frames[i];
+        public void LoadIndicesFromData(List<byte> data, int offset, int length) {
+            Indices.Clear();
+            for (int i = 0; i < length; i += 2) {
+                int head = data[offset+i+0];
+                int foot = data[offset+i+1];
+                if (head == 0xff) head = -1;
+                if (foot == 0xff) foot = -1;
+                Indices.Add(new Frame(head, foot));
             }
         }
 
@@ -121,9 +117,13 @@ namespace GameEditor.GameData
 
         public int GameDataSize {
             get {
-                // FIXME
-                // spriteImage(4) + numLoops(1) + MAX_LOOPS(4)*(numFrames(1) + MAX_LOOP_FRAMES(16))
-                return 4 + 1 + 4 * (1 + 16);
+                // frameDataOffset(2) + frameDataLength(2) + numHeadIndices*index(1) + numFootIndices*index(1)
+                int size = 0;
+                foreach (SpriteAnimationLoop loop in Loops) {
+                    size += 2 + 2 + 2 * loop.Indices.Count;
+                }
+                // framesData(4) + spriteImage(4) + loop sizes
+                return 4+4 + size;
             }
         }
 

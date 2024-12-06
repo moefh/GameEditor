@@ -65,8 +65,8 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected void WriteFooter(int dataSize) {
-            f.WriteLine($"// total data size: {dataSize} bytes");
+        protected void WriteFooter() {
+            f.WriteLine($"// total data size: {Util.Project.GetGameDataSize()} bytes");
             f.Close();
         }
 
@@ -500,11 +500,30 @@ namespace GameEditor.ProjectIO
         // === SPRITE ANIMATIONS
         // =============================================================
 
+        protected void WriteSpriteAnimationFrames(SpriteAnimation anim) {
+            string ident = identifiers.Add(anim, "sprite_animation_frames", anim.Name);
+            f.WriteLine($"static const uint8_t {ident}[] = {{");
+            foreach (SpriteAnimationLoop loop in anim.Loops) {
+                f.Write($"  // {loop.Name}");
+                for (int i = 0; i < loop.NumFrames; i++) {
+                    if (i % 8 == 0) { f.WriteLine(); f.Write("  "); }
+                    f.Write($"0x{loop.Indices[i].HeadIndex & 0xff:x02},");
+                    f.Write($"0x{loop.Indices[i].FootIndex & 0xff:x02},");
+                }
+                f.WriteLine();
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
         protected int WriteSpriteAnimations() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === SPRITE ANIMATIONS");
             f.WriteLine("// ================================================================");
             f.WriteLine();
+            foreach (SpriteAnimationItem si in Util.Project.SpriteAnimationList) {
+                WriteSpriteAnimationFrames(si.Animation);
+            }
 
             Dictionary<IDataAsset, int>? sprIndices = [];
             foreach (var (si, index) in Util.Project.SpriteList.Zip(Enumerable.Range(0, Util.Project.SpriteList.Count))) {
@@ -515,23 +534,20 @@ namespace GameEditor.ProjectIO
             f.WriteLine($"const struct {GetUpperGlobal("SPRITE_ANIMATION")} {GetLowerGlobal("sprite_animations")}[] = {{");
             foreach (SpriteAnimationItem ai in Util.Project.SpriteAnimationList) {
                 string spritesIdent = GetLowerGlobal("sprites");
-                /*
                 int spriteIndex = Util.Project.GetAssetIndex(ai.Animation.Sprite);
-                f.WriteLine($"  {{  // {ai.Animation.Name}");
+                string ident = identifiers.Get(ai.Animation);
+                f.WriteLine("  {");
+                f.WriteLine($"    {ident},");
                 f.WriteLine($"    &{spritesIdent}[{spriteIndex}],");
-                f.WriteLine($"    {ai.Animation.NumLoops-1},");
                 f.WriteLine("    {");
-                foreach (SpriteAnimationLoop loop in ai.Animation.GetAllLoops()) {
-                    if (loop.IsImmutable) continue;  // skip "all frames" loop
-                    f.Write($"      {{ {loop.NumFrames}, {{ ");
-                    for (int i = 0; i < loop.NumFrames; i++) {
-                        f.Write($"{loop.Frame(i)},");
-                    }
-                    f.WriteLine(" } },");
+                int offset = 0;
+                foreach (SpriteAnimationLoop loop in ai.Animation.Loops) {
+                    int length = 2*loop.NumFrames;
+                    f.WriteLine($"      {{ {offset,5}, {length,5} }},  // {loop.Name}");
+                    offset += length;
                 }
-                f.WriteLine("    },");
+                f.WriteLine("    }");
                 f.WriteLine("  },");
-                */
                 dataSize += ai.Animation.GameDataSize;
             }
             f.WriteLine("};");
@@ -578,17 +594,16 @@ namespace GameEditor.ProjectIO
         public void WriteProject() {
             WriteHeader();
             WriteDataStart();
-            int dataSize = 0;
-            dataSize += WriteFonts();
-            dataSize += WriteMods();
-            dataSize += WriteSfxs();
-            dataSize += WriteTilesets();
-            dataSize += WriteSprites();
-            dataSize += WriteMaps();
-            dataSize += WriteSpriteAnimations();
+            WriteFonts();
+            WriteMods();
+            WriteSfxs();
+            WriteTilesets();
+            WriteSprites();
+            WriteMaps();
+            WriteSpriteAnimations();
             WriteDataEnd();
             WriteDataIds();
-            WriteFooter(dataSize);
+            WriteFooter();
         }
     }
 }
