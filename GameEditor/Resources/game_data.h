@@ -50,15 +50,16 @@ struct ${PREFIX}_MAP {
    const uint8_t *tiles;
 };
 
+
 struct ${PREFIX}_SPRITE_ANIMATION_LOOP {
-   uint8_t num_frames;
-   uint8_t frames[16];
+  uint16_t offset;   // offset into animation frame_indices
+  uint16_t length;   // number of frames (including head+foot)
 };
 
 struct ${PREFIX}_SPRITE_ANIMATION {
+  const uint8_t *frame_indices;
   const struct ${PREFIX}_IMAGE *sprite;
-  uint8_t num_loops;
-  struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[4];
+  struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[20];
 };
 
 struct ${PREFIX}_FONT {
