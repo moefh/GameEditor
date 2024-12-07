@@ -1,4 +1,6 @@
 ﻿
+- implement SpriteAnimationEditor custom control
+
 - change save data format for map tiles: write each tile (fg, bg, clip) packed locally
   instead of a block of fg, block of bg and block of clip (to improve cache locality in game)
 

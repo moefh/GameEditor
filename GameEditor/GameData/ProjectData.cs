@@ -36,6 +36,15 @@ namespace GameEditor.GameData
 
     public class ProjectData : IDisposable
     {
+        private static readonly DataAssetType[] ASSET_TYPES_IN_DESTROY_ORDER = [
+          DataAssetType.SpriteAnimation,
+          DataAssetType.Map,
+          DataAssetType.Mod,
+          DataAssetType.Sfx,
+          DataAssetType.Sprite,
+          DataAssetType.Tileset,
+          DataAssetType.Font,
+        ];
         private readonly Dictionary<DataAssetType, AssetList<IDataAssetItem>> assets = [];
 
         public ProjectData() {
@@ -74,20 +83,19 @@ namespace GameEditor.GameData
         }
 
         private void CreateAssetLists() {
-            assets[DataAssetType.Font] = [];
-            assets[DataAssetType.Mod] = [];
-            assets[DataAssetType.Sfx] = [];
-            assets[DataAssetType.Sprite] = [];
-            assets[DataAssetType.SpriteAnimation] = [];
-            assets[DataAssetType.Tileset] = [];
-            assets[DataAssetType.Map] = [];
+            // order is not important here
+            foreach (DataAssetType type in ASSET_TYPES_IN_DESTROY_ORDER) {
+                assets[type] = [];
+            }
         }
 
         public void Dispose() {
-            foreach (AssetList<IDataAssetItem> list in assets.Values) {
+            // order is important here
+            foreach (DataAssetType type in ASSET_TYPES_IN_DESTROY_ORDER) {
+                AssetList<IDataAssetItem> list = GetAssetList(type);
                 foreach (IDataAssetItem asset in list) {
-                    asset.Asset.Dispose();
                     asset.CloseEditor();
+                    asset.Asset.Dispose();
                 }
                 list.Clear();
             }

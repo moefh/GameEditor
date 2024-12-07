@@ -267,11 +267,13 @@
             animLoopView.Location = new Point(0, 0);
             animLoopView.Name = "animLoopView";
             animLoopView.RepeatFrames = false;
+            animLoopView.ScrollOffset = 0;
             animLoopView.SelectedIndex = 0;
+            animLoopView.SelectionEnabled = true;
             animLoopView.Size = new Size(312, 86);
             animLoopView.Sprite = null;
             animLoopView.TabIndex = 0;
-            animLoopView.SelectedLoopIndexChanged += spriteListView_SelectedLoopIndexChanged;
+            animLoopView.SelectedIndexChanged += spriteListView_SelectedLoopIndexChanged;
             // 
             // colorPicker
             // 

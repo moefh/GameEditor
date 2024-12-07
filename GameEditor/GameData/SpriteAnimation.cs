@@ -19,8 +19,6 @@ namespace GameEditor.GameData
             public int FootIndex = footIndex;
         }
 
-        public const int MAX_NUM_FRAMES = 16;
-
         public SpriteAnimationLoop(SpriteAnimation anim, string name) {
             Animation = anim;
             Name = name;

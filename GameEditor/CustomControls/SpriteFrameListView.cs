@@ -30,7 +30,8 @@ namespace GameEditor.CustomControls
             int frameOffX,
             int headOffY,
             int footOffY,
-            int numFrames
+            int maxDisplayFrames,
+            int windowWidth
         )
         {
             public static RenderInfo Empty = new RenderInfo();
@@ -41,7 +42,8 @@ namespace GameEditor.CustomControls
             public readonly int FrameOffX = frameOffX;
             public readonly int HeadOffY = headOffY;
             public readonly int FootOffY = footOffY;
-            public readonly int NumFrames = numFrames;
+            public readonly int MaxDisplayFrames = maxDisplayFrames;
+            public readonly int WindowWidth = windowWidth;
         }
 
         public readonly struct Frame(int head, int foot) {
@@ -70,14 +72,16 @@ namespace GameEditor.CustomControls
         private bool displayFoot;
         private int footOverlap;
         private bool repeatFrames;
+        private int scrollOffset;
+        private bool selectionEnabled;
+        private bool dragEnabled;
 
         // data:
         private bool dragging;
-        private bool dragOriginSet;
         private Point dragOrigin;
         private Frame dragFrame = Frame.Empty;
 
-        public event EventHandler? SelectedLoopIndexChanged;
+        public event EventHandler? SelectedIndexChanged;
 
         public SpriteFrameListView() {
             InitializeComponent();
@@ -86,12 +90,12 @@ namespace GameEditor.CustomControls
 
         public Sprite? Sprite {
             get { return sprite; }
-            set { sprite = value; Invalidate(); }
+            set { sprite = value; ClipScrollOffset(); Invalidate(); }
         }
 
         public List<Frame>? Frames {
             get { return frames; }
-            set { frames = value; Invalidate(); }
+            set { frames = value; ClipScrollOffset(); Invalidate(); }
         }
 
         public int SelectedIndex {
@@ -114,31 +118,47 @@ namespace GameEditor.CustomControls
             set { repeatFrames = value; Invalidate(); }
         }
 
+        public bool SelectionEnabled {
+            get { return selectionEnabled; }
+            set { selectionEnabled = value; Invalidate(); }
+        }
+
+        public bool DragEnabled {
+            get { return dragEnabled; }
+            set { dragEnabled = value; Invalidate(); }
+        }
+
+        public int ScrollOffset {
+            get { return scrollOffset; }
+            set { scrollOffset = value; ClipScrollOffset(); Invalidate(); }
+        }
+
         private RenderInfo GetRenderInfo() {
             if (Sprite == null || Frames == null || Frames.Count == 0) {
                 return RenderInfo.Empty;
             }
+            int windowWidth = ClientSize.Width - 2*MARGIN;
+            int windowHeight = ClientSize.Height - 2*MARGIN;
             int origFullH = DisplayFoot ? 2*Sprite.Height-FootOverlap : Sprite.Height;
-            int zoom = int.Max((ClientSize.Height - 2*MARGIN) / origFullH, 1);
+            int zoom = int.Max(windowHeight / origFullH, 1);
             int fullH = zoom * origFullH;
             int frameH = zoom * Sprite.Height;
             int frameW = zoom * Sprite.Width;
             int frameStride = frameW + MARGIN;
             int frameOffX = MARGIN;
-            int headOffY = MARGIN;
+            int headOffY = MARGIN + (windowHeight - fullH) / 2;
             int footOffY = headOffY + frameH - (DisplayFoot ? zoom * FootOverlap : 0);
             int roundUp = 2*frameW + MARGIN - 1;
-            int numFrames = (ClientSize.Width - 2*MARGIN + roundUp) / (frameW + MARGIN);
-            return new RenderInfo(frameW, frameH, fullH, frameStride, frameOffX, headOffY, footOffY, numFrames);
+            int maxDisplayFrames = (windowWidth + roundUp) / frameStride;
+            return new RenderInfo(frameW, frameH, fullH, frameStride, frameOffX,
+                                  headOffY, footOffY, maxDisplayFrames, windowWidth);
         }
 
-        private void DrawFrame(PaintEventArgs pe, int index, bool head, RenderInfo r) {
-            if (Sprite == null || (! head && ! DisplayFoot)) return;
+        private void DrawFrame(PaintEventArgs pe, int index, int x, bool isHead, RenderInfo r) {
+            if (Sprite == null || (! isHead && ! DisplayFoot)) return;
             if (Frames == null || Frames.Count == 0 || (index >= Frames.Count && ! RepeatFrames)) return;
-            int x = r.FrameOffX + r.FrameStride * index;
-            int y = head ? r.HeadOffY : r.FootOffY;
-            index %= Frames.Count;
-            int frame = head ? Frames[index].HeadIndex : Frames[index].FootIndex;
+            int y = isHead ? r.HeadOffY : r.FootOffY;
+            int frame = isHead ? Frames[index].HeadIndex : Frames[index].FootIndex;
             Sprite.DrawFrameAt(pe.Graphics, frame, x, y, r.FrameWidth, r.FrameHeight, true);
         }
 
@@ -151,58 +171,111 @@ namespace GameEditor.CustomControls
             ImageUtil.SetupTileGraphics(pe.Graphics);
 
             RenderInfo r = GetRenderInfo();
-            if (r.NumFrames == 0) return;
+            if (r.MaxDisplayFrames == 0) return;
 
-            for (int index = 0; index < r.NumFrames; index++) {
-                DrawFrame(pe, index, false, r);   // foot
-                DrawFrame(pe, index, true, r);    // head (over foot)
-                if (index == SelectedIndex) {
-                    int x = r.FrameOffX + r.FrameStride * index;
+            int firstFrame = ScrollOffset / r.FrameStride;
+            int xOffset = ScrollOffset % r.FrameStride;
+            int numDisplayFrames = r.MaxDisplayFrames;
+            for (int i = 0; i < numDisplayFrames; i++) {
+                int index = i + firstFrame;
+                if (index >= Frames.Count && ! RepeatFrames) break;
+                index %= Frames.Count;
+                int x = r.FrameOffX + r.FrameStride * i - xOffset;
+                DrawFrame(pe, index, x, false, r);   // foot
+                DrawFrame(pe, index, x, true, r);    // head (over foot)
+                if (SelectionEnabled && index == SelectedIndex) {
                     int y = r.HeadOffY;
                     pe.Graphics.DrawRectangle(Pens.Black, x, y, r.FrameWidth, r.FullHeight);
                 }
             }
         }
 
-        private Frame GetSpriteFrameIndexAt(Point p) {
-            if (Frames == null) return Frame.Empty;
+        private int GetSpriteFrameIndexAt(Point p) {
+            if (Frames == null) return -1;
             RenderInfo r = GetRenderInfo();
-            if (r.NumFrames == 0) return Frame.Empty;
-            int index = (p.X - MARGIN) / r.FrameStride;
-            if (index < 0 || index >= Frames.Count) return Frame.Empty;
-            return Frames[index];
+            if (r.MaxDisplayFrames == 0) return -1;
+            int index = (p.X - MARGIN + ScrollOffset) / r.FrameStride;
+            if (index < 0 || index >= Frames.Count) return -1;
+            return index;
+        }
+
+        private void ClipScrollOffset() {
+            if (Frames == null || Frames.Count == 0) return;
+            RenderInfo r = GetRenderInfo();
+            if (r.MaxDisplayFrames == 0 || r.WindowWidth == 0) return;
+
+            int offset = ScrollOffset;
+            int totalFramesWidth = Frames.Count * r.FrameStride;
+            if (RepeatFrames) {
+                // wrap offset around
+                offset = (offset + r.FrameStride*totalFramesWidth) % totalFramesWidth;
+            } else {
+                // keep offset within bounds
+                if (totalFramesWidth - offset < r.WindowWidth) {
+                    offset = totalFramesWidth - r.WindowWidth - 1;
+                }
+                if (offset < 0) offset = 0;
+                if (SelectionEnabled) {
+                    // move selection into view
+                    if (SelectedIndex*r.FrameStride + r.FrameWidth - 1 - offset > r.WindowWidth) {
+                        SelectedIndex = (r.WindowWidth - (r.FrameWidth - 1 - offset)) / r.FrameStride;
+                        SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                    if (SelectedIndex*r.FrameStride < offset) {
+                        SelectedIndex = (offset + r.FrameStride - 1) / r.FrameStride;
+                        SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+                    }
+                }
+            }
+            if (offset != ScrollOffset) {
+                scrollOffset = offset;
+            }
+        }
+
+        protected override void OnResize(EventArgs e) {
+            base.OnResize(e);
+            ClipScrollOffset();
         }
 
         protected override void OnMouseWheel(MouseEventArgs e) {
             base.OnMouseWheel(e);
+            if (Frames == null) return;
+            RenderInfo r = GetRenderInfo();
+            if (r.MaxDisplayFrames == 0 || r.WindowWidth == 0) return;
 
-        }
-
-        protected override void OnDragDrop(DragEventArgs drgevent) {
-            base.OnDragDrop(drgevent);
-            Util.Log("drag drop called");
+            ScrollOffset += int.Sign(e.Delta) * r.FrameStride;
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
-            if (Sprite == null || e.Button != MouseButtons.Left) return;
-            dragging = false;
-            dragOrigin = e.Location;
-            dragFrame = GetSpriteFrameIndexAt(e.Location);
+            if (Sprite == null || Frames == null || e.Button != MouseButtons.Left) return;
+
+            int index = GetSpriteFrameIndexAt(e.Location);
+            if (SelectedIndex != index) {
+                SelectedIndex = index;
+                SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+            }
+
+            if (DragEnabled && SelectedIndex >= 0) {
+                dragging = false;
+                dragOrigin = e.Location;
+                dragFrame = Frames[SelectedIndex];
+            }
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
             if (Sprite == null || e.Button != MouseButtons.Left) return;
-            if (dragFrame == Frame.Empty) return;
 
-            Size dist = new Size(e.Location.X - dragOrigin.X, e.Location.Y - dragOrigin.Y);
-            if (dist.Width*dist.Width + dist.Height*dist.Height > MIN_DRAG_DISTANCE*MIN_DRAG_DISTANCE) {
-                dragging = true;
-            }
+            if (DragEnabled && dragFrame != Frame.Empty) {
+                Size dist = new Size(e.Location.X - dragOrigin.X, e.Location.Y - dragOrigin.Y);
+                if (dist.Width*dist.Width + dist.Height*dist.Height > MIN_DRAG_DISTANCE*MIN_DRAG_DISTANCE) {
+                    dragging = true;
+                }
 
-            if (dragging) {
-                DoDragDrop(dragFrame, DragDropEffects.Scroll|DragDropEffects.Copy);
+                if (dragging) {
+                    DoDragDrop(dragFrame, DragDropEffects.Scroll|DragDropEffects.Copy);
+                }
             }
         }
 

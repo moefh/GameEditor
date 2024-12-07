@@ -122,7 +122,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected int WriteFonts() {
+        protected void WriteFonts() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === FONTS");
             f.WriteLine("// ================================================================");
@@ -131,18 +131,15 @@ namespace GameEditor.ProjectIO
                 WriteFontData(fi.Font);
             }
 
-            int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("FONT")} {GetLowerGlobal("fonts")}[] = {{");
             foreach (FontDataItem fi in Util.Project.FontList) {
                 int w = fi.Font.Width;
                 int h = fi.Font.Height;
                 string ident = identifiers.Get(fi.Font);
                 f.WriteLine($"  {{ {w}, {h}, {ident} }},");
-                dataSize += fi.Font.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-            return dataSize;
         }
 
         // =============================================================
@@ -231,7 +228,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine("  },");
         }
 
-        protected int WriteMods() {
+        protected void WriteMods() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === MOD");
             f.WriteLine("// ================================================================");
@@ -240,15 +237,12 @@ namespace GameEditor.ProjectIO
                 WriteModData(mi.Mod);
             }
 
-            int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("MOD_DATA")} {GetLowerGlobal("mods")}[] = {{");
             foreach (ModDataItem mi in Util.Project.ModList) {
                 WriteMod(mi.Mod);
-                dataSize += mi.Mod.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-            return dataSize;
         }
 
         // =============================================================
@@ -267,7 +261,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected int WriteSfxs() {
+        protected void WriteSfxs() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === SFX");
             f.WriteLine("// ================================================================");
@@ -276,16 +270,13 @@ namespace GameEditor.ProjectIO
                 WriteSfxData(si.Sfx);
             }
 
-            int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("SFX")} {GetLowerGlobal("sfxs")}[] = {{");
             foreach (SfxDataItem si in Util.Project.SfxList) {
                 string name = identifiers.Get(si.Sfx);
                 f.WriteLine($"  {{ {si.Sfx.NumSamples}, {name} }},");
-                dataSize += si.Sfx.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-            return dataSize;
         }
 
         // =============================================================
@@ -324,7 +315,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected int WriteTilesets() {
+        protected void WriteTilesets() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === TILESETS");
             f.WriteLine("// ================================================================");
@@ -333,17 +324,14 @@ namespace GameEditor.ProjectIO
                 WriteTilesetData(ti.Tileset);
             }
 
-            int dataSize = 0;
             const int size = Tileset.TILE_SIZE;
             f.WriteLine($"const struct {GetUpperGlobal("IMAGE")} {GetLowerGlobal("tilesets")}[] = {{");
             foreach (TilesetItem ti in Util.Project.TilesetList) {
                 string ident = identifiers.Get(ti.Tileset);
                 f.WriteLine($"  {{ {size}, {size}, {size/4}, {ti.Tileset.NumTiles}, {ident} }},");
-                dataSize += ti.Tileset.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-            return dataSize;
         }
 
         // =============================================================
@@ -395,7 +383,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected int WriteSprites() {
+        protected void WriteSprites() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === SPRITES");
             f.WriteLine("// ================================================================");
@@ -404,7 +392,6 @@ namespace GameEditor.ProjectIO
                 WriteSpriteData(si.Sprite);
             }
 
-            int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("IMAGE")} {GetLowerGlobal("sprites")}[] = {{");
             foreach (SpriteItem si in Util.Project.SpriteList) {
                 int w = si.Sprite.Width;
@@ -413,11 +400,9 @@ namespace GameEditor.ProjectIO
                 string ident = identifiers.Get(si.Sprite);
                 if (ADD_SPRITE_MIRRORS) nFrames *= 2;
                 f.WriteLine($"  {{ {w}, {h}, {(w+3)/4}, {nFrames}, {ident} }},");
-                dataSize += si.Sprite.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-            return dataSize;
         }
 
         // =============================================================
@@ -456,7 +441,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected int WriteMaps() {
+        protected void WriteMaps() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === MAPS");
             f.WriteLine("// ================================================================");
@@ -470,7 +455,6 @@ namespace GameEditor.ProjectIO
                 tsIndices[ti.Asset] = index;
             }
 
-            int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("MAP")} {GetLowerGlobal("maps")}[] = {{");
             foreach (MapDataItem mi in Util.Project.MapList) {
                 string tilesetsIdent = GetLowerGlobal("tilesets");
@@ -478,11 +462,9 @@ namespace GameEditor.ProjectIO
                 string tileset = $"&{tilesetsIdent}[{tilesetIndex}]";
                 string tiles = identifiers.Get(mi.Map);
                 f.WriteLine($"  {{ {mi.Map.Tiles.Width}, {mi.Map.Tiles.Height}, {tileset}, {tiles} }},");
-                dataSize += mi.Map.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-            return dataSize;
         }
 
         public void WriteMap(MapData map) {
@@ -516,7 +498,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected int WriteSpriteAnimations() {
+        protected void WriteSpriteAnimations() {
             f.WriteLine("// ================================================================");
             f.WriteLine("// === SPRITE ANIMATIONS");
             f.WriteLine("// ================================================================");
@@ -530,30 +512,28 @@ namespace GameEditor.ProjectIO
                 sprIndices[si.Asset] = index;
             }
 
-            int dataSize = 0;
             f.WriteLine($"const struct {GetUpperGlobal("SPRITE_ANIMATION")} {GetLowerGlobal("sprite_animations")}[] = {{");
             foreach (SpriteAnimationItem ai in Util.Project.SpriteAnimationList) {
+                SpriteAnimation anim = ai.Animation;
                 string spritesIdent = GetLowerGlobal("sprites");
-                int spriteIndex = Util.Project.GetAssetIndex(ai.Animation.Sprite);
+                int spriteIndex = Util.Project.GetAssetIndex(anim.Sprite);
                 string ident = identifiers.Get(ai.Animation);
                 f.WriteLine("  {");
                 f.WriteLine($"    {ident},");
                 f.WriteLine($"    &{spritesIdent}[{spriteIndex}],");
+                f.WriteLine($"    {anim.FootOverlap},");
                 f.WriteLine("    {");
                 int offset = 0;
-                foreach (SpriteAnimationLoop loop in ai.Animation.Loops) {
+                foreach (SpriteAnimationLoop loop in anim.Loops) {
                     int length = 2*loop.NumFrames;
                     f.WriteLine($"      {{ {offset,5}, {length,5} }},  // {loop.Name}");
                     offset += length;
                 }
                 f.WriteLine("    }");
                 f.WriteLine("  },");
-                dataSize += ai.Animation.GameDataSize;
             }
             f.WriteLine("};");
             f.WriteLine();
-
-            return dataSize;
         }
 
         // =============================================================

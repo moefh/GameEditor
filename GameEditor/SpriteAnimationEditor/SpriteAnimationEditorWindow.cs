@@ -137,6 +137,7 @@ namespace GameEditor.SpriteAnimationEditor
             if (dlg.ShowDialog() == DialogResult.OK) {
                 loop.Indices.Clear();
                 loop.Indices.AddRange(dlg.SelectedFrames);
+                Util.Project.SetDirty();
                 animEditor.Invalidate();
                 animLoopView.Invalidate();
                 RefreshSpriteLoopList();
@@ -156,6 +157,7 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         private void toolStripComboSprite_SelectedIndexChanged(object sender, EventArgs e) {
+            if (toolStripComboSprite.SelectedIndex < 0 || toolStripComboSprite.SelectedIndex > Util.Project.SpriteList.Count) return;
             if (!toolStripComboSprite.ComboBox.Enabled) return;
 
             Animation.Sprite = (Sprite)Util.Project.SpriteList[toolStripComboSprite.SelectedIndex].Asset;
@@ -169,10 +171,16 @@ namespace GameEditor.SpriteAnimationEditor
             FixFormTitle();
         }
 
+        // =========================================================================
+        // FOOT OVERLAP TEXT VALIDATION
+        // =========================================================================
+
         private void OnFootOverlapTextChanged() {
             if (int.TryParse(toolStripTxtFootOverlap.Text, out int footOverlap)) {
-                Animation.FootOverlap = footOverlap;
-                Util.Project.SetDirty();
+                if (Animation.FootOverlap != footOverlap) {
+                    Animation.FootOverlap = footOverlap;
+                    Util.Project.SetDirty();
+                }
                 animLoopView.FootOverlap = footOverlap;
             } else {
                 toolStripTxtFootOverlap.Text = Animation.FootOverlap.ToString();

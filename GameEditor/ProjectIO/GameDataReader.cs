@@ -642,6 +642,8 @@ namespace GameEditor.ProjectIO
                 Token spriteIndex = ExpectNumber();
                 ExpectPunct(']');
                 ExpectPunct(',');
+                long footOverlap = ReadSignedNumber(ExpectToken());
+                ExpectPunct(',');
                 List<(int,int)> loopOffsetAndLengths = ReadSpriteAnimationLoops();
                 ExpectPunct('}');
                 ExpectPunct(',');
@@ -655,6 +657,7 @@ namespace GameEditor.ProjectIO
                 string name = ExtractGlobalLowerName(spriteAnimationIdent.Str, "sprite_animation_frames");
                 Sprite sprite = spriteList[(int) spriteIndex.Num];
                 SpriteAnimation anim = new SpriteAnimation(sprite, name);
+                anim.FootOverlap = (int) footOverlap;
                 for (int loop = 0; loop < loopOffsetAndLengths.Count; loop++) {
                     if (loop >= anim.Loops.Length) throw new Exception($"too many loops in animation {spriteAnimationIdent.Str}");
                     (int offset, int length) = loopOffsetAndLengths[loop];

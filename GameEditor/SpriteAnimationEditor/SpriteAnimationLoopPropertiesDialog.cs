@@ -39,19 +39,17 @@ namespace GameEditor.SpriteAnimationEditor
             checkEnableFoot.Checked = loop.Indices.Any((SpriteAnimationLoop.Frame frame) => frame.FootIndex >= 0);
 
             numSelectedFrames.Minimum = 1;
-            numSelectedFrames.Maximum = SpriteAnimationLoop.MAX_NUM_FRAMES;
+            numSelectedFrames.Maximum = 50;
             numSelectedFrames.Value = loop.NumFrames;
 
             allFramesListView.Sprite = loop.Animation.Sprite;
             allFramesListView.Frames = MakeLoopFrameRange(loop.Animation.Sprite.NumFrames);
             allFramesListView.DisplayFoot = false;
-            allFramesListView.RepeatFrames = false;
             allFramesListView.SelectedIndex = 0;
 
             selFramesListView.Sprite = loop.Animation.Sprite;
             selFramesListView.DisplayFoot = checkEnableFoot.Checked;
             selFramesListView.FootOverlap = loop.Animation.FootOverlap;
-            selFramesListView.RepeatFrames = true;
             selFramesListView.SelectedIndex = 0;
             UpdateSelectedFrames();
         }
@@ -73,6 +71,11 @@ namespace GameEditor.SpriteAnimationEditor
             return ret;
         }
 
+        private void AdjustListBoxScroll(ListBox listBox) {
+            int numVisibleItems = listBox.ClientSize.Height / listBox.ItemHeight;
+            listBox.TopIndex = int.Max(0, listBox.SelectedIndex - numVisibleItems/2);
+        }
+
         private void UpdateSelectedFrames() {
             int numFrames = (int)numSelectedFrames.Value;
 
@@ -87,6 +90,8 @@ namespace GameEditor.SpriteAnimationEditor
             listBoxHeadFrames.DataSource = headFrames;
             listBoxFootFrames.DataSource = null;
             listBoxFootFrames.DataSource = footFrames;
+            AdjustListBoxScroll(listBoxHeadFrames);
+            AdjustListBoxScroll(listBoxFootFrames);
 
             // fix selected frames view
             List<SpriteFrameListView.Frame> frames = selFramesListView.Frames ?? [];

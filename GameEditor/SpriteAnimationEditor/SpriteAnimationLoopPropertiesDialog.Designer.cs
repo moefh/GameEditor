@@ -32,6 +32,8 @@
             btnCancel = new Button();
             btnOK = new Button();
             listBoxFootFrames = new ListBox();
+            footContextMenuStrip = new ContextMenuStrip(components);
+            eraseFootFrameToolStripMenuItem = new ToolStripMenuItem();
             label2 = new Label();
             label3 = new Label();
             allFramesListView = new CustomControls.SpriteFrameListView();
@@ -41,11 +43,9 @@
             checkEnableFoot = new CheckBox();
             label5 = new Label();
             numSelectedFrames = new NumericUpDown();
-            footContextMenuStrip = new ContextMenuStrip(components);
-            eraseFootFrameToolStripMenuItem = new ToolStripMenuItem();
             headContextMenuStrip.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)numSelectedFrames).BeginInit();
             footContextMenuStrip.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)numSelectedFrames).BeginInit();
             SuspendLayout();
             // 
             // listBoxHeadFrames
@@ -109,6 +109,19 @@
             listBoxFootFrames.DragEnter += listBox_DragEnter;
             listBoxFootFrames.DragOver += listBox_DragOver;
             // 
+            // footContextMenuStrip
+            // 
+            footContextMenuStrip.Items.AddRange(new ToolStripItem[] { eraseFootFrameToolStripMenuItem });
+            footContextMenuStrip.Name = "frameListContextMenuStrip";
+            footContextMenuStrip.Size = new Size(153, 28);
+            // 
+            // eraseFootFrameToolStripMenuItem
+            // 
+            eraseFootFrameToolStripMenuItem.Name = "eraseFootFrameToolStripMenuItem";
+            eraseFootFrameToolStripMenuItem.Size = new Size(152, 24);
+            eraseFootFrameToolStripMenuItem.Text = "Erase Frame";
+            eraseFootFrameToolStripMenuItem.Click += eraseFootFrameToolStripMenuItem_Click;
+            // 
             // label2
             // 
             label2.AutoSize = true;
@@ -132,12 +145,15 @@
             // 
             allFramesListView.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             allFramesListView.DisplayFoot = false;
+            allFramesListView.DragEnabled = true;
             allFramesListView.FootOverlap = 0;
             allFramesListView.Frames = null;
             allFramesListView.Location = new Point(12, 394);
             allFramesListView.Name = "allFramesListView";
             allFramesListView.RepeatFrames = false;
+            allFramesListView.ScrollOffset = 0;
             allFramesListView.SelectedIndex = 0;
+            allFramesListView.SelectionEnabled = true;
             allFramesListView.Size = new Size(519, 60);
             allFramesListView.Sprite = null;
             allFramesListView.TabIndex = 12;
@@ -166,12 +182,15 @@
             // 
             selFramesListView.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             selFramesListView.DisplayFoot = false;
+            selFramesListView.DragEnabled = false;
             selFramesListView.FootOverlap = 0;
             selFramesListView.Frames = null;
             selFramesListView.Location = new Point(12, 31);
             selFramesListView.Name = "selFramesListView";
-            selFramesListView.RepeatFrames = false;
+            selFramesListView.RepeatFrames = true;
+            selFramesListView.ScrollOffset = 0;
             selFramesListView.SelectedIndex = 0;
+            selFramesListView.SelectionEnabled = false;
             selFramesListView.Size = new Size(519, 120);
             selFramesListView.Sprite = null;
             selFramesListView.TabIndex = 14;
@@ -207,19 +226,6 @@
             numSelectedFrames.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numSelectedFrames.ValueChanged += numSelectedFrames_ValueChanged;
             // 
-            // footContextMenuStrip
-            // 
-            footContextMenuStrip.Items.AddRange(new ToolStripItem[] { eraseFootFrameToolStripMenuItem });
-            footContextMenuStrip.Name = "frameListContextMenuStrip";
-            footContextMenuStrip.Size = new Size(153, 28);
-            // 
-            // eraseFootFrameToolStripMenuItem
-            // 
-            eraseFootFrameToolStripMenuItem.Name = "eraseFootFrameToolStripMenuItem";
-            eraseFootFrameToolStripMenuItem.Size = new Size(152, 24);
-            eraseFootFrameToolStripMenuItem.Text = "Erase Frame";
-            eraseFootFrameToolStripMenuItem.Click += eraseFootFrameToolStripMenuItem_Click;
-            // 
             // SpriteAnimationLoopPropertiesDialog
             // 
             AcceptButton = btnOK;
@@ -247,8 +253,8 @@
             StartPosition = FormStartPosition.CenterParent;
             Text = "Sprite Animation Loop Properties";
             headContextMenuStrip.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)numSelectedFrames).EndInit();
             footContextMenuStrip.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)numSelectedFrames).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -257,7 +263,6 @@
         private ListBox listBoxHeadFrames;
         private Button btnCancel;
         private Button btnOK;
-        private GroupBox grpFrames;
         private CustomControls.SpriteFrameListView allFramesListView;
         private Label label3;
         private Label label2;
