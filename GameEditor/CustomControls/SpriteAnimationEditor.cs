@@ -31,7 +31,7 @@ namespace GameEditor.CustomControls
         public Color ForePen { get; set; }
         public Color BackPen { get; set; }
         public Color GridColor { get; set; }
-        public uint RenderFlags { get; set; }
+        public RenderFlags RenderFlags { get; set; }
         public int SelectedIndex { get; set; }
         public int SelectedLoop { get; set; }
 

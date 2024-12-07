@@ -15,12 +15,9 @@ namespace GameEditor.CustomControls
 {
     public partial class SpriteEditor : AbstractPaintedControl
     {
-        public const uint RENDER_GRID = 1u<<0;
-        public const uint RENDER_TRANSPARENT = 1u<<1;
-
         private Sprite? sprite;
         private int selFrame;
-        private uint renderFlags;
+        private RenderFlags renderFlags;
 
         public event EventHandler? ImageChanged;
         public event EventHandler? SelectedColorsChanged;
@@ -30,7 +27,7 @@ namespace GameEditor.CustomControls
             SetDoubleBuffered();
         }
 
-        public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
+        public RenderFlags RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
         public int SelectedFrame { get { return selFrame; } set { selFrame = value; Invalidate(); } }
         public bool ReadOnly { get; set; }
         public Color ForePen { get; set; }
@@ -77,10 +74,10 @@ namespace GameEditor.CustomControls
             // sprite image
             Sprite.DrawFrameAt(pe.Graphics, SelectedFrame,
                 sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height,
-                (RenderFlags & RENDER_TRANSPARENT) != 0);
+                (RenderFlags & RenderFlags.Transparent) != 0);
 
             // grid
-            if ((RenderFlags & RENDER_GRID) != 0) {
+            if ((RenderFlags & RenderFlags.Grid) != 0) {
                 using Pen grid = new Pen(GridColor);
                 for (int ty = 0; ty < Sprite.Height + 1; ty++) {
                     int y = ty * zoom;

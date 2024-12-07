@@ -18,9 +18,6 @@ namespace GameEditor.SpriteAnimationEditor
 {
     public partial class SpriteAnimationEditorWindow : ProjectAssetEditorForm
     {
-        private const uint RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
-        private const uint RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
-
         private readonly SpriteAnimationItem animationItem;
 
         public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
@@ -75,8 +72,8 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         private void FixRenderFlags() {
-            uint renderGrid = (toolStripBtnGrid.Checked) ? RENDER_GRID : 0;
-            uint renderTransparent = (toolStripBtnTransparent.Checked) ? RENDER_TRANSPARENT : 0;
+            RenderFlags renderGrid = toolStripBtnGrid.Checked ? RenderFlags.Grid : 0;
+            RenderFlags renderTransparent = toolStripBtnTransparent.Checked ? RenderFlags.Transparent : 0;
             animEditor.RenderFlags = renderGrid | renderTransparent;
         }
 

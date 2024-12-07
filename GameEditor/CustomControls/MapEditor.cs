@@ -15,11 +15,11 @@ namespace GameEditor.CustomControls
 {
     public partial class MapEditor : AbstractPaintedControl
     {
-        public const uint LAYER_FG = 1 << 0;
-        public const uint LAYER_BG = 1 << 1;
-        public const uint LAYER_COL = 1 << 2;
-        public const uint LAYER_GRID = 1 << 3;
-        public const uint LAYER_SCREEN = 1 << 4;
+        public enum Layer {
+            Foreground,
+            Background,
+            Collision,
+        }
 
         const int TILE_SIZE = Tileset.TILE_SIZE;
         const int MARGIN = 1;
@@ -44,8 +44,8 @@ namespace GameEditor.CustomControls
         }
 
         public MapData? Map { get; set; }
-        public uint EditLayer { get; set; }
-        public uint EnabledRenderLayers { get; set; }
+        public Layer EditLayer { get; set; }
+        public RenderFlags EnabledRenderLayers { get; set; }
         public int LeftSelectedTile { get; set; }
         public int RightSelectedTile { get; set; }
         public int LeftSelectedCollisionTile { get; set; }
@@ -65,9 +65,9 @@ namespace GameEditor.CustomControls
             MapChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent, uint layer) {
+        private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent, Layer layer) {
             if (tile < 0) return;
-            bool grayscale = ((EditLayer & layer) == 0) && ((EditLayer & LAYER_COL) == 0);
+            bool grayscale = (EditLayer != layer) && (EditLayer != Layer.Collision);
             Map?.Tileset.DrawTileAt(pe.Graphics, tile, x - origin.X, y - origin.Y, w, h, transparent, grayscale);
         }
 
@@ -89,18 +89,18 @@ namespace GameEditor.CustomControls
                 int y = (int) (ty * zoomedTileSize) + MARGIN;
                 for (int tx = 0; tx < Map.Tiles.Width; tx++) {
                     int x = (int) (tx * zoomedTileSize) + MARGIN;
-                    if ((EnabledRenderLayers & LAYER_BG) != 0) {
-                        RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false, LAYER_BG);
+                    if ((EnabledRenderLayers & RenderFlags.Background) != 0) {
+                        RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false, Layer.Background);
                     }
-                    if ((EnabledRenderLayers & LAYER_FG) != 0) {
-                        RenderTile(pe, Map.Tiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true, LAYER_FG);
+                    if ((EnabledRenderLayers & RenderFlags.Foreground) != 0) {
+                        RenderTile(pe, Map.Tiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true, Layer.Foreground);
                     }
-                    if ((EnabledRenderLayers & LAYER_COL) != 0) {
+                    if ((EnabledRenderLayers & RenderFlags.Collision) != 0) {
                         RenderCollision(pe, Map.Tiles.clip[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true);
                     }
                 }
             }
-            if ((EnabledRenderLayers & LAYER_GRID) != 0) {
+            if ((EnabledRenderLayers & RenderFlags.Grid) != 0) {
                 using Pen gridPen = new Pen(GridColor);
                 int w = (int) (Map.Tiles.Width * zoomedTileSize);
                 int h = (int) (Map.Tiles.Height * zoomedTileSize);
@@ -113,7 +113,7 @@ namespace GameEditor.CustomControls
                     pe.Graphics.DrawLine(gridPen, x + MARGIN, MARGIN, x + MARGIN, h);
                 }
             }
-            if ((EnabledRenderLayers & LAYER_SCREEN) != 0) {
+            if ((EnabledRenderLayers & RenderFlags.Screen) != 0) {
                 int w = (int) (GAME_SCREEN_WIDTH * zoom);
                 int h = (int) (GAME_SCREEN_HEIGHT * zoom);
                 int x = (int) (TILE_SIZE / 2 * zoom);
@@ -156,9 +156,11 @@ namespace GameEditor.CustomControls
         private void SetTile(int tx, int ty, bool left) {
             if (Map == null) return;
             if (tx < 0 || ty < 0 || tx >= Map.Tiles.Width || ty >= Map.Tiles.Height) return;
-            if ((EditLayer & LAYER_BG) != 0) Map.Tiles.bg[tx, ty] = left ? LeftSelectedTile : RightSelectedTile;
-            if ((EditLayer & LAYER_FG) != 0) Map.Tiles.fg[tx, ty] = left ? LeftSelectedTile : RightSelectedTile;
-            if ((EditLayer & LAYER_COL) != 0) Map.Tiles.clip[tx, ty] = left ? LeftSelectedCollisionTile : RightSelectedCollisionTile;
+            switch (EditLayer) {
+            case Layer.Background: Map.Tiles.bg[tx, ty] = left ? LeftSelectedTile : RightSelectedTile; break;
+            case Layer.Foreground: Map.Tiles.fg[tx, ty] = left ? LeftSelectedTile : RightSelectedTile; break;
+            case Layer.Collision: Map.Tiles.clip[tx, ty] = left ? LeftSelectedCollisionTile : RightSelectedCollisionTile; break;
+            }
             Invalidate();
             SetDirty();
         }
@@ -167,13 +169,17 @@ namespace GameEditor.CustomControls
             if (Map == null) return;
             if (tx < 0 || ty < 0 || tx >= Map.Tiles.Width || ty >= Map.Tiles.Height) return;
             if (left) {
-                if ((EditLayer & LAYER_BG) != 0) LeftSelectedTile = Map.Tiles.bg[tx, ty];
-                if ((EditLayer & LAYER_FG) != 0) LeftSelectedTile = Map.Tiles.fg[tx, ty];
-                if ((EditLayer & LAYER_COL) != 0) LeftSelectedCollisionTile = Map.Tiles.clip[tx, ty];
+                switch (EditLayer) {
+                case Layer.Background: LeftSelectedTile = Map.Tiles.bg[tx, ty]; break;
+                case Layer.Foreground: LeftSelectedTile = Map.Tiles.fg[tx, ty]; break;
+                case Layer.Collision: LeftSelectedCollisionTile = Map.Tiles.clip[tx, ty]; break;
+                }
             } else {
-                if ((EditLayer & LAYER_BG) != 0) RightSelectedTile = Map.Tiles.bg[tx, ty];
-                if ((EditLayer & LAYER_FG) != 0) RightSelectedTile = Map.Tiles.fg[tx, ty];
-                if ((EditLayer & LAYER_COL) != 0) RightSelectedCollisionTile = Map.Tiles.clip[tx, ty];
+                switch (EditLayer) {
+                case Layer.Background: RightSelectedTile = Map.Tiles.bg[tx, ty]; break;
+                case Layer.Foreground: RightSelectedTile = Map.Tiles.fg[tx, ty]; break;
+                case Layer.Collision: RightSelectedCollisionTile = Map.Tiles.clip[tx, ty]; break;
+                }
             }
             SelectedTilesChanged?.Invoke(this, EventArgs.Empty);
         }

@@ -6,6 +6,16 @@ using System.Threading.Tasks;
 
 namespace GameEditor.CustomControls
 {
+    [Flags]
+    public enum RenderFlags {
+        Foreground = 1<<0,
+        Background = 1<<1,
+        Collision = 1<<2,
+        Grid = 1<<3,
+        Screen = 1<<4,
+        Transparent = 1<<5,
+    }
+
     public abstract class AbstractPaintedControl : Control
     {
         protected void SetDoubleBuffered() {

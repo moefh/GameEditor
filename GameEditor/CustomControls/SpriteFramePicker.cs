@@ -32,7 +32,7 @@ namespace GameEditor.CustomControls
         private int zoom = 4;
         private int selectedFrame;
         private bool showEmptyFrame;
-        private uint renderFlags;
+        private RenderFlags renderFlags;
         private int scrollMin;
         private int scrollMax;
         private int scrollValue;
@@ -52,7 +52,7 @@ namespace GameEditor.CustomControls
             set { scrollbar = value; ResetSize(); Invalidate(); }
         }
 
-        public uint RenderFlags {
+        public RenderFlags RenderFlags {
             get { return renderFlags; }
             set { renderFlags = value; Invalidate(); }
         }
@@ -129,7 +129,7 @@ namespace GameEditor.CustomControls
 
             ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
             RenderInfo ri = GetRenderInfo(Sprite);
-            bool transparent = (RenderFlags & RENDER_TRANSPARENT) != 0;
+            bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
 

@@ -46,6 +46,9 @@
             animEditor = new CustomControls.SpriteAnimationEditor();
             animLoopView = new CustomControls.SpriteFrameListView();
             colorPicker = new CustomControls.ColorPicker();
+            toolStripBtnPenFoot = new ToolStripButton();
+            toolStripBtnPenHead = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
             statusStrip.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -117,7 +120,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator1, toolStripLabel2, toolStripTxtFootOverlap });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnPenHead, toolStripBtnPenFoot, toolStripSeparator1, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator2, toolStripLabel2, toolStripTxtFootOverlap });
             toolsToolStrip.Location = new Point(0, 29);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -262,6 +265,7 @@
             // 
             animLoopView.DisplayFoot = false;
             animLoopView.Dock = DockStyle.Fill;
+            animLoopView.DragEnabled = false;
             animLoopView.FootOverlap = 0;
             animLoopView.Frames = null;
             animLoopView.Location = new Point(0, 0);
@@ -288,6 +292,36 @@
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
+            // 
+            // toolStripBtnPenFoot
+            // 
+            toolStripBtnPenFoot.CheckOnClick = true;
+            toolStripBtnPenFoot.Image = Properties.Resources.PenIcon;
+            toolStripBtnPenFoot.ImageTransparentColor = Color.Magenta;
+            toolStripBtnPenFoot.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnPenFoot.Name = "toolStripBtnPenFoot";
+            toolStripBtnPenFoot.Size = new Size(57, 24);
+            toolStripBtnPenFoot.Text = "Foot";
+            toolStripBtnPenFoot.ToolTipText = "Draw on foot image";
+            // 
+            // toolStripBtnPenHead
+            // 
+            toolStripBtnPenHead.Checked = true;
+            toolStripBtnPenHead.CheckOnClick = true;
+            toolStripBtnPenHead.CheckState = CheckState.Checked;
+            toolStripBtnPenHead.Image = Properties.Resources.PenIcon;
+            toolStripBtnPenHead.ImageTransparentColor = Color.Magenta;
+            toolStripBtnPenHead.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnPenHead.Name = "toolStripBtnPenHead";
+            toolStripBtnPenHead.Size = new Size(61, 24);
+            toolStripBtnPenHead.Text = "Head";
+            toolStripBtnPenHead.ToolTipText = "Draw on head image";
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 27);
             // 
             // SpriteAnimationEditorWindow
             // 
@@ -347,5 +381,8 @@
         private ToolStripSeparator toolStripSeparator1;
         private ToolStripLabel toolStripLabel2;
         private ToolStripTextBox toolStripTxtFootOverlap;
+        private ToolStripButton toolStripBtnPenHead;
+        private ToolStripButton toolStripBtnPenFoot;
+        private ToolStripSeparator toolStripSeparator2;
     }
 }

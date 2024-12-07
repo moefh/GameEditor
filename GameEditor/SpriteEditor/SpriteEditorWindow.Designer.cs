@@ -189,6 +189,7 @@
             toolStripBtnGrid.CheckState = CheckState.Checked;
             toolStripBtnGrid.Image = Properties.Resources.EyeIcon;
             toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
+            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
             toolStripBtnGrid.Name = "toolStripBtnGrid";
             toolStripBtnGrid.Size = new Size(55, 24);
             toolStripBtnGrid.Text = "Grid";
@@ -202,6 +203,7 @@
             toolStripBtnTransparent.CheckState = CheckState.Checked;
             toolStripBtnTransparent.Image = Properties.Resources.EyeIcon;
             toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
+            toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
             toolStripBtnTransparent.Name = "toolStripBtnTransparent";
             toolStripBtnTransparent.Size = new Size(101, 24);
             toolStripBtnTransparent.Text = "Transparent";

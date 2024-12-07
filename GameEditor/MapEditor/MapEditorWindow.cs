@@ -1,7 +1,9 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.IO.MemoryMappedFiles;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using GameEditor.CustomControls;
 using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.Misc;
@@ -11,12 +13,6 @@ namespace GameEditor.MapEditor
 {
     public partial class MapEditorWindow : ProjectAssetEditorForm
     {
-        const uint LAYER_FG = CustomControls.MapEditor.LAYER_FG;
-        const uint LAYER_BG = CustomControls.MapEditor.LAYER_BG;
-        const uint LAYER_COL = CustomControls.MapEditor.LAYER_COL;
-        const uint LAYER_GRID = CustomControls.MapEditor.LAYER_GRID;
-        const uint LAYER_SCREEN = CustomControls.MapEditor.LAYER_SCREEN;
-
         private readonly MapDataItem mapDataItem;
 
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
@@ -34,7 +30,7 @@ namespace GameEditor.MapEditor
             mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
             mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
             UpdateMapZoom();
-            EditLayer = LAYER_FG;
+            EditLayer = CustomControls.MapEditor.Layer.Foreground;
             toolStripComboBoxZoom.SelectedIndex = 2;
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
@@ -46,15 +42,15 @@ namespace GameEditor.MapEditor
             get { return mapDataItem.Map; }
         }
 
-        public uint EditLayer {
+        public CustomControls.MapEditor.Layer EditLayer {
             get { return mapEditor.EditLayer; }
             set {
                 mapEditor.EditLayer = value;
                 mapEditor.Invalidate();
-                toolStripButtonEditFG.Checked = (value & LAYER_FG) != 0;
-                toolStripButtonEditBG.Checked = (value & LAYER_BG) != 0;
-                toolStripButtonEditCol.Checked = (value & LAYER_COL) != 0;
-                if ((mapEditor.EditLayer & LAYER_COL) != 0) {
+                toolStripButtonEditFG.Checked = value == CustomControls.MapEditor.Layer.Foreground;
+                toolStripButtonEditBG.Checked = value == CustomControls.MapEditor.Layer.Background;
+                toolStripButtonEditCol.Checked = value == CustomControls.MapEditor.Layer.Collision;
+                if (value == CustomControls.MapEditor.Layer.Collision) {
                     tilePicker.Tileset = ImageUtil.CollisionTileset;
                     tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
                 } else {
@@ -64,7 +60,7 @@ namespace GameEditor.MapEditor
             }
         }
 
-        public uint EnabledRenderLayers {
+        public RenderFlags EnabledRenderLayers {
             get { return mapEditor.EnabledRenderLayers; }
             set { mapEditor.EnabledRenderLayers = value; }
         }
@@ -89,11 +85,11 @@ namespace GameEditor.MapEditor
         }
 
         private void UpdateRenderLayers() {
-            uint fg = toolStripButtonShowFG.Checked ? LAYER_FG : 0;
-            uint bg = toolStripButtonShowBG.Checked ? LAYER_BG : 0;
-            uint col = toolStripButtonShowCol.Checked ? LAYER_COL : 0;
-            uint grid = toolStripButtonShowGrid.Checked ? LAYER_GRID : 0;
-            uint screen = toolStripButtonShowScreen.Checked ? LAYER_SCREEN : 0;
+            RenderFlags fg = toolStripButtonShowFG.Checked ? RenderFlags.Foreground : 0;
+            RenderFlags bg = toolStripButtonShowBG.Checked ? RenderFlags.Background : 0;
+            RenderFlags col = toolStripButtonShowCol.Checked ? RenderFlags.Collision : 0;
+            RenderFlags grid = toolStripButtonShowGrid.Checked ? RenderFlags.Grid : 0;
+            RenderFlags screen = toolStripButtonShowScreen.Checked ? RenderFlags.Screen : 0;
             EnabledRenderLayers = fg | bg | col | grid | screen;
             mapEditor.Invalidate();
         }
@@ -130,7 +126,7 @@ namespace GameEditor.MapEditor
         }
 
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
-            if ((EditLayer & LAYER_COL) != 0) {
+            if (EditLayer == CustomControls.MapEditor.Layer.Collision) {
                 mapEditor.LeftSelectedCollisionTile = tilePicker.LeftSelectedTile;
                 mapEditor.RightSelectedCollisionTile = tilePicker.RightSelectedTile;
             } else {
@@ -144,7 +140,7 @@ namespace GameEditor.MapEditor
         }
 
         private void mapEditor_SelectedTilesChanged(object sender, EventArgs e) {
-            if ((EditLayer & LAYER_COL) != 0) {
+            if (EditLayer == CustomControls.MapEditor.Layer.Collision) {
                 tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
                 tilePicker.RightSelectedTile = mapEditor.RightSelectedCollisionTile;
             } else {
@@ -188,15 +184,15 @@ namespace GameEditor.MapEditor
         }
 
         private void toolStripButtonEditFG_Click(object sender, EventArgs e) {
-            EditLayer = LAYER_FG;
+            EditLayer = CustomControls.MapEditor.Layer.Foreground;
         }
 
         private void toolStripButtonEditBG_Click(object sender, EventArgs e) {
-            EditLayer = LAYER_BG;
+            EditLayer = CustomControls.MapEditor.Layer.Background;
         }
 
         private void toolStripButtonEditCol_Click(object sender, EventArgs e) {
-            EditLayer = LAYER_COL;
+            EditLayer = CustomControls.MapEditor.Layer.Collision;
         }
 
         private void btnProperties_Click(object sender, EventArgs e) {

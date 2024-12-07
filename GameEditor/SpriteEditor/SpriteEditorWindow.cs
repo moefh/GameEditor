@@ -18,11 +18,6 @@ namespace GameEditor.SpriteEditor
 {
     public partial class SpriteEditorWindow : ProjectAssetEditorForm
     {
-        private const uint EDITOR_RENDER_GRID = CustomControls.SpriteEditor.RENDER_GRID;
-        private const uint EDITOR_RENDER_TRANSPARENT = CustomControls.SpriteEditor.RENDER_TRANSPARENT;
-
-        private const uint PICKER_RENDER_TRANSPARENT = CustomControls.SpriteFramePicker.RENDER_TRANSPARENT;
-
         private readonly SpriteItem spriteItem;
 
         public SpriteEditorWindow(SpriteItem spriteItem) : base(spriteItem, "SpriteEditor") {
@@ -49,11 +44,11 @@ namespace GameEditor.SpriteEditor
         }
 
         private void FixRenderFlags() {
-            uint editorRenderGrid = (toolStripBtnGrid.Checked) ? EDITOR_RENDER_GRID : 0;
-            uint editorRenderTransparent = (toolStripBtnTransparent.Checked) ? EDITOR_RENDER_TRANSPARENT : 0;
+            RenderFlags editorRenderGrid = toolStripBtnGrid.Checked ? RenderFlags.Grid : 0;
+            RenderFlags editorRenderTransparent = toolStripBtnTransparent.Checked ? RenderFlags.Transparent : 0;
             spriteEditor.RenderFlags = editorRenderGrid | editorRenderTransparent;
 
-            uint pickerRenderTransparent = (toolStripBtnTransparent.Checked) ? PICKER_RENDER_TRANSPARENT : 0;
+            RenderFlags pickerRenderTransparent = toolStripBtnTransparent.Checked ? RenderFlags.Transparent : 0;
             spriteFramePicker.RenderFlags = pickerRenderTransparent;
         }
 
@@ -95,7 +90,7 @@ namespace GameEditor.SpriteEditor
             try {
                 Image? img = Clipboard.GetImage();
                 if (img == null) return;
-                bool transparent = (spriteEditor.RenderFlags & EDITOR_RENDER_TRANSPARENT) != 0;
+                bool transparent = (spriteEditor.RenderFlags & RenderFlags.Transparent) != 0;
                 Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
