@@ -34,9 +34,12 @@
             toolStripComboSprite = new ToolStripComboBox();
             toolStripLabel1 = new ToolStripLabel();
             toolsToolStrip = new ToolStrip();
+            toolStripBtnPenHead = new ToolStripButton();
+            toolStripBtnPenFoot = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
-            toolStripSeparator1 = new ToolStripSeparator();
+            toolStripSeparator2 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
             toolStripTxtFootOverlap = new ToolStripTextBox();
             mainSplit = new SplitContainer();
@@ -46,9 +49,6 @@
             animEditor = new CustomControls.SpriteAnimationEditor();
             animLoopView = new CustomControls.SpriteFrameListView();
             colorPicker = new CustomControls.ColorPicker();
-            toolStripBtnPenFoot = new ToolStripButton();
-            toolStripBtnPenHead = new ToolStripButton();
-            toolStripSeparator2 = new ToolStripSeparator();
             statusStrip.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -127,6 +127,36 @@
             toolsToolStrip.TabIndex = 2;
             toolsToolStrip.Text = "toolStrip2";
             // 
+            // toolStripBtnPenHead
+            // 
+            toolStripBtnPenHead.Checked = true;
+            toolStripBtnPenHead.CheckState = CheckState.Checked;
+            toolStripBtnPenHead.Image = Properties.Resources.PenIcon;
+            toolStripBtnPenHead.ImageTransparentColor = Color.Magenta;
+            toolStripBtnPenHead.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnPenHead.Name = "toolStripBtnPenHead";
+            toolStripBtnPenHead.Size = new Size(61, 24);
+            toolStripBtnPenHead.Text = "Head";
+            toolStripBtnPenHead.ToolTipText = "Draw on head image";
+            toolStripBtnPenHead.Click += toolStripBtnPenHead_Click;
+            // 
+            // toolStripBtnPenFoot
+            // 
+            toolStripBtnPenFoot.Image = Properties.Resources.PenIcon;
+            toolStripBtnPenFoot.ImageTransparentColor = Color.Magenta;
+            toolStripBtnPenFoot.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnPenFoot.Name = "toolStripBtnPenFoot";
+            toolStripBtnPenFoot.Size = new Size(57, 24);
+            toolStripBtnPenFoot.Text = "Foot";
+            toolStripBtnPenFoot.ToolTipText = "Draw on foot image";
+            toolStripBtnPenFoot.Click += toolStripBtnPenFoot_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 27);
+            // 
             // toolStripBtnGrid
             // 
             toolStripBtnGrid.Checked = true;
@@ -153,11 +183,11 @@
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.CheckedChanged += toolStripBtnTransparent_CheckedChanged;
             // 
-            // toolStripSeparator1
+            // toolStripSeparator2
             // 
-            toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(6, 27);
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 27);
             // 
             // toolStripLabel2
             // 
@@ -247,19 +277,23 @@
             // 
             // animEditor
             // 
-            animEditor.Animation = null;
             animEditor.BackPen = Color.Empty;
+            animEditor.DisplayFoot = false;
             animEditor.Dock = DockStyle.Fill;
+            animEditor.EditLayer = CustomControls.SpriteAnimationEditor.Layer.Head;
+            animEditor.FootOverlap = 0;
             animEditor.ForePen = Color.Empty;
+            animEditor.Frames = null;
             animEditor.GridColor = Color.Empty;
             animEditor.Location = new Point(0, 0);
             animEditor.Name = "animEditor";
             animEditor.ReadOnly = false;
-            animEditor.RenderFlags = 0U;
             animEditor.SelectedIndex = 0;
-            animEditor.SelectedLoop = 0;
             animEditor.Size = new Size(312, 159);
+            animEditor.Sprite = null;
             animEditor.TabIndex = 0;
+            animEditor.ImageChanged += animEditor_ImageChanged;
+            animEditor.SelectedColorsChanged += animEditor_SelectedColorsChanged;
             // 
             // animLoopView
             // 
@@ -292,36 +326,6 @@
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
-            // 
-            // toolStripBtnPenFoot
-            // 
-            toolStripBtnPenFoot.CheckOnClick = true;
-            toolStripBtnPenFoot.Image = Properties.Resources.PenIcon;
-            toolStripBtnPenFoot.ImageTransparentColor = Color.Magenta;
-            toolStripBtnPenFoot.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnPenFoot.Name = "toolStripBtnPenFoot";
-            toolStripBtnPenFoot.Size = new Size(57, 24);
-            toolStripBtnPenFoot.Text = "Foot";
-            toolStripBtnPenFoot.ToolTipText = "Draw on foot image";
-            // 
-            // toolStripBtnPenHead
-            // 
-            toolStripBtnPenHead.Checked = true;
-            toolStripBtnPenHead.CheckOnClick = true;
-            toolStripBtnPenHead.CheckState = CheckState.Checked;
-            toolStripBtnPenHead.Image = Properties.Resources.PenIcon;
-            toolStripBtnPenHead.ImageTransparentColor = Color.Magenta;
-            toolStripBtnPenHead.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnPenHead.Name = "toolStripBtnPenHead";
-            toolStripBtnPenHead.Size = new Size(61, 24);
-            toolStripBtnPenHead.Text = "Head";
-            toolStripBtnPenHead.ToolTipText = "Draw on head image";
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 27);
             // 
             // SpriteAnimationEditorWindow
             // 

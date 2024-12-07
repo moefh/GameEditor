@@ -19,6 +19,7 @@ namespace GameEditor.SpriteAnimationEditor
     public partial class SpriteAnimationEditorWindow : ProjectAssetEditorForm
     {
         private readonly SpriteAnimationItem animationItem;
+        private CustomControls.SpriteAnimationEditor.Layer editLayer;
 
         public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
             this.animationItem = animationItem;
@@ -26,16 +27,32 @@ namespace GameEditor.SpriteAnimationEditor
             SetupAssetListControls(toolStripTxtName, lblDataSize);
             RefreshSpriteList();
             RefreshSpriteLoopList();
+
             loopsListBox.SelectedIndex = 0;
+
             animLoopView.Sprite = Animation.Sprite;
             animLoopView.SelectedIndex = 0;
             animLoopView.FootOverlap = Animation.FootOverlap;
-            animEditor.Animation = Animation;
-            animEditor.SelectedIndex = 0;
+
+            animEditor.Sprite = animLoopView.Sprite;
+            animEditor.SelectedIndex = animLoopView.SelectedIndex;
+            animEditor.FootOverlap = animLoopView.FootOverlap;
+            animEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
             animEditor.ForePen = colorPicker.SelectedForeColor;
             animEditor.BackPen = colorPicker.SelectedBackColor;
+
             toolStripTxtFootOverlap.Text = Animation.FootOverlap.ToString();
             FixRenderFlags();
+        }
+
+        private CustomControls.SpriteAnimationEditor.Layer EditLayer {
+            get { return editLayer; }
+            set {
+                toolStripBtnPenHead.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Head;
+                toolStripBtnPenFoot.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Foot;
+                animEditor.EditLayer = value;
+                editLayer = value;
+            }
         }
 
         public void RefreshSpriteList() {
@@ -86,14 +103,19 @@ namespace GameEditor.SpriteAnimationEditor
             RefreshSpriteList();
         }
 
-        private void loopsListBox_SelectedIndexChanged(object sender, EventArgs e) {
+        private void RefreshSelectedLoop() {
             if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Animation.Loops.Length) return;
             SpriteAnimationLoop loop = Animation.Loops[loopsListBox.SelectedIndex];
-            animLoopView.SelectedIndex = 0;
             animLoopView.Frames = MakeLoopFrames(loop);
             animLoopView.DisplayFoot = loop.Indices.Any((SpriteAnimationLoop.Frame frame) => frame.FootIndex >= 0);
-            animEditor.SelectedLoop = loopsListBox.SelectedIndex;
             animEditor.SelectedIndex = animLoopView.SelectedIndex;
+            animEditor.Frames = animLoopView.Frames;
+            animEditor.DisplayFoot = animLoopView.DisplayFoot;
+            animEditor.SelectedIndex = animLoopView.SelectedIndex;
+        }
+
+        private void loopsListBox_SelectedIndexChanged(object sender, EventArgs e) {
+            RefreshSelectedLoop();
             animLoopView.Focus(); // remove focus from list box so arrow keys can be used again
         }
 
@@ -121,9 +143,7 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         private void spriteListView_SelectedLoopIndexChanged(object sender, EventArgs e) {
-            if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Animation.Loops.Length) return;
-            SpriteAnimationLoop selectedLoop = Animation.Loops[loopsListBox.SelectedIndex];
-            animEditor.SelectedIndex = animLoopView.SelectedIndex;
+            RefreshSelectedLoop();
         }
 
         private void loopsListBox_DoubleClick(object sender, EventArgs e) {
@@ -146,6 +166,11 @@ namespace GameEditor.SpriteAnimationEditor
             animEditor.BackPen = colorPicker.SelectedBackColor;
         }
 
+        private void animEditor_SelectedColorsChanged(object sender, EventArgs e) {
+            colorPicker.ForeColor = animEditor.ForeColor;
+            colorPicker.BackColor = animEditor.BackColor;
+        }
+
         private void animEditor_ImageChanged(object sender, EventArgs e) {
             animLoopView.Invalidate();
             Util.Project.SetDirty();
@@ -159,12 +184,13 @@ namespace GameEditor.SpriteAnimationEditor
 
             Animation.Sprite = (Sprite)Util.Project.SpriteList[toolStripComboSprite.SelectedIndex].Asset;
             Util.Project.SetDirty();
-            RefreshSpriteLoopList();
-            animEditor.Animation = Animation;
             animLoopView.Sprite = Animation.Sprite;
-            animLoopView.Frames = MakeLoopFrames(Animation.Loops[loopsListBox.SelectedIndex]);
+            animEditor.Sprite = Animation.Sprite;
             animLoopView.SelectedIndex = 0;
+            RefreshSpriteLoopList();
+            RefreshSelectedLoop();
             animLoopView.Invalidate();
+            animEditor.Invalidate();
             FixFormTitle();
         }
 
@@ -179,6 +205,7 @@ namespace GameEditor.SpriteAnimationEditor
                     Util.Project.SetDirty();
                 }
                 animLoopView.FootOverlap = footOverlap;
+                animEditor.FootOverlap = footOverlap;
             } else {
                 toolStripTxtFootOverlap.Text = Animation.FootOverlap.ToString();
             }
@@ -194,5 +221,14 @@ namespace GameEditor.SpriteAnimationEditor
             if (e.KeyCode != Keys.Enter) return;
             OnFootOverlapTextChanged();
         }
+
+        private void toolStripBtnPenHead_Click(object sender, EventArgs e) {
+            EditLayer = CustomControls.SpriteAnimationEditor.Layer.Head;
+        }
+
+        private void toolStripBtnPenFoot_Click(object sender, EventArgs e) {
+            EditLayer = CustomControls.SpriteAnimationEditor.Layer.Foot;
+        }
+
     }
 }

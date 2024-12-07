@@ -14,20 +14,18 @@ namespace GameEditor.CustomControls
 {
     public partial class TileEditor : AbstractPaintedControl
     {
-        public const uint RENDER_GRID = 1 << 0;
-        public const uint RENDER_TRANSPARENT = 1 << 1;
         private const int TILE_SIZE = Tileset.TILE_SIZE;
 
         protected Tileset? tileset;
         protected int selectedTile;
-        protected uint renderFlags;
+        protected RenderFlags renderFlags;
 
         public event EventHandler? ImageChanged;
         public event EventHandler? SelectedColorsChanged;
 
         public Tileset? Tileset { get { return tileset; } set { tileset = value; Invalidate(); } }
         public int SelectedTile { get { return selectedTile; } set { selectedTile = value; Invalidate(); } }
-        public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
+        public RenderFlags RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
         public Color ForePen { get; set; }
         public Color BackPen { get; set; }
         public Color GridColor { get; set; }
@@ -63,7 +61,7 @@ namespace GameEditor.CustomControls
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
             int zoomedTileSize = zoom * TILE_SIZE;
-            bool transparent = (RenderFlags & RENDER_TRANSPARENT) != 0;
+            bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
 
             // tile image
             Tileset?.DrawTileAt(pe.Graphics, SelectedTile,
@@ -71,7 +69,7 @@ namespace GameEditor.CustomControls
                 transparent);
 
             // grid
-            if ((RenderFlags & RENDER_GRID) != 0) {
+            if ((RenderFlags & RenderFlags.Transparent) != 0) {
                 using Pen grid = new Pen(GridColor);
                 for (int ty = 0; ty < TILE_SIZE + 1; ty++) {
                     int y = (int) (ty * zoom);

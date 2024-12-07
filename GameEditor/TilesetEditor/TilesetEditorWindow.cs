@@ -17,9 +17,6 @@ namespace GameEditor.TilesetEditor
 {
     public partial class TilesetEditorWindow : ProjectAssetEditorForm
     {
-        public const uint RENDER_GRID = CustomControls.TileEditor.RENDER_GRID;
-        public const uint RENDER_TRANSPARENT = CustomControls.TileEditor.RENDER_TRANSPARENT;
-
         private readonly TilesetItem tileset;
         private bool warnedAboutTooManyTiles;
 
@@ -51,8 +48,8 @@ namespace GameEditor.TilesetEditor
 
         private void UpdateRenderFlags() {
             tileEditor.RenderFlags =
-                ((toolStripBtnGrid.Checked) ? RENDER_GRID : 0) |
-                ((toolStripBtnTransparent.Checked) ? RENDER_TRANSPARENT : 0);
+                ((toolStripBtnGrid.Checked) ? RenderFlags.Grid : 0) |
+                ((toolStripBtnTransparent.Checked) ? RenderFlags.Transparent : 0);
         }
 
 
@@ -184,7 +181,7 @@ namespace GameEditor.TilesetEditor
             try {
                 Image? img = Clipboard.GetImage();
                 if (img == null) return;
-                bool transparent = (tileEditor.RenderFlags & RENDER_TRANSPARENT) != 0;
+                bool transparent = (tileEditor.RenderFlags & RenderFlags.Transparent) != 0;
                 Tileset.PasteIntoTile(img, tileEditor.SelectedTile, 0, 0, transparent);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");

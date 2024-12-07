@@ -15,12 +15,9 @@ namespace GameEditor.CustomControls
 {
     public partial class FontEditor : AbstractPaintedControl
     {
-        public const uint RENDER_GRID = 1u<<0;
-        public const uint RENDER_TRANSPARENT = 1u<<1;
-
         private FontData? fontData;
         private byte selChar;
-        private uint renderFlags;
+        private RenderFlags renderFlags;
 
         public event EventHandler? ImageChanged;
 
@@ -29,7 +26,7 @@ namespace GameEditor.CustomControls
             SetDoubleBuffered();
         }
 
-        public uint RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
+        public RenderFlags RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
         public byte SelectedCharacter { get { return selChar; } set { selChar = value; Invalidate(); } }
         public FontData? FontData {
             get { return fontData; }
@@ -73,10 +70,10 @@ namespace GameEditor.CustomControls
             // char image
             FontData.DrawCharAt(pe.Graphics, SelectedCharacter,
                 sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height,
-                (RenderFlags & RENDER_TRANSPARENT) != 0);
+                (RenderFlags & RenderFlags.Transparent) != 0);
 
             // grid
-            if ((RenderFlags & RENDER_GRID) != 0) {
+            if ((RenderFlags & RenderFlags.Grid) != 0) {
                 for (int ty = 0; ty < FontData.Height + 1; ty++) {
                     int y = ty * zoom;
                     pe.Graphics.DrawLine(Pens.Red, sprRect.X, y + sprRect.Y, sprRect.X + sprRect.Width, y + sprRect.Y);

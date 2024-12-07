@@ -56,8 +56,8 @@ namespace GameEditor.GameData
             int numSprFrames = Animation.Sprite.NumFrames;
             for (int i = 0; i < Indices.Count; i++) {
                 if (Indices[i].HeadIndex >= numSprFrames || Indices[i].FootIndex >= numSprFrames) {
-                    Indices[i] = new Frame(int.Min(Indices[i].HeadIndex, numSprFrames),
-                                           int.Min(Indices[i].FootIndex, numSprFrames));
+                    Indices[i] = new Frame(int.Min(Indices[i].HeadIndex, numSprFrames-1),
+                                           int.Min(Indices[i].FootIndex, numSprFrames-1));
                 }
             }
         }

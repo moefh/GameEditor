@@ -15,8 +15,6 @@ namespace GameEditor.CustomControls
 {
     public partial class SpriteFramePicker : AbstractPaintedControl
     {
-        public const uint RENDER_TRANSPARENT = 1<<0;
-
         private const int SEL_BORDER = 2;
 
         private struct RenderInfo(int emptyFrameSpace, int zoomedFrameWidth, int zoomedFrameHeight, int numHorzFrames, int numVertFrames)
