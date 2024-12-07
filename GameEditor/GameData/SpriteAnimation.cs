@@ -118,10 +118,10 @@ namespace GameEditor.GameData
                 // frameDataOffset(2) + frameDataLength(2) + numHeadIndices*index(1) + numFootIndices*index(1)
                 int size = 0;
                 foreach (SpriteAnimationLoop loop in Loops) {
-                    size += 2 + 2 + 2 * loop.Indices.Count;
+                    size += 2 + 2 + 2*loop.Indices.Count;
                 }
-                // framesData(4) + spriteImage(4) + loop sizes
-                return 4+4 + size;
+                // framesData(4) + spriteImage(4) + footOverlap(1) + padding(3) + loop sizes
+                return 4 + 4 + 1 + 3 + size;
             }
         }
 

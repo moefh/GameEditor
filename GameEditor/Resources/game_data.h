@@ -53,12 +53,13 @@ struct ${PREFIX}_MAP {
 
 struct ${PREFIX}_SPRITE_ANIMATION_LOOP {
   uint16_t offset;   // offset into animation frame_indices
-  uint16_t length;   // number of frames (including head+foot)
+  uint16_t length;   // loop data length
 };
 
 struct ${PREFIX}_SPRITE_ANIMATION {
   const uint8_t *frame_indices;
   const struct ${PREFIX}_IMAGE *sprite;
+  int8_t foot_overlap;
   struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[20];
 };
 
