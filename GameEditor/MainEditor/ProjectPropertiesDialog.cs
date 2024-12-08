@@ -64,10 +64,10 @@ namespace GameEditor.MainEditor
             try {
                 File.WriteAllBytes(dlg.FileName, Encoding.UTF8.GetBytes(content));
             } catch (Exception ex) {
-                Util.ShowError(ex, $"Error writing {dlg.FileName}", "Error Exporting Header");
+                Util.ShowError(ex, $"Error writing {dlg.FileName}", "Error Saving Header File");
                 return;
             }
-            MessageBox.Show("Created header file with struct declarations.", "Header Exported",
+            MessageBox.Show("Saved header file with declarations.", "File Saved",
                             MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }

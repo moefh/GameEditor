@@ -46,6 +46,8 @@ struct ${PREFIX}_IMAGE {
 struct ${PREFIX}_MAP {
    int16_t w;
    int16_t h;
+   int16_t bg_w;
+   int16_t bg_h;
    const struct ${PREFIX}_IMAGE *tileset;
    const uint8_t *tiles;
 };

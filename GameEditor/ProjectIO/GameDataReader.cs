@@ -560,6 +560,10 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token height = ExpectNumber();
                 ExpectPunct(',');
+                Token bgWidth = ExpectNumber();
+                ExpectPunct(',');
+                Token bgHeight = ExpectNumber();
+                ExpectPunct(',');
                 ExpectPunct('&');
                 ExpectIdent($"{GlobalPrefixLower}_tilesets");
                 ExpectPunct('[');
@@ -576,10 +580,20 @@ namespace GameEditor.ProjectIO
                 if (! mapTiles.TryGetValue(mapTilesDataIdent.Str, out List<byte>? tiles)) {
                     throw new ParseError($"game map tile {mapTilesDataIdent.Str} doesn't exist", mapTilesDataIdent.LineNum);
                 }
+                int mapW = (int) width.Num;
+                int mapH = (int) height.Num;
+                int bgW = (int) bgWidth.Num;
+                int bgH = (int) bgHeight.Num;
+                if (bgW <= 0 || bgW > mapW || bgH <= 0 || bgH > mapH) {
+                    throw new ParseError($"invalid map background size: {bgW}x{bgH} must be between 1x1 and {mapW}x{mapH}", tilesetIndex.LineNum);
+                }
+                if (3*mapW*mapH != tiles.Count) {
+                    throw new ParseError($"invalid map tiles: expecting {3*mapW*mapH} tiles, got {tiles.Count}", tilesetIndex.LineNum);
+                }
 
                 string name = ExtractGlobalLowerName(mapTilesDataIdent.Str, "map_tiles");
                 Tileset tileset = tilesetList[(int) tilesetIndex.Num];
-                mapList.Add(new MapData(name, (int) width.Num, (int) height.Num, tileset, tiles));
+                mapList.Add(new MapData(name, mapW, mapH, bgW, bgH, tileset, tiles));
                 Util.Log($"-> got map for {mapTilesDataIdent.Str} with tileset {tilesetIndex.Num}");
             }
             ExpectPunct(';');

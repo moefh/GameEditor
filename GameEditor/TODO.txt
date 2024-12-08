@@ -1,5 +1,10 @@
 ﻿
-- change save data format for map tiles: write each tile (fg, bg, clip) packed locally
-  instead of a block of fg, block of bg and block of clip (to improve cache locality in game)
+- map editor:
+  - show indication of background tiles that will not be used because the
+    background is smaller than the foreground
+
+- validate maps in validator:
+  - check minimum size: mapW >= 320/16 && mapH >= 240/16
+  - check bg size: 1 <= bgW <= mapW && 1 <= bgH <= mapH
 
 - make editor for map connections (world editor)

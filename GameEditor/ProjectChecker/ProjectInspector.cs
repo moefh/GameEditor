@@ -147,8 +147,8 @@ namespace GameEditor.ProjectChecker
         private void CheckMapInvalidTileIndices(MapData map) {
             Point firstTile = Point.Empty;
             int numTiles = 0;
-            for (int y = 0; y < map.Tiles.Height; y++) {
-                for (int x = 0; x < map.Tiles.Width; x++) {
+            for (int y = 0; y < map.Height; y++) {
+                for (int x = 0; x < map.Width; x++) {
                     int fg = map.Tiles.fg[x, y];
                     int bg = map.Tiles.bg[x, y];
                     if (fg < -1 || bg < -1 || fg >= map.Tileset.NumTiles || bg >= map.Tileset.NumTiles) {

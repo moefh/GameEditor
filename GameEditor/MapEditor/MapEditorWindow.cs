@@ -72,7 +72,7 @@ namespace GameEditor.MapEditor
         }
 
         protected override void FixFormTitle() {
-            Text = $"{Map.Name} [{Map.Tiles.Width}x{Map.Tiles.Height} - tileset {Map.Tileset.Name}] - Map";
+            Text = $"{Map.Name} [{Map.Width}x{Map.Height} - tileset {Map.Tileset.Name}] - Map";
         }
 
         private void UpdateDataSize() {
@@ -149,7 +149,7 @@ namespace GameEditor.MapEditor
         }
 
         private void mapEditor_MouseOver(object sender, Point p) {
-            if (p.X < 0 || p.Y < 0 || p.X >= Map.Tiles.Width || p.Y >= Map.Tiles.Height) {
+            if (p.X < 0 || p.Y < 0 || p.X >= Map.Width || p.Y >= Map.Height) {
                 toolStripLblMapCoords.Text = "";
             } else {
                 toolStripLblMapCoords.Text = $"({p.X}, {p.Y})";
@@ -219,10 +219,16 @@ namespace GameEditor.MapEditor
 
         private void btnProperties_Click(object sender, EventArgs e) {
             MapPropertiesDialog dlg = new MapPropertiesDialog();
-            dlg.MapWidth = Map.Tiles.Width;
-            dlg.MapHeight = Map.Tiles.Height;
+            dlg.MapWidth = Map.Width;
+            dlg.MapHeight = Map.Height;
+            dlg.MapBgWidth = Map.BgWidth;
+            dlg.MapBgHeight = Map.BgHeight;
             if (dlg.ShowDialog() == DialogResult.OK) {
-                Map.Resize(dlg.MapWidth, dlg.MapHeight);
+                if (dlg.MapWidth != Map.BgWidth || dlg.MapHeight != Map.BgHeight) {
+                    Map.Resize(dlg.MapWidth, dlg.MapHeight);
+                }
+                Map.BgWidth = dlg.MapBgWidth;
+                Map.BgHeight = dlg.MapBgHeight;
                 Util.Project.SetDirty();
                 FixFormTitle();
                 UpdateDataSize();

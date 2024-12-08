@@ -85,9 +85,9 @@ namespace GameEditor.CustomControls
             ImageUtil.SetupTileGraphics(pe.Graphics);
 
             int zoomedTileSize = (int) (TILE_SIZE * zoom);
-            for (int ty = 0; ty < Map.Tiles.Height; ty++) {
+            for (int ty = 0; ty < Map.Height; ty++) {
                 int y = (int) (ty * zoomedTileSize) + MARGIN;
-                for (int tx = 0; tx < Map.Tiles.Width; tx++) {
+                for (int tx = 0; tx < Map.Width; tx++) {
                     int x = (int) (tx * zoomedTileSize) + MARGIN;
                     if ((EnabledRenderLayers & RenderFlags.Background) != 0) {
                         RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false, Layer.Background);
@@ -102,13 +102,13 @@ namespace GameEditor.CustomControls
             }
             if ((EnabledRenderLayers & RenderFlags.Grid) != 0) {
                 using Pen gridPen = new Pen(GridColor);
-                int w = (int) (Map.Tiles.Width * zoomedTileSize);
-                int h = (int) (Map.Tiles.Height * zoomedTileSize);
-                for (int ty = 0; ty < Map.Tiles.Height + 1; ty++) {
+                int w = (int) (Map.Width * zoomedTileSize);
+                int h = (int) (Map.Height * zoomedTileSize);
+                for (int ty = 0; ty < Map.Height + 1; ty++) {
                     int y = (int) (ty * zoomedTileSize) - origin.Y;
                     pe.Graphics.DrawLine(gridPen, MARGIN, y + MARGIN, w, y + MARGIN);
                 }
-                for (int tx = 0; tx < Map.Tiles.Width + 1; tx++) {
+                for (int tx = 0; tx < Map.Width + 1; tx++) {
                     int x = (int) (tx * zoomedTileSize) - origin.X;
                     pe.Graphics.DrawLine(gridPen, x + MARGIN, MARGIN, x + MARGIN, h);
                 }
@@ -135,8 +135,8 @@ namespace GameEditor.CustomControls
 
         private void ClampScroll() {
             if (Map == null) return;
-            int w = int.Max((int) (Map.Tiles.Width * TILE_SIZE * zoom), ClientSize.Width-1);
-            int h = int.Max((int) (Map.Tiles.Height * TILE_SIZE * zoom), ClientSize.Height-1);
+            int w = int.Max((int) (Map.Width * TILE_SIZE * zoom), ClientSize.Width-1);
+            int h = int.Max((int) (Map.Height * TILE_SIZE * zoom), ClientSize.Height-1);
             origin.X = int.Clamp(origin.X, 0, w - ClientSize.Width + 1);
             origin.Y = int.Clamp(origin.Y, 0, h - ClientSize.Height + 1);
         }
@@ -155,7 +155,7 @@ namespace GameEditor.CustomControls
 
         private void SetTile(int tx, int ty, bool left) {
             if (Map == null) return;
-            if (tx < 0 || ty < 0 || tx >= Map.Tiles.Width || ty >= Map.Tiles.Height) return;
+            if (tx < 0 || ty < 0 || tx >= Map.Width || ty >= Map.Height) return;
             switch (EditLayer) {
             case Layer.Background: Map.Tiles.bg[tx, ty] = left ? LeftSelectedTile : RightSelectedTile; break;
             case Layer.Foreground: Map.Tiles.fg[tx, ty] = left ? LeftSelectedTile : RightSelectedTile; break;
@@ -167,7 +167,7 @@ namespace GameEditor.CustomControls
 
         private void PickTile(int tx, int ty, bool left) {
             if (Map == null) return;
-            if (tx < 0 || ty < 0 || tx >= Map.Tiles.Width || ty >= Map.Tiles.Height) return;
+            if (tx < 0 || ty < 0 || tx >= Map.Width || ty >= Map.Height) return;
             if (left) {
                 switch (EditLayer) {
                 case Layer.Background: LeftSelectedTile = Map.Tiles.bg[tx, ty]; break;

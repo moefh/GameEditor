@@ -461,7 +461,7 @@ namespace GameEditor.ProjectIO
                 int tilesetIndex = Util.Project.GetAssetIndex(mi.Map.Tileset);
                 string tileset = $"&{tilesetsIdent}[{tilesetIndex}]";
                 string tiles = identifiers.Get(mi.Map);
-                f.WriteLine($"  {{ {mi.Map.Tiles.Width}, {mi.Map.Tiles.Height}, {tileset}, {tiles} }},");
+                f.WriteLine($"  {{ {mi.Map.Width}, {mi.Map.Height}, {mi.Map.BgWidth}, {mi.Map.BgHeight}, {tileset}, {tiles} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -472,7 +472,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine($"const struct {GetUpperGlobal("MAP")} {GetLowerGlobal("maps")}[] = {{");
             string tileset = $"&{GetLowerGlobal("tilesets")}[0]";
             string tiles = identifiers.Get(map);
-            f.WriteLine($"  {{ {map.Tiles.Width}, {map.Tiles.Height}, {tileset}, {tiles} }},");
+            f.WriteLine($"  {{ {map.Width}, {map.Height}, {map.BgWidth}, {map.BgHeight}, {tileset}, {tiles} }},");
             f.WriteLine("};");
             f.WriteLine();
             f.Close();
