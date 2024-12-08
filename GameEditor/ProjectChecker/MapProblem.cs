@@ -1,5 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,17 +7,16 @@ using System.Threading.Tasks;
 
 namespace GameEditor.ProjectChecker
 {
-    public class MapTileProblem(ProjectData proj, MapData map, int numTiles, Point tile) : IAssetProblem
+    public class MapProblem(ProjectData proj, MapData map) : IAssetProblem
     {
         private readonly string mapName = map.Name;
-        private readonly int numTiles = numTiles;
-        private readonly Point tile = tile;
-
+        private readonly Size size = new Size(map.Width, map.Height);
+        private readonly Size bgSize = new Size(map.BgWidth, map.BgHeight);
         public AssetRef Asset { get; } = new AssetRef(proj, map);
 
         public override string ToString() {
-            return $"{mapName}: first tile at ({tile.X},{tile.Y}), {numTiles} tiles total";
+            return $"{mapName}: {size}, bg {bgSize}";
         }
-    }
 
+    }
 }

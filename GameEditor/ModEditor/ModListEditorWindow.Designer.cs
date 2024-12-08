@@ -45,6 +45,7 @@
             modList.IntegralHeight = false;
             modList.Location = new Point(0, 0);
             modList.Name = "modList";
+            modList.ScrollAlwaysVisible = true;
             modList.Size = new Size(143, 153);
             modList.TabIndex = 0;
             // 

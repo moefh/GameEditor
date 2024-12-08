@@ -8,23 +8,28 @@ using System.Threading.Tasks;
 namespace GameEditor.MainEditor
 {
     /**
+     * This is the base class for all project MDI child windows. It implements
+     * basic facilities for saving/loading the window position from the settings.
+     *
      * This should be an abstract class, but Visual Studio gets really
      * annoyed about it for some reason. It also doesn't like if we
      * don't have a default constructor.
      */
-    public class ProjectForm : Form
+    public class BaseProjectForm : Form
     {
         protected string? propName;
 
-        public ProjectForm(string propName) {
+        public BaseProjectForm(string propName) {
             this.propName = propName;
         }
 
-        public ProjectForm() {}  // to keep VS happy
+        public BaseProjectForm() {}  // to keep VS happy
 
         protected override void OnLoad(EventArgs e) {
             base.OnLoad(e);
-            if (propName != null) Util.LoadWindowPosition(this, propName);
+            if (propName != null) {
+                Util.LoadWindowPosition(this, propName);
+            }
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e) {

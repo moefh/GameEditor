@@ -16,6 +16,10 @@ namespace GameEditor.ProjectChecker
     public enum ProblemType {
         MapWithTransparentTiles,
         MapWithInvalidTileIndices,
+        MapWithUnusedBgTiles,
+        MapTooSmall,
+        MapBackgroundTooSmall,
+        MapBackgroundTooBig,
         TilesetTooBig,
         SpriteTooBig,
     }
@@ -26,6 +30,10 @@ namespace GameEditor.ProjectChecker
         private static readonly Dictionary<ProblemType,string> ProblemNames = new() {
             [ProblemType.MapWithTransparentTiles] = "maps with leaking transparent tiles",
             [ProblemType.MapWithInvalidTileIndices] = "maps with invalid tile indices",
+            [ProblemType.MapWithUnusedBgTiles] = "Map has set BG tiles outside BG area",
+            [ProblemType.MapTooSmall] = "Map is smaller than screen size",
+            [ProblemType.MapBackgroundTooSmall] = "Map background is smaller than screen size",
+            [ProblemType.MapBackgroundTooBig] = "Map background is larger than actual map size",
             [ProblemType.TilesetTooBig] = "tileset with too many tiles",
             [ProblemType.SpriteTooBig] = "sprite with too many frames",
         };
@@ -95,6 +103,7 @@ namespace GameEditor.ProjectChecker
             return false;
         }
 
+
         private static bool[] BuildTilesetTransparencyArray(Tileset tileset) {
             bool[] trans = new bool[tileset.NumTiles];
             byte[] pixels = new byte[4 * TILE_SIZE * TILE_SIZE];
@@ -113,22 +122,85 @@ namespace GameEditor.ProjectChecker
             return trans;
         }
 
-        private void CheckMapTransparentTiles(MapData map, Dictionary<Tileset, bool[]> tilesetTransparency) {
-            // check if any map tile has both fg and bg transparent
+        private void CheckMapSize(MapData map) {
+            const int SCREEN_WIDTH = ProjectData.SCREEN_WIDTH;
+            const int SCREEN_HEIGHT = ProjectData.SCREEN_HEIGHT;
+            const int TILE_SIZE = Tileset.TILE_SIZE;
+
+            bool mapTooSmall = false;
+            if (map.Width * TILE_SIZE < SCREEN_WIDTH || map.Height * TILE_SIZE < SCREEN_HEIGHT) {
+                AddProblem(ProblemType.MapTooSmall, new MapProblem(project, map));
+                mapTooSmall = true;
+            }
+            if (! mapTooSmall && (map.BgWidth * TILE_SIZE < SCREEN_WIDTH || map.BgHeight * TILE_SIZE < SCREEN_HEIGHT)) {
+                // only complain about bg being too small if map size is ok
+                AddProblem(ProblemType.MapBackgroundTooSmall, new MapProblem(project, map));
+            }
+            if (map.BgWidth > map.Width || map.BgHeight > map.Height) {
+                AddProblem(ProblemType.MapBackgroundTooBig, new MapProblem(project, map));
+            }
+        }
+
+        private void CheckMapUnusedBgTiles(MapData map) {
+            // check if any background tile outside (BgWidth x BgHeight) is set to anything other than 0 or 0xff
             MapTiles tiles = map.Tiles;
-            bool[] tileTrans = tilesetTransparency[map.Tileset];
+            Point firstTile = Point.Empty;
+            int numTiles = 0;
+            for (int y = 0; y < tiles.Height; y++) {
+                for (int x = 0; x < tiles.Width; x++) {
+                    if ((x >= map.BgWidth || y >= map.BgHeight) && tiles.bg[x, y] > 0) {
+                        if (numTiles == 0) {
+                            firstTile.X = x;
+                            firstTile.Y = y;
+                        }
+                        numTiles++;
+                    }
+                }
+            }
+            if (numTiles > 0) {
+                AddProblem(ProblemType.MapWithUnusedBgTiles,
+                           new MapTileProblem(project, map, numTiles, firstTile));
+            }
+        }
+
+        private void CheckMapTransparentTiles(MapData map, Dictionary<Tileset, bool[]> tilesetTransparency) {
+            // Check if any transparent fg map tile may be drawn over a bg with no set tile.
+            // This would cause a hole where nothing is drawn on the screen, possibly causing
+            // loss of VGA sync.
+
+            // Build an array that marks all fg tile positions that may overlap a
+            // transparent bg (i.e, no bg tile set).
+            bool[,] bgTransparency = new bool[map.Width, map.Height];
+            int pw = map.Width - map.BgWidth + 1;
+            int ph = map.Height - map.BgHeight + 1;
+            if (pw <= 0 || ph <= 0) {
+                // invalid bg size; this will be caught by another checker
+                return;
+            }
+            for (int y = 0; y < map.BgHeight; y++) {
+                for (int x = 0; x < map.BgWidth; x++) {
+                    if (map.Tiles.bg[x,y] >= 0) continue;  // bg is not transparent here
+                    for (int py = 0; py < ph; py++) {
+                        for (int px = 0; px < pw; px++) {
+                            bgTransparency[x+px,y+py] = true;
+                        }
+                    }
+                }
+            }
+
+            MapTiles tiles = map.Tiles;
+            bool[] tileTransparent = tilesetTransparency[map.Tileset];
             Point firstTile = Point.Empty;
             int numTiles = 0;
             for (int y = 0; y < tiles.Height; y++) {
                 for (int x = 0; x < tiles.Width; x++) {
                     int fg = tiles.fg[x, y];
-                    int bg = tiles.bg[x, y];
-                    if (fg >= map.Tileset.NumTiles || bg >= map.Tileset.NumTiles) {
+                    if (fg >= map.Tileset.NumTiles) {
                         // invalid tile index: this will be caught by another checker
                         continue;
                     }
-                    bool fgTrans = fg < 0 || tileTrans[fg];
-                    bool bgTrans = bg < 0 || tileTrans[bg];
+                    bool fgTrans = fg < 0 || tileTransparent[fg];
+                    bool bgTrans = bgTransparency[x, y];
                     if (fgTrans && bgTrans) {
                         if (numTiles == 0) {
                             firstTile.X = x;
@@ -140,7 +212,7 @@ namespace GameEditor.ProjectChecker
             }
             if (numTiles > 0) {
                 AddProblem(ProblemType.MapWithTransparentTiles,
-                            new MapTileProblem(project, map, numTiles, firstTile));
+                           new MapTileProblem(project, map, numTiles, firstTile));
             }
         }
 
@@ -162,7 +234,7 @@ namespace GameEditor.ProjectChecker
             }
             if (numTiles > 0) {
                 AddProblem(ProblemType.MapWithInvalidTileIndices,
-                            new MapTileProblem(project, map, numTiles, firstTile));
+                           new MapTileProblem(project, map, numTiles, firstTile));
             }
         }
 
@@ -179,6 +251,8 @@ namespace GameEditor.ProjectChecker
             foreach (MapDataItem mi in project.MapList) {
                 CheckMapTransparentTiles(mi.Map, tilesetTransparency);
                 CheckMapInvalidTileIndices(mi.Map);
+                CheckMapSize(mi.Map);
+                CheckMapUnusedBgTiles(mi.Map);
             }
 
             foreach (TilesetItem ti in project.TilesetList) {

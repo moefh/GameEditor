@@ -10,11 +10,20 @@ using System.Threading.Tasks;
 namespace GameEditor.MainEditor
 {
     /**
+     * This is the base class for all asset editors in the project. It implements
+     * basic facilities for:
+     * 
+     *   - saving/loading the window position (inherited from BaseProjectForm)
+     * 
+     *   - keeping the asset list updated
+     *   
+     *   - keeping the asset list data size updated
+     *
      * This should be an abstract class, but Visual Studio gets really
      * annoyed about it for some reason. It also doesn't like if we
      * don't have a default constructor.
      */
-    public class ProjectAssetListEditorForm : ProjectForm
+    public class ProjectAssetListEditorForm : BaseProjectForm
     {
         private readonly DataAssetType assetType;
         private ListBox? assetListBox;

@@ -12,7 +12,7 @@ namespace GameEditor.ProjectChecker
         private readonly string tilesetName = tileset.Name;
         private readonly int numTiles = tileset.NumTiles;
 
-        public AssetRef Asset { get; set; } = new AssetRef(proj, tileset);
+        public AssetRef Asset { get; } = new AssetRef(proj, tileset);
 
         public override string ToString() {
             return $"{tilesetName}: {numTiles} tiles total";

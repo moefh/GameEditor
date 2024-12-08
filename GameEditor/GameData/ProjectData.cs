@@ -36,6 +36,9 @@ namespace GameEditor.GameData
 
     public class ProjectData : IDisposable
     {
+        public const int SCREEN_WIDTH = 320;
+        public const int SCREEN_HEIGHT = 240;
+
         private static readonly DataAssetType[] ASSET_TYPES_IN_DESTROY_ORDER = [
           DataAssetType.SpriteAnimation,
           DataAssetType.Map,

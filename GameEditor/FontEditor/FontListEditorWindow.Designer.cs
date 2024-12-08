@@ -46,7 +46,7 @@
             fontList.Location = new Point(0, 0);
             fontList.Name = "fontList";
             fontList.ScrollAlwaysVisible = true;
-            fontList.Size = new Size(160, 195);
+            fontList.Size = new Size(160, 171);
             fontList.TabIndex = 0;
             // 
             // fontListContextMenuStrip
@@ -89,8 +89,8 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(160, 195);
-            Controls.Add(statusStrip);
             Controls.Add(fontList);
+            Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             MinimizeBox = false;

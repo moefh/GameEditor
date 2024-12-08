@@ -16,7 +16,7 @@ using System.Windows.Forms;
 
 namespace GameEditor.MainEditor
 {
-    public partial class CheckerWindow : ProjectForm
+    public partial class CheckerWindow : ProjectUnclosableForm
     {
         private List<IAssetProblem> savedProblems = [];
 

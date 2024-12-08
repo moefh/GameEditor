@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace GameEditor.MainEditor
 {
-    public partial class LogWindow : ProjectForm
+    public partial class LogWindow : ProjectUnclosableForm
     {
         public LogWindow() : base("LogWindow") {
             InitializeComponent();

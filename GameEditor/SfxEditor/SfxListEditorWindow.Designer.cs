@@ -45,6 +45,7 @@
             sfxList.IntegralHeight = false;
             sfxList.Location = new Point(0, 0);
             sfxList.Name = "sfxList";
+            sfxList.ScrollAlwaysVisible = true;
             sfxList.Size = new Size(145, 169);
             sfxList.TabIndex = 0;
             // 

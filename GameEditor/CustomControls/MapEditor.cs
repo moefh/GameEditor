@@ -23,8 +23,8 @@ namespace GameEditor.CustomControls
 
         const int TILE_SIZE = Tileset.TILE_SIZE;
         const int MARGIN = 1;
-        const int GAME_SCREEN_WIDTH = 320;
-        const int GAME_SCREEN_HEIGHT = 240;
+        const int GAME_SCREEN_WIDTH = ProjectData.SCREEN_WIDTH;
+        const int GAME_SCREEN_HEIGHT = ProjectData.SCREEN_HEIGHT;
 
         private double zoom = 3.0f;
         private Point scrollOrigin;
@@ -65,9 +65,9 @@ namespace GameEditor.CustomControls
             MapChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent, Layer layer) {
+        private void RenderTile(PaintEventArgs pe, int tile, int x, int y, int w, int h, bool transparent, Layer layer, bool forceGray = false) {
             if (tile < 0) return;
-            bool grayscale = (EditLayer != layer) && (EditLayer != Layer.Collision);
+            bool grayscale = ((EditLayer != layer) && (EditLayer != Layer.Collision)) || forceGray;
             Map?.Tileset.DrawTileAt(pe.Graphics, tile, x - origin.X, y - origin.Y, w, h, transparent, grayscale);
         }
 
@@ -90,7 +90,8 @@ namespace GameEditor.CustomControls
                 for (int tx = 0; tx < Map.Width; tx++) {
                     int x = (int) (tx * zoomedTileSize) + MARGIN;
                     if ((EnabledRenderLayers & RenderFlags.Background) != 0) {
-                        RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false, Layer.Background);
+                        bool forceGray = tx >= Map.BgWidth || ty >= Map.BgHeight;
+                        RenderTile(pe, Map.Tiles.bg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false, Layer.Background, forceGray);
                     }
                     if ((EnabledRenderLayers & RenderFlags.Foreground) != 0) {
                         RenderTile(pe, Map.Tiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true, Layer.Foreground);
