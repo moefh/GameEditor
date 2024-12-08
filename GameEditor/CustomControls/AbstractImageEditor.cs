@@ -96,21 +96,6 @@ namespace GameEditor.CustomControls
         }
 
         // ==============================================================================
-        // ABSTRACT STUFF
-        // ==============================================================================
-
-        protected abstract bool HasEditImage { get; }
-        protected abstract int EditImageWidth { get; }
-        protected abstract int EditImageHeight { get; }
-        protected abstract bool GetImageRenderRect(out int zoom, out Rectangle rect);
-        protected abstract void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp);
-        protected abstract Bitmap? LiftSelectionBitmap(Rectangle selectedRect);
-        protected abstract Color GetImagePixel(int x, int y);
-        protected abstract void SetImagePixel(int x, int y, Color color);
-        protected abstract void FloodFillImage(int x, int y, Color color);
-        protected abstract Bitmap? CopyFromImage(int x, int y, int w, int h);
-
-        // ==============================================================================
         // METHODS USED BY DERIVED CLASSES
         // ==============================================================================
 
@@ -186,6 +171,8 @@ namespace GameEditor.CustomControls
             if (action == MouseAction.Up) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
             if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            if (! tileRect.Contains(e.Location)) return;
+
             int tx = (e.X - tileRect.X) / zoom;
             int ty = (e.Y - tileRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
@@ -200,7 +187,8 @@ namespace GameEditor.CustomControls
             if (action == MouseAction.Up) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
             if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
-            if (e.X < tileRect.X || e.Y < tileRect.Y) return;
+            if (! tileRect.Contains(e.Location)) return;
+
             int tx = (e.X - tileRect.X) / zoom;
             int ty = (e.Y - tileRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
@@ -214,10 +202,11 @@ namespace GameEditor.CustomControls
         }
 
         private void ApplyFloodFillTool(MouseEventArgs e, MouseAction action) {
-            if (! HasEditImage) return;
             if (action != MouseAction.Down) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
             if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            if (! tileRect.Contains(e.Location)) return;
+
             int tx = (e.X - tileRect.X) / zoom;
             int ty = (e.Y - tileRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
@@ -263,14 +252,14 @@ namespace GameEditor.CustomControls
         // EVENT HANDLERS
         // ==============================================================================
 
-        protected void RunMouseEvent(MouseEventArgs e, MouseAction action) {
-            if (Util.DesignMode) return;
-            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
-            if (ignoreMouseUntilDown && action != MouseAction.Down) return;
+        private bool HandleSelectionMovement(MouseEventArgs e, MouseAction action) {
+            // In this method we return true to indicate that the mouse event was consumed
+            // and so the normal tools shouldn't get to process it.
+
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return true;
+            if (ignoreMouseUntilDown && action != MouseAction.Down) return true;
             ignoreMouseUntilDown = false;
 
-            // ==================================
-            // handle selection moving
             Rectangle selection = new Rectangle(
                 selectedRect.X * zoom + tileRect.X,
                 selectedRect.Y * zoom + tileRect.Y,
@@ -280,46 +269,65 @@ namespace GameEditor.CustomControls
             bool activeSelection = selection.Width > 0 && selection.Height > 0;
             Cursor = selection.Contains(e.Location) ? Cursors.Hand : GetCursorForSelectedTool();
 
-            if (e.Button == MouseButtons.Left && activeSelection) {
-                if (action == MouseAction.Down) {
-                    if (selection.Contains(e.Location)) {
-                        // start moving selection
-                        movingSelection = true;
-                        selectionMoveOrigin = e.Location;
-                        moveSelectedRectStart = selectedRect;
-                        return;
-                    } else {
-                        // drop current selection
-                        DropSelection();
-                        Invalidate();
-                        if (SelectedTool != PaintTool.RectSelect) {
-                            // for any tool other than selection, ignore mouse until next mouse down
-                            ignoreMouseUntilDown = true;
-                            return;
-                        }
-                    }
-                }
-
-                // move the current selection
-                if (action == MouseAction.Move && movingSelection && activeSelection) {
-                    int dx = (e.X - selectionMoveOrigin.X) / zoom;
-                    int dy = (e.Y - selectionMoveOrigin.Y) / zoom;
-                    selectedRect.X = moveSelectedRectStart.X + dx;
-                    selectedRect.Y = moveSelectedRectStart.Y + dy;
-                    return;
-                }
-
-                // lift the selection from the image
-                if (action == MouseAction.Up && selectionBmp == null && activeSelection) {
-                    LiftSelection();
-                    Invalidate();
-                    movingSelection = false;
-                    return;
-                }
+            if (! activeSelection) {
+                // no active selection, nothing to do
+                return false;
             }
 
-            // ==================================
-            // apply tools
+            if (action == MouseAction.Down) {
+                if (selection.Contains(e.Location)) {
+                    // start moving selection
+                    movingSelection = true;
+                    selectionMoveOrigin = e.Location;
+                    moveSelectedRectStart = selectedRect;
+                    return true;
+                }
+
+                // drop current selection
+                DropSelection();
+                Invalidate();
+
+                // For the selection tool, we'll let the tool immediatelly start creating
+                // another selection, so we let the code run (by returning false).
+                // For any other tool, in addition to stopping the tool from handling this
+                // mouse down (by returning true), we'll also ignore the mouse until the next
+                // mouse down event.
+                if (SelectedTool != PaintTool.RectSelect) {
+                    ignoreMouseUntilDown = true;
+                    return true;
+                }
+                return false;
+            }
+
+            // move the current selection
+            if (e.Button == MouseButtons.Left && action == MouseAction.Move && movingSelection) {
+                int dx = (e.X - selectionMoveOrigin.X) / zoom;
+                int dy = (e.Y - selectionMoveOrigin.Y) / zoom;
+                selectedRect.X = moveSelectedRectStart.X + dx;
+                selectedRect.Y = moveSelectedRectStart.Y + dy;
+                Invalidate();
+                return true;
+            }
+
+            // lift the selection from the image
+            if (action == MouseAction.Up && selectionBmp == null) {
+                LiftSelection();
+                movingSelection = false;
+                Invalidate();
+                return true;
+            }
+
+            // We can't let tools (other than selection) run while there's an active selection
+            return SelectedTool != PaintTool.RectSelect;
+        }
+
+        protected void RunMouseEvent(MouseEventArgs e, MouseAction action) {
+            if (Util.DesignMode) return;
+
+            if (HandleSelectionMovement(e, action)) {
+                return;
+            }
+
             if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
                 ApplyColorPickerTool(e, action);
             } else {
@@ -331,6 +339,20 @@ namespace GameEditor.CustomControls
                 }
             }
         }
+
+        // ==============================================================================
+        // ABSTRACT STUFF
+        // ==============================================================================
+
+        protected abstract int EditImageWidth { get; }
+        protected abstract int EditImageHeight { get; }
+        protected abstract bool GetImageRenderRect(out int zoom, out Rectangle rect);
+        protected abstract void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp);
+        protected abstract Bitmap? LiftSelectionBitmap(Rectangle selectedRect);
+        protected abstract Color GetImagePixel(int x, int y);
+        protected abstract void SetImagePixel(int x, int y, Color color);
+        protected abstract void FloodFillImage(int x, int y, Color color);
+        protected abstract Bitmap? CopyFromImage(int x, int y, int w, int h);
 
     }
 }

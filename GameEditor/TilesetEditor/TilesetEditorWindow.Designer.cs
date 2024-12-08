@@ -58,6 +58,7 @@
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
             toolStripSeparator5 = new ToolStripSeparator();
+            toolStripLabel2 = new ToolStripLabel();
             toolStripBtnToolPen = new ToolStripButton();
             toolStripBtnToolSelect = new ToolStripButton();
             toolStripBtnToolFill = new ToolStripButton();
@@ -139,7 +140,7 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip1.Location = new Point(0, 269);
+            statusStrip1.Location = new Point(0, 455);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(686, 24);
             statusStrip1.TabIndex = 1;
@@ -169,7 +170,7 @@
             // mainSplit.Panel2
             // 
             mainSplit.Panel2.Controls.Add(tileSplit);
-            mainSplit.Size = new Size(686, 211);
+            mainSplit.Size = new Size(686, 397);
             mainSplit.SplitterDistance = 244;
             mainSplit.TabIndex = 2;
             // 
@@ -186,7 +187,7 @@
             tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
             tilePicker.Scrollbar = tilePickerScroll;
             tilePicker.ShowEmptyTile = false;
-            tilePicker.Size = new Size(227, 211);
+            tilePicker.Size = new Size(227, 397);
             tilePicker.TabIndex = 0;
             tilePicker.Tileset = null;
             tilePicker.Zoom = 5;
@@ -197,7 +198,7 @@
             tilePickerScroll.Dock = DockStyle.Right;
             tilePickerScroll.Location = new Point(227, 0);
             tilePickerScroll.Name = "tilePickerScroll";
-            tilePickerScroll.Size = new Size(17, 211);
+            tilePickerScroll.Size = new Size(17, 397);
             tilePickerScroll.TabIndex = 1;
             // 
             // tileSplit
@@ -214,8 +215,8 @@
             // tileSplit.Panel2
             // 
             tileSplit.Panel2.Controls.Add(colorPicker);
-            tileSplit.Size = new Size(438, 211);
-            tileSplit.SplitterDistance = 256;
+            tileSplit.Size = new Size(438, 397);
+            tileSplit.SplitterDistance = 261;
             tileSplit.TabIndex = 5;
             // 
             // tileEditor
@@ -228,7 +229,7 @@
             tileEditor.Name = "tileEditor";
             tileEditor.SelectedTile = 0;
             tileEditor.SelectedTool = CustomControls.PaintTool.Pen;
-            tileEditor.Size = new Size(256, 211);
+            tileEditor.Size = new Size(261, 397);
             tileEditor.TabIndex = 4;
             tileEditor.Tileset = null;
             tileEditor.ImageChanged += tileEditor_ImageChanged;
@@ -244,14 +245,14 @@
             colorPicker.SelectedBackColor = Color.FromArgb(0, 0, 255);
             colorPicker.SelectedForeColor = Color.FromArgb(255, 0, 0);
             colorPicker.SingleSelection = false;
-            colorPicker.Size = new Size(178, 211);
+            colorPicker.Size = new Size(173, 397);
             colorPicker.TabIndex = 0;
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripBtnToolPen, toolStripBtnToolSelect, toolStripBtnToolFill });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolSelect, toolStripBtnToolFill });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
@@ -373,6 +374,12 @@
             toolStripSeparator5.Name = "toolStripSeparator5";
             toolStripSeparator5.Size = new Size(6, 27);
             // 
+            // toolStripLabel2
+            // 
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(43, 24);
+            toolStripLabel2.Text = "Tools:";
+            // 
             // toolStripBtnToolPen
             // 
             toolStripBtnToolPen.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -381,7 +388,7 @@
             toolStripBtnToolPen.Name = "toolStripBtnToolPen";
             toolStripBtnToolPen.Size = new Size(23, 24);
             toolStripBtnToolPen.Text = "Pen";
-            toolStripBtnToolPen.ToolTipText = "Draw with the selected colors";
+            toolStripBtnToolPen.ToolTipText = "Pencil";
             toolStripBtnToolPen.Click += toolStripBtnToolPen_Click;
             // 
             // toolStripBtnToolSelect
@@ -392,7 +399,7 @@
             toolStripBtnToolSelect.Name = "toolStripBtnToolSelect";
             toolStripBtnToolSelect.Size = new Size(23, 24);
             toolStripBtnToolSelect.Text = "Select";
-            toolStripBtnToolSelect.ToolTipText = "Select rectangular regions";
+            toolStripBtnToolSelect.ToolTipText = "Select";
             toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
             // 
             // toolStripBtnToolFill
@@ -403,20 +410,19 @@
             toolStripBtnToolFill.Name = "toolStripBtnToolFill";
             toolStripBtnToolFill.Size = new Size(23, 24);
             toolStripBtnToolFill.Text = "Fill";
-            toolStripBtnToolFill.ToolTipText = "Fill contiguous regions with selected colors";
+            toolStripBtnToolFill.ToolTipText = "Fill";
             toolStripBtnToolFill.Click += toolStripBtnToolFill_Click;
             // 
             // TilesetEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(686, 293);
+            ClientSize = new Size(686, 479);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
             Controls.Add(statusStrip1);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximizeBox = false;
             MinimizeBox = false;
             Name = "TilesetEditorWindow";
             Text = "Tileset Editor";
@@ -474,5 +480,6 @@
         private ToolStripButton toolStripBtnToolSelect;
         private ToolStripButton toolStripBtnToolFill;
         private ToolStripSeparator toolStripSeparator6;
+        private ToolStripLabel toolStripLabel2;
     }
 }

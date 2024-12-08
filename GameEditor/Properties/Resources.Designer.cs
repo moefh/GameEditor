@@ -238,6 +238,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap PicoIcon {
+            get {
+                object obj = ResourceManager.GetObject("PicoIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap PlayIcon {
             get {
                 object obj = ResourceManager.GetObject("PlayIcon", resourceCulture);

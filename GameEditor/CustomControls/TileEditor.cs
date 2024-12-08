@@ -38,7 +38,6 @@ namespace GameEditor.CustomControls
             set { DropSelection(); selectedTile = value; Invalidate(); }
         }
 
-        protected override bool HasEditImage { get { return Tileset != null; } }
         protected override int EditImageWidth { get { return TILE_SIZE; } }
         protected override int EditImageHeight { get { return TILE_SIZE; } }
 
@@ -135,7 +134,7 @@ namespace GameEditor.CustomControls
             PaintSelectionImage(pe.Graphics, tileRect, zoom, transparent);
 
             // grid
-            if ((RenderFlags & RenderFlags.Transparent) != 0) {
+            if ((RenderFlags & RenderFlags.Grid) != 0) {
                 using Pen grid = new Pen(GridColor);
                 for (int ty = 0; ty < TILE_SIZE + 1; ty++) {
                     int y = (int) (ty * zoom);

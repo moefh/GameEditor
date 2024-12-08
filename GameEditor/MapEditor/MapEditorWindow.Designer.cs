@@ -40,10 +40,11 @@ namespace GameEditor.MapEditor
             toolStripButtonShowCol = new ToolStripButton();
             toolStripButtonShowGrid = new ToolStripButton();
             toolStripButtonShowScreen = new ToolStripButton();
+            toolStripSeparator5 = new ToolStripSeparator();
+            toolStripBtnGridColor = new ToolStripButton();
             toolStripSeparator3 = new ToolStripSeparator();
             toolStripLabel1 = new ToolStripLabel();
             toolStripComboBoxZoom = new ToolStripComboBox();
-            toolStripBtnGridColor = new ToolStripButton();
             toolStripLblMapCoords = new ToolStripLabel();
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
@@ -61,7 +62,6 @@ namespace GameEditor.MapEditor
             toolStripComboTiles = new ToolStripComboBox();
             toolStripBtnExport = new ToolStripButton();
             toolStripBtnImport = new ToolStripButton();
-            toolStripSeparator5 = new ToolStripSeparator();
             toolsToolStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -183,6 +183,22 @@ namespace GameEditor.MapEditor
             toolStripButtonShowScreen.ToolTipText = "Display screen size";
             toolStripButtonShowScreen.CheckStateChanged += toolStripButtonRenderLayer_CheckStateChanged;
             // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(6, 27);
+            // 
+            // toolStripBtnGridColor
+            // 
+            toolStripBtnGridColor.Image = (Image)resources.GetObject("toolStripBtnGridColor.Image");
+            toolStripBtnGridColor.ImageTransparentColor = Color.Magenta;
+            toolStripBtnGridColor.Name = "toolStripBtnGridColor";
+            toolStripBtnGridColor.Size = new Size(92, 24);
+            toolStripBtnGridColor.Text = "Grid Color";
+            toolStripBtnGridColor.ToolTipText = "Change grid color";
+            toolStripBtnGridColor.Click += toolStripBtnGridColor_Click;
+            // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Margin = new Padding(5, 0, 5, 0);
@@ -199,22 +215,11 @@ namespace GameEditor.MapEditor
             // 
             toolStripComboBoxZoom.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboBoxZoom.DropDownWidth = 20;
-            toolStripComboBoxZoom.Items.AddRange(new object[] { "1.0x", "1.5x", "2.0x", "2.5x", "3.0x", "3.5x", "4.0x", "4.5x", "5.0x", "5.5x", "6.0x", "6.5x", "7.0x", "7.5x", "8.0x" });
             toolStripComboBoxZoom.Name = "toolStripComboBoxZoom";
             toolStripComboBoxZoom.Size = new Size(75, 27);
             toolStripComboBoxZoom.Tag = "";
             toolStripComboBoxZoom.ToolTipText = "Set zoom level (Mouse Wheel)";
             toolStripComboBoxZoom.SelectedIndexChanged += toolStripComboBoxZoom_SelectedIndexChanged;
-            // 
-            // toolStripBtnGridColor
-            // 
-            toolStripBtnGridColor.Image = (Image)resources.GetObject("toolStripBtnGridColor.Image");
-            toolStripBtnGridColor.ImageTransparentColor = Color.Magenta;
-            toolStripBtnGridColor.Name = "toolStripBtnGridColor";
-            toolStripBtnGridColor.Size = new Size(92, 24);
-            toolStripBtnGridColor.Text = "Grid Color";
-            toolStripBtnGridColor.ToolTipText = "Change grid color";
-            toolStripBtnGridColor.Click += toolStripBtnGridColor_Click;
             // 
             // toolStripLblMapCoords
             // 
@@ -293,8 +298,7 @@ namespace GameEditor.MapEditor
             // mapEditor
             // 
             mapEditor.Dock = DockStyle.Fill;
-            mapEditor.EditLayer = 0U;
-            mapEditor.EnabledRenderLayers = 0U;
+            mapEditor.EditLayer = CustomControls.MapEditor.Layer.Foreground;
             mapEditor.GridColor = Color.FromArgb(0, 0, 0);
             mapEditor.LeftSelectedCollisionTile = 0;
             mapEditor.LeftSelectedTile = 0;
@@ -395,12 +399,6 @@ namespace GameEditor.MapEditor
             toolStripBtnImport.Text = "Import";
             toolStripBtnImport.ToolTipText = "Import map from file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(6, 27);
             // 
             // MapEditorWindow
             // 

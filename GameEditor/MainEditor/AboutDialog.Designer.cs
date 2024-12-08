@@ -29,6 +29,7 @@
             label1 = new Label();
             label2 = new Label();
             label3 = new Label();
+            lblIcon = new Label();
             SuspendLayout();
             // 
             // btnClose
@@ -69,12 +70,21 @@
             label3.Text = "Source code released under the MIT license.";
             label3.TextAlign = ContentAlignment.MiddleCenter;
             // 
+            // lblIcon
+            // 
+            lblIcon.Image = Properties.Resources.PicoIcon;
+            lblIcon.Location = new Point(39, 21);
+            lblIcon.Name = "lblIcon";
+            lblIcon.Size = new Size(32, 32);
+            lblIcon.TabIndex = 4;
+            // 
             // AboutDialog
             // 
             AcceptButton = btnClose;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(421, 210);
+            Controls.Add(lblIcon);
             Controls.Add(label3);
             Controls.Add(label2);
             Controls.Add(label1);
@@ -94,5 +104,6 @@
         private Label label1;
         private Label label2;
         private Label label3;
+        private Label lblIcon;
     }
 }

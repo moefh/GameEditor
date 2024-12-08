@@ -1,4 +1,5 @@
-﻿using GameEditor.Misc;
+﻿using GameEditor.GameData;
+using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -16,14 +17,7 @@ namespace GameEditor.CustomControls
 {
     public partial class ColorPicker : AbstractPaintedControl
     {
-        private readonly Color[] gradients = [
-            Color.FromArgb(255,0,0),
-            Color.FromArgb(0,255,0),
-            Color.FromArgb(0,0,255),
-            Color.FromArgb(255,255,0),
-            Color.FromArgb(0,255,255),
-            Color.FromArgb(255,0,255),
-        ];
+        private const int MARGIN = 2;
 
         protected bool singleSelection;
         protected Color fg;
@@ -58,39 +52,30 @@ namespace GameEditor.CustomControls
             set { bg = PaletteUtil.ForceToGamePalette(value); Invalidate(); }
         }
 
-        protected static Color GetMostContrastingColor(Color c) {
-            const int maxContrast = 255;
-            const int minContrast = 128;
-            double y = Math.Round(0.299 * c.R + 0.587 * c.G + 0.114 * c.B); // luma
-            double oy = 255 - y; // opposite
-            double dy = oy - y; // delta
-            if (Math.Abs(dy) > maxContrast) {
-                dy = Math.Sign(dy) * maxContrast;
-                oy = y + dy;
-            } else if (Math.Abs(dy) < minContrast) {
-                dy = Math.Sign(dy) * minContrast;
-                oy = y + dy;
+        protected bool GetPaletteRenderRect(out int zoom, out Rectangle rect) {
+            int winWidth = ClientSize.Width - 2*MARGIN;
+            int winHeight = ClientSize.Height - 2*MARGIN;
+            if (winWidth <= 0 || winHeight <= 0) {
+                zoom = 0;
+                rect = Rectangle.Empty;
+                return false;
             }
-            int comp = (int) Math.Clamp(oy, 0, 255);
-            return Color.FromArgb(comp, comp, comp);
-        }
 
-        protected static Color InterpolateColor(Color c1, Color c2, int n, int max) {
-            double r = Math.Round((double) (c1.R * (max - n) + c2.R * n) / (double) max);
-            double g = Math.Round((double) (c1.G * (max - n) + c2.G * n) / (double) max);
-            double b = Math.Round((double) (c1.B * (max - n) + c2.B * n) / (double) max);
-            int ir = (((int) Math.Clamp(r, 0, 255)) >> 6) & 0x3;
-            int ig = (((int) Math.Clamp(g, 0, 255)) >> 6) & 0x3;
-            int ib = (((int) Math.Clamp(b, 0, 255)) >> 6) & 0x3;
-            ir = (ir<<6)|(ir<<4)|(ir<<2)|ir;
-            ig = (ig<<6)|(ig<<4)|(ig<<2)|ig;
-            ib = (ib<<6)|(ib<<4)|(ib<<2)|ib;
-            return Color.FromArgb(ir, ig, ib);
+            zoom = (ClientSize.Width - 2*MARGIN) / PaletteUtil.ColorPickerPalette.Width;
+            int zoomedPalWidth = zoom * PaletteUtil.ColorPickerPalette.Width;
+            int zoomedPalHeight = zoom * PaletteUtil.ColorPickerPalette.Height;
+            rect = new Rectangle(
+                (winWidth - zoomedPalWidth) / 2,
+                3 * zoom,
+                zoomedPalWidth,
+                zoomedPalHeight
+            );
+            return zoom != 0;
         }
 
         protected void DrawSelectedColor(PaintEventArgs pe, int x, int y, int w, int h, Color c, string label) {
             using SolidBrush paint = new SolidBrush(c);
-            using SolidBrush text = new SolidBrush(GetMostContrastingColor(c));
+            using SolidBrush text = new SolidBrush(PaletteUtil.GetMostContrastingColor(c));
             pe.Graphics.FillRectangle(paint, x, y, w, h);
             StringFormat fmt = new StringFormat();
             fmt.LineAlignment = StringAlignment.Center;
@@ -98,37 +83,22 @@ namespace GameEditor.CustomControls
             pe.Graphics.DrawString(label, Font, text, new Rectangle(x, y, w, h), fmt);
         }
 
-        protected static void DrawGradient(PaintEventArgs pe, int x, int y, int size, int[] steps, int max, Color start, Color end) {
-            for (int i = 0; i < steps.Length; i++) {
-                using SolidBrush paint = new SolidBrush(InterpolateColor(start, end, steps[i], max));
-                pe.Graphics.FillRectangle(paint, x+size*i, y, size, size);
-            }
-        }
-
         protected override void OnPaint(PaintEventArgs pe)
         {
             base.OnPaint(pe);
+            if (! GetPaletteRenderRect(out int zoom, out Rectangle renderRect)) return;
             ImageUtil.SetupTileGraphics(pe.Graphics);
 
-            int size = ClientSize.Width;
-            int blob = size / 8;
             if (singleSelection) {
-                DrawSelectedColor(pe, 0, 0, 8*blob, 2*blob, SelectedForeColor, "Selected");
+                DrawSelectedColor(pe, 0, 0, 8*zoom, 2*zoom, SelectedForeColor, "Selected");
             } else {
-                DrawSelectedColor(pe, 0, 0, 4*blob, 2*blob, SelectedForeColor, "FG");
-                DrawSelectedColor(pe, 4*blob, 0, 4*blob, 2*blob, SelectedBackColor, "BG");
+                DrawSelectedColor(pe, 0, 0, 4*zoom, 2*zoom, SelectedForeColor, "FG");
+                DrawSelectedColor(pe, 4*zoom, 0, 4*zoom, 2*zoom, SelectedBackColor, "BG");
             }
 
             // full palette
-            pe.Graphics.DrawImage(PaletteUtil.ColorPickerPalette,
-                new Rectangle(0, 3*blob, size, size), new Rectangle(0, 0, 8, 8),
-                GraphicsUnit.Pixel);
-
-            // gradients
-            foreach (var (color, index) in gradients.Zip(Enumerable.Range(0, gradients.Length))) {
-                DrawGradient(pe, 3*blob/2, (12+index)*blob, blob, [1,2,3], 3, Color.Black, color);
-                DrawGradient(pe, 7*blob/2, (12+index)*blob, blob, [0,1,2], 3, color, Color.White);
-            }
+            Bitmap pal = PaletteUtil.ColorPickerPalette;
+            pe.Graphics.DrawImage(pal, renderRect, new Rectangle(0, 0, pal.Width, pal.Height), GraphicsUnit.Pixel);
         }
 
         private void SetSelectedColor(Color c, MouseButtons button) {
@@ -143,30 +113,18 @@ namespace GameEditor.CustomControls
         protected override void OnMouseClick(MouseEventArgs e) {
             base.OnMouseClick(e);
             if (Util.DesignMode) return;
+            if (! GetPaletteRenderRect(out int zoom, out Rectangle renderRect)) return;
+            if (! renderRect.Contains(e.Location)) return;
 
-            int size = ClientSize.Width;
-            int blob = size / 8;
+            int x = (e.X - renderRect.X) / zoom;
+            int y = (e.Y - renderRect.Y) / zoom;
 
-            // main palette
-            if (e.X >= 0 && e.X < 8*blob && e.Y >= 3*blob && e.Y < 11*blob) {
-                int x = e.X / blob;
-                int y = (e.Y - 3*blob) / blob;
-                SetSelectedColor(PaletteUtil.ColorPickerPalette.GetPixel(x, y), e.Button);
-                return;
-            }
-
-            // gradients
-            if (e.X >= 3*blob/2 && e.X < 13*blob/2 && e.Y >= 12*blob && e.Y < (12+gradients.Length)*blob) {
-                int x = (e.X - 3*blob/2) / blob;
-                int grad = (e.Y - 12*blob) / blob;
-                Color c;
-                if (x <= 2) {
-                    c = InterpolateColor(Color.Black, gradients[grad], x+1, 3);
-                } else {
-                    c = InterpolateColor(gradients[grad], Color.White, x-2, 3);
+            Bitmap pal = PaletteUtil.ColorPickerPalette;
+            if (x >= 0 && x < pal.Width && y >= 0 && y <= pal.Height) {
+                Color c = pal.GetPixel(x, y);
+                if (c.A == 255) {
+                    SetSelectedColor(c, e.Button);
                 }
-                SetSelectedColor(c, e.Button);
-                return;
             }
         }
 

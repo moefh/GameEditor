@@ -282,7 +282,7 @@ namespace GameEditor.Misc
             }
         }
 
-        private static void ReadImagePixelsFrom(Bitmap bitmap, int image, int w, int h, byte[] pixels, bool mirror = false) {
+        public static void ReadImagePixelsFrom(Bitmap bitmap, int image, int w, int h, byte[] pixels, bool mirror = false) {
             Rectangle rect = new Rectangle(0, image * h, w, h);
             BitmapData data = bitmap.LockBits(rect, ImageLockMode.ReadOnly, PixelFormat.Format32bppArgb);
             try {

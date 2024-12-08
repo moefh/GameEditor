@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -87,13 +88,13 @@ namespace GameEditor.Misc
             g.Clear(Color.FromArgb(255, 255, 255));
             int s = int.Max(size.Width, size.Height);
             s += 5 - s % 4;
+            Pen pen = Pens.LightBlue;
             for (int i = 0; i < s; i += 4) {
-                g.DrawLine(Pens.Black, i, 0, 0, i);
-                g.DrawLine(Pens.Black, i, s - 1, s - 1, i);
-                g.DrawLine(Pens.Black, i, 0, s - 1, s - 1 - i);
-                g.DrawLine(Pens.Black, s - 1 - i, s - 1, 0, i);
+                g.DrawLine(pen, i, 0, 0, i);
+                g.DrawLine(pen, i, s - 1, s - 1, i);
+                g.DrawLine(pen, i, 0, s - 1, s - 1 - i);
+                g.DrawLine(pen, s - 1 - i, s - 1, 0, i);
             }
-            //g.DrawRectangle(Pens.Black, 0, 0, size.Width-1, size.Height-1);
         }
 
     }

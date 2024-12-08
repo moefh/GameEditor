@@ -1,5 +1,6 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
+using System.Dynamic;
 using System.IO.MemoryMappedFiles;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
@@ -13,25 +14,30 @@ namespace GameEditor.MapEditor
 {
     public partial class MapEditorWindow : ProjectAssetEditorForm
     {
+        private class ZoomLevel(int comboIndex, double zoom) {
+            public readonly int ComboIndex = comboIndex;
+            public readonly double Zoom = zoom;
+            public readonly string Name = $"{zoom:F2}x";
+            public override string ToString() { return Name; }
+        }
+
         private readonly MapDataItem mapDataItem;
+        private ZoomLevel[] zoomLevels = [];
 
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
             mapDataItem = mapItem;
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupMapZoom();
             tilePicker.Tileset = Map.Tileset;
             tilePicker.LeftSelectionColor = ConfigUtil.TilePickerLeftColor;
             tilePicker.RightSelectionColor = ConfigUtil.TilePickerRightColor;
             tilePicker.AllowRightSelection = true;
             mapEditor.Map = Map;
             mapEditor.GridColor = ConfigUtil.MapEditorGridColor;
-            mapEditor.MinZoom = 1;
-            mapEditor.MaxZoom = toolStripComboBoxZoom.Items.Count;
             mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
             mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
-            UpdateMapZoom();
             EditLayer = CustomControls.MapEditor.Layer.Foreground;
-            toolStripComboBoxZoom.SelectedIndex = 2;
             toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
             toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
@@ -71,17 +77,6 @@ namespace GameEditor.MapEditor
 
         private void UpdateDataSize() {
             lblDataSize.Text = $"{Util.FormatNumber(Map.GameDataSize)} bytes";
-        }
-
-        private void UpdateMapZoom() {
-            string? text = toolStripComboBoxZoom.SelectedItem?.ToString();
-            if (text == null) return;
-            if (text.EndsWith('x')) text = text.Substring(0, text.Length - 1);
-
-            double zoom;
-            if (double.TryParse(text, out zoom)) {
-                mapEditor.Zoom = zoom;
-            }
         }
 
         private void UpdateRenderLayers() {
@@ -153,20 +148,47 @@ namespace GameEditor.MapEditor
             tilePicker.Invalidate();
         }
 
-        private void mapEditor_ZoomChanged(object sender, EventArgs e) {
-            int zoomIndex = (int)(mapEditor.Zoom * 2) - 2;
-            if (toolStripComboBoxZoom.SelectedIndex != zoomIndex) {
-                toolStripComboBoxZoom.Enabled = false;
-                toolStripComboBoxZoom.SelectedIndex = zoomIndex;
-                toolStripComboBoxZoom.Enabled = true;
-            }
-        }
-
         private void mapEditor_MouseOver(object sender, Point p) {
             if (p.X < 0 || p.Y < 0 || p.X >= Map.Tiles.Width || p.Y >= Map.Tiles.Height) {
                 toolStripLblMapCoords.Text = "";
             } else {
                 toolStripLblMapCoords.Text = $"({p.X}, {p.Y})";
+            }
+        }
+
+        // ====================================================================
+        // === MAP ZOOM
+        // ====================================================================
+
+        private void SetupMapZoom() {
+            const double defaultZoomLevel = 2;
+
+            int comboIndex = 0;
+            zoomLevels = new ZoomLevel[15];
+            for (int i = 0; i < zoomLevels.Length; i++) {
+                zoomLevels[i] = new ZoomLevel(i, 1.0 + 0.5*i);
+                if (zoomLevels[i].Zoom == defaultZoomLevel) comboIndex = i;
+            }
+            mapEditor.MinZoom = zoomLevels[0].Zoom;
+            mapEditor.MaxZoom = zoomLevels[zoomLevels.Length-1].Zoom;
+            mapEditor.Zoom = zoomLevels[comboIndex].Zoom;
+            toolStripComboBoxZoom.Items.AddRange(zoomLevels);
+            toolStripComboBoxZoom.SelectedIndex = comboIndex;
+        }
+
+        private void UpdateMapZoom() {
+            int index = toolStripComboBoxZoom.SelectedIndex;
+            if (index < 0 || index >= zoomLevels.Length) return;
+            mapEditor.Zoom = zoomLevels[index].Zoom;
+        }
+
+        private void mapEditor_ZoomChanged(object sender, EventArgs e) {
+            for (int index = 0; index < zoomLevels.Length; index++) {
+                if (mapEditor.Zoom == zoomLevels[index].Zoom && toolStripComboBoxZoom.SelectedIndex != index) {
+                    toolStripComboBoxZoom.Enabled = false;
+                    toolStripComboBoxZoom.SelectedIndex = index;
+                    toolStripComboBoxZoom.Enabled = true;
+                }
             }
         }
 
