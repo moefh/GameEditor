@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -32,6 +33,7 @@ namespace GameEditor.TilesetEditor
             tilePicker.Tileset = Tileset;
             tilePicker.LeftSelectionColor = ConfigUtil.TilePickerLeftColor;
             tilePicker.RightSelectionColor = ConfigUtil.TilePickerRightColor;
+            SelectTool(PaintTool.Pen);
             UpdateRenderFlags();
         }
 
@@ -169,7 +171,8 @@ namespace GameEditor.TilesetEditor
         // ====================================================================
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
-            using Bitmap tile = Tileset.CopyFromTile(tileEditor.SelectedTile, 0, 0, Tileset.TILE_SIZE, Tileset.TILE_SIZE);
+            using Bitmap? tile = tileEditor.GetSelectionCopy();
+            if (tile == null) return;
             try {
                 Clipboard.SetImage(tile);
             } catch (Exception ex) {
@@ -181,8 +184,9 @@ namespace GameEditor.TilesetEditor
             try {
                 Image? img = Clipboard.GetImage();
                 if (img == null) return;
-                bool transparent = (tileEditor.RenderFlags & RenderFlags.Transparent) != 0;
-                Tileset.PasteIntoTile(img, tileEditor.SelectedTile, 0, 0, transparent);
+                //bool transparent = (tileEditor.RenderFlags & RenderFlags.Transparent) != 0;
+                //Tileset.PasteIntoTile(img, tileEditor.SelectedTile, 0, 0, transparent);
+                tileEditor.PasteImage(img);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
                 return;
@@ -222,6 +226,7 @@ namespace GameEditor.TilesetEditor
 
         private void InsertTilesFromFileAt(int index) {
             TilesetImportDialog dlg = new TilesetImportDialog();
+            dlg.Text = "Read Tiles From File";
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
             try {
@@ -282,5 +287,27 @@ namespace GameEditor.TilesetEditor
             InsertTilesFromFileAt(Tileset.NumTiles);
         }
 
+        // ====================================================================
+        // === TOOLS
+        // ====================================================================
+
+        private void SelectTool(PaintTool tool) {
+            tileEditor.SelectedTool = tool;
+            toolStripBtnToolPen.Checked = tool == PaintTool.Pen;
+            toolStripBtnToolSelect.Checked = tool == PaintTool.RectSelect;
+            toolStripBtnToolFill.Checked = tool == PaintTool.FloodFill;
+        }
+
+        private void toolStripBtnToolPen_Click(object sender, EventArgs e) {
+            SelectTool(PaintTool.Pen);
+        }
+
+        private void toolStripBtnToolSelect_Click(object sender, EventArgs e) {
+            SelectTool(PaintTool.RectSelect);
+        }
+
+        private void toolStripBtnToolFill_Click(object sender, EventArgs e) {
+            SelectTool(PaintTool.FloodFill);
+        }
     }
 }

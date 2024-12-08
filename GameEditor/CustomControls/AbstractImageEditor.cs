@@ -1,0 +1,336 @@
+﻿using GameEditor.GameData;
+using GameEditor.Misc;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics.Eventing.Reader;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace GameEditor.CustomControls
+{
+    public abstract class AbstractImageEditor : AbstractPaintedControl
+    {
+        protected enum MouseAction {
+            Down,
+            Move,
+            Up,
+        }
+
+        // properties
+        private PaintTool tool;
+
+        // internal stuff
+        private Bitmap? selectionBmp;
+        private Point selectionOrigin;
+        private Point selectionMoveOrigin;
+        private Rectangle moveSelectedRectStart;
+        private Rectangle selectedRect;
+        private bool movingSelection;
+        private bool ignoreMouseUntilDown;
+        private int selectionAnimationOffset;
+        private System.Windows.Forms.Timer? selectionAnimationTimer;
+
+        public event EventHandler? ImageChanged;
+        public event EventHandler? SelectedColorsChanged;
+
+        public Color ForePen { get; set; }
+        public Color BackPen { get; set; }
+
+        public PaintTool SelectedTool {
+            get { return tool; }
+            set {
+                tool = value;
+                Cursor = GetCursorForSelectedTool();
+                DropSelection();
+                Invalidate();
+            }
+        }
+
+        protected override void SelfDispose() {
+            DropSelection();
+            selectionBmp?.Dispose();
+            selectionBmp = null;
+        }
+
+        private void SelectionAnimationTimer_Tick(object? sender, EventArgs e) {
+            if (selectedRect.Width > 0 && selectedRect.Height > 0) {
+                selectionAnimationOffset = (selectionAnimationOffset + 1) % 8;
+                Invalidate();
+            }
+        }
+
+        private Cursor GetCursorForSelectedTool() {
+            return SelectedTool switch {
+                PaintTool.Pen => Cursors.Arrow,
+                PaintTool.RectSelect => Cursors.Cross,
+                PaintTool.FloodFill => CursorUtil.FillCursor,
+                _ => Cursors.Arrow,
+            };
+        }
+
+        // ==============================================================================
+        // COPY/PASTE
+        // ==============================================================================
+
+        public Bitmap? GetSelectionCopy() {
+            if (selectionBmp != null) {
+                Rectangle r = new Rectangle(0, 0, selectionBmp.Width, selectionBmp.Height);
+                return selectionBmp.Clone(r, selectionBmp.PixelFormat);
+            }
+            return CopyFromImage(0, 0, EditImageWidth, EditImageHeight);
+        }
+
+        public void PasteImage(Image img) {
+            DropSelection();
+
+            // copy the whole image and make it the current selection
+            selectedRect = new Rectangle(0, 0, img.Width, img.Height);
+            selectionBmp = new Bitmap(img.Width, img.Height);
+            using Graphics g = Graphics.FromImage(selectionBmp);
+            g.DrawImage(img, new Point(0,0));
+
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        // ==============================================================================
+        // ABSTRACT STUFF
+        // ==============================================================================
+
+        protected abstract bool HasEditImage { get; }
+        protected abstract int EditImageWidth { get; }
+        protected abstract int EditImageHeight { get; }
+        protected abstract bool GetImageRenderRect(out int zoom, out Rectangle rect);
+        protected abstract void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp);
+        protected abstract Bitmap? LiftSelectionBitmap(Rectangle selectedRect);
+        protected abstract Color GetImagePixel(int x, int y);
+        protected abstract void SetImagePixel(int x, int y, Color color);
+        protected abstract void FloodFillImage(int x, int y, Color color);
+        protected abstract Bitmap? CopyFromImage(int x, int y, int w, int h);
+
+        // ==============================================================================
+        // METHODS USED BY DERIVED CLASSES
+        // ==============================================================================
+
+        protected void SetupComponents(IContainer? components) {
+            RegisterSelfDispose(components);
+            if (components != null) {
+                selectionAnimationTimer = new System.Windows.Forms.Timer(components);
+                selectionAnimationTimer.Tick += SelectionAnimationTimer_Tick;
+                selectionAnimationTimer.Interval = 250;
+                selectionAnimationTimer.Start();
+            }
+        }
+
+        protected void DropSelection() {
+            if (selectionBmp == null) {
+                selectedRect = Rectangle.Empty;
+                return;
+            }
+            DropSelectionBitmap(selectedRect, selectionBmp);
+            selectionBmp.Dispose();
+            selectionBmp = null;
+            selectedRect = Rectangle.Empty;
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void LiftSelection() {
+            if (selectionBmp != null) return;
+            selectionBmp = LiftSelectionBitmap(selectedRect);
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        protected void PaintSelectionImage(Graphics g, Rectangle tileRect, int zoom, bool transparent) {
+            if (selectionBmp == null) return;
+            int x = selectedRect.X * zoom + tileRect.X;
+            int y = selectedRect.Y * zoom + tileRect.Y;
+            int w = selectionBmp.Width * zoom;
+            int h = selectionBmp.Height * zoom;
+            if (transparent) {
+                g.DrawImage(selectionBmp,
+                            new Rectangle(x, y, w, h),
+                            0, 0, selectionBmp.Width, selectionBmp.Height,
+                            GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
+            } else {
+                g.DrawImage(selectionBmp,
+                            new Rectangle(x, y, w, h),
+                            0, 0, selectionBmp.Width, selectionBmp.Height,
+                            GraphicsUnit.Pixel);
+            }
+        }
+
+        protected void PaintSelectionRectangle(Graphics g, Rectangle tileRect, int zoom) {
+            if (selectedRect.Width > 0 && selectedRect.Height > 0) {
+                int x = selectedRect.X * zoom + tileRect.X;
+                int y = selectedRect.Y * zoom + tileRect.Y;
+                int w = selectedRect.Width * zoom;
+                int h = selectedRect.Height * zoom;
+                using Pen pen = new Pen(Color.Black, 3);
+                pen.DashPattern = [2,2,2,2];
+                pen.DashStyle = System.Drawing.Drawing2D.DashStyle.Custom;
+                pen.DashOffset = selectionAnimationOffset;
+                g.DrawRectangle(pen, x, y, w, h);
+                pen.Color = Color.White;
+                pen.DashOffset = selectionAnimationOffset + 2;
+                g.DrawRectangle(pen, x, y, w, h);
+            }
+        }
+
+        // ==============================================================================
+        // TOOLS
+        // ==============================================================================
+
+        private void ApplyPenTool(MouseEventArgs e, MouseAction action) {
+            if (action == MouseAction.Up) return;
+            if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            int tx = (e.X - tileRect.X) / zoom;
+            int ty = (e.Y - tileRect.Y) / zoom;
+            if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
+
+            Color color = (e.Button == MouseButtons.Left) ? ForePen : BackPen;
+            SetImagePixel(tx, ty, color); 
+            Invalidate();
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ApplyColorPickerTool(MouseEventArgs e, MouseAction action) {
+            if (action == MouseAction.Up) return;
+            if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            if (e.X < tileRect.X || e.Y < tileRect.Y) return;
+            int tx = (e.X - tileRect.X) / zoom;
+            int ty = (e.Y - tileRect.Y) / zoom;
+            if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
+
+            Color color = GetImagePixel(tx, ty);
+            switch (e.Button) {
+            case MouseButtons.Left:  ForePen = color; break;
+            case MouseButtons.Right: BackPen = color; break;
+            }
+            SelectedColorsChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ApplyFloodFillTool(MouseEventArgs e, MouseAction action) {
+            if (! HasEditImage) return;
+            if (action != MouseAction.Down) return;
+            if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            int tx = (e.X - tileRect.X) / zoom;
+            int ty = (e.Y - tileRect.Y) / zoom;
+            if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
+
+            Color color = (e.Button == MouseButtons.Left) ? ForePen : BackPen;
+            FloodFillImage(tx, ty, color);
+            Invalidate();
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void ApplyRectSelectTool(MouseEventArgs e, MouseAction action) {
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+
+            if (e.Button != MouseButtons.Left) return;
+            int sx = int.Clamp((e.X + zoom/2 - tileRect.X) / zoom, 0, EditImageWidth);
+            int sy = int.Clamp((e.Y + zoom/2 - tileRect.Y) / zoom, 0, EditImageHeight);
+
+            // start new selection
+            if (action == MouseAction.Down) {
+                DropSelection();
+                movingSelection = false;
+                selectionOrigin = new Point(sx, sy);
+                Invalidate();
+                return;
+            }
+
+            // create selection from origin to current point
+            if (action == MouseAction.Move) {
+                int ox = selectionOrigin.X;
+                int oy = selectionOrigin.Y;
+                if (sx < ox) (sx, ox) = (ox, sx);
+                if (sy < oy) (sy, oy) = (oy, sy);
+                selectedRect.X = ox;
+                selectedRect.Y = oy;
+                selectedRect.Width = sx - ox;
+                selectedRect.Height = sy - oy;
+                Invalidate();
+                return;
+            }
+        }
+
+        // ==============================================================================
+        // EVENT HANDLERS
+        // ==============================================================================
+
+        protected void RunMouseEvent(MouseEventArgs e, MouseAction action) {
+            if (Util.DesignMode) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            if (ignoreMouseUntilDown && action != MouseAction.Down) return;
+            ignoreMouseUntilDown = false;
+
+            // ==================================
+            // handle selection moving
+            Rectangle selection = new Rectangle(
+                selectedRect.X * zoom + tileRect.X,
+                selectedRect.Y * zoom + tileRect.Y,
+                selectedRect.Width * zoom,
+                selectedRect.Height * zoom
+            );
+            bool activeSelection = selection.Width > 0 && selection.Height > 0;
+            Cursor = selection.Contains(e.Location) ? Cursors.Hand : GetCursorForSelectedTool();
+
+            if (e.Button == MouseButtons.Left && activeSelection) {
+                if (action == MouseAction.Down) {
+                    if (selection.Contains(e.Location)) {
+                        // start moving selection
+                        movingSelection = true;
+                        selectionMoveOrigin = e.Location;
+                        moveSelectedRectStart = selectedRect;
+                        return;
+                    } else {
+                        // drop current selection
+                        DropSelection();
+                        Invalidate();
+                        if (SelectedTool != PaintTool.RectSelect) {
+                            // for any tool other than selection, ignore mouse until next mouse down
+                            ignoreMouseUntilDown = true;
+                            return;
+                        }
+                    }
+                }
+
+                // move the current selection
+                if (action == MouseAction.Move && movingSelection && activeSelection) {
+                    int dx = (e.X - selectionMoveOrigin.X) / zoom;
+                    int dy = (e.Y - selectionMoveOrigin.Y) / zoom;
+                    selectedRect.X = moveSelectedRectStart.X + dx;
+                    selectedRect.Y = moveSelectedRectStart.Y + dy;
+                    return;
+                }
+
+                // lift the selection from the image
+                if (action == MouseAction.Up && selectionBmp == null && activeSelection) {
+                    LiftSelection();
+                    Invalidate();
+                    movingSelection = false;
+                    return;
+                }
+            }
+
+            // ==================================
+            // apply tools
+            if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
+                ApplyColorPickerTool(e, action);
+            } else {
+                switch (SelectedTool) {
+                case PaintTool.Pen: ApplyPenTool(e, action); break;
+                case PaintTool.ColorPicker: ApplyColorPickerTool(e, action); break;
+                case PaintTool.FloodFill: ApplyFloodFillTool(e, action); break; 
+                case PaintTool.RectSelect: ApplyRectSelectTool(e, action); break;
+                }
+            }
+        }
+
+    }
+}

@@ -107,14 +107,14 @@ namespace GameEditor.CustomControls
             RenderInfo ri = GetRenderInfo(Tileset);
             int y = (tile+ri.EmptyTileSpace) / ri.NumHorzTiles * (ri.ZoomedTileSize + 2*SEL_BORDER) + 1;
 
-            if (y + 2*SEL_BORDER + ri.ZoomedTileSize < scrollValue) {
-                // tile is above the scolled area, we must scroll up
+            // check if tile is above the scrolled area
+            if (y < scrollValue) {
                 SetScrollPosition(y - 2*SEL_BORDER);
                 Invalidate();
             }
 
-            if (y > scrollValue + ClientSize.Height) {
-                // tile is below the scolled area, we must scroll down
+            // check if tile is below the scrolled area
+            if (y + 2*SEL_BORDER + ri.ZoomedTileSize > scrollValue + ClientSize.Height) {
                 SetScrollPosition(y + ri.ZoomedTileSize + 2*SEL_BORDER - (ClientSize.Width + 1));
                 Invalidate();
             }

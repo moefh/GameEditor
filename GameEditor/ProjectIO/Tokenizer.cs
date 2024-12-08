@@ -52,10 +52,10 @@ namespace GameEditor.ProjectIO
 
         public override string ToString() {
             return Type switch {
-                TokenType.Punctuation  => $"<punct@{LineNum} {Str}>",
-                TokenType.Identifier   => $"<ident@{LineNum} {Str}>",
-                TokenType.Number       => $"<num@{LineNum} {Num}>",
-                TokenType.PreProcessor => $"<#pre@{LineNum} {Str}>",
+                TokenType.Punctuation  => $"'{Str}' at line {LineNum}",
+                TokenType.Identifier   => $"'{Str}' at line {LineNum}",
+                TokenType.Number       => $"'{Num}' at line {LineNum}",
+                TokenType.PreProcessor => $"'{Str}' at line {LineNum}",
                 _ => "???@" + LineNum,
             };
         }

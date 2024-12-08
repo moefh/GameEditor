@@ -6,37 +6,50 @@ using System.ComponentModel;
 using System.Data;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.Xml;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace GameEditor.CustomControls
 {
-    public partial class TileEditor : AbstractPaintedControl
+    public partial class TileEditor : AbstractImageEditor
     {
         private const int TILE_SIZE = Tileset.TILE_SIZE;
 
-        protected Tileset? tileset;
-        protected int selectedTile;
-        protected RenderFlags renderFlags;
+        private Tileset? tileset;
+        private int selectedTile;
+        private RenderFlags renderFlags;
 
-        public event EventHandler? ImageChanged;
-        public event EventHandler? SelectedColorsChanged;
-
-        public Tileset? Tileset { get { return tileset; } set { tileset = value; Invalidate(); } }
-        public int SelectedTile { get { return selectedTile; } set { selectedTile = value; Invalidate(); } }
-        public RenderFlags RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
-        public Color ForePen { get; set; }
-        public Color BackPen { get; set; }
         public Color GridColor { get; set; }
+
+        public RenderFlags RenderFlags {
+            get { return renderFlags; }
+            set { renderFlags = value; Invalidate(); }
+        }
+
+        public Tileset? Tileset {
+            get { return tileset; }
+            set { DropSelection(); tileset = value; Invalidate(); }
+        }
+
+        public int SelectedTile {
+            get { return selectedTile; }
+            set { DropSelection(); selectedTile = value; Invalidate(); }
+        }
+
+        protected override bool HasEditImage { get { return Tileset != null; } }
+        protected override int EditImageWidth { get { return TILE_SIZE; } }
+        protected override int EditImageHeight { get { return TILE_SIZE; } }
 
         public TileEditor()
         {
             InitializeComponent();
+            SetupComponents(components);
             SetDoubleBuffered();
         }
 
-        private bool GetTileRenderRect(out int zoom, out Rectangle rect) {
+        protected override bool GetImageRenderRect(out int zoom, out Rectangle rect) {
             int winWidth = ClientSize.Width;
             int winHeight = ClientSize.Height;
             if (Tileset == null || winWidth <= 0 || winHeight <= 0) {
@@ -48,7 +61,57 @@ namespace GameEditor.CustomControls
             zoom = int.Min(ClientSize.Width, ClientSize.Height) / (TILE_SIZE + 1);
             int zoomedTileSize = zoom * TILE_SIZE;
             rect = new Rectangle((winWidth - zoomedTileSize) / 2, (winHeight - zoomedTileSize) / 2, zoomedTileSize, zoomedTileSize);
-            return true;
+            return zoom != 0;
+        }
+
+        protected override Color GetImagePixel(int x, int y) {
+            if (Tileset == null) return Color.Black;
+            return Tileset.GetTilePixel(SelectedTile, x, y);
+        }
+
+        protected override void SetImagePixel(int x, int y, Color color) {
+            if (Tileset == null) return;
+            Tileset.SetTilePixel(SelectedTile, x, y, color);
+        }
+        
+        protected override void FloodFillImage(int x, int y, Color color) {
+            if (Tileset == null) return;
+            Tileset.FloodFill(SelectedTile, x, y, color);
+        }
+        
+        protected override Bitmap? CopyFromImage(int x, int y, int w, int h) {
+            if (Tileset == null) return null;
+            return Tileset.CopyFromTile(SelectedTile, x, y, w, h);
+        }
+
+        protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
+            if (Tileset == null) return null;
+
+            // get selection bitmap
+            Bitmap selection = Tileset.CopyFromTile(SelectedTile, rect);
+
+            // make a hole in the tile
+            byte[] pixels = new byte[4*TILE_SIZE*TILE_SIZE];
+            Tileset.ReadTilePixels(SelectedTile, pixels);
+            for (int y = 0; y < rect.Height; y++) {
+                for (int x = 0; x < rect.Width; x++) {
+                    int tx = x + rect.X;
+                    int ty = y + rect.Y;
+                    pixels[4*(ty*TILE_SIZE+tx)+0] = 0;
+                    pixels[4*(ty*TILE_SIZE+tx)+1] = 255;
+                    pixels[4*(ty*TILE_SIZE+tx)+2] = 0;
+                }
+            }
+            Tileset.WriteTilePixels(SelectedTile, pixels);
+
+            return selection;
+        }
+
+        protected override void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp) {
+            if (Tileset == null) return;
+
+            bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
+            Tileset.PasteIntoTile(selectionBmp, SelectedTile, selectedRect.X, selectedRect.Y, transparent);
         }
 
         protected override void OnPaint(PaintEventArgs pe)
@@ -57,7 +120,7 @@ namespace GameEditor.CustomControls
             ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
             if (Util.DesignMode) return;
             if (Tileset == null) return;
-            if (! GetTileRenderRect(out int zoom, out Rectangle tileRect)) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
             int zoomedTileSize = zoom * TILE_SIZE;
@@ -67,6 +130,9 @@ namespace GameEditor.CustomControls
             Tileset?.DrawTileAt(pe.Graphics, SelectedTile,
                 tileRect.X, tileRect.Y, tileRect.Width, tileRect.Height,
                 transparent);
+
+            // selection image
+            PaintSelectionImage(pe.Graphics, tileRect, zoom, transparent);
 
             // grid
             if ((RenderFlags & RenderFlags.Transparent) != 0) {
@@ -80,55 +146,24 @@ namespace GameEditor.CustomControls
                     pe.Graphics.DrawLine(grid, tileRect.X + x, tileRect.Y, tileRect.X + x, tileRect.Y + zoomedTileSize);
                 }
             }
-        }
 
-        private void SetPixel(Color color, int x, int y) {
-            tileset?.SetTilePixel(SelectedTile, x, y, color);
-            Invalidate();
-            ImageChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void PickColor(int x, int y, bool foreground) {
-            if (Tileset == null) return;
-            Color c = Tileset.GetTilePixel(SelectedTile, x, y);
-            if (foreground) {
-                ForePen = c;
-            } else {
-                BackPen = c;
-            }
-            SelectedColorsChanged?.Invoke(this, EventArgs.Empty);
-        }
-
-        private void RunMouseDraw(MouseEventArgs e) {
-            if (Util.DesignMode) return;
-            if (Tileset == null) return;
-
-            if (! GetTileRenderRect(out int zoom, out Rectangle tileRect) || zoom == 0) return;
-            int tx = (e.X - tileRect.X) / zoom;
-            int ty = (e.Y - tileRect.Y) / zoom;
-            if (tx < 0 || ty < 0 || tx >= TILE_SIZE || ty >= TILE_SIZE) return;
-
-            if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
-                switch (e.Button) {
-                case MouseButtons.Left:  PickColor(tx, ty, true); break;
-                case MouseButtons.Right: PickColor(tx, ty, false); break;
-                }
-            } else {
-                switch (e.Button) {
-                case MouseButtons.Left:  SetPixel(ForePen, tx, ty); break;
-                case MouseButtons.Right: SetPixel(BackPen, tx, ty); break;
-                }
-            }
+            // selection rectangle
+            PaintSelectionRectangle(pe.Graphics, tileRect, zoom);
         }
 
         protected override void OnMouseDown(MouseEventArgs e) {
             base.OnMouseDown(e);
-            RunMouseDraw(e);
+            RunMouseEvent(e, MouseAction.Down);
         }
 
         protected override void OnMouseMove(MouseEventArgs e) {
             base.OnMouseMove(e);
-            RunMouseDraw(e);
+            RunMouseEvent(e, MouseAction.Move);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e) {
+            base.OnMouseUp(e);
+            RunMouseEvent(e, MouseAction.Up);
         }
 
     }

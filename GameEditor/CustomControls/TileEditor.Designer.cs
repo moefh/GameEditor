@@ -1,4 +1,6 @@
-﻿namespace GameEditor.CustomControls
+﻿using GameEditor.Misc;
+
+namespace GameEditor.CustomControls
 {
     partial class TileEditor
     {

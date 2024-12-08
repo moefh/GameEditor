@@ -85,12 +85,16 @@ namespace GameEditor.GameData
             images.DrawImageAt(g, tile, x, y, w, h, transparent, grayscale);
         }
 
+        public Color GetTilePixel(int tile, int x, int y) {
+            return images.GetImagePixel(tile, x, y);
+        }
+
         public void SetTilePixel(int tile, int x, int y, Color color) {
             images.SetImagePixel(tile, x, y, color);
         }
 
-        public Color GetTilePixel(int tile, int x, int y) {
-            return images.GetImagePixel(tile, x, y);
+        public void FloodFill(int tile, int x, int y, Color color) {
+            images.FloodFillImage(tile, x, y, color);
         }
 
         public void ReadTilePixels(int tile, byte[] pixels) {
@@ -127,6 +131,10 @@ namespace GameEditor.GameData
 
         public Bitmap CopyFromTile(int index, int x, int y, int w, int h) {
             return images.CopyFromImage(index, x, y, w, h);
+        }
+
+        public Bitmap CopyFromTile(int index, Rectangle r) {
+            return images.CopyFromImage(index, r.X, r.Y, r.Width, r.Height);
         }
 
         public void PasteIntoTile(Image source, int index, int x, int y, bool transparent) {

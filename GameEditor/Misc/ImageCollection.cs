@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -54,19 +55,6 @@ namespace GameEditor.Misc
 
         public void DrawImageAt(Graphics g, int image, int x, int y, int w, int h, bool transparent = false, bool grayscale = false) {
             DrawBitmapImageAt(bitmap, g, Width, Height, image, x, y, w, h, transparent, grayscale);
-        }
-
-        
-        // ===============================================================
-        // GET/SET PIXEL
-        // ===============================================================
-
-        public void SetImagePixel(int image, int x, int y, Color color) {
-            bitmap.SetPixel(x, y + image * Height, color);
-        }
-
-        public Color GetImagePixel(int image, int x, int y) {
-            return bitmap.GetPixel(x, y + image * Height);
         }
 
         // ===============================================================
@@ -313,6 +301,75 @@ namespace GameEditor.Misc
 
         public void ReadImagePixels(int image, byte[] pixels, bool mirror = false) {
             ReadImagePixelsFrom(bitmap, image, Width, Height, pixels, mirror);
+        }
+
+        
+        // ===============================================================
+        // EDIT OPERATIONS
+        // ===============================================================
+
+        public void SetImagePixel(int image, int x, int y, Color color) {
+            bitmap.SetPixel(x, y + image * Height, color);
+        }
+
+        public Color GetImagePixel(int image, int x, int y) {
+            return bitmap.GetPixel(x, y + image * Height);
+        }
+
+        private Color GetBytesPixel(byte[] bytes, int x, int y) {
+            return Color.FromArgb(
+                255,
+                bytes[4*(y*Width+x)+2],
+                bytes[4*(y*Width+x)+1],
+                bytes[4*(y*Width+x)+0]
+            );
+        }
+
+        private void SetBytesPixel(byte[] bytes, int x, int y, Color color) {
+            bytes[4*(y*Width+x) + 2] = color.R;
+            bytes[4*(y*Width+x) + 1] = color.G;
+            bytes[4*(y*Width+x) + 0] = color.B;
+        }
+
+        private void FloodFillScan(byte[] pixels, Queue<Point> work, Color fillOver, int lx, int rx, int y) {
+            bool spanAdded = false;
+            for (int x = lx; x <= rx; x++) {
+                if (fillOver != GetBytesPixel(pixels, x, y)) {
+                    spanAdded = false;
+                } else if (! spanAdded) {
+                    work.Enqueue(new Point(x, y));
+                    spanAdded = true;
+                }
+            }
+        }
+
+        private void FloodFill(byte[] pixels, int x, int y, Color c) {
+            Color fillOver = GetBytesPixel(pixels, x, y);
+            if (c == GetBytesPixel(pixels, x, y)) return;
+            Queue<Point> work = [];
+            work.Enqueue(new Point(x,y));
+            while (work.Count != 0) {
+                Point p = work.Dequeue();
+                // left
+                int lx = p.X;
+                while (lx-1 >= 0 && fillOver == GetBytesPixel(pixels, lx-1, p.Y)) {
+                    SetBytesPixel(pixels, --lx, p.Y, c);
+                }
+                // right
+                int rx = p.X;
+                while (rx < Width && fillOver == GetBytesPixel(pixels, rx, p.Y)) {
+                    SetBytesPixel(pixels, rx++, p.Y, c);
+                }
+                if (p.Y < Height-1) FloodFillScan(pixels, work, fillOver, lx, rx-1, p.Y+1);
+                if (p.Y > 0) FloodFillScan(pixels, work, fillOver, lx, rx-1, p.Y-1);
+            }
+        }
+
+        public void FloodFillImage(int image, int x, int y, Color color) {
+            byte[] pixels = new byte[Width*Height*4];
+            ReadImagePixels(image, pixels);
+            FloodFill(pixels, x, y, color);
+            WriteImagePixels(image, pixels);
         }
 
     }

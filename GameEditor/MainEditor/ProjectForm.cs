@@ -31,10 +31,6 @@ namespace GameEditor.MainEditor
             base.OnFormClosing(e);
             if (propName != null) {
                 Util.SaveWindowPosition(this, propName);
-                if (e.CloseReason == CloseReason.UserClosing) {
-                    e.Cancel = true;
-                    Hide();
-                }
             }
         }
 

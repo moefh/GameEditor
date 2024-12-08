@@ -54,5 +54,13 @@ namespace GameEditor.MainEditor
             assetListBox.DataSource = Util.Project.GetAssetList(assetType);
             assetListBox.DisplayMember = "Name";
         }
+
+        protected override void OnFormClosing(FormClosingEventArgs e) {
+            base.OnFormClosing(e);
+            if (e.CloseReason == CloseReason.UserClosing) {
+                e.Cancel = true;
+                Hide();
+            }
+        }
     }
 }

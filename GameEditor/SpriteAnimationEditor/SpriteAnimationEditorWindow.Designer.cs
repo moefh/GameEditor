@@ -286,6 +286,7 @@
             animEditor.Frames = null;
             animEditor.GridColor = Color.Empty;
             animEditor.Location = new Point(0, 0);
+            animEditor.MinimumSize = new Size(100, 100);
             animEditor.Name = "animEditor";
             animEditor.ReadOnly = false;
             animEditor.SelectedIndex = 0;

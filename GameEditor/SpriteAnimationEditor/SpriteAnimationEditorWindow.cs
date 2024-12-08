@@ -167,8 +167,9 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         private void animEditor_SelectedColorsChanged(object sender, EventArgs e) {
-            colorPicker.ForeColor = animEditor.ForeColor;
-            colorPicker.BackColor = animEditor.BackColor;
+            colorPicker.SelectedForeColor = animEditor.ForePen;
+            colorPicker.SelectedBackColor = animEditor.BackPen;
+            colorPicker.Invalidate();
         }
 
         private void animEditor_ImageChanged(object sender, EventArgs e) {

@@ -49,13 +49,18 @@
             toolStripSeparator4 = new ToolStripSeparator();
             insertTileToolStripMenuItem = new ToolStripMenuItem();
             appendTileToolStripMenuItem = new ToolStripMenuItem();
-            deleteTileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
             insertTilesFromFileToolStripMenuItem = new ToolStripMenuItem();
             appendTilesFromFileToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator6 = new ToolStripSeparator();
+            deleteTileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
+            toolStripSeparator5 = new ToolStripSeparator();
+            toolStripBtnToolPen = new ToolStripButton();
+            toolStripBtnToolSelect = new ToolStripButton();
+            toolStripBtnToolFill = new ToolStripButton();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -221,8 +226,8 @@
             tileEditor.GridColor = Color.Empty;
             tileEditor.Location = new Point(0, 0);
             tileEditor.Name = "tileEditor";
-            tileEditor.RenderFlags = 0U;
             tileEditor.SelectedTile = 0;
+            tileEditor.SelectedTool = CustomControls.PaintTool.Pen;
             tileEditor.Size = new Size(256, 211);
             tileEditor.TabIndex = 4;
             tileEditor.Tileset = null;
@@ -246,7 +251,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripBtnToolPen, toolStripBtnToolSelect, toolStripBtnToolFill });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
@@ -256,11 +261,10 @@
             // toolStripDropDownEdit
             // 
             toolStripDropDownEdit.AutoToolTip = false;
-            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, insertTileToolStripMenuItem, appendTileToolStripMenuItem, deleteTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem });
-            toolStripDropDownEdit.Image = Properties.Resources.PenIcon;
+            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, insertTileToolStripMenuItem, appendTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem, toolStripSeparator6, deleteTileToolStripMenuItem });
             toolStripDropDownEdit.ImageTransparentColor = Color.Magenta;
             toolStripDropDownEdit.Name = "toolStripDropDownEdit";
-            toolStripDropDownEdit.Size = new Size(61, 24);
+            toolStripDropDownEdit.Size = new Size(45, 24);
             toolStripDropDownEdit.Text = "Edit";
             // 
             // copyToolStripMenuItem
@@ -298,13 +302,6 @@
             appendTileToolStripMenuItem.Text = "Append Tile";
             appendTileToolStripMenuItem.Click += appendTileToolStripMenuItem_Click;
             // 
-            // deleteTileToolStripMenuItem
-            // 
-            deleteTileToolStripMenuItem.Name = "deleteTileToolStripMenuItem";
-            deleteTileToolStripMenuItem.Size = new Size(225, 24);
-            deleteTileToolStripMenuItem.Text = "Delete Tile";
-            deleteTileToolStripMenuItem.Click += deleteTileToolStripMenuItem_Click;
-            // 
             // toolStripSeparator3
             // 
             toolStripSeparator3.Name = "toolStripSeparator3";
@@ -323,6 +320,18 @@
             appendTilesFromFileToolStripMenuItem.Size = new Size(225, 24);
             appendTilesFromFileToolStripMenuItem.Text = "Append Tiles From File...";
             appendTilesFromFileToolStripMenuItem.Click += appendTilesFromFileToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator6
+            // 
+            toolStripSeparator6.Name = "toolStripSeparator6";
+            toolStripSeparator6.Size = new Size(222, 6);
+            // 
+            // deleteTileToolStripMenuItem
+            // 
+            deleteTileToolStripMenuItem.Name = "deleteTileToolStripMenuItem";
+            deleteTileToolStripMenuItem.Size = new Size(225, 24);
+            deleteTileToolStripMenuItem.Text = "Delete Tile";
+            deleteTileToolStripMenuItem.Click += deleteTileToolStripMenuItem_Click;
             // 
             // toolStripSeparator2
             // 
@@ -357,6 +366,45 @@
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.ToolTipText = "Display with transparency";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
+            // 
+            // toolStripSeparator5
+            // 
+            toolStripSeparator5.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator5.Name = "toolStripSeparator5";
+            toolStripSeparator5.Size = new Size(6, 27);
+            // 
+            // toolStripBtnToolPen
+            // 
+            toolStripBtnToolPen.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolPen.Image = Properties.Resources.PenIcon;
+            toolStripBtnToolPen.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolPen.Name = "toolStripBtnToolPen";
+            toolStripBtnToolPen.Size = new Size(23, 24);
+            toolStripBtnToolPen.Text = "Pen";
+            toolStripBtnToolPen.ToolTipText = "Draw with the selected colors";
+            toolStripBtnToolPen.Click += toolStripBtnToolPen_Click;
+            // 
+            // toolStripBtnToolSelect
+            // 
+            toolStripBtnToolSelect.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolSelect.Image = Properties.Resources.SelRectIcon;
+            toolStripBtnToolSelect.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolSelect.Name = "toolStripBtnToolSelect";
+            toolStripBtnToolSelect.Size = new Size(23, 24);
+            toolStripBtnToolSelect.Text = "Select";
+            toolStripBtnToolSelect.ToolTipText = "Select rectangular regions";
+            toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
+            // 
+            // toolStripBtnToolFill
+            // 
+            toolStripBtnToolFill.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolFill.Image = Properties.Resources.FillIcon;
+            toolStripBtnToolFill.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolFill.Name = "toolStripBtnToolFill";
+            toolStripBtnToolFill.Size = new Size(23, 24);
+            toolStripBtnToolFill.Text = "Fill";
+            toolStripBtnToolFill.ToolTipText = "Fill contiguous regions with selected colors";
+            toolStripBtnToolFill.Click += toolStripBtnToolFill_Click;
             // 
             // TilesetEditorWindow
             // 
@@ -421,5 +469,10 @@
         private ToolStripMenuItem copyToolStripMenuItem;
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
+        private ToolStripSeparator toolStripSeparator5;
+        private ToolStripButton toolStripBtnToolPen;
+        private ToolStripButton toolStripBtnToolSelect;
+        private ToolStripButton toolStripBtnToolFill;
+        private ToolStripSeparator toolStripSeparator6;
     }
 }

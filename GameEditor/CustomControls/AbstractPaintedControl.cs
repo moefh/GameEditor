@@ -1,5 +1,7 @@
-﻿using System;
+﻿using GameEditor.Misc;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,8 +18,34 @@ namespace GameEditor.CustomControls
         Transparent = 1<<5,
     }
 
+    public enum PaintTool {
+        Pen,
+        ColorPicker,
+        RectSelect,
+        FloodFill,
+    }
+
     public abstract class AbstractPaintedControl : Control
     {
+        private class SelfDisposer(Action disposeAction) : IComponent
+        {
+            public ISite? Site { get; set; }
+            public event EventHandler? Disposed;
+            public Action DisposeAction = disposeAction;
+
+            public void Dispose() {
+                DisposeAction();
+                Disposed?.Invoke(this, EventArgs.Empty);
+            }
+        }
+
+        protected static void RunAfter(int ms, Action action) {
+            Task.Delay(ms).ContinueWith(
+                (task) => { action(); },
+                TaskScheduler.FromCurrentSynchronizationContext()
+            );
+        }  
+
         protected void SetDoubleBuffered() {
             SetStyle(ControlStyles.UserPaint | ControlStyles.OptimizedDoubleBuffer |
                 ControlStyles.AllPaintingInWmPaint | ControlStyles.SupportsTransparentBackColor,
@@ -34,5 +62,13 @@ namespace GameEditor.CustomControls
             base.OnResize(e);
             Invalidate();
         }
+
+        protected virtual void SelfDispose() {
+        }
+
+        protected void RegisterSelfDispose(IContainer? container) {
+            container?.Add(new SelfDisposer(SelfDispose));
+        }
+
     }
 }
