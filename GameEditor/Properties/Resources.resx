@@ -127,6 +127,9 @@
   <data name="CollisionBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CollisionBitmap.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="DropCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\DropCursor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ExportIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -145,6 +148,9 @@
   <data name="game_data" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\game_data.h;System.String, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089;Windows-1252</value>
   </data>
+  <data name="GridIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\GridIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ImportIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ImportIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -156,6 +162,9 @@
   </data>
   <data name="MODIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MODIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="MoveCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\MoveCursor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="OpenIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OpenIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -192,6 +201,9 @@
   </data>
   <data name="ToolFillIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ToolFillIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TransparencyIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TransparencyIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="WarningImage" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\WarningImage.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

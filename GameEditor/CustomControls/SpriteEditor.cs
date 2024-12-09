@@ -13,33 +13,39 @@ using System.Windows.Forms;
 
 namespace GameEditor.CustomControls
 {
-    public partial class SpriteEditor : AbstractPaintedControl
+    public partial class SpriteEditor : AbstractImageEditor
     {
         private Sprite? sprite;
         private int selFrame;
         private RenderFlags renderFlags;
 
-        public event EventHandler? ImageChanged;
-        public event EventHandler? SelectedColorsChanged;
-
         public SpriteEditor() {
             InitializeComponent();
+            SetupComponents(components);
             SetDoubleBuffered();
         }
 
-        public RenderFlags RenderFlags { get { return renderFlags; } set { renderFlags = value; Invalidate(); } }
-        public int SelectedFrame { get { return selFrame; } set { selFrame = value; Invalidate(); } }
-        public bool ReadOnly { get; set; }
-        public Color ForePen { get; set; }
-        public Color BackPen { get; set; }
+        protected override int EditImageWidth { get { return (Sprite != null) ? Sprite.Width : 0; } }
+        protected override int EditImageHeight { get { return (Sprite != null) ? Sprite.Height : 0; } }
+        public bool ReadOnly { get; set; } // TODO: remove this (or move to AbstractImageEditor)
         public Color GridColor { get; set; }
 
+        public RenderFlags RenderFlags {
+            get { return renderFlags; }
+            set { renderFlags = value; Invalidate(); }
+        }
+        
         public Sprite? Sprite {
             get { return sprite; }
-            set { sprite = value; selFrame = 0; Invalidate(); }
+            set { DropSelection(); sprite = value; selFrame = 0; Invalidate(); }
         }
 
-        private bool GetSpriteRenderRect(out int zoom, out Rectangle rect) {
+        public int SelectedFrame {
+            get { return selFrame; }
+            set { DropSelection(); selFrame = value; Invalidate(); }
+        }
+
+        protected override bool GetImageRenderRect(out int zoom, out Rectangle rect) {
             int winWidth = ClientSize.Width;
             int winHeight = ClientSize.Height;
             if (Sprite == null || winWidth <= 0 || winHeight <= 0) {
@@ -67,14 +73,18 @@ namespace GameEditor.CustomControls
             ImageUtil.DrawEmptyControl(pe.Graphics, ClientSize);
             if (Util.DesignMode) return;
             if (Sprite == null) return;
-            if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect)) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle sprRect)) return;
 
             ImageUtil.SetupTileGraphics(pe.Graphics);
+            bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
 
             // sprite image
             Sprite.DrawFrameAt(pe.Graphics, SelectedFrame,
                 sprRect.X, sprRect.Y, sprRect.Width, sprRect.Height,
-                (RenderFlags & RenderFlags.Transparent) != 0);
+                transparent);
+
+            // selection image
+            PaintSelectionImage(pe.Graphics, sprRect, zoom, transparent);
 
             // grid
             if ((RenderFlags & RenderFlags.Grid) != 0) {
@@ -88,58 +98,57 @@ namespace GameEditor.CustomControls
                     pe.Graphics.DrawLine(grid, x + sprRect.X, sprRect.Y, x + sprRect.X, sprRect.Y + sprRect.Height);
                 }
             }
+            pe.Graphics.DrawRectangle(Pens.Black, sprRect);
+
+            // selection rectangle
+            PaintSelectionRectangle(pe.Graphics, sprRect, zoom);
         }
 
-        private void SetPixel(Color color, int x, int y) {
-            if (Sprite == null) return;
-            Sprite.SetFramePixel(SelectedFrame, x, y, color);
-            Invalidate();
-            ImageChanged?.Invoke(this, EventArgs.Empty);
+        protected override void SetImagePixel(int x, int y, Color color) {
+            Sprite?.SetFramePixel(SelectedFrame, x, y, color);
         }
 
-        private void PickColor(int x, int y, bool foreground) {
-            if (Sprite == null) return;
-            Color c = Sprite.GetFramePixel(SelectedFrame, x, y);
-            if (foreground) {
-                ForePen = c;
-            } else {
-                BackPen = c;
-            }
-            SelectedColorsChanged?.Invoke(this, EventArgs.Empty);
+        protected override Color GetImagePixel(int x, int y) {
+            if (Sprite == null) return Color.Empty;
+            return Sprite.GetFramePixel(SelectedFrame, x, y);
         }
 
-        private void RunMouseDraw(MouseEventArgs e) {
-            if (Util.DesignMode) return;
-            if (Sprite == null || e.Button == MouseButtons.None) return;
+        protected override void FloodFillImage(int x, int y, Color color) {
+            Sprite?.FloodFill(SelectedFrame, x, y, color);
+        }
 
-            if (! GetSpriteRenderRect(out int zoom, out Rectangle sprRect) || zoom == 0) return;
+        protected override Bitmap? CopyFromImage(int x, int y, int w, int h) {
+            return Sprite?.CopyFromFrame(SelectedFrame, x, y, w, h);
+        }
 
-            int fx = (e.X - sprRect.X) / zoom;
-            int fy = (e.Y - sprRect.Y) / zoom;
-            if (fx < 0 || fy < 0 || fx >= Sprite.Width || fy >= Sprite.Height) return;
+        protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
+            if (Sprite == null) return null;
 
-            if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
-                switch (e.Button) {
-                case MouseButtons.Left:  PickColor(fx, fy, true); break;
-                case MouseButtons.Right: PickColor(fx, fy, false); break;
+            // get selection bitmap
+            Bitmap selection = Sprite.CopyFromFrame(SelectedFrame, rect);
+
+            // make a hole in the tile
+            byte[] pixels = new byte[4*Sprite.Width*Sprite.Height];
+            Sprite.ReadFramePixels(SelectedFrame, pixels);
+            for (int y = 0; y < rect.Height; y++) {
+                for (int x = 0; x < rect.Width; x++) {
+                    int tx = x + rect.X;
+                    int ty = y + rect.Y;
+                    pixels[4*(ty*Sprite.Width+tx)+0] = 0;
+                    pixels[4*(ty*Sprite.Width+tx)+1] = 255;
+                    pixels[4*(ty*Sprite.Width+tx)+2] = 0;
                 }
-            } else {
-                switch (e.Button) {
-                case MouseButtons.Left:  SetPixel(ForePen, fx, fy); break;
-                case MouseButtons.Right: SetPixel(BackPen, fx, fy); break;
-                }
             }
+            Sprite.WriteFramePixels(SelectedFrame, pixels);
+
+            return selection;
         }
 
-        protected override void OnMouseDown(MouseEventArgs e) {
-            base.OnMouseDown(e);
-            if (e.Button == MouseButtons.Left || e.Button == MouseButtons.Right) Focus();
-            RunMouseDraw(e);
-        }
+        protected override void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp) {
+            if (Sprite == null) return;
 
-        protected override void OnMouseMove(MouseEventArgs e) {
-            base.OnMouseMove(e);
-            RunMouseDraw(e);
+            bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
+            Sprite.PasteIntoFrame(selectionBmp, SelectedFrame, selectedRect.X, selectedRect.Y, transparent);
         }
     }
 }

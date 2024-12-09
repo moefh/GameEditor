@@ -184,8 +184,6 @@ namespace GameEditor.TilesetEditor
             try {
                 Image? img = Clipboard.GetImage();
                 if (img == null) return;
-                //bool transparent = (tileEditor.RenderFlags & RenderFlags.Transparent) != 0;
-                //Tileset.PasteIntoTile(img, tileEditor.SelectedTile, 0, 0, transparent);
                 tileEditor.PasteImage(img);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");

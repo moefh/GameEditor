@@ -93,6 +93,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap DropCursor {
+            get {
+                object obj = ResourceManager.GetObject("DropCursor", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ExportIcon {
             get {
                 object obj = ResourceManager.GetObject("ExportIcon", resourceCulture);
@@ -178,6 +188,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap GridIcon {
+            get {
+                object obj = ResourceManager.GetObject("GridIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ImportIcon {
             get {
                 object obj = ResourceManager.GetObject("ImportIcon", resourceCulture);
@@ -211,6 +231,16 @@ namespace GameEditor.Properties {
         internal static System.Drawing.Bitmap MODIcon {
             get {
                 object obj = ResourceManager.GetObject("MODIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap MoveCursor {
+            get {
+                object obj = ResourceManager.GetObject("MoveCursor", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -331,6 +361,16 @@ namespace GameEditor.Properties {
         internal static System.Drawing.Bitmap ToolFillIcon {
             get {
                 object obj = ResourceManager.GetObject("ToolFillIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TransparencyIcon {
+            get {
+                object obj = ResourceManager.GetObject("TransparencyIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -55,13 +55,14 @@
             toolStripSeparator6 = new ToolStripSeparator();
             deleteTileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
+            toolStripLabel3 = new ToolStripLabel();
             toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
             toolStripSeparator5 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
             toolStripBtnToolPen = new ToolStripButton();
-            toolStripBtnToolSelect = new ToolStripButton();
             toolStripBtnToolFill = new ToolStripButton();
+            toolStripBtnToolSelect = new ToolStripButton();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -111,7 +112,7 @@
             toolStripBtnExport.Name = "toolStripBtnExport";
             toolStripBtnExport.Size = new Size(23, 24);
             toolStripBtnExport.Text = "Export";
-            toolStripBtnExport.ToolTipText = "Export tileset image to file";
+            toolStripBtnExport.ToolTipText = "Export to file";
             toolStripBtnExport.Click += toolStripBtnExport_Click;
             // 
             // toolStripBtnImport
@@ -123,7 +124,7 @@
             toolStripBtnImport.Name = "toolStripBtnImport";
             toolStripBtnImport.Size = new Size(23, 24);
             toolStripBtnImport.Text = "Import";
-            toolStripBtnImport.ToolTipText = "Import tileset image from file";
+            toolStripBtnImport.ToolTipText = "Import from file";
             toolStripBtnImport.Click += toolStripBtnImport_Click;
             // 
             // toolStripBtnProperties
@@ -252,7 +253,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolSelect, toolStripBtnToolFill });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel3, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
@@ -340,18 +341,25 @@
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
             // 
+            // toolStripLabel3
+            // 
+            toolStripLabel3.Name = "toolStripLabel3";
+            toolStripLabel3.Size = new Size(56, 24);
+            toolStripLabel3.Text = "Display:";
+            // 
             // toolStripBtnGrid
             // 
             toolStripBtnGrid.Checked = true;
             toolStripBtnGrid.CheckOnClick = true;
             toolStripBtnGrid.CheckState = CheckState.Checked;
-            toolStripBtnGrid.Image = Properties.Resources.EyeIcon;
+            toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnGrid.Image = Properties.Resources.GridIcon;
             toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
             toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
             toolStripBtnGrid.Name = "toolStripBtnGrid";
-            toolStripBtnGrid.Size = new Size(55, 24);
+            toolStripBtnGrid.Size = new Size(23, 24);
             toolStripBtnGrid.Text = "Grid";
-            toolStripBtnGrid.ToolTipText = "Display grid";
+            toolStripBtnGrid.ToolTipText = "Grid";
             toolStripBtnGrid.Click += toolStripBtnGrid_Click;
             // 
             // toolStripBtnTransparent
@@ -359,13 +367,14 @@
             toolStripBtnTransparent.Checked = true;
             toolStripBtnTransparent.CheckOnClick = true;
             toolStripBtnTransparent.CheckState = CheckState.Checked;
-            toolStripBtnTransparent.Image = Properties.Resources.EyeIcon;
+            toolStripBtnTransparent.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnTransparent.Image = Properties.Resources.TransparencyIcon;
             toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
             toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
             toolStripBtnTransparent.Name = "toolStripBtnTransparent";
-            toolStripBtnTransparent.Size = new Size(101, 24);
+            toolStripBtnTransparent.Size = new Size(23, 24);
             toolStripBtnTransparent.Text = "Transparent";
-            toolStripBtnTransparent.ToolTipText = "Display with transparency";
+            toolStripBtnTransparent.ToolTipText = "Transparency";
             toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
             // 
             // toolStripSeparator5
@@ -391,17 +400,6 @@
             toolStripBtnToolPen.ToolTipText = "Pencil";
             toolStripBtnToolPen.Click += toolStripBtnToolPen_Click;
             // 
-            // toolStripBtnToolSelect
-            // 
-            toolStripBtnToolSelect.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnToolSelect.Image = Properties.Resources.SelRectIcon;
-            toolStripBtnToolSelect.ImageTransparentColor = Color.Magenta;
-            toolStripBtnToolSelect.Name = "toolStripBtnToolSelect";
-            toolStripBtnToolSelect.Size = new Size(23, 24);
-            toolStripBtnToolSelect.Text = "Select";
-            toolStripBtnToolSelect.ToolTipText = "Select";
-            toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
-            // 
             // toolStripBtnToolFill
             // 
             toolStripBtnToolFill.DisplayStyle = ToolStripItemDisplayStyle.Image;
@@ -412,6 +410,17 @@
             toolStripBtnToolFill.Text = "Fill";
             toolStripBtnToolFill.ToolTipText = "Fill";
             toolStripBtnToolFill.Click += toolStripBtnToolFill_Click;
+            // 
+            // toolStripBtnToolSelect
+            // 
+            toolStripBtnToolSelect.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolSelect.Image = Properties.Resources.SelRectIcon;
+            toolStripBtnToolSelect.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolSelect.Name = "toolStripBtnToolSelect";
+            toolStripBtnToolSelect.Size = new Size(23, 24);
+            toolStripBtnToolSelect.Text = "Select";
+            toolStripBtnToolSelect.ToolTipText = "Select";
+            toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
             // 
             // TilesetEditorWindow
             // 
@@ -481,5 +490,6 @@
         private ToolStripButton toolStripBtnToolFill;
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripLabel toolStripLabel2;
+        private ToolStripLabel toolStripLabel3;
     }
 }

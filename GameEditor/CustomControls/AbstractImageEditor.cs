@@ -62,12 +62,12 @@ namespace GameEditor.CustomControls
             }
         }
 
-        private Cursor GetCursorForSelectedTool() {
+        protected virtual Cursor GetCursorForSelectedTool() {
             return SelectedTool switch {
                 PaintTool.Pen => Cursors.Arrow,
                 PaintTool.RectSelect => Cursors.Cross,
                 PaintTool.FloodFill => CursorUtil.FillCursor,
-                _ => Cursors.Arrow,
+                _ => Cursors.No,
             };
         }
 
@@ -127,10 +127,10 @@ namespace GameEditor.CustomControls
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
-        protected void PaintSelectionImage(Graphics g, Rectangle tileRect, int zoom, bool transparent) {
+        protected void PaintSelectionImage(Graphics g, Rectangle imageRect, int zoom, bool transparent) {
             if (selectionBmp == null) return;
-            int x = selectedRect.X * zoom + tileRect.X;
-            int y = selectedRect.Y * zoom + tileRect.Y;
+            int x = selectedRect.X * zoom + imageRect.X;
+            int y = selectedRect.Y * zoom + imageRect.Y;
             int w = selectionBmp.Width * zoom;
             int h = selectionBmp.Height * zoom;
             if (transparent) {
@@ -146,10 +146,10 @@ namespace GameEditor.CustomControls
             }
         }
 
-        protected void PaintSelectionRectangle(Graphics g, Rectangle tileRect, int zoom) {
+        protected void PaintSelectionRectangle(Graphics g, Rectangle imageRect, int zoom) {
             if (selectedRect.Width > 0 && selectedRect.Height > 0) {
-                int x = selectedRect.X * zoom + tileRect.X;
-                int y = selectedRect.Y * zoom + tileRect.Y;
+                int x = selectedRect.X * zoom + imageRect.X;
+                int y = selectedRect.Y * zoom + imageRect.Y;
                 int w = selectedRect.Width * zoom;
                 int h = selectedRect.Height * zoom;
                 using Pen pen = new Pen(Color.Black, 3);
@@ -170,11 +170,11 @@ namespace GameEditor.CustomControls
         private void ApplyPenTool(MouseEventArgs e, MouseAction action) {
             if (action == MouseAction.Up) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
-            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
-            if (! tileRect.Contains(e.Location)) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle imageRect)) return;
+            if (! imageRect.Contains(e.Location)) return;
 
-            int tx = (e.X - tileRect.X) / zoom;
-            int ty = (e.Y - tileRect.Y) / zoom;
+            int tx = (e.X - imageRect.X) / zoom;
+            int ty = (e.Y - imageRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
 
             Color color = (e.Button == MouseButtons.Left) ? ForePen : BackPen;
@@ -186,11 +186,11 @@ namespace GameEditor.CustomControls
         private void ApplyColorPickerTool(MouseEventArgs e, MouseAction action) {
             if (action == MouseAction.Up) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
-            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
-            if (! tileRect.Contains(e.Location)) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle imageRect)) return;
+            if (! imageRect.Contains(e.Location)) return;
 
-            int tx = (e.X - tileRect.X) / zoom;
-            int ty = (e.Y - tileRect.Y) / zoom;
+            int tx = (e.X - imageRect.X) / zoom;
+            int ty = (e.Y - imageRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
 
             Color color = GetImagePixel(tx, ty);
@@ -204,11 +204,11 @@ namespace GameEditor.CustomControls
         private void ApplyFloodFillTool(MouseEventArgs e, MouseAction action) {
             if (action != MouseAction.Down) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
-            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
-            if (! tileRect.Contains(e.Location)) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle imageRect)) return;
+            if (! imageRect.Contains(e.Location)) return;
 
-            int tx = (e.X - tileRect.X) / zoom;
-            int ty = (e.Y - tileRect.Y) / zoom;
+            int tx = (e.X - imageRect.X) / zoom;
+            int ty = (e.Y - imageRect.Y) / zoom;
             if (tx < 0 || ty < 0 || tx >= EditImageWidth || ty >= EditImageHeight) return;
 
             Color color = (e.Button == MouseButtons.Left) ? ForePen : BackPen;
@@ -218,11 +218,11 @@ namespace GameEditor.CustomControls
         }
 
         private void ApplyRectSelectTool(MouseEventArgs e, MouseAction action) {
-            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return;
+            if (! GetImageRenderRect(out int zoom, out Rectangle imageRect)) return;
 
             if (e.Button != MouseButtons.Left) return;
-            int sx = int.Clamp((e.X + zoom/2 - tileRect.X) / zoom, 0, EditImageWidth);
-            int sy = int.Clamp((e.Y + zoom/2 - tileRect.Y) / zoom, 0, EditImageHeight);
+            int sx = int.Clamp((e.X + zoom/2 - imageRect.X) / zoom, 0, EditImageWidth);
+            int sy = int.Clamp((e.Y + zoom/2 - imageRect.Y) / zoom, 0, EditImageHeight);
 
             // start new selection
             if (action == MouseAction.Down) {
@@ -256,18 +256,31 @@ namespace GameEditor.CustomControls
             // In this method we return true to indicate that the mouse event was consumed
             // and so the normal tools shouldn't get to process it.
 
-            if (! GetImageRenderRect(out int zoom, out Rectangle tileRect)) return true;
-            if (ignoreMouseUntilDown && action != MouseAction.Down) return true;
+            if (! GetImageRenderRect(out int zoom, out Rectangle imageRect)) return true;
+            if (ignoreMouseUntilDown && action != MouseAction.Down) {
+                Cursor = Cursors.Default;
+                return true;
+            }
             ignoreMouseUntilDown = false;
 
             Rectangle selection = new Rectangle(
-                selectedRect.X * zoom + tileRect.X,
-                selectedRect.Y * zoom + tileRect.Y,
+                selectedRect.X * zoom + imageRect.X,
+                selectedRect.Y * zoom + imageRect.Y,
                 selectedRect.Width * zoom,
                 selectedRect.Height * zoom
             );
             bool activeSelection = selection.Width > 0 && selection.Height > 0;
-            Cursor = selection.Contains(e.Location) ? Cursors.Hand : GetCursorForSelectedTool();
+
+            // set cursor
+            if (selection.Contains(e.Location)) {
+                Cursor = CursorUtil.MoveCursor;
+            } else if (SelectedTool != PaintTool.RectSelect && activeSelection) {
+                Cursor = CursorUtil.DropCursor;
+            } else if (SelectedTool == PaintTool.RectSelect || imageRect.Contains(e.Location)) {
+                Cursor = GetCursorForSelectedTool();
+            } else {
+                Cursor = Cursors.No;
+            }
 
             if (! activeSelection) {
                 // no active selection, nothing to do
@@ -338,6 +351,21 @@ namespace GameEditor.CustomControls
                 case PaintTool.RectSelect: ApplyRectSelectTool(e, action); break;
                 }
             }
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e) {
+            base.OnMouseDown(e);
+            RunMouseEvent(e, MouseAction.Down);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e) {
+            base.OnMouseMove(e);
+            RunMouseEvent(e, MouseAction.Move);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e) {
+            base.OnMouseUp(e);
+            RunMouseEvent(e, MouseAction.Up);
         }
 
         // ==============================================================================

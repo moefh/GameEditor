@@ -145,24 +145,11 @@ namespace GameEditor.CustomControls
                     pe.Graphics.DrawLine(grid, tileRect.X + x, tileRect.Y, tileRect.X + x, tileRect.Y + zoomedTileSize);
                 }
             }
+            pe.Graphics.DrawRectangle(Pens.Black, tileRect);
+
 
             // selection rectangle
             PaintSelectionRectangle(pe.Graphics, tileRect, zoom);
-        }
-
-        protected override void OnMouseDown(MouseEventArgs e) {
-            base.OnMouseDown(e);
-            RunMouseEvent(e, MouseAction.Down);
-        }
-
-        protected override void OnMouseMove(MouseEventArgs e) {
-            base.OnMouseMove(e);
-            RunMouseEvent(e, MouseAction.Move);
-        }
-
-        protected override void OnMouseUp(MouseEventArgs e) {
-            base.OnMouseUp(e);
-            RunMouseEvent(e, MouseAction.Up);
         }
 
     }

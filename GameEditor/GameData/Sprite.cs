@@ -98,14 +98,6 @@ namespace GameEditor.GameData
             images.ReadImagePixels(frame, pixels, mirror);
         }
 
-        public Bitmap CopyFrame(int frame, int x, int y, int w, int h) {
-            return images.CopyFromImage(frame, x, y, w, h);
-        }
-
-        public void Paste(Image image, int frame, int x, int y, bool transparent) {
-            images.PasteIntoImage(image, frame, x, y, transparent);
-        }
-
         public void SetFramePixel(int frame, int x, int y, Color color) {
             images.SetImagePixel(frame, x, y, color);
         }
@@ -123,5 +115,20 @@ namespace GameEditor.GameData
             images.ExportBitmap(filename, numHorzFrames);
         }
 
+        public void FloodFill(int frame, int x, int y, Color c) {
+            images.FloodFillImage(frame, x, y, c);
+        }
+
+        public Bitmap CopyFromFrame(int index, int x, int y, int w, int h) {
+            return images.CopyFromImage(index, x, y, w, h);
+        }
+
+        public Bitmap CopyFromFrame(int index, Rectangle r) {
+            return images.CopyFromImage(index, r.X, r.Y, r.Width, r.Height);
+        }
+
+        public void PasteIntoFrame(Image source, int index, int x, int y, bool transparent) {
+            images.PasteIntoImage(source, index, x, y, transparent);
+        }
     }
 }

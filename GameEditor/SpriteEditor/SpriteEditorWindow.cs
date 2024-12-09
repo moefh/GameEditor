@@ -32,6 +32,7 @@ namespace GameEditor.SpriteEditor
             spriteEditor.BackPen = colorPicker.SelectedBackColor;
             spriteEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
             mainSplit.SplitterDistance = int.Max(Sprite.Width * spriteFramePicker.Zoom + 30, mainSplit.SplitterDistance);
+            SelectTool(PaintTool.Pen);
             FixRenderFlags();
         }
 
@@ -90,8 +91,9 @@ namespace GameEditor.SpriteEditor
             try {
                 Image? img = Clipboard.GetImage();
                 if (img == null) return;
-                bool transparent = (spriteEditor.RenderFlags & RenderFlags.Transparent) != 0;
-                Sprite.Paste(img, spriteEditor.SelectedFrame, 0, 0, transparent);
+                //bool transparent = (spriteEditor.RenderFlags & RenderFlags.Transparent) != 0;
+                //Sprite.PasteIntoFrame(img, spriteEditor.SelectedFrame, 0, 0, transparent);
+                spriteEditor.PasteImage(img);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
             }
@@ -102,8 +104,8 @@ namespace GameEditor.SpriteEditor
         }
 
         private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
-            using Bitmap frame = Sprite.CopyFrame(spriteEditor.SelectedFrame, 0, 0,
-                                                  Sprite.Width, Sprite.Height);
+            using Bitmap? frame = spriteEditor.GetSelectionCopy();
+            if (frame == null) return;
             try {
                 Clipboard.SetImage(frame);
             } catch (Exception ex) {
@@ -166,5 +168,27 @@ namespace GameEditor.SpriteEditor
             FixRenderFlags();
         }
 
+        // ====================================================================
+        // === TOOLS
+        // ====================================================================
+
+        private void SelectTool(PaintTool tool) {
+            spriteEditor.SelectedTool = tool;
+            toolStripBtnToolPen.Checked = tool == PaintTool.Pen;
+            toolStripBtnToolSelect.Checked = tool == PaintTool.RectSelect;
+            toolStripBtnToolFill.Checked = tool == PaintTool.FloodFill;
+        }
+
+        private void toolStripBtnToolPen_Click(object sender, EventArgs e) {
+            SelectTool(PaintTool.Pen);
+        }
+
+        private void toolStripBtnToolSelect_Click(object sender, EventArgs e) {
+            SelectTool(PaintTool.RectSelect);
+        }
+
+        private void toolStripBtnToolFill_Click(object sender, EventArgs e) {
+            SelectTool(PaintTool.FloodFill);
+        }
     }
 }

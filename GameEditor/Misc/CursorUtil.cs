@@ -10,11 +10,27 @@ namespace GameEditor.Misc
     public class CursorUtil
     {
         private static Cursor? fillCursor;
+        private static Cursor? dropCursor;
+        private static Cursor? moveCursor;
 
         public static Cursor FillCursor {
             get {
-                fillCursor ??= CreateCursor(Properties.Resources.FillCursor, 2, 25);
+                fillCursor ??= CreateCursor(Properties.Resources.FillCursor, 5, 22);
                 return fillCursor;
+            }
+        }
+
+        public static Cursor DropCursor {
+            get {
+                dropCursor ??= CreateCursor(Properties.Resources.DropCursor, 15, 25);
+                return dropCursor;
+            }
+        }
+
+        public static Cursor MoveCursor {
+            get {
+                moveCursor ??= CreateCursor(Properties.Resources.MoveCursor, 16, 16);
+                return moveCursor;
             }
         }
 
