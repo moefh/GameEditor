@@ -1,13 +1,5 @@
-﻿using GameEditor.FontEditor;
-using GameEditor.GameData;
-using GameEditor.MapEditor;
+﻿using GameEditor.GameData;
 using GameEditor.Misc;
-using GameEditor.ModEditor;
-using GameEditor.ProjectIO;
-using GameEditor.SfxEditor;
-using GameEditor.SpriteEditor;
-using GameEditor.SpriteAnimationEditor;
-using GameEditor.TilesetEditor;
 using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections;
@@ -25,37 +17,28 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using Accessibility;
 
 namespace GameEditor.MainEditor
 {
     public partial class MainWindow : Form
     {
-        private readonly Dictionary<DataAssetType, ProjectAssetListEditorForm> editors = [];
         private readonly LogWindow logWindow;
         private readonly CheckerWindow checkerWindow;
+        private readonly AssetTreeManager assetManager;
         private ProjectData project;
 
         public MainWindow() {
             InitializeComponent();
 
             project = new ProjectData();
+            assetManager = new AssetTreeManager(assetTree, project, components);
 
             logWindow = new LogWindow(project);
             logWindow.MdiParent = this;
 
             checkerWindow = new CheckerWindow(project);
             checkerWindow.MdiParent = this;
-
-            editors[DataAssetType.Map] = new MapListEditorWindow(project);
-            editors[DataAssetType.Tileset] = new TilesetListEditorWindow(project);
-            editors[DataAssetType.Sprite] = new SpriteListEditorWindow(project);
-            editors[DataAssetType.SpriteAnimation] = new SpriteAnimationListEditorWindow(project);
-            editors[DataAssetType.Sfx] = new SfxListEditorWindow(project);
-            editors[DataAssetType.Mod] = new ModListEditorWindow(project);
-            editors[DataAssetType.Font] = new FontListEditorWindow(project);
-            foreach (ProjectAssetListEditorForm editor in editors.Values) {
-                editor.MdiParent = this;
-            }
 
             UpdateWindowTitle();
             UpdateDataSize();
@@ -64,9 +47,6 @@ namespace GameEditor.MainEditor
 
         public void UpdateDataSize() {
             lblDataSize.Text = $"{Util.FormatNumber(project.GetGameDataSize())} bytes";
-            foreach (ProjectAssetListEditorForm editor in editors.Values) {
-                editor.UpdateDataSize();
-            }
         }
 
         public void UpdateDirtyStatus() {
@@ -82,22 +62,6 @@ namespace GameEditor.MainEditor
             Text = $"{name} - Game Asset Editor";
         }
 
-        public void ShowListEditorWindow(DataAssetType type) {
-            editors[type].Show();
-            editors[type].Activate();
-        }
-
-        private void RefreshAllAssetLists() {
-            foreach (ProjectAssetListEditorForm editor in editors.Values) {
-                editor.Project = project;
-                editor.RefreshAssetList();
-            }
-        }
-
-        public void RefreshAssetList(DataAssetType type) {
-            editors[type].RefreshAssetList();
-        }
-
         public void AddLog(string log) {
             logWindow.AddLog(log);
         }
@@ -109,10 +73,8 @@ namespace GameEditor.MainEditor
             }
 
             Util.SaveMainWindowPosition(this, "MainWindow");
-            foreach (ProjectAssetListEditorForm editor in editors.Values) {
-                editor.Close();
-            }
             logWindow.Close();
+            checkerWindow.Close();
 
             base.OnFormClosing(e);
         }
@@ -131,6 +93,36 @@ namespace GameEditor.MainEditor
         // === NEW/SAVE/LOAD STUFF
         // ======================================================================
 
+        private void ReplaceCurrentProject(ProjectData proj) {
+            checkerWindow.ClearResults();
+            project.Dispose();
+            project = proj;
+            assetManager.Project = project;
+            HookProjectEventHandlers();
+            UpdateWindowTitle();
+            UpdateDirtyStatus();
+            UpdateDataSize();
+            assetManager.ExpandPopulatedAssetTypes();
+        }
+
+        private void HookProjectEventHandlers() {
+            project.DirtyStatusChanged += Project_DirtyStatusChanged;
+            project.DataSizeChanged += Project_DataSizeChanged;
+            project.AssetNamesChanged += Project_AssetNamesChanged;
+        }
+
+        private void Project_AssetNamesChanged(object? sender, EventArgs e) {
+            assetManager.UpdateAssetNames();
+        }
+
+        private void Project_DataSizeChanged(object? sender, EventArgs e) {
+            UpdateDataSize();
+        }
+
+        private void Project_DirtyStatusChanged(object? sender, EventArgs e) {
+            UpdateDirtyStatus();
+        }
+
         private bool ConfirmLoseData() {
             if (!project.IsDirty) return true;
             ConfirmLoseChangesDialog dlg = new ConfirmLoseChangesDialog();
@@ -146,22 +138,9 @@ namespace GameEditor.MainEditor
             return dlg.FileName;
         }
 
-        private void OpenFilledListWindows() {
-            foreach (DataAssetType type in project.AssetTypes) {
-                if (project.GetAssetList(type).Count != 0) {
-                    editors[type].Show();
-                }
-            }
-        }
-
         public void NewProject() {
             if (!ConfirmLoseData()) return;
-            project.Dispose();
-            project = new ProjectData();
-            UpdateWindowTitle();
-            RefreshAllAssetLists();
-            checkerWindow.ClearResults();
-            project.UpdateDataSize();
+            ReplaceCurrentProject(new ProjectData());
             Util.Log("== created new project");
         }
 
@@ -196,21 +175,19 @@ namespace GameEditor.MainEditor
             lblModified.Visible = false;
             lblDataSize.Text = "Parsing project file...";
             Refresh();
+            ProjectData? newProject = null;
             try {
-                project.Dispose();
-                project = new ProjectData(dlg.FileName);
-                UpdateWindowTitle();
-                RefreshAllAssetLists();
-                checkerWindow.ClearResults();
-                UpdateDirtyStatus();
-                project.UpdateDataSize();
-                OpenFilledListWindows();
-                Util.Log("== loaded project");
+                newProject = new ProjectData(dlg.FileName);
             } catch (Exception) {
                 UpdateDirtyStatus();
                 UpdateDataSize();
                 MessageBox.Show($"Error loading project file.\n\nConsult the log window for more information.",
                                 "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return;
+            }
+            if (newProject != null) {
+                ReplaceCurrentProject(newProject);
+                Util.Log("== loaded project");
             }
         }
 
@@ -284,7 +261,7 @@ namespace GameEditor.MainEditor
         }
 
         private void runCheckToolStripMenuItem_Click(object sender, EventArgs e) {
-            checkerWindow.Show(this);
+            checkerWindow.Show();
             //checkerWindow.Activate();
             checkerWindow.RunCheck();
         }
@@ -306,37 +283,84 @@ namespace GameEditor.MainEditor
             SaveProject();
         }
 
-        private void toolStripBtnMapEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.Map);
-        }
-
-        private void toolStripBtnTilesetEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.Tileset);
-        }
-
-        private void toolStripBtnSpriteEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.Sprite);
-        }
-
-        private void toolStripBtnAnimationEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.SpriteAnimation);
-        }
-
-        private void toolStripBtnSfxEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.Sfx);
-        }
-
-        private void toolStripBtnModEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.Mod);
-        }
-
-        private void toolStripBtnFontEditor_Click(object sender, EventArgs e) {
-            ShowListEditorWindow(DataAssetType.Font);
-        }
-
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
             logWindow.Show();
             logWindow.Activate();
+        }
+
+        // ======================================================================
+        // === ASSET TREE
+        // ======================================================================
+
+        private void assetTree_DoubleClick(object sender, EventArgs e) {
+            IDataAssetItem? item = assetManager.GetSelectedItem();
+            item?.ShowEditor(this);
+        }
+
+        private void newAssetToolStripMenuItem_Click(object sender, EventArgs e) {
+            DataAssetType? type = assetManager.GetSelectedRootType();
+            if (type != null) {
+                project.AddAsset(type.Value);
+                return;
+            }
+
+            IDataAssetItem? asset = assetManager.GetSelectedItem();
+            if (asset != null) {
+                project.AddAsset(asset.Asset.AssetType);
+                return;
+            }
+        }
+
+        private void deleteAssetToolStripMenuItem_Click(object sender, EventArgs e) {
+            IDataAssetItem? asset = assetManager.GetSelectedItem();
+            if (asset != null) {
+                if (!asset.CheckRemovalAllowed()) {
+                    return;
+                }
+                project.RemoveAsset(asset);
+                project.SetDirty();
+                project.UpdateDataSize();
+            }
+        }
+
+        private static string? GetDataAssetTypeName(DataAssetType type) {
+            return type switch {
+                DataAssetType.Tileset => "Tileset",
+                DataAssetType.Map => "Map",
+                DataAssetType.Sprite => "Sprite",
+                DataAssetType.SpriteAnimation => "Sprite Animation",
+                DataAssetType.Sfx => "Sound Effect",
+                DataAssetType.Mod => "MOD",
+                DataAssetType.Font => "Font",
+                _ => null,
+            };
+        }
+
+        private void ctxMenuAsset_Opening(object sender, CancelEventArgs e) {
+            DataAssetType? type = assetManager.GetSelectedRootType();
+            if (type != null) {
+                string? name = GetDataAssetTypeName(type.Value);
+                ctxMenuAssetTree.Items[0].Text = $"Add New {name}";
+                ctxMenuAssetTree.Items[1].Visible = false;
+                return;
+            }
+
+            IDataAssetItem? asset = assetManager.GetSelectedItem();
+            if (asset != null) {
+                string? name = GetDataAssetTypeName(asset.Asset.AssetType);
+                ctxMenuAssetTree.Items[0].Text = $"Add New {name}";
+                ctxMenuAssetTree.Items[1].Text = $"Delete {name}";
+                ctxMenuAssetTree.Items[1].Visible = true;
+                return;
+            }
+
+            e.Cancel = true;
+        }
+
+        private void assetTree_NodeMouseClick(object sender, TreeNodeMouseClickEventArgs e) {
+            if (e.Button == MouseButtons.Right) {
+                assetTree.SelectedNode = e.Node;
+            }
         }
 
     }

@@ -42,5 +42,16 @@ namespace GameEditor.ModEditor
         public void EditorClosed() {
             Editor = null;
         }
+
+        public bool CheckRemovalAllowed() {
+            if (Editor != null) {
+                MessageBox.Show(
+                    "This MOD is open for editing. Close the editor and try again.",
+                    "Can't Remove MOD",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+            return true;
+        }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -42,5 +43,32 @@ namespace GameEditor.TilesetEditor
             Editor = null;
         }
 
+        public bool CheckRemovalAllowed() {
+            // check that tileset is not open in an editor
+            if (Editor != null) {
+                MessageBox.Show(
+                    "This tileset is open for editing. Close the tileset and try again.",
+                    "Can't Remove Tileset",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+
+            // check that the tileset is not used in a map
+            List<string> maps = [];
+            foreach (MapDataItem map in Project.MapList) {
+                if (map.Map.Tileset == Tileset) {
+                    maps.Add(map.Map.Name);
+                }
+            }
+            if (maps.Count != 0) {
+                MessageBox.Show(
+                    "This tileset is used in the following maps:\n\n - " + string.Join("\n - ", maps),
+                    "Can't Remove Tileset",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

@@ -41,5 +41,16 @@ namespace GameEditor.SpriteAnimationEditor
         public void EditorClosed() {
             Editor = null;
         }
+
+        public bool CheckRemovalAllowed() {
+            if (Editor != null) {
+                MessageBox.Show(
+                    "This animation is open for editing. Close the animation and try again.",
+                    "Can't Remove Sprite Animation",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+            return true;
+        }
     }
 }

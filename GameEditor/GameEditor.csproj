@@ -33,9 +33,6 @@
     <Compile Update="SpriteAnimationEditor\SpriteAnimationEditorWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Update="SpriteAnimationEditor\SpriteAnimationListEditorWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
   </ItemGroup>
 
   <ItemGroup>

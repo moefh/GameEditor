@@ -41,5 +41,16 @@ namespace GameEditor.SfxEditor
         public void EditorClosed() {
             Editor = null;
         }
+
+        public bool CheckRemovalAllowed() {
+            if (Editor != null) {
+                MessageBox.Show(
+                    "This sound effect is open for editing. Close the editor and try again.",
+                    "Can't Remove Sound Effect",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+            return true;
+        }
     }
 }

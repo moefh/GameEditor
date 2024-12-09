@@ -179,10 +179,6 @@ namespace GameEditor.GameData
             return false;
         }
 
-        public void RemoveAssetAt(DataAssetType type, int index) {
-            assets[type].RemoveAt(index);
-        }
-
         public void RefreshTilesetUsers(Tileset tileset) {
             foreach (MapDataItem map in MapList) {
                 if (map.Editor != null) {
@@ -229,6 +225,19 @@ namespace GameEditor.GameData
                 }
             }
             return name;
+        }
+
+        public IDataAssetItem? AddAsset(DataAssetType type) {
+            return type switch {
+                DataAssetType.Tileset => AddTileset(),
+                DataAssetType.Map => AddMap(),
+                DataAssetType.Sprite => AddSprite(),
+                DataAssetType.SpriteAnimation => AddSpriteAnimation(),
+                DataAssetType.Sfx => AddSfx(),
+                DataAssetType.Mod => AddMod(),
+                DataAssetType.Font => AddFont(),
+                _ => null,
+            };
         }
 
         public TilesetItem AddTileset() {
@@ -305,6 +314,20 @@ namespace GameEditor.GameData
             SetDirty();
             UpdateDataSize();
             return fi;
+        }
+
+        // =======================================================================
+        // ASSET REMOVAL
+        // =======================================================================
+
+        public void RemoveAssetAt(DataAssetType type, int index) {
+            assets[type].RemoveAt(index);
+        }
+
+        public void RemoveAsset(IDataAssetItem assetItem) {
+            if (assets[assetItem.Asset.AssetType].Remove(assetItem)) {
+                assetItem.Asset.Dispose();
+            }
         }
 
     }

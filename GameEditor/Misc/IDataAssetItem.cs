@@ -18,5 +18,6 @@ namespace GameEditor.Misc
         public void ShowEditor(Form parent);
         public void CloseEditor();
         public void EditorClosed();
+        public bool CheckRemovalAllowed();
     }
 }

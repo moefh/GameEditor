@@ -1,9 +1,11 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
+using GameEditor.SpriteAnimationEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -43,5 +45,31 @@ namespace GameEditor.SpriteEditor
             Editor = null;
         }
 
+        public bool CheckRemovalAllowed() {
+            // check that the editor is not open
+            if (Editor != null) {
+                MessageBox.Show(
+                    "This sprite is open for editing. Close the sprite and try again.",
+                    "Can't Remove Sprite",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+
+            // check that the sprite is not used in an animation
+            List<string> anims = [];
+            foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
+                if (ai.Animation.Sprite == Sprite) {
+                    anims.Add(ai.Animation.Name);
+                }
+            }
+            if (anims.Count != 0) {
+                MessageBox.Show(
+                    "This sprite is used in the following animations:\n\n - " + string.Join("\n - ", anims),
+                    "Can't Remove Sprite",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+            return true;
+        }
     }
 }

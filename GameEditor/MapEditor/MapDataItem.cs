@@ -41,5 +41,16 @@ namespace GameEditor.MapEditor
         public void EditorClosed() {
             Editor = null;
         }
+
+        public bool CheckRemovalAllowed() {
+            if (Editor != null) {
+                MessageBox.Show(
+                    "This map is open for editing. Close the map and try again.",
+                    "Can't Remove Map",
+                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
+                return false;
+            }
+            return true;
+        }
     }
 }
