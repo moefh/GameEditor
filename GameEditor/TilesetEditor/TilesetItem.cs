@@ -10,16 +10,18 @@ namespace GameEditor.TilesetEditor
 {
     public class TilesetItem : IDataAssetItem
     {
-        public TilesetItem(Tileset ts) {
+        public TilesetItem(Tileset ts, ProjectData proj) {
             Tileset = ts;
+            Project = proj;
         }
 
         public IDataAsset Asset { get { return Tileset; } }
+        public ProjectData Project { get; }
         public Tileset Tileset { get; }
         public TilesetEditorWindow? Editor { get; private set; }
         public string Name { get { return Tileset.Name; } }
 
-        public void ShowEditor() {
+        public void ShowEditor(Form parent) {
             if (Editor != null) {
                 if (Editor.WindowState == FormWindowState.Minimized) {
                     Editor.WindowState = FormWindowState.Normal;
@@ -27,7 +29,7 @@ namespace GameEditor.TilesetEditor
                 Editor.Activate();
             } else {
                 Editor = new TilesetEditorWindow(this);
-                Editor.MdiParent = Util.MainWindow;
+                Editor.MdiParent = parent;
                 Editor.Show();
             }
         }

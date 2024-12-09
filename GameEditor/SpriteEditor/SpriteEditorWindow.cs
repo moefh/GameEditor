@@ -60,7 +60,7 @@ namespace GameEditor.SpriteEditor
 
         protected override void OnNameChanged(EventArgs e) {
             base.OnNameChanged(e);
-            Util.RefreshSpriteUsers(Sprite, null);
+            Project?.RefreshSpriteUsers(Sprite, null);
         }
 
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
@@ -75,8 +75,8 @@ namespace GameEditor.SpriteEditor
 
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteFramePicker.Invalidate();
-            Util.Project.SetDirty();
-            Util.RefreshSpriteUsers(Sprite, null);
+            SetDirty();
+            Project?.RefreshSpriteUsers(Sprite, null);
         }
 
         private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
@@ -97,10 +97,10 @@ namespace GameEditor.SpriteEditor
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
             }
-            Util.Project.SetDirty();
+            SetDirty();
             spriteEditor.Invalidate();
             spriteFramePicker.Invalidate();
-            Util.RefreshSpriteUsers(Sprite, null);
+            Project?.RefreshSpriteUsers(Sprite, null);
         }
 
         private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -121,14 +121,14 @@ namespace GameEditor.SpriteEditor
             dlg.SpriteFrames = Sprite.NumFrames;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
-            Util.Project.SetDirty();
+            SetDirty();
             FixFormTitle();
-            Util.UpdateGameDataSize();
+            Project?.UpdateDataSize();
             UpdateGameDataSize();
             spriteFramePicker.ResetSize();
             spriteEditor.SelectedFrame = 0;
             spriteFramePicker.SelectedFrame = 0;
-            Util.RefreshSpriteUsers(Sprite, null);
+            Project?.RefreshSpriteUsers(Sprite, null);
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
@@ -149,10 +149,10 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
-                Util.Project.SetDirty();
+                SetDirty();
                 FixFormTitle();
                 UpdateGameDataSize();
-                Util.UpdateGameDataSize();
+                Project?.UpdateDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.ResetSize();
             } catch (Exception ex) {

@@ -25,6 +25,7 @@ namespace GameEditor.MapEditor
         private ZoomLevel[] zoomLevels = [];
 
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
+            if (Project == null) throw Util.ProjectRequired();
             mapDataItem = mapItem;
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
@@ -38,9 +39,9 @@ namespace GameEditor.MapEditor
             mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
             mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
             EditLayer = CustomControls.MapEditor.Layer.Foreground;
-            toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
+            toolStripComboTiles.ComboBox.DataSource = Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
-            toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
+            toolStripComboTiles.SelectedIndex = Project.GetAssetIndex(Map.Tileset);
             UpdateRenderLayers();
         }
 
@@ -90,6 +91,7 @@ namespace GameEditor.MapEditor
         }
 
         public void RefreshTileset(Tileset tileset) {
+            if (Project == null) return;
             if (Map.Tileset == tileset) {
                 tilePicker.ResetSize();
                 tilePicker.Invalidate();
@@ -97,13 +99,14 @@ namespace GameEditor.MapEditor
                 FixFormTitle();
             }
             toolStripComboTiles.ComboBox.DataSource = null;
-            toolStripComboTiles.ComboBox.DataSource = Util.Project.TilesetList;
+            toolStripComboTiles.ComboBox.DataSource = Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
-            toolStripComboTiles.SelectedIndex = Util.Project.GetAssetIndex(Map.Tileset);
+            toolStripComboTiles.SelectedIndex = Project.GetAssetIndex(Map.Tileset);
         }
 
         private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
-            AssetList<IDataAssetItem> tilesetList = Util.Project.TilesetList;
+            if (Project == null) throw Util.ProjectRequired();
+            AssetList<IDataAssetItem> tilesetList = Project.TilesetList;
             int sel = toolStripComboTiles.SelectedIndex;
             if (sel < 0 || sel >= tilesetList.Count) {
                 Util.Log($"WARNING: tileset dropdown has invalid selected index {sel}");
@@ -114,7 +117,7 @@ namespace GameEditor.MapEditor
 
             Map.Tileset = newTileset;
             tilePicker.Tileset = Map.Tileset;
-            Util.Project.SetDirty();
+            SetDirty();
             mapEditor.Invalidate();
             tilePicker.Invalidate();
             FixFormTitle();
@@ -131,7 +134,7 @@ namespace GameEditor.MapEditor
         }
 
         private void mapEditor_MapChanged(object sender, EventArgs e) {
-            Util.Project.SetDirty();
+            SetDirty();
         }
 
         private void mapEditor_SelectedTilesChanged(object sender, EventArgs e) {
@@ -229,10 +232,10 @@ namespace GameEditor.MapEditor
                 }
                 Map.BgWidth = dlg.MapBgWidth;
                 Map.BgHeight = dlg.MapBgHeight;
-                Util.Project.SetDirty();
+                SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
-                Util.UpdateGameDataSize();
+                Project?.UpdateDataSize();
                 mapEditor.Invalidate();
             }
         }
@@ -267,21 +270,23 @@ namespace GameEditor.MapEditor
                 Util.ShowError(ex, $"Error importing map from {dlg.FileName}", "Error Importing Map");
                 return;
             }
-            Util.Project.SetDirty();
+            SetDirty();
             FixFormTitle();
             UpdateDataSize();
-            Util.UpdateGameDataSize();
+            Project?.UpdateDataSize();
             mapEditor.Invalidate();
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
+            if (Project == null) return;
+
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Export Map";
             dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
-                using GameDataWriter w = new GameDataWriter(dlg.FileName, "PREFIX");
+                using GameDataWriter w = new GameDataWriter(Project, dlg.FileName, "PREFIX");
                 w.WriteMap(Map);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error exporting map to {dlg.FileName}", "Error Exporting Map");

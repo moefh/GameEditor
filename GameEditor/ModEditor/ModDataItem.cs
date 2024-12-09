@@ -11,16 +11,18 @@ namespace GameEditor.ModEditor
 {
     public class ModDataItem : IDataAssetItem
     {
-        public ModDataItem(ModData modData) {
+        public ModDataItem(ModData modData, ProjectData proj) {
             Mod = modData;
+            Project = proj;
         }
 
         public IDataAsset Asset { get { return Mod; } }
+        public ProjectData Project { get; }
         public ModData Mod { get; }
         public ModEditorWindow? Editor { get; private set; }
         public string Name { get { return Mod.Name; } }
 
-        public void ShowEditor() {
+        public void ShowEditor(Form parent) {
             if (Editor != null) {
                 if (Editor.WindowState == FormWindowState.Minimized) {
                     Editor.WindowState = FormWindowState.Normal;
@@ -28,7 +30,7 @@ namespace GameEditor.ModEditor
                 Editor.Activate();
             } else {
                 Editor = new ModEditorWindow(this);
-                Editor.MdiParent = Util.MainWindow;
+                Editor.MdiParent = parent;
                 Editor.Show();
             }
         }

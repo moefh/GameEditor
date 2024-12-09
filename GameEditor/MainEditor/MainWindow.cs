@@ -33,23 +33,26 @@ namespace GameEditor.MainEditor
         private readonly Dictionary<DataAssetType, ProjectAssetListEditorForm> editors = [];
         private readonly LogWindow logWindow;
         private readonly CheckerWindow checkerWindow;
+        private ProjectData project;
 
         public MainWindow() {
             InitializeComponent();
 
-            logWindow = new LogWindow();
+            project = new ProjectData();
+
+            logWindow = new LogWindow(project);
             logWindow.MdiParent = this;
 
-            checkerWindow = new CheckerWindow();
+            checkerWindow = new CheckerWindow(project);
             checkerWindow.MdiParent = this;
 
-            editors[DataAssetType.Map] = new MapListEditorWindow();
-            editors[DataAssetType.Tileset] = new TilesetListEditorWindow();
-            editors[DataAssetType.Sprite] = new SpriteListEditorWindow();
-            editors[DataAssetType.SpriteAnimation] = new SpriteAnimationListEditorWindow();
-            editors[DataAssetType.Sfx] = new SfxListEditorWindow();
-            editors[DataAssetType.Mod] = new ModListEditorWindow();
-            editors[DataAssetType.Font] = new FontListEditorWindow();
+            editors[DataAssetType.Map] = new MapListEditorWindow(project);
+            editors[DataAssetType.Tileset] = new TilesetListEditorWindow(project);
+            editors[DataAssetType.Sprite] = new SpriteListEditorWindow(project);
+            editors[DataAssetType.SpriteAnimation] = new SpriteAnimationListEditorWindow(project);
+            editors[DataAssetType.Sfx] = new SfxListEditorWindow(project);
+            editors[DataAssetType.Mod] = new ModListEditorWindow(project);
+            editors[DataAssetType.Font] = new FontListEditorWindow(project);
             foreach (ProjectAssetListEditorForm editor in editors.Values) {
                 editor.MdiParent = this;
             }
@@ -60,22 +63,22 @@ namespace GameEditor.MainEditor
         }
 
         public void UpdateDataSize() {
-            lblDataSize.Text = $"{Util.FormatNumber(Util.Project.GetGameDataSize())} bytes";
+            lblDataSize.Text = $"{Util.FormatNumber(project.GetGameDataSize())} bytes";
             foreach (ProjectAssetListEditorForm editor in editors.Values) {
                 editor.UpdateDataSize();
             }
         }
 
         public void UpdateDirtyStatus() {
-            lblModified.Visible = Util.Project.IsDirty;
+            lblModified.Visible = project.IsDirty;
         }
 
         public void UpdateWindowTitle() {
-            if (Util.Project.FileName == null) {
+            if (project.FileName == null) {
                 Text = "New Project - Game Asset Editor";
                 return;
             }
-            string name = Regex.Replace(Util.Project.FileName, """^(.*?)([^\\/]+)$""", "$2");
+            string name = Regex.Replace(project.FileName, """^(.*?)([^\\/]+)$""", "$2");
             Text = $"{name} - Game Asset Editor";
         }
 
@@ -86,6 +89,7 @@ namespace GameEditor.MainEditor
 
         private void RefreshAllAssetLists() {
             foreach (ProjectAssetListEditorForm editor in editors.Values) {
+                editor.Project = project;
                 editor.RefreshAssetList();
             }
         }
@@ -128,7 +132,7 @@ namespace GameEditor.MainEditor
         // ======================================================================
 
         private bool ConfirmLoseData() {
-            if (!Util.Project.IsDirty) return true;
+            if (!project.IsDirty) return true;
             ConfirmLoseChangesDialog dlg = new ConfirmLoseChangesDialog();
             return dlg.ShowDialog() == DialogResult.OK;
         }
@@ -143,8 +147,8 @@ namespace GameEditor.MainEditor
         }
 
         private void OpenFilledListWindows() {
-            foreach (DataAssetType type in Util.Project.AssetTypes) {
-                if (Util.Project.GetAssetList(type).Count != 0) {
+            foreach (DataAssetType type in project.AssetTypes) {
+                if (project.GetAssetList(type).Count != 0) {
                     editors[type].Show();
                 }
             }
@@ -152,27 +156,28 @@ namespace GameEditor.MainEditor
 
         public void NewProject() {
             if (!ConfirmLoseData()) return;
-            Util.Project = new ProjectData();
+            project.Dispose();
+            project = new ProjectData();
             UpdateWindowTitle();
             RefreshAllAssetLists();
             checkerWindow.ClearResults();
-            Util.UpdateGameDataSize();
+            project.UpdateDataSize();
             Util.Log("== created new project");
         }
 
         private void SaveProject() {
-            if (Util.Project.FileName == null) {
+            if (project.FileName == null) {
                 string? savefile = GetProjectSaveFilename();
                 if (savefile != null) {
                     SaveProject(savefile);
                 }
             } else {
-                SaveProject(Util.Project.FileName);
+                SaveProject(project.FileName);
             }
         }
 
         private void SaveProject(string filename) {
-            if (Util.Project.SaveProject(filename)) {
+            if (project.SaveProject(filename)) {
                 Util.Log("== saved project");
             } else {
                 MessageBox.Show($"Error saving project.\n\nConsult the log window for more information.",
@@ -192,13 +197,13 @@ namespace GameEditor.MainEditor
             lblDataSize.Text = "Parsing project file...";
             Refresh();
             try {
-                ProjectData p = new ProjectData(dlg.FileName);
-                Util.Project = p;
+                project.Dispose();
+                project = new ProjectData(dlg.FileName);
                 UpdateWindowTitle();
                 RefreshAllAssetLists();
                 checkerWindow.ClearResults();
                 UpdateDirtyStatus();
-                Util.UpdateGameDataSize();
+                project.UpdateDataSize();
                 OpenFilledListWindows();
                 Util.Log("== loaded project");
             } catch (Exception) {
@@ -208,100 +213,6 @@ namespace GameEditor.MainEditor
                                 "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
             }
         }
-
-        // ======================================================================
-        // === ASSET CREATION
-        // ======================================================================
-
-        private static string GetNewAssetName(DataAssetType type, string baseName) {
-            string name = baseName;
-            int next = 1;
-            while (true) {
-                name = $"{baseName}{next++}";
-                if (! Util.Project.GetAssetList(type).Any((IDataAssetItem item) => item.Name == name)) {
-                    break;
-                }
-            }
-            return name;
-        }
-
-        public TilesetItem AddTileset() {
-            string name = GetNewAssetName(DataAssetType.Tileset, "tileset");
-            TilesetItem ti = new TilesetItem(new Tileset(name));
-            Util.Project.AddAssetItem(ti);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return ti;
-        }
-
-        public SpriteItem AddSprite() {
-            string name = GetNewAssetName(DataAssetType.Sprite, "sprite");
-            SpriteItem si = new SpriteItem(new Sprite(name));
-            Util.Project.AddAssetItem(si);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return si;
-        }
-
-        public MapDataItem? AddMap() {
-            AssetList<IDataAssetItem> tilesetList = Util.Project.TilesetList;
-            if (tilesetList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one tileset to create a map.",
-                    "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            string name = GetNewAssetName(DataAssetType.Map, "map");
-            MapDataItem mi = new MapDataItem(new MapData(name, 24, 16, (Tileset)tilesetList[0].Asset));
-            Util.Project.AddAssetItem(mi);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return mi;
-        }
-
-        public SpriteAnimationItem? AddSpriteAnimation() {
-            if (Util.Project.SpriteList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one sprite to create an animation.",
-                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            string name = GetNewAssetName(DataAssetType.SpriteAnimation, "sprite_animation");
-            Sprite sprite = (Sprite)Util.Project.SpriteList[0].Asset;
-            SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, name));
-            Util.Project.AddAssetItem(ai);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return ai;
-        }
-
-        public SfxDataItem AddSfx() {
-            string name = GetNewAssetName(DataAssetType.Sfx, "sfx");
-            SfxDataItem si = new SfxDataItem(new SfxData(name));
-            Util.Project.AddAssetItem(si);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return si;
-        }
-
-        public ModDataItem AddMod() {
-            string name = GetNewAssetName(DataAssetType.Mod, "mod");
-            ModDataItem mi = new ModDataItem(new ModData("new_mod"));
-            Util.Project.AddAssetItem(mi);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return mi;
-        }
-
-        public FontDataItem AddFont() {
-            string name = GetNewAssetName(DataAssetType.Font, "font");
-            FontDataItem fi = new FontDataItem(new FontData(name));
-            Util.Project.AddAssetItem(fi);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
-            return fi;
-        }
-
 
         // ======================================================================
         // === MENU
@@ -336,44 +247,44 @@ namespace GameEditor.MainEditor
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
             ProjectPropertiesDialog dlg = new ProjectPropertiesDialog();
-            dlg.VgaSyncBits = Util.Project.VgaSyncBits;
-            dlg.IdentifierPrefix = Util.Project.IdentifierPrefix;
+            dlg.VgaSyncBits = project.VgaSyncBits;
+            dlg.IdentifierPrefix = project.IdentifierPrefix;
             if (dlg.ShowDialog() != DialogResult.OK) return;
-            Util.Project.VgaSyncBits = dlg.VgaSyncBits;
-            Util.Project.IdentifierPrefix = dlg.IdentifierPrefix;
-            Util.Project.SetDirty();
+            project.VgaSyncBits = dlg.VgaSyncBits;
+            project.IdentifierPrefix = dlg.IdentifierPrefix;
+            project.SetDirty();
         }
 
         private void addTilesetToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddTileset().ShowEditor();
+            project.AddTileset().ShowEditor(this);
         }
 
         private void addSpriteToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddSprite().ShowEditor();
+            project.AddSprite().ShowEditor(this);
         }
 
         private void addMapToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddMap()?.ShowEditor();
+            project.AddMap()?.ShowEditor(this);
         }
 
         private void addSpriteAnimationToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddSpriteAnimation()?.ShowEditor(); ;
+            project.AddSpriteAnimation()?.ShowEditor(this);
         }
 
         private void addSoundEffectToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddSfx().ShowEditor();
+            project.AddSfx().ShowEditor(this);
         }
 
         private void addMODToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddMod().ShowEditor();
+            project.AddMod().ShowEditor(this);
         }
 
         private void addNewFontToolStripMenuItem_Click(object sender, EventArgs e) {
-            AddFont().ShowEditor();
+            project.AddFont().ShowEditor(this);
         }
 
         private void runCheckToolStripMenuItem_Click(object sender, EventArgs e) {
-            checkerWindow.Show();
+            checkerWindow.Show(this);
             //checkerWindow.Activate();
             checkerWindow.RunCheck();
         }

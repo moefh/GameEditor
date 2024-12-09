@@ -86,7 +86,7 @@ namespace GameEditor.SfxEditor
                 return;
             }
             RefreshSfx();
-            Util.Project.SetDirty();
+            SetDirty();
         }
     }
 }

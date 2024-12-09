@@ -132,7 +132,7 @@ namespace GameEditor.ModEditor
             sampleList.SelectedIndex = 0;
             UpdateDataSize();
             UpdateModPattern();
-            Util.UpdateGameDataSize();
+            Project?.UpdateDataSize();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
@@ -152,7 +152,7 @@ namespace GameEditor.ModEditor
                 Util.ShowError(ex, $"Error importing MOD from {dlg.FileName}", "Error Importing MOD");
                 return;
             }
-            Util.Project.SetDirty();
+            SetDirty();
             RefreshMod();
         }
 
@@ -255,7 +255,7 @@ namespace GameEditor.ModEditor
                 sampleView.Marker[0] = (int)ModFile.Sample[spl].LoopStart;
                 sampleView.Marker[1] = (int)(ModFile.Sample[spl].LoopStart + ModFile.Sample[spl].LoopLen);
                 sampleView.Invalidate();
-                Util.Project.SetDirty();
+                SetDirty();
             }
         }
 
@@ -372,7 +372,7 @@ namespace GameEditor.ModEditor
                     if (res == ModSampleImportLimitDialog.Result.Proceed) {
                         // wav is ready to go (possibly clipped)
                         ModFile.Sample[index].Import(wav, dlg.UseChannelBits, importSampleRate, dlg.Volume);
-                        Util.Project.SetDirty();
+                        SetDirty();
                         UpdateSampleListDisplay();
                         UpdateSampleDisplay();
                         UpdateDataSize();

@@ -18,16 +18,17 @@ namespace GameEditor.SpriteEditor
 {
     public partial class SpriteListEditorWindow : ProjectAssetListEditorForm
     {
-        public SpriteListEditorWindow() : base(DataAssetType.Sprite, "SpriteListEditor") {
+        public SpriteListEditorWindow(ProjectData proj) : base(proj, DataAssetType.Sprite, "SpriteListEditor") {
             InitializeComponent();
             SetupAssetListControls(spriteList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddSprite();
+            Project?.AddSprite();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Project == null) throw Util.ProjectRequired();
             object? item = spriteList.SelectedItem;
             if (item is not SpriteItem sprite) return;
 
@@ -42,7 +43,7 @@ namespace GameEditor.SpriteEditor
 
             // check that the sprite is not used in an animation
             List<string> anims = [];
-            foreach (SpriteAnimationItem ai in Util.Project.SpriteAnimationList) {
+            foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
                 if (ai.Animation.Sprite == sprite.Sprite) {
                     anims.Add(ai.Animation.Name);
                 }
@@ -55,9 +56,9 @@ namespace GameEditor.SpriteEditor
                 return;
             }
 
-            Util.Project.SpriteList.RemoveAt(spriteList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project.SpriteList.RemoveAt(spriteList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
     }
 }

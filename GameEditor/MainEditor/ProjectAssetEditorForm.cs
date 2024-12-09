@@ -28,7 +28,7 @@ namespace GameEditor.MainEditor
         protected ToolStripTextBox? assetNameTextBox;
         protected ToolStripStatusLabel? assetDataSizeLabel;
 
-        public ProjectAssetEditorForm(IDataAssetItem assetItem, string propName) : base(propName) {
+        public ProjectAssetEditorForm(IDataAssetItem assetItem, string propName) : base(assetItem.Project, propName) {
             this.assetItem = assetItem;
         }
 
@@ -40,7 +40,9 @@ namespace GameEditor.MainEditor
             FixFormTitle();
             UpdateGameDataSize();
             if (assetItem != null) {
-                Util.ChangeTextBoxWithoutDirtying(assetNameTextBox, assetItem.Name);
+                assetNameTextBox.ReadOnly = true;
+                assetNameTextBox.Text = assetItem.Name;
+                assetNameTextBox.ReadOnly = false;
             }
             assetNameTextBox.TextChanged += AssetNameTextBox_TextChanged;
         }
@@ -58,9 +60,9 @@ namespace GameEditor.MainEditor
         protected virtual void AssetNameTextBox_TextChanged(object? sender, EventArgs e) {
             if (assetItem == null || assetNameTextBox == null) return;
             assetItem.Asset.Name = assetNameTextBox.Text;
-            if (!assetNameTextBox.ReadOnly) Util.Project.SetDirty();
+            if (!assetNameTextBox.ReadOnly) SetDirty();
             FixFormTitle();
-            Util.RefreshAssetList(assetItem.Asset.AssetType);
+            Project?.UpdateAssetNames(assetItem.Asset.AssetType);
             OnNameChanged(EventArgs.Empty);
         }
 

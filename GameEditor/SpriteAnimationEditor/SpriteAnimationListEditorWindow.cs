@@ -16,13 +16,13 @@ namespace GameEditor.SpriteAnimationEditor
 {
     public partial class SpriteAnimationListEditorWindow : ProjectAssetListEditorForm
     {
-        public SpriteAnimationListEditorWindow() : base(DataAssetType.SpriteAnimation, "SpriteAnimationListEditor") {
+        public SpriteAnimationListEditorWindow(ProjectData proj) : base(proj, DataAssetType.SpriteAnimation, "SpriteAnimationListEditor") {
             InitializeComponent();
             SetupAssetListControls(animationList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddSpriteAnimation();
+            Project?.AddSpriteAnimation();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -36,9 +36,9 @@ namespace GameEditor.SpriteAnimationEditor
                 return;
             }
             ai.Animation.Dispose();  // unregister sprite event
-            Util.Project.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project?.SpriteAnimationList.RemoveAt(animationList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
 
     }

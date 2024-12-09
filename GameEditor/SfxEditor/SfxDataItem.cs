@@ -10,16 +10,18 @@ namespace GameEditor.SfxEditor
 {
     public class SfxDataItem : IDataAssetItem
     {
-        public SfxDataItem(SfxData sfxData) {
+        public SfxDataItem(SfxData sfxData, ProjectData proj) {
             Sfx = sfxData;
+            Project = proj;
         }
 
         public IDataAsset Asset { get { return Sfx; } }
+        public ProjectData Project { get; }
         public SfxData Sfx { get; }
         public SfxEditorWindow? Editor { get; private set; }
         public string Name { get { return Sfx.Name; } }
 
-        public void ShowEditor() {
+        public void ShowEditor(Form parent) {
             if (Editor != null) {
                 if (Editor.WindowState == FormWindowState.Minimized) {
                     Editor.WindowState = FormWindowState.Normal;
@@ -27,7 +29,7 @@ namespace GameEditor.SfxEditor
                 Editor.Activate();
             } else {
                 Editor = new SfxEditorWindow(this);
-                Editor.MdiParent = Util.MainWindow;
+                Editor.MdiParent = parent;
                 Editor.Show();
             }
         }

@@ -16,13 +16,13 @@ namespace GameEditor.FontEditor
 {
     public partial class FontListEditorWindow : ProjectAssetListEditorForm
     {
-        public FontListEditorWindow() : base(DataAssetType.Font, "FontListEditor") {
+        public FontListEditorWindow(ProjectData proj) : base(proj, DataAssetType.Font, "FontListEditor") {
             InitializeComponent();
             SetupAssetListControls(fontList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddFont();
+            Project?.AddFont();
         }
 
         private void deleteToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -38,9 +38,9 @@ namespace GameEditor.FontEditor
                 return;
             }
 
-            Util.Project.FontList.RemoveAt(fontList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project?.FontList.RemoveAt(fontList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
 
     }

@@ -51,7 +51,7 @@ namespace GameEditor.FontEditor
 
         private void fontEditor_ImageChanged(object sender, EventArgs e) {
             fontDisplay.Invalidate();
-            Util.Project.SetDirty();
+            SetDirty();
         }
 
         private void toolStripComboSelChar_DropDownClosed(object sender, EventArgs e) {
@@ -88,10 +88,10 @@ namespace GameEditor.FontEditor
             FontData.Resize(dlg.FontDataWidth, dlg.FontDataHeight);
             fontDisplay.Invalidate();
             fontEditor.Invalidate();
-            Util.Project.SetDirty();
+            SetDirty();
             FixFormTitle();
             UpdateGameDataSize();
-            Util.UpdateGameDataSize();
+            Project?.UpdateDataSize();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -103,10 +103,10 @@ namespace GameEditor.FontEditor
                 FontData.ImportBitmap(dlg.ImportFileName, dlg.ImportWidth, dlg.ImportHeight);
                 fontDisplay.Invalidate();
                 fontEditor.Invalidate();
-                Util.Project.SetDirty();
+                SetDirty();
                 FixFormTitle();
                 UpdateGameDataSize();
-                Util.UpdateGameDataSize();
+                Project?.UpdateDataSize();
                 Util.Log($"== Imported font image from {dlg.ImportFileName}");
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Font");
@@ -149,7 +149,7 @@ namespace GameEditor.FontEditor
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
                 return;
             }
-            Util.Project.SetDirty();
+            SetDirty();
             fontEditor.Invalidate();
             fontDisplay.Invalidate();
         }

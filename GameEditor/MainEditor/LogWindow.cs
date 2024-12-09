@@ -1,4 +1,5 @@
-﻿using GameEditor.Misc;
+﻿using GameEditor.GameData;
+using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -13,7 +14,7 @@ namespace GameEditor.MainEditor
 {
     public partial class LogWindow : ProjectUnclosableForm
     {
-        public LogWindow() : base("LogWindow") {
+        public LogWindow(ProjectData proj) : base(proj, "LogWindow") {
             InitializeComponent();
         }
 

@@ -45,7 +45,7 @@ namespace GameEditor.TilesetEditor
 
         protected override void OnNameChanged(EventArgs e) {
             base.OnNameChanged(e);
-            Util.RefreshTilesetUsers(Tileset);
+            Project?.RefreshTilesetUsers(Tileset);
         }
 
         private void UpdateRenderFlags() {
@@ -61,8 +61,8 @@ namespace GameEditor.TilesetEditor
 
         private void tileEditor_ImageChanged(object sender, EventArgs e) {
             tilePicker.Invalidate();
-            Util.Project.SetDirty();
-            Util.RefreshTilesetUsers(Tileset);
+            SetDirty();
+            Project?.RefreshTilesetUsers(Tileset);
         }
 
         private void tileEditor_SelectedColorsChanged(object sender, EventArgs e) {
@@ -76,10 +76,10 @@ namespace GameEditor.TilesetEditor
         }
 
         private void OnTilesetResized() {
-            Util.Project.SetDirty();
+            SetDirty();
             FixFormTitle();
             UpdateGameDataSize();
-            Util.UpdateGameDataSize();
+            Project?.UpdateDataSize();
             tilePicker.ResetSize();
             if (tilePicker.LeftSelectedTile >= Tileset.NumTiles) {
                 tilePicker.LeftSelectedTile = Tileset.NumTiles - 1;
@@ -88,7 +88,7 @@ namespace GameEditor.TilesetEditor
                 tileEditor.Invalidate();
             }
             tilePicker.Invalidate();
-            Util.RefreshTilesetUsers(Tileset);
+            Project?.RefreshTilesetUsers(Tileset);
         }
 
         // ====================================================================
@@ -114,10 +114,10 @@ namespace GameEditor.TilesetEditor
                 Util.ShowError(ex, $"Error reading bitmap from {dlg.FileName}", "Error Importing Image");
                 return;
             }
-            Util.Project.SetDirty();
+            SetDirty();
             FixFormTitle();
             UpdateGameDataSize();
-            Util.UpdateGameDataSize();
+            Project?.UpdateDataSize();
 
             tilePicker.ScrollToTile(0);
             tilePicker.LeftSelectedTile = 0;
@@ -126,7 +126,7 @@ namespace GameEditor.TilesetEditor
 
             tileEditor.Invalidate();
 
-            Util.RefreshTilesetUsers(Tileset);
+            Project?.RefreshTilesetUsers(Tileset);
 
             if (Tileset.NumTiles > Tileset.MAX_NUM_TILES) {
                 MessageBox.Show(
@@ -189,10 +189,10 @@ namespace GameEditor.TilesetEditor
                 Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
                 return;
             }
-            Util.Project.SetDirty();
+            SetDirty();
             tileEditor.Invalidate();
             tilePicker.Invalidate();
-            Util.RefreshTilesetUsers(Tileset);
+            Project?.RefreshTilesetUsers(Tileset);
         }
 
         private void CheckTooManyTiles() {
@@ -205,9 +205,10 @@ namespace GameEditor.TilesetEditor
         }
 
         private void InsertTileAt(int index) {
+            if (Project == null) throw Util.ProjectRequired();
             int oldNumTiles = Tileset.NumTiles;
             Tileset.AddTiles(index, 1, colorPicker.SelectedBackColor);
-            foreach (MapDataItem map in Util.Project.MapList) {
+            foreach (MapDataItem map in Project.MapList) {
                 if (map.Map.Tileset == Tileset) {
                     map.Map.InsertedTile(index, 1);
                 }
@@ -218,11 +219,12 @@ namespace GameEditor.TilesetEditor
             tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
-            Util.RefreshTilesetUsers(Tileset);
+            Project?.RefreshTilesetUsers(Tileset);
             CheckTooManyTiles();
         }
 
         private void InsertTilesFromFileAt(int index) {
+            if (Project == null) throw Util.ProjectRequired();
             TilesetImportDialog dlg = new TilesetImportDialog();
             dlg.Text = "Read Tiles From File";
             if (dlg.ShowDialog() != DialogResult.OK) return;
@@ -230,7 +232,7 @@ namespace GameEditor.TilesetEditor
             try {
                 int numAdded = Tileset.AddTilesFromBitmap(index, dlg.FileName, dlg.ImportBorder, dlg.ImportSpaceBetweenTiles);
                 // fix maps that use this tileset
-                foreach (MapDataItem map in Util.Project.MapList) {
+                foreach (MapDataItem map in Project.MapList) {
                     if (map.Map.Tileset == Tileset) {
                         map.Map.InsertedTile(index, numAdded);
                     }
@@ -245,7 +247,7 @@ namespace GameEditor.TilesetEditor
             tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
-            Util.RefreshTilesetUsers(Tileset);
+            Project?.RefreshTilesetUsers(Tileset);
             CheckTooManyTiles();
         }
 
@@ -258,6 +260,7 @@ namespace GameEditor.TilesetEditor
         }
 
         private void deleteTileToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Project == null) throw Util.ProjectRequired();
             if (Tileset.NumTiles <= 1) {
                 MessageBox.Show($"The tileset must have at least one tile.", "Can't Remove Tile",
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -268,7 +271,7 @@ namespace GameEditor.TilesetEditor
                 return;
             }
             Tileset.DeleteTiles(tilePicker.LeftSelectedTile, 1);
-            foreach (MapDataItem map in Util.Project.MapList) {
+            foreach (MapDataItem map in Project.MapList) {
                 if (map.Map.Tileset == Tileset) {
                     map.Map.RemovedTiles(tilePicker.LeftSelectedTile, 1);
                 }

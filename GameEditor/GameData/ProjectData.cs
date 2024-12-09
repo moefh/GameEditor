@@ -67,6 +67,10 @@ namespace GameEditor.GameData
             if (! LoadProject(filename)) throw new Exception("Error loading project");
         }
 
+        public event EventHandler? DataSizeChanged;
+        public event EventHandler? DirtyStatusChanged;
+        public event EventHandler? AssetNamesChanged;
+
         public string? FileName { get; set; }
         public string IdentifierPrefix { get; set; }
         public byte VgaSyncBits { get; set; }
@@ -107,7 +111,7 @@ namespace GameEditor.GameData
         public void SetDirty(bool dirty = true) {
             if (IsDirty != dirty) {
                 IsDirty = dirty;
-                Util.MainWindow?.UpdateDirtyStatus();
+                DirtyStatusChanged?.Invoke(this, EventArgs.Empty);
             }
         }
 
@@ -139,7 +143,7 @@ namespace GameEditor.GameData
 
         public bool SaveProject(string filename) {
             try {
-                using GameDataWriter writer = new GameDataWriter(filename, Util.Project.IdentifierPrefix);
+                using GameDataWriter writer = new GameDataWriter(this, filename, IdentifierPrefix);
                 writer.WriteProject();
             } catch (Exception ex) {
                 Util.Log($"Error writing project to '{filename}': {ex}");
@@ -157,13 +161,13 @@ namespace GameEditor.GameData
 
                 VgaSyncBits = (byte) reader.VgaSyncBits;
                 IdentifierPrefix = reader.GlobalPrefixUpper;
-                foreach (Tileset t in reader.TilesetList) AddAssetItem(new TilesetItem(t));
-                foreach (Sprite s in reader.SpriteList) AddAssetItem(new SpriteItem(s));
-                foreach (SpriteAnimation a in reader.SpriteAnimationList) AddAssetItem(new SpriteAnimationItem(a));
-                foreach (MapData m in reader.MapList) AddAssetItem(new MapDataItem(m));
-                foreach (SfxData s in reader.SfxList) AddAssetItem(new SfxDataItem(s));
-                foreach (ModData m in reader.ModList) AddAssetItem(new ModDataItem(m));
-                foreach (FontData f in reader.FontList) AddAssetItem(new FontDataItem(f));
+                foreach (Tileset t in reader.TilesetList) AddAssetItem(new TilesetItem(t, this));
+                foreach (Sprite s in reader.SpriteList) AddAssetItem(new SpriteItem(s, this));
+                foreach (SpriteAnimation a in reader.SpriteAnimationList) AddAssetItem(new SpriteAnimationItem(a, this));
+                foreach (MapData m in reader.MapList) AddAssetItem(new MapDataItem(m, this));
+                foreach (SfxData s in reader.SfxList) AddAssetItem(new SfxDataItem(s, this));
+                foreach (ModData m in reader.ModList) AddAssetItem(new ModDataItem(m, this));
+                foreach (FontData f in reader.FontList) AddAssetItem(new FontDataItem(f, this));
                 reader.ConsumeData();  // prevent read data from being disposed
                 SetDirty(false);
                 return true;
@@ -177,6 +181,130 @@ namespace GameEditor.GameData
 
         public void RemoveAssetAt(DataAssetType type, int index) {
             assets[type].RemoveAt(index);
+        }
+
+        public void RefreshTilesetUsers(Tileset tileset) {
+            foreach (MapDataItem map in MapList) {
+                if (map.Editor != null) {
+                    map.Editor.RefreshTileset(tileset);
+                }
+            }
+        }
+
+        public void RefreshSprite(Sprite sprite) {
+            foreach (SpriteItem si in SpriteList) {
+                if (si.Editor != null && si.Sprite == sprite) {
+                    si.Editor.RefreshSprite();
+                }
+            }
+        }
+
+        public void RefreshSpriteUsers(Sprite sprite, SpriteAnimationItem? exceptAnimationItem) {
+            foreach (SpriteAnimationItem ai in SpriteAnimationList) {
+                if (ai.Editor != null && ai != exceptAnimationItem) {
+                    ai.Editor.RefreshSprite(sprite);
+                }
+            }
+        }
+
+        public void UpdateDataSize() {
+            DataSizeChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void UpdateAssetNames(DataAssetType assetType) {
+            AssetNamesChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        // =======================================================================
+        // ASSET CREATION
+        // =======================================================================
+
+        private string GetNewAssetName(DataAssetType type, string baseName) {
+            string name = baseName;
+            int next = 1;
+            while (true) {
+                name = $"{baseName}{next++}";
+                if (! GetAssetList(type).Any((IDataAssetItem item) => item.Name == name)) {
+                    break;
+                }
+            }
+            return name;
+        }
+
+        public TilesetItem AddTileset() {
+            string name = GetNewAssetName(DataAssetType.Tileset, "tileset");
+            TilesetItem ti = new TilesetItem(new Tileset(name), this);
+            AddAssetItem(ti);
+            SetDirty();
+            UpdateDataSize();
+            return ti;
+        }
+
+        public SpriteItem AddSprite() {
+            string name = GetNewAssetName(DataAssetType.Sprite, "sprite");
+            SpriteItem si = new SpriteItem(new Sprite(name), this);
+            AddAssetItem(si);
+            SetDirty();
+            UpdateDataSize();
+            return si;
+        }
+
+        public MapDataItem? AddMap() {
+            if (TilesetList.Count == 0) {
+                MessageBox.Show(
+                    "You need at least one tileset to create a map.",
+                    "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            string name = GetNewAssetName(DataAssetType.Map, "map");
+            MapDataItem mi = new MapDataItem(new MapData(name, 24, 16, (Tileset)TilesetList[0].Asset), this);
+            AddAssetItem(mi);
+            SetDirty();
+            UpdateDataSize();
+            return mi;
+        }
+
+        public SpriteAnimationItem? AddSpriteAnimation() {
+            if (SpriteList.Count == 0) {
+                MessageBox.Show(
+                    "You need at least one sprite to create an animation.",
+                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return null;
+            }
+            string name = GetNewAssetName(DataAssetType.SpriteAnimation, "sprite_animation");
+            Sprite sprite = (Sprite)SpriteList[0].Asset;
+            SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, name), this);
+            AddAssetItem(ai);
+            SetDirty();
+            UpdateDataSize();
+            return ai;
+        }
+
+        public SfxDataItem AddSfx() {
+            string name = GetNewAssetName(DataAssetType.Sfx, "sfx");
+            SfxDataItem si = new SfxDataItem(new SfxData(name), this);
+            AddAssetItem(si);
+            SetDirty();
+            UpdateDataSize();
+            return si;
+        }
+
+        public ModDataItem AddMod() {
+            string name = GetNewAssetName(DataAssetType.Mod, "mod");
+            ModDataItem mi = new ModDataItem(new ModData("new_mod"), this);
+            AddAssetItem(mi);
+            SetDirty();
+            UpdateDataSize();
+            return mi;
+        }
+
+        public FontDataItem AddFont() {
+            string name = GetNewAssetName(DataAssetType.Font, "font");
+            FontDataItem fi = new FontDataItem(new FontData(name), this);
+            AddAssetItem(fi);
+            SetDirty();
+            UpdateDataSize();
+            return fi;
         }
 
     }

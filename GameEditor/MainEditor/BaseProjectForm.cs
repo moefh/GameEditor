@@ -1,4 +1,5 @@
-﻿using GameEditor.Misc;
+﻿using GameEditor.GameData;
+using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,13 +18,27 @@ namespace GameEditor.MainEditor
      */
     public class BaseProjectForm : Form
     {
-        protected string? propName;
+        private string? propName;
+        private ProjectData? project;
 
-        public BaseProjectForm(string propName) {
+        public BaseProjectForm(ProjectData project, string propName) {
+            this.project = project;
             this.propName = propName;
         }
 
         public BaseProjectForm() {}  // to keep VS happy
+
+        public ProjectData? Project {
+            get { return project; }
+            set { project = value; OnProjectChanged(); }
+        }
+
+        protected void SetDirty() {
+            project?.SetDirty();
+        }
+
+        protected virtual void OnProjectChanged() {
+        }
 
         protected override void OnLoad(EventArgs e) {
             base.OnLoad(e);

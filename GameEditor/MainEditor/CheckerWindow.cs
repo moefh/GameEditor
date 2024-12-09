@@ -20,7 +20,7 @@ namespace GameEditor.MainEditor
     {
         private List<IAssetProblem> savedProblems = [];
 
-        public CheckerWindow() : base("ValidatorWindow") {
+        public CheckerWindow(ProjectData proj) : base(proj, "ValidatorWindow") {
             InitializeComponent();
         }
 
@@ -38,15 +38,17 @@ namespace GameEditor.MainEditor
         // ===================================================================
 
         public void RunCheck() {
-            ProjectInspector inspector = new ProjectInspector(Util.Project);
+            if (Project == null) return;
+            ProjectInspector inspector = new ProjectInspector(Project);
             inspector.Run();
             savedProblems = inspector.GetProblems();
             txtLog.Text = inspector.GetReport();
         }
 
         private void toolStripBtnOpenProblems_Click(object sender, EventArgs e) {
+            if (Project == null || MdiParent == null) return;
             foreach (IAssetProblem p in savedProblems) {
-                p.Asset.ShowEditor(Util.Project);
+                p.Asset.ShowEditor(Project, MdiParent);
             }
         }
     }

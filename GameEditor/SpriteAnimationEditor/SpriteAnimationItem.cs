@@ -10,16 +10,18 @@ namespace GameEditor.SpriteAnimationEditor
 {
     public class SpriteAnimationItem : IDataAssetItem
     {
-        public SpriteAnimationItem(SpriteAnimation anim) {
+        public SpriteAnimationItem(SpriteAnimation anim, ProjectData proj) {
             Animation = anim;
+            Project = proj;
         }
 
         public IDataAsset Asset { get { return Animation; } }
+        public ProjectData Project { get; }
         public SpriteAnimation Animation { get; }
         public SpriteAnimationEditorWindow? Editor { get; private set; }
         public string Name { get { return Animation.Name; } }
 
-        public void ShowEditor() {
+        public void ShowEditor(Form parent) {
             if (Editor != null) {
                 if (Editor.WindowState == FormWindowState.Minimized) {
                     Editor.WindowState = FormWindowState.Normal;
@@ -27,7 +29,7 @@ namespace GameEditor.SpriteAnimationEditor
                 Editor.Activate();
             } else {
                 Editor = new SpriteAnimationEditorWindow(this);
-                Editor.MdiParent = Util.MainWindow;
+                Editor.MdiParent = parent;
                 Editor.Show();
             }
         }

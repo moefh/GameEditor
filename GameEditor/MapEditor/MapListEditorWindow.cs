@@ -15,13 +15,13 @@ namespace GameEditor.MapEditor
 {
     public partial class MapListEditorWindow : ProjectAssetListEditorForm
     {
-        public MapListEditorWindow() : base(DataAssetType.Map, "MapListEditor") {
+        public MapListEditorWindow(ProjectData proj) : base(proj, DataAssetType.Map, "MapListEditor") {
             InitializeComponent();
             SetupAssetListControls(mapList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddMap();
+            Project?.AddMap();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -34,9 +34,9 @@ namespace GameEditor.MapEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            Util.Project.RemoveAssetAt(DataAssetType.Map, mapList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project?.RemoveAssetAt(DataAssetType.Map, mapList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
 
     }

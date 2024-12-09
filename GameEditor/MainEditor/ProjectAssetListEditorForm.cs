@@ -29,7 +29,7 @@ namespace GameEditor.MainEditor
         private ListBox? assetListBox;
         private ToolStripStatusLabel? assetDataSizeLabel;
 
-        public ProjectAssetListEditorForm(DataAssetType type, string propName) : base(propName) {
+        public ProjectAssetListEditorForm(ProjectData proj, DataAssetType type, string propName) : base(proj, propName) {
             assetType = type;
         }
 
@@ -44,23 +44,23 @@ namespace GameEditor.MainEditor
         }
 
         private void AssetListBox_DoubleClick(object? sender, EventArgs e) {
+            if (MdiParent == null) return;
             object? item = assetListBox?.SelectedItem;
             if (item is IDataAssetItem it) {
-                it.ShowEditor();
+                it.ShowEditor(MdiParent);
             }
         }
 
         public void UpdateDataSize() {
-            if (assetDataSizeLabel != null) {
-                int size = Util.Project.GetGameDataSize(assetType);
-                assetDataSizeLabel.Text = $"{Util.FormatNumber(size)} bytes";
-            }
+            if (assetDataSizeLabel == null || Project == null) return;
+            int size = Project.GetGameDataSize(assetType);
+            assetDataSizeLabel.Text = $"{Util.FormatNumber(size)} bytes";
         }
 
         public void RefreshAssetList() {
-            if (assetListBox == null) return;
+            if (assetListBox == null || Project == null) return;
             assetListBox.DataSource = null;
-            assetListBox.DataSource = Util.Project.GetAssetList(assetType);
+            assetListBox.DataSource = Project.GetAssetList(assetType);
             assetListBox.DisplayMember = "Name";
         }
 

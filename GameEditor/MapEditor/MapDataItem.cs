@@ -10,16 +10,18 @@ namespace GameEditor.MapEditor
 {
     public class MapDataItem : IDataAssetItem
     {
-        public MapDataItem(MapData mapData) {
+        public MapDataItem(MapData mapData, ProjectData proj) {
             Map = mapData;
+            Project = proj;
         }
 
         public IDataAsset Asset { get { return Map; } }
         public MapData Map { get; set; }
+        public ProjectData Project { get; }
         public MapEditorWindow? Editor { get; private set; }
         public string Name { get { return Map.Name; } }
 
-        public void ShowEditor() {
+        public void ShowEditor(Form parent) {
             if (Editor != null) {
                 if (Editor.WindowState == FormWindowState.Minimized) {
                     Editor.WindowState = FormWindowState.Normal;
@@ -27,7 +29,7 @@ namespace GameEditor.MapEditor
                 Editor.Activate();
             } else {
                 Editor = new MapEditorWindow(this);
-                Editor.MdiParent = Util.MainWindow;
+                Editor.MdiParent = parent;
                 Editor.Show();
             }
         }

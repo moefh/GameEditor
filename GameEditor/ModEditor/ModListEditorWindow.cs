@@ -17,13 +17,13 @@ namespace GameEditor.ModEditor
 {
     public partial class ModListEditorWindow : ProjectAssetListEditorForm
     {
-        public ModListEditorWindow() : base(DataAssetType.Mod, "ModListEditor") {
+        public ModListEditorWindow(ProjectData proj) : base(proj, DataAssetType.Mod, "ModListEditor") {
             InitializeComponent();
             SetupAssetListControls(modList, lblDataSize);
         }
 
         private void newMODToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddMod();
+            Project?.AddMod();
         }
 
         private void deleteMODToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -36,9 +36,9 @@ namespace GameEditor.ModEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            Util.Project.RemoveAssetAt(DataAssetType.Mod, modList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project?.RemoveAssetAt(DataAssetType.Mod, modList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
     }
 }

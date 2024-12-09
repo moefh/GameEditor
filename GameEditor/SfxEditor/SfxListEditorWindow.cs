@@ -16,13 +16,13 @@ namespace GameEditor.SfxEditor
 {
     public partial class SfxListEditorWindow : ProjectAssetListEditorForm
     {
-        public SfxListEditorWindow() : base(DataAssetType.Sfx, "SfxListEditor") {
+        public SfxListEditorWindow(ProjectData proj) : base(proj, DataAssetType.Sfx, "SfxListEditor") {
             InitializeComponent();
             SetupAssetListControls(sfxList, lblDataSize);
         }
 
         private void newSFXToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddSfx();
+            Project?.AddSfx();
         }
 
         private void deleteSFXToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -35,9 +35,9 @@ namespace GameEditor.SfxEditor
                     MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            Util.Project.SfxList.RemoveAt(sfxList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project?.SfxList.RemoveAt(sfxList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
     }
 }

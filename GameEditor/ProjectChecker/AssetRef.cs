@@ -26,8 +26,8 @@ namespace GameEditor.ProjectChecker
             return null;
         }
 
-        public readonly void ShowEditor(ProjectData proj) {
-            Item(proj)?.ShowEditor();
+        public readonly void ShowEditor(ProjectData proj, Form parent) {
+            Item(proj)?.ShowEditor(parent);
         }
     }
 }

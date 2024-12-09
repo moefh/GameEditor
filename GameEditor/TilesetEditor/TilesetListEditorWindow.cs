@@ -17,16 +17,17 @@ namespace GameEditor.TilesetEditor
 {
     public partial class TilesetListEditorWindow : ProjectAssetListEditorForm
     {
-        public TilesetListEditorWindow() : base(DataAssetType.Tileset, "TilesetListEditor") {
+        public TilesetListEditorWindow(ProjectData proj) : base(proj, DataAssetType.Tileset, "TilesetListEditor") {
             InitializeComponent();
             SetupAssetListControls(tilesetList, lblDataSize);
         }
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.MainWindow?.AddTileset();
+            Project?.AddTileset();
         }
 
         private void removeToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Project == null) throw Util.ProjectRequired();
             object? item = tilesetList.SelectedItem;
             if (item is not TilesetItem ts) return;
 
@@ -41,7 +42,7 @@ namespace GameEditor.TilesetEditor
 
             // check that the tileset is not used in a map
             List<string> maps = [];
-            foreach (MapDataItem map in Util.Project.MapList) {
+            foreach (MapDataItem map in Project.MapList) {
                 if (map.Map.Tileset == ts.Tileset) {
                     maps.Add(map.Map.Name);
                 }
@@ -54,9 +55,9 @@ namespace GameEditor.TilesetEditor
                 return;
             }
 
-            Util.Project.TilesetList.RemoveAt(tilesetList.SelectedIndex);
-            Util.Project.SetDirty();
-            Util.UpdateGameDataSize();
+            Project.TilesetList.RemoveAt(tilesetList.SelectedIndex);
+            SetDirty();
+            Project?.UpdateDataSize();
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using GameEditor.Misc;
+﻿using GameEditor.GameData;
+using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,7 +18,7 @@ namespace GameEditor.MainEditor
      */
     public class ProjectUnclosableForm : BaseProjectForm
     {
-        public ProjectUnclosableForm(string propName) : base(propName) {
+        public ProjectUnclosableForm(ProjectData proj, string propName) : base(proj, propName) {
         }
 
         public ProjectUnclosableForm() {}  // to keep VS happy

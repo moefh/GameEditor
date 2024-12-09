@@ -11,16 +11,18 @@ namespace GameEditor.FontEditor
 {
     public class FontDataItem : IDataAssetItem
     {
-        public FontDataItem(FontData font) {
+        public FontDataItem(FontData font, ProjectData proj) {
             Font = font;
+            Project = proj;
         }
 
         public IDataAsset Asset { get { return Font; } }
-        public FontData Font { get; set; }
+        public FontData Font { get; }
+        public ProjectData Project { get; }
         public FontEditorWindow? Editor { get; private set; }
         public string Name { get { return Font.Name; } }
 
-        public void ShowEditor() {
+        public void ShowEditor(Form parent) {
             if (Editor != null) {
                 if (Editor.WindowState == FormWindowState.Minimized) {
                     Editor.WindowState = FormWindowState.Normal;
@@ -28,7 +30,7 @@ namespace GameEditor.FontEditor
                 Editor.Activate();
             } else {
                 Editor = new FontEditorWindow(this);
-                Editor.MdiParent = Util.MainWindow;
+                Editor.MdiParent = parent;
                 Editor.Show();
             }
         }

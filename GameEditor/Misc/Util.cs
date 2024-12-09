@@ -23,14 +23,12 @@ namespace GameEditor.Misc
         public const uint LOG_TARGET_DEBUG = 1<<0;
         public const uint LOG_TARGET_WINDOW = 1<<1;
 
-        private static ProjectData? project;
         private static Point nextWindowPosition;
         private static uint logTargets;
         private static bool logTargetsLoaded;
 
         static Util() {
             DesignMode = true;
-            project = null;
             nextWindowPosition = new Point(20, 20);
             logTargets = LOG_TARGET_WINDOW;
             logTargetsLoaded = false;
@@ -68,10 +66,6 @@ namespace GameEditor.Misc
 
         public static MainWindow? MainWindow { get; set; }
 
-        public static ProjectData Project {
-            get { project ??= new ProjectData(); return project; }
-            set { project?.Dispose(); project = value; }
-        }
 
         public static void Log(string log) {
             if (DesignMode) return;
@@ -84,38 +78,6 @@ namespace GameEditor.Misc
             MessageBox.Show(
                 $"{message}\n\nConsult the log window for more information.",
                 title, MessageBoxButtons.OK, MessageBoxIcon.Stop);
-        }
-
-        public static void UpdateGameDataSize() {
-            MainWindow?.UpdateDataSize();
-        }
-
-        public static void RefreshAssetList(DataAssetType type) {
-            MainWindow?.RefreshAssetList(type);
-        }
-
-        public static void RefreshTilesetUsers(Tileset tileset) {
-            foreach (MapDataItem map in Project.MapList) {
-                if (map.Editor != null) {
-                    map.Editor.RefreshTileset(tileset);
-                }
-            }
-        }
-
-        public static void RefreshSprite(Sprite sprite) {
-            foreach (SpriteItem si in Project.SpriteList) {
-                if (si.Editor != null && si.Sprite == sprite) {
-                    si.Editor.RefreshSprite();
-                }
-            }
-        }
-
-        public static void RefreshSpriteUsers(Sprite sprite, SpriteAnimationItem? exceptAnimationItem) {
-            foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
-                if (ai.Editor != null && ai != exceptAnimationItem) {
-                    ai.Editor.RefreshSprite(sprite);
-                }
-            }
         }
 
         public static void SaveWindowPosition(Form form, string name) {
@@ -160,17 +122,6 @@ namespace GameEditor.Misc
             }
         }
 
-        public static void ChangeTextBoxWithoutDirtying(ToolStripTextBox tb, string text) {
-            // This is a hack: the text box event handler will dirty only if it's not readonly
-            if (tb.ReadOnly) {
-                tb.Text = text;
-            } else {
-                tb.ReadOnly = true;
-                tb.Text = text;
-                tb.ReadOnly = false;
-            }
-        }
-
         public static string FormatNumber(int num) {
             string s = num.ToString();
             StringBuilder sb = new StringBuilder();
@@ -188,5 +139,8 @@ namespace GameEditor.Misc
             return sb.ToString();
         }
 
+        public static Exception ProjectRequired() {
+            return new Exception("Project required");
+        }
     }
 }

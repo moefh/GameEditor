@@ -45,23 +45,21 @@ namespace GameEditor.SpriteAnimationEditor
             FixRenderFlags();
         }
 
-        private CustomControls.SpriteAnimationEditor.Layer EditLayer {
-            get { return editLayer; }
-            set {
-                toolStripBtnPenHead.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Head;
-                toolStripBtnPenFoot.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Foot;
-                animEditor.EditLayer = value;
-                editLayer = value;
-            }
+        private void SetEditLayer(CustomControls.SpriteAnimationEditor.Layer value) {
+            toolStripBtnPenHead.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Head;
+            toolStripBtnPenFoot.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Foot;
+            animEditor.EditLayer = value;
+            editLayer = value;
         }
 
         public void RefreshSpriteList() {
+            if (Project == null) throw Util.ProjectRequired();
             toolStripComboSprite.ComboBox.Enabled = false;
 
             toolStripComboSprite.ComboBox.DataSource = null;
-            toolStripComboSprite.ComboBox.DataSource = Util.Project.SpriteList;
+            toolStripComboSprite.ComboBox.DataSource = Project.SpriteList;
             toolStripComboSprite.ComboBox.DisplayMember = "Name";
-            toolStripComboSprite.SelectedIndex = Util.Project.GetAssetIndex(Animation.Sprite);
+            toolStripComboSprite.SelectedIndex = Project.GetAssetIndex(Animation.Sprite);
 
             toolStripComboSprite.ComboBox.Enabled = true;
         }
@@ -154,7 +152,7 @@ namespace GameEditor.SpriteAnimationEditor
             if (dlg.ShowDialog() == DialogResult.OK) {
                 loop.Indices.Clear();
                 loop.Indices.AddRange(dlg.SelectedFrames);
-                Util.Project.SetDirty();
+                SetDirty();
                 animEditor.Invalidate();
                 animLoopView.Invalidate();
                 RefreshSpriteLoopList();
@@ -174,17 +172,18 @@ namespace GameEditor.SpriteAnimationEditor
 
         private void animEditor_ImageChanged(object sender, EventArgs e) {
             animLoopView.Invalidate();
-            Util.Project.SetDirty();
-            Util.RefreshSprite(Animation.Sprite);
-            Util.RefreshSpriteUsers(Animation.Sprite, animationItem);
+            SetDirty();
+            Project?.RefreshSprite(Animation.Sprite);
+            Project?.RefreshSpriteUsers(Animation.Sprite, animationItem);
         }
 
         private void toolStripComboSprite_SelectedIndexChanged(object sender, EventArgs e) {
-            if (toolStripComboSprite.SelectedIndex < 0 || toolStripComboSprite.SelectedIndex > Util.Project.SpriteList.Count) return;
+            if (Project == null) throw Util.ProjectRequired();
+            if (toolStripComboSprite.SelectedIndex < 0 || toolStripComboSprite.SelectedIndex > Project.SpriteList.Count) return;
             if (!toolStripComboSprite.ComboBox.Enabled) return;
 
-            Animation.Sprite = (Sprite)Util.Project.SpriteList[toolStripComboSprite.SelectedIndex].Asset;
-            Util.Project.SetDirty();
+            Animation.Sprite = (Sprite)Project.SpriteList[toolStripComboSprite.SelectedIndex].Asset;
+            SetDirty();
             animLoopView.Sprite = Animation.Sprite;
             animEditor.Sprite = Animation.Sprite;
             animLoopView.SelectedIndex = 0;
@@ -203,7 +202,7 @@ namespace GameEditor.SpriteAnimationEditor
             if (int.TryParse(toolStripTxtFootOverlap.Text, out int footOverlap)) {
                 if (Animation.FootOverlap != footOverlap) {
                     Animation.FootOverlap = footOverlap;
-                    Util.Project.SetDirty();
+                    SetDirty();
                 }
                 animLoopView.FootOverlap = footOverlap;
                 animEditor.FootOverlap = footOverlap;
@@ -224,11 +223,11 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         private void toolStripBtnPenHead_Click(object sender, EventArgs e) {
-            EditLayer = CustomControls.SpriteAnimationEditor.Layer.Head;
+            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Head);
         }
 
         private void toolStripBtnPenFoot_Click(object sender, EventArgs e) {
-            EditLayer = CustomControls.SpriteAnimationEditor.Layer.Foot;
+            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Foot);
         }
 
     }
