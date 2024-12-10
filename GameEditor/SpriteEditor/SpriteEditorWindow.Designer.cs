@@ -48,6 +48,8 @@
             toolStripBtnToolPen = new ToolStripButton();
             toolStripBtnToolFill = new ToolStripButton();
             toolStripBtnToolSelect = new ToolStripButton();
+            toolStripBtnToolVFlip = new ToolStripButton();
+            toolStripBtnToolHFlip = new ToolStripButton();
             mainSplit = new SplitContainer();
             spriteFramePicker = new CustomControls.SpriteFramePicker();
             framePickerScroll = new VScrollBar();
@@ -147,7 +149,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { editToolStripDropDownButton, toolStripSeparator3, toolStripLabel1, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator2, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { editToolStripDropDownButton, toolStripSeparator3, toolStripLabel1, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator2, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -168,7 +170,7 @@
             copyFrameToolStripMenuItem.Name = "copyFrameToolStripMenuItem";
             copyFrameToolStripMenuItem.ShortcutKeyDisplayString = "Ctrl+C";
             copyFrameToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
-            copyFrameToolStripMenuItem.Size = new Size(180, 24);
+            copyFrameToolStripMenuItem.Size = new Size(161, 24);
             copyFrameToolStripMenuItem.Text = "Copy";
             copyFrameToolStripMenuItem.Click += copyFrameToolStripMenuItem_Click;
             // 
@@ -177,7 +179,7 @@
             pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
             pasteToolStripMenuItem.ShortcutKeyDisplayString = "";
             pasteToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
-            pasteToolStripMenuItem.Size = new Size(180, 24);
+            pasteToolStripMenuItem.Size = new Size(161, 24);
             pasteToolStripMenuItem.Text = "Paste";
             pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
             // 
@@ -267,6 +269,26 @@
             toolStripBtnToolSelect.Text = "Select";
             toolStripBtnToolSelect.ToolTipText = "Select";
             toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
+            // 
+            // toolStripBtnToolVFlip
+            // 
+            toolStripBtnToolVFlip.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolVFlip.Image = Properties.Resources.VFlipIcon;
+            toolStripBtnToolVFlip.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolVFlip.Name = "toolStripBtnToolVFlip";
+            toolStripBtnToolVFlip.Size = new Size(23, 24);
+            toolStripBtnToolVFlip.Text = "Vertical Flip";
+            toolStripBtnToolVFlip.Click += toolStripBtnToolVFlip_Click;
+            // 
+            // toolStripBtnToolHFlip
+            // 
+            toolStripBtnToolHFlip.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolHFlip.Image = Properties.Resources.HFlipIcon;
+            toolStripBtnToolHFlip.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolHFlip.Name = "toolStripBtnToolHFlip";
+            toolStripBtnToolHFlip.Size = new Size(23, 24);
+            toolStripBtnToolHFlip.Text = "Horizontal Flip";
+            toolStripBtnToolHFlip.Click += toolStripBtnToolHFlip_Click;
             // 
             // mainSplit
             // 
@@ -424,5 +446,7 @@
         private ToolStripButton toolStripBtnToolSelect;
         private ToolStripButton toolStripBtnToolFill;
         private ToolStripLabel toolStripLabel1;
+        private ToolStripButton toolStripBtnToolVFlip;
+        private ToolStripButton toolStripBtnToolHFlip;
     }
 }

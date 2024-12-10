@@ -208,6 +208,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap HFlipIcon {
+            get {
+                object obj = ResourceManager.GetObject("HFlipIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap ImportIcon {
             get {
                 object obj = ResourceManager.GetObject("ImportIcon", resourceCulture);
@@ -441,6 +451,16 @@ namespace GameEditor.Properties {
         internal static System.Drawing.Bitmap TransparencyIcon {
             get {
                 object obj = ResourceManager.GetObject("TransparencyIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap VFlipIcon {
+            get {
+                object obj = ResourceManager.GetObject("VFlipIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

@@ -44,6 +44,11 @@ namespace GameEditor.CustomControls
             set { DropSelection(); selFrame = value; Invalidate(); }
         }
 
+        protected override void SelfDispose() {
+            // this stops any event handlers from trying to work after disposing
+            Sprite = null;
+        }
+
         protected override bool GetImageRenderRect(out int zoom, out Rectangle rect) {
             int winWidth = ClientSize.Width;
             int winHeight = ClientSize.Height;
@@ -114,6 +119,16 @@ namespace GameEditor.CustomControls
 
         protected override void FloodFillImage(int x, int y, Color color) {
             Sprite?.FloodFill(SelectedFrame, x, y, color);
+        }
+
+        protected override void VFlipImage() {
+            if (Sprite == null) return;
+            Sprite.VFlipFrame(SelectedFrame, 0, 0, Sprite.Width, Sprite.Height);
+        }
+
+        protected override void HFlipImage() {
+            if (Sprite == null) return;
+            Sprite.HFlipFrame(SelectedFrame, 0, 0, Sprite.Width, Sprite.Height);
         }
 
         protected override Bitmap? CopyFromImage(int x, int y, int w, int h) {

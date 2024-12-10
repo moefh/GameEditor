@@ -63,6 +63,8 @@
             toolStripBtnToolPen = new ToolStripButton();
             toolStripBtnToolFill = new ToolStripButton();
             toolStripBtnToolSelect = new ToolStripButton();
+            toolStripBtnToolVFlip = new ToolStripButton();
+            toolStripBtnToolHFlip = new ToolStripButton();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -253,7 +255,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel3, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel3, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(686, 27);
@@ -422,6 +424,26 @@
             toolStripBtnToolSelect.ToolTipText = "Select";
             toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
             // 
+            // toolStripBtnToolVFlip
+            // 
+            toolStripBtnToolVFlip.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolVFlip.Image = Properties.Resources.VFlipIcon;
+            toolStripBtnToolVFlip.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolVFlip.Name = "toolStripBtnToolVFlip";
+            toolStripBtnToolVFlip.Size = new Size(23, 24);
+            toolStripBtnToolVFlip.Text = "Vertical Flip";
+            toolStripBtnToolVFlip.Click += toolStripBtnToolVFlip_Click;
+            // 
+            // toolStripBtnToolHFlip
+            // 
+            toolStripBtnToolHFlip.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnToolHFlip.Image = Properties.Resources.HFlipIcon;
+            toolStripBtnToolHFlip.ImageTransparentColor = Color.Magenta;
+            toolStripBtnToolHFlip.Name = "toolStripBtnToolHFlip";
+            toolStripBtnToolHFlip.Size = new Size(23, 24);
+            toolStripBtnToolHFlip.Text = "Horizontal Flip";
+            toolStripBtnToolHFlip.Click += toolStripBtnToolHFlip_Click;
+            // 
             // TilesetEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -491,5 +513,7 @@
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripLabel toolStripLabel2;
         private ToolStripLabel toolStripLabel3;
+        private ToolStripButton toolStripBtnToolVFlip;
+        private ToolStripButton toolStripBtnToolHFlip;
     }
 }

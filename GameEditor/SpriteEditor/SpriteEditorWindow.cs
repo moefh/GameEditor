@@ -190,5 +190,13 @@ namespace GameEditor.SpriteEditor
         private void toolStripBtnToolFill_Click(object sender, EventArgs e) {
             SelectTool(PaintTool.FloodFill);
         }
+
+        private void toolStripBtnToolVFlip_Click(object sender, EventArgs e) {
+            spriteEditor.VFlipSelection();
+        }
+
+        private void toolStripBtnToolHFlip_Click(object sender, EventArgs e) {
+            spriteEditor.HFlipSelection();
+        }
     }
 }

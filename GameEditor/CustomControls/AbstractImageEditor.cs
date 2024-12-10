@@ -71,15 +71,21 @@ namespace GameEditor.CustomControls
         }
 
         // ==============================================================================
-        // COPY/PASTE
+        // EXTERNAL COMMANDS
         // ==============================================================================
 
         public Bitmap? GetSelectionCopy() {
             if (selectionBmp != null) {
-                Rectangle r = new Rectangle(0, 0, selectionBmp.Width, selectionBmp.Height);
-                return selectionBmp.Clone(r, selectionBmp.PixelFormat);
+                Rectangle selBmp = new Rectangle(0, 0, selectionBmp.Width, selectionBmp.Height);
+                return selectionBmp.Clone(selBmp, selectionBmp.PixelFormat);
             }
-            return CopyFromImage(0, 0, EditImageWidth, EditImageHeight);
+
+            Rectangle sel = selectedRect;
+            if (sel.Width <= 0 || sel.Height <= 0) {
+                // no selection, select EVERYTHING!
+                sel = new Rectangle(0, 0, EditImageWidth, EditImageHeight);
+            }
+            return CopyFromImage(sel.X, sel.Y, sel.Width, sel.Height);
         }
 
         public void PasteImage(Image img) {
@@ -91,6 +97,40 @@ namespace GameEditor.CustomControls
             using Graphics g = Graphics.FromImage(selectionBmp);
             g.DrawImage(img, new Point(0,0));
 
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void VFlipSelection() {
+            if (selectedRect.Width > 0 && selectedRect.Height > 0) {
+                // lift selection to be flipped below
+                LiftSelection();
+            }
+            if (selectionBmp != null) {
+                ImageCollection.VFlipBitmap(selectionBmp, 0, 0, selectionBmp.Width, selectionBmp.Height);
+                Invalidate();
+                return;
+            }
+
+            // no selection, flip whole image
+            VFlipImage();
+            Invalidate();
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void HFlipSelection() {
+            if (selectedRect.Width > 0 && selectedRect.Height > 0) {
+                // lift selection to be flipped below
+                LiftSelection();
+            }
+            if (selectionBmp != null) {
+                ImageCollection.HFlipBitmap(selectionBmp, 0, 0, selectionBmp.Width, selectionBmp.Height);
+                Invalidate();
+                return;
+            }
+
+            // no selection, flip whole image
+            HFlipImage();
+            Invalidate();
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -288,6 +328,10 @@ namespace GameEditor.CustomControls
 
             if (action == MouseAction.Down) {
                 if (selection.Contains(e.Location)) {
+                    if (selectionBmp == null) {
+                        LiftSelection();
+                    }
+
                     // start moving selection
                     movingSelection = true;
                     selectionMoveOrigin = e.Location;
@@ -295,19 +339,27 @@ namespace GameEditor.CustomControls
                     return true;
                 }
 
-                // drop current selection
-                DropSelection();
-                Invalidate();
+                if (selectionBmp != null) {
+                    // drop current selection
+                    DropSelection();
+                    Invalidate();
 
-                // For the selection tool, we'll let the tool immediatelly start creating
-                // another selection, so we let the code run (by returning false).
-                // For any other tool, in addition to stopping the tool from handling this
-                // mouse down (by returning true), we'll also ignore the mouse until the next
-                // mouse down event.
-                if (SelectedTool != PaintTool.RectSelect) {
-                    ignoreMouseUntilDown = true;
-                    return true;
+                    // For the selection tool, we'll let the tool immediatelly start creating
+                    // another selection, so we let the code run (by returning false).
+                    // For any other tool, in addition to stopping the tool from handling this
+                    // mouse down (by returning true), we'll also ignore the mouse until the next
+                    // mouse down event.
+                    if (SelectedTool != PaintTool.RectSelect) {
+                        ignoreMouseUntilDown = true;
+                        return true;
+                    }
+                    return false;
                 }
+
+                // just cancel the selection with no bitmap (no harm, no foul)
+                selectedRect = Rectangle.Empty;
+                movingSelection = false;
+                Invalidate();
                 return false;
             }
 
@@ -317,14 +369,6 @@ namespace GameEditor.CustomControls
                 int dy = (e.Y - selectionMoveOrigin.Y) / zoom;
                 selectedRect.X = moveSelectedRectStart.X + dx;
                 selectedRect.Y = moveSelectedRectStart.Y + dy;
-                Invalidate();
-                return true;
-            }
-
-            // lift the selection from the image
-            if (action == MouseAction.Up && selectionBmp == null) {
-                LiftSelection();
-                movingSelection = false;
                 Invalidate();
                 return true;
             }
@@ -380,6 +424,8 @@ namespace GameEditor.CustomControls
         protected abstract void SetImagePixel(int x, int y, Color color);
         protected abstract void FloodFillImage(int x, int y, Color color);
         protected abstract Bitmap? CopyFromImage(int x, int y, int w, int h);
+        protected abstract void VFlipImage();
+        protected abstract void HFlipImage();
 
     }
 }

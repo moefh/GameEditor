@@ -98,6 +98,7 @@ namespace GameEditor.CustomControls
 
         protected override void SelfDispose() {
             DropSelection();
+            Map = null; // this stops any event handlers from trying to work after disposing
         }
 
         private void SelectionAnimationTimer_Tick(object? sender, EventArgs e) {
@@ -460,7 +461,9 @@ namespace GameEditor.CustomControls
                     selectionMoveOrigin = e.Location;
                     moveSelectedRectStart = activeSelection;
                     return true;
-                } else if (selectionTiles != null) {
+                }
+                
+                if (selectionTiles != null) {
                     // drop selection
                     DropSelection();
                     movingSelection = false;
@@ -470,13 +473,13 @@ namespace GameEditor.CustomControls
                         return true;
                     }
                     return false;  // let selection tool start a new selection
-                } else {
-                    // cancel selection
-                    activeSelection = Rectangle.Empty;
-                    movingSelection = false;
-                    Invalidate();
-                    return false;
                 }
+
+                // cancel selection
+                activeSelection = Rectangle.Empty;
+                movingSelection = false;
+                Invalidate();
+                return false;
             }
 
             if (e.Button == MouseButtons.Left && action == MouseAction.Move && movingSelection) {

@@ -135,5 +135,12 @@ namespace GameEditor.GameData
             images.PasteIntoImage(source, index, x, y, transparent);
         }
 
+        public void VFlipTile(int tile, int x, int y, int width, int height) {
+            images.VFlipImage(tile, x, y, width, height);
+        }
+
+        public void HFlipTile(int tile, int x, int y, int width, int height) {
+            images.HFlipImage(tile, x, y, width, height);
+        }
     }
 }

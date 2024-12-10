@@ -66,6 +66,7 @@
             toolStripButtonNew = new ToolStripButton();
             toolStripButtonOpen = new ToolStripButton();
             toolStripButtonSave = new ToolStripButton();
+            toolStripSeparator2 = new ToolStripSeparator();
             toolStripBtnLogWindow = new ToolStripButton();
             assetTree = new TreeView();
             panel1 = new Panel();
@@ -287,7 +288,7 @@
             // toolStrip
             // 
             toolStrip.AutoSize = false;
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonNew, toolStripButtonOpen, toolStripButtonSave, toolStripBtnLogWindow });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonNew, toolStripButtonOpen, toolStripButtonSave, toolStripSeparator2, toolStripBtnLogWindow });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(574, 28);
@@ -327,15 +328,20 @@
             toolStripButtonSave.ToolTipText = "Save Project";
             toolStripButtonSave.Click += toolStripButtonSave_Click;
             // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 28);
+            // 
             // toolStripBtnLogWindow
             // 
-            toolStripBtnLogWindow.Alignment = ToolStripItemAlignment.Right;
             toolStripBtnLogWindow.Image = Properties.Resources.LogIcon;
             toolStripBtnLogWindow.ImageTransparentColor = Color.Magenta;
             toolStripBtnLogWindow.Name = "toolStripBtnLogWindow";
             toolStripBtnLogWindow.Size = new Size(52, 25);
             toolStripBtnLogWindow.Text = "Log";
-            toolStripBtnLogWindow.ToolTipText = "Open Log";
+            toolStripBtnLogWindow.ToolTipText = "Log Window";
             toolStripBtnLogWindow.Click += toolStripBtnLogWindow_Click;
             // 
             // assetTree
@@ -471,5 +477,6 @@
         private Label label1;
         private Splitter splitter1;
         private ToolStripButton toolStripButtonNew;
+        private ToolStripSeparator toolStripSeparator2;
     }
 }

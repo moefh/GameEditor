@@ -308,5 +308,13 @@ namespace GameEditor.TilesetEditor
         private void toolStripBtnToolFill_Click(object sender, EventArgs e) {
             SelectTool(PaintTool.FloodFill);
         }
+
+        private void toolStripBtnToolVFlip_Click(object sender, EventArgs e) {
+            tileEditor.VFlipSelection();
+        }
+
+        private void toolStripBtnToolHFlip_Click(object sender, EventArgs e) {
+            tileEditor.HFlipSelection();
+        }
     }
 }

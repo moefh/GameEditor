@@ -1,3 +1,13 @@
 ﻿
 
 - make editor for map connections (world editor)
+
+- new map layer for effects. Effects tiles:
+  0xff = no effect
+  0x00 = (reserved)
+  0x01 = door (when activated, animate through next 4 tiles, then set collision to 0xff)
+  0x02 = door (same as above)
+  0x03 = door (same as above)
+  0x04 = door (same as above)
+  0x05 = permanent animation of FG tile between 4 tiles (fg -> fg+1 -> fg+2 -> fg+3 -> fg -> ...)
+  0x06 = permanent animation of BG tile between 4 tiles (bg -> bg+1 -> bg+2 -> bg+3 -> bg -> ...)

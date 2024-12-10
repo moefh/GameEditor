@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Drawing.Imaging;
 using System.Linq;
 using System.Runtime.InteropServices;
+using System.Runtime.Intrinsics.X86;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
@@ -305,7 +306,7 @@ namespace GameEditor.Misc
 
         
         // ===============================================================
-        // EDIT OPERATIONS
+        // PIXEL OPERATIONS
         // ===============================================================
 
         public void SetImagePixel(int image, int x, int y, Color color) {
@@ -330,6 +331,10 @@ namespace GameEditor.Misc
             bytes[4*(y*Width+x) + 1] = color.G;
             bytes[4*(y*Width+x) + 0] = color.B;
         }
+
+        // ===============================================================
+        // FLOOD FILL
+        // ===============================================================
 
         private void FloodFillScan(byte[] pixels, Queue<Point> work, Color fillOver, int lx, int rx, int y) {
             bool spanAdded = false;
@@ -370,6 +375,73 @@ namespace GameEditor.Misc
             ReadImagePixels(image, pixels);
             FloodFill(pixels, x, y, color);
             WriteImagePixels(image, pixels);
+        }
+
+        // ===============================================================
+        // VERTICAL AND HORIZONTAL FLIP
+        // ===============================================================
+
+        private static void SwapBytes(ref byte b1, ref byte b2) {
+            byte tmp = b1;
+            b1 = b2;
+            b2 = tmp;
+        }
+
+        private static void HFlipPixels(byte[] pixels, int stride, int x, int y, int w, int h) {
+            int cx = w/2;
+            for (int iy = 0; iy < h; iy++) {
+                int py = y + iy;
+                for (int ix = 0; ix < cx; ix++) {
+                    int px1 = x + ix;
+                    int px2 = x + w - ix - 1;
+                    SwapBytes(ref pixels[4*(py*w+px1)+0], ref pixels[4*(py*w+px2)+0]);
+                    SwapBytes(ref pixels[4*(py*w+px1)+1], ref pixels[4*(py*w+px2)+1]);
+                    SwapBytes(ref pixels[4*(py*w+px1)+2], ref pixels[4*(py*w+px2)+2]);
+                }
+            }
+        }
+
+        private static void VFlipPixels(byte[] pixels, int stride, int x, int y, int w, int h) {
+            byte[] line = new byte[4*w];
+            int cy = h/2;
+            for (int iy = 0; iy < cy; iy++) {
+                int py1 = y + iy;
+                int py2 = y + h - iy - 1;
+                // line = p1
+                Array.Copy(pixels, 4*(py1*stride+x), line, 0, line.Length);
+                // p1 = p2
+                Array.Copy(pixels, 4*(py2*stride+x), pixels, 4*(py1*stride+x), line.Length);
+                // p2 = line
+                Array.Copy(line, 0, pixels, 4*(py2*stride+x), line.Length);
+            }
+        }
+
+        public void HFlipImage(int image, int x, int y, int w, int h) {
+            byte[] pixels = new byte[Width*Height*4];
+            ReadImagePixels(image, pixels);
+            HFlipPixels(pixels, Width, x, y, w, h);
+            WriteImagePixels(image, pixels);
+        }
+
+        public void VFlipImage(int image, int x, int y, int w, int h) {
+            byte[] pixels = new byte[Width*Height*4];
+            ReadImagePixels(image, pixels);
+            VFlipPixels(pixels, Width, x, y, w, h);
+            WriteImagePixels(image, pixels);
+        }
+
+        public static void VFlipBitmap(Bitmap bmp, int x, int y, int w, int h) {
+            byte[] pixels = new byte[bmp.Width*bmp.Height*4];
+            ReadImagePixelsFrom(bmp, 0, bmp.Width, bmp.Height, pixels);
+            VFlipPixels(pixels, bmp.Width, x, y, w, h);
+            WriteImagePixelsTo(bmp, 0, bmp.Width, bmp.Height, pixels);
+        }
+
+        public static void HFlipBitmap(Bitmap bmp, int x, int y, int w, int h) {
+            byte[] pixels = new byte[bmp.Width*bmp.Height*4];
+            ReadImagePixelsFrom(bmp, 0, bmp.Width, bmp.Height, pixels);
+            HFlipPixels(pixels, bmp.Width, x, y, w, h);
+            WriteImagePixelsTo(bmp, 0, bmp.Width, bmp.Height, pixels);
         }
 
     }

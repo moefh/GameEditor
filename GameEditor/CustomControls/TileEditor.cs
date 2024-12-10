@@ -48,6 +48,11 @@ namespace GameEditor.CustomControls
             SetDoubleBuffered();
         }
 
+        protected override void SelfDispose() {
+            // this stops any event handlers from trying to work after disposing
+            Tileset = null;
+        }
+
         protected override bool GetImageRenderRect(out int zoom, out Rectangle rect) {
             int winWidth = ClientSize.Width;
             int winHeight = ClientSize.Height;
@@ -76,6 +81,14 @@ namespace GameEditor.CustomControls
         protected override void FloodFillImage(int x, int y, Color color) {
             if (Tileset == null) return;
             Tileset.FloodFill(SelectedTile, x, y, color);
+        }
+
+        protected override void VFlipImage() {
+            Tileset?.VFlipTile(SelectedTile, 0, 0, TILE_SIZE, TILE_SIZE);
+        }
+
+        protected override void HFlipImage() {
+            Tileset?.HFlipTile(SelectedTile, 0, 0, TILE_SIZE, TILE_SIZE);
         }
         
         protected override Bitmap? CopyFromImage(int x, int y, int w, int h) {
