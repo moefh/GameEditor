@@ -14,7 +14,8 @@ namespace GameEditor.MapEditor
 {
     public partial class MapEditorWindow : ProjectAssetEditorForm
     {
-        private class ZoomLevel(int comboIndex, double zoom) {
+        private class ZoomLevel(int comboIndex, double zoom)
+        {
             public readonly int ComboIndex = comboIndex;
             public readonly double Zoom = zoom;
             public readonly string Name = $"{zoom:F2}x";
@@ -25,7 +26,6 @@ namespace GameEditor.MapEditor
         private ZoomLevel[] zoomLevels = [];
 
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
-            if (Project == null) throw Util.ProjectRequired();
             mapDataItem = mapItem;
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
@@ -38,25 +38,28 @@ namespace GameEditor.MapEditor
             mapEditor.GridColor = ConfigUtil.MapEditorGridColor;
             mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
             mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
-            EditLayer = CustomControls.MapEditor.Layer.Foreground;
+            mapEditor.LeftSelectedCollisionTile = 0;
+            mapEditor.RightSelectedCollisionTile = -1;
+            ActiveLayer = CustomControls.MapEditor.Layer.Foreground;
             toolStripComboTiles.ComboBox.DataSource = Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
             toolStripComboTiles.SelectedIndex = Project.GetAssetIndex(Map.Tileset);
             UpdateRenderLayers();
+            SetSelectedTool(CustomControls.MapEditor.Tool.Tile);
         }
 
         public MapData Map {
             get { return mapDataItem.Map; }
         }
 
-        public CustomControls.MapEditor.Layer EditLayer {
-            get { return mapEditor.EditLayer; }
+        public CustomControls.MapEditor.Layer ActiveLayer {
+            get { return mapEditor.ActiveLayer; }
             set {
-                mapEditor.EditLayer = value;
+                mapEditor.ActiveLayer = value;
                 mapEditor.Invalidate();
-                toolStripButtonEditFG.Checked = value == CustomControls.MapEditor.Layer.Foreground;
-                toolStripButtonEditBG.Checked = value == CustomControls.MapEditor.Layer.Background;
-                toolStripButtonEditCol.Checked = value == CustomControls.MapEditor.Layer.Collision;
+                toolStripButtonLayerFg.Checked = value == CustomControls.MapEditor.Layer.Foreground;
+                toolStripButtonLayerBg.Checked = value == CustomControls.MapEditor.Layer.Background;
+                toolStripButtonLayerCollision.Checked = value == CustomControls.MapEditor.Layer.Collision;
                 if (value == CustomControls.MapEditor.Layer.Collision) {
                     tilePicker.Tileset = ImageUtil.CollisionTileset;
                     tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
@@ -67,6 +70,12 @@ namespace GameEditor.MapEditor
             }
         }
 
+        public void SetSelectedTool(CustomControls.MapEditor.Tool tool) {
+            mapEditor.SelectedTool = tool;
+            toolStripButtonToolTiles.Checked = tool == CustomControls.MapEditor.Tool.Tile;
+            toolStripButtonToolSelect.Checked = tool == CustomControls.MapEditor.Tool.RectSelect;
+        }
+
         public RenderFlags EnabledRenderLayers {
             get { return mapEditor.EnabledRenderLayers; }
             set { mapEditor.EnabledRenderLayers = value; }
@@ -74,10 +83,6 @@ namespace GameEditor.MapEditor
 
         protected override void FixFormTitle() {
             Text = $"{Map.Name} [{Map.Width}x{Map.Height} - tileset {Map.Tileset.Name}] - Map";
-        }
-
-        private void UpdateDataSize() {
-            lblDataSize.Text = $"{Util.FormatNumber(Map.GameDataSize)} bytes";
         }
 
         private void UpdateRenderLayers() {
@@ -91,7 +96,6 @@ namespace GameEditor.MapEditor
         }
 
         public void RefreshTileset(Tileset tileset) {
-            if (Project == null) return;
             if (Map.Tileset == tileset) {
                 tilePicker.ResetSize();
                 tilePicker.Invalidate();
@@ -104,27 +108,8 @@ namespace GameEditor.MapEditor
             toolStripComboTiles.SelectedIndex = Project.GetAssetIndex(Map.Tileset);
         }
 
-        private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
-            if (Project == null) throw Util.ProjectRequired();
-            AssetList<IDataAssetItem> tilesetList = Project.TilesetList;
-            int sel = toolStripComboTiles.SelectedIndex;
-            if (sel < 0 || sel >= tilesetList.Count) {
-                Util.Log($"WARNING: tileset dropdown has invalid selected index {sel}");
-                return;
-            }
-            Tileset newTileset = (Tileset)tilesetList[sel].Asset;
-            if (newTileset == Map.Tileset) return;
-
-            Map.Tileset = newTileset;
-            tilePicker.Tileset = Map.Tileset;
-            SetDirty();
-            mapEditor.Invalidate();
-            tilePicker.Invalidate();
-            FixFormTitle();
-        }
-
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
-            if (EditLayer == CustomControls.MapEditor.Layer.Collision) {
+            if (ActiveLayer == CustomControls.MapEditor.Layer.Collision) {
                 mapEditor.LeftSelectedCollisionTile = tilePicker.LeftSelectedTile;
                 mapEditor.RightSelectedCollisionTile = tilePicker.RightSelectedTile;
             } else {
@@ -138,7 +123,7 @@ namespace GameEditor.MapEditor
         }
 
         private void mapEditor_SelectedTilesChanged(object sender, EventArgs e) {
-            if (EditLayer == CustomControls.MapEditor.Layer.Collision) {
+            if (ActiveLayer == CustomControls.MapEditor.Layer.Collision) {
                 tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
                 tilePicker.RightSelectedTile = mapEditor.RightSelectedCollisionTile;
             } else {
@@ -169,11 +154,11 @@ namespace GameEditor.MapEditor
             int comboIndex = 0;
             zoomLevels = new ZoomLevel[15];
             for (int i = 0; i < zoomLevels.Length; i++) {
-                zoomLevels[i] = new ZoomLevel(i, 1.0 + 0.5*i);
+                zoomLevels[i] = new ZoomLevel(i, 1.0 + 0.5 * i);
                 if (zoomLevels[i].Zoom == defaultZoomLevel) comboIndex = i;
             }
             mapEditor.MinZoom = zoomLevels[0].Zoom;
-            mapEditor.MaxZoom = zoomLevels[zoomLevels.Length-1].Zoom;
+            mapEditor.MaxZoom = zoomLevels[zoomLevels.Length - 1].Zoom;
             mapEditor.Zoom = zoomLevels[comboIndex].Zoom;
             toolStripComboBoxZoom.Items.AddRange(zoomLevels);
             toolStripComboBoxZoom.SelectedIndex = comboIndex;
@@ -195,30 +180,14 @@ namespace GameEditor.MapEditor
             }
         }
 
-        // ====================================================================
-        // === TOOLSTRIP BUTTONS
-        // ====================================================================
-
-        private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
-            UpdateRenderLayers();
-        }
-
         private void toolStripComboBoxZoom_SelectedIndexChanged(object sender, EventArgs e) {
             if (!toolStripComboBoxZoom.Enabled) return;
             UpdateMapZoom();
         }
 
-        private void toolStripButtonEditFG_Click(object sender, EventArgs e) {
-            EditLayer = CustomControls.MapEditor.Layer.Foreground;
-        }
-
-        private void toolStripButtonEditBG_Click(object sender, EventArgs e) {
-            EditLayer = CustomControls.MapEditor.Layer.Background;
-        }
-
-        private void toolStripButtonEditCol_Click(object sender, EventArgs e) {
-            EditLayer = CustomControls.MapEditor.Layer.Collision;
-        }
+        // ====================================================================
+        // === TOP TOOLSTRIP (MAP NAME)
+        // ====================================================================
 
         private void btnProperties_Click(object sender, EventArgs e) {
             MapPropertiesDialog dlg = new MapPropertiesDialog();
@@ -235,22 +204,27 @@ namespace GameEditor.MapEditor
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
-                Project?.UpdateDataSize();
+                Project.UpdateDataSize();
                 mapEditor.Invalidate();
             }
         }
 
-        private void toolStripBtnGridColor_Click(object sender, EventArgs e) {
-            ColorDialog dlg = new ColorDialog();
-            dlg.Color = mapEditor.GridColor;
-            dlg.AnyColor = true;
-            dlg.AllowFullOpen = true;
-            dlg.FullOpen = true;
-            dlg.SolidColorOnly = true;
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                mapEditor.GridColor = dlg.Color;
-                mapEditor.Invalidate();
+        private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
+            AssetList<IDataAssetItem> tilesetList = Project.TilesetList;
+            int sel = toolStripComboTiles.SelectedIndex;
+            if (sel < 0 || sel >= tilesetList.Count) {
+                Util.Log($"WARNING: tileset dropdown has invalid selected index {sel}");
+                return;
             }
+            Tileset newTileset = (Tileset)tilesetList[sel].Asset;
+            if (newTileset == Map.Tileset) return;
+
+            Map.Tileset = newTileset;
+            tilePicker.Tileset = Map.Tileset;
+            SetDirty();
+            mapEditor.Invalidate();
+            tilePicker.Invalidate();
+            FixFormTitle();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -273,13 +247,11 @@ namespace GameEditor.MapEditor
             SetDirty();
             FixFormTitle();
             UpdateDataSize();
-            Project?.UpdateDataSize();
+            Project.UpdateDataSize();
             mapEditor.Invalidate();
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            if (Project == null) return;
-
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Export Map";
             dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
@@ -293,5 +265,62 @@ namespace GameEditor.MapEditor
             }
         }
 
+        // ====================================================================
+        // === DISPLAY TOOLSTRIP (RENDER LAYERS)
+        // ====================================================================
+
+        private void toolStripButtonRenderLayer_CheckStateChanged(object sender, EventArgs e) {
+            UpdateRenderLayers();
+        }
+
+        private void toolStripBtnGridColor_Click(object sender, EventArgs e) {
+            ColorDialog dlg = new ColorDialog();
+            dlg.Color = mapEditor.GridColor;
+            dlg.AnyColor = true;
+            dlg.AllowFullOpen = true;
+            dlg.FullOpen = true;
+            dlg.SolidColorOnly = true;
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                mapEditor.GridColor = dlg.Color;
+                mapEditor.Invalidate();
+            }
+        }
+
+
+        // ====================================================================
+        // === EDIT TOOLSTRIP (TOOLS)
+        // ====================================================================
+
+        private void toolStripButtonLayerFg_Click(object sender, EventArgs e) {
+            ActiveLayer = CustomControls.MapEditor.Layer.Foreground;
+        }
+
+        private void toolStripButtonLayerBg_Click(object sender, EventArgs e) {
+            ActiveLayer = CustomControls.MapEditor.Layer.Background;
+        }
+
+        private void toolStripButtonLayerCollision_Click(object sender, EventArgs e) {
+            ActiveLayer = CustomControls.MapEditor.Layer.Collision;
+        }
+
+        private void toolStripButtonToolTiles_Click(object sender, EventArgs e) {
+            SetSelectedTool(CustomControls.MapEditor.Tool.Tile);
+        }
+
+        private void toolStripButtonToolSelect_Click(object sender, EventArgs e) {
+            SetSelectedTool(CustomControls.MapEditor.Tool.RectSelect);
+        }
+
+        private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapEditor.DeleteSelection();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapEditor.CopyToClipboard();
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapEditor.PasteFromClipboard();
+        }
     }
 }

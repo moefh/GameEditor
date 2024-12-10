@@ -70,7 +70,7 @@ namespace GameEditor.ProjectIO
         }
 
         protected void WriteFooter() {
-            f.WriteLine($"// total data size: {Project.GetGameDataSize()} bytes");
+            f.WriteLine($"// total data size: {Project.GetDataSize()} bytes");
             f.Close();
         }
 

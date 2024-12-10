@@ -123,16 +123,12 @@ namespace GameEditor.ModEditor
             Text = $"{Mod.Name} - MOD";
         }
 
-        private void UpdateDataSize() {
-            lblDataSize.Text = $"{Util.FormatNumber(Mod.GameDataSize)} bytes";
-        }
-
         private void RefreshMod() {
             UpdateSampleListDisplay();
             sampleList.SelectedIndex = 0;
             UpdateDataSize();
             UpdateModPattern();
-            Project?.UpdateDataSize();
+            Project.UpdateDataSize();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {

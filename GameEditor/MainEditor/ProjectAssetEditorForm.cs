@@ -38,7 +38,7 @@ namespace GameEditor.MainEditor
             this.assetNameTextBox = assetNameTextBox;
             this.assetDataSizeLabel = assetDataSizeLabel;
             FixFormTitle();
-            UpdateGameDataSize();
+            UpdateDataSize();
             if (assetItem != null) {
                 assetNameTextBox.ReadOnly = true;
                 assetNameTextBox.Text = assetItem.Name;
@@ -47,9 +47,9 @@ namespace GameEditor.MainEditor
             assetNameTextBox.TextChanged += AssetNameTextBox_TextChanged;
         }
 
-        protected void UpdateGameDataSize() {
+        protected void UpdateDataSize() {
             if (assetItem == null || assetDataSizeLabel == null) return;
-            assetDataSizeLabel.Text = $"{Util.FormatNumber(assetItem.Asset.GameDataSize)} bytes";
+            assetDataSizeLabel.Text = $"{Util.FormatNumber(assetItem.Asset.DataSize)} bytes";
         }
 
         protected virtual void FixFormTitle() {
@@ -62,7 +62,7 @@ namespace GameEditor.MainEditor
             assetItem.Asset.Name = assetNameTextBox.Text;
             if (!assetNameTextBox.ReadOnly) SetDirty();
             FixFormTitle();
-            Project?.UpdateAssetNames(assetItem.Asset.AssetType);
+            Project.UpdateAssetNames(assetItem.Asset.AssetType);
             OnNameChanged(EventArgs.Empty);
         }
 

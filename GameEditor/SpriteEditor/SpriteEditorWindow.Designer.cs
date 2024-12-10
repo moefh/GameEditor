@@ -339,7 +339,6 @@
             spriteEditor.GridColor = Color.Empty;
             spriteEditor.Location = new Point(0, 0);
             spriteEditor.Name = "spriteEditor";
-            spriteEditor.ReadOnly = false;
             spriteEditor.SelectedFrame = 0;
             spriteEditor.SelectedTool = CustomControls.PaintTool.Pen;
             spriteEditor.Size = new Size(380, 251);

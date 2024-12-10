@@ -127,6 +127,9 @@
   <data name="CollisionBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\CollisionBitmap.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="CollisionIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\CollisionIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="DropCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DropCursor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -166,8 +169,17 @@
   <data name="MoveCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\MoveCursor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="NewIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\NewIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="OpenIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\OpenIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PencilBgIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PencilBgIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="PencilFgIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\PencilFgIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="PenIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\PenIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
@@ -184,6 +196,9 @@
   <data name="SaveIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SaveIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="ScreenIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\ScreenIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="SelRectIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\SelRectIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
@@ -196,8 +211,14 @@
   <data name="StarIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\star.ico;System.Drawing.Icon, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="TilesBgIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TilesBgIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="TilesetIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\TilesetIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="TilesFgIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\TilesFgIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
   <data name="ToolFillIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ToolFillIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>

@@ -15,8 +15,8 @@ namespace GameEditor.MainEditor
     {
         public EditorSettingsDialog() {
             InitializeComponent();
-            checkBoxLogWindow.Checked = (Util.LogTargets & Util.LOG_TARGET_WINDOW) != 0;
-            checkBoxLogDotNet.Checked = (Util.LogTargets & Util.LOG_TARGET_DEBUG) != 0;
+            checkBoxLogWindow.Checked = (Util.LogTargets & Util.LogTarget.Window) != 0;
+            checkBoxLogDotNet.Checked = (Util.LogTargets & Util.LogTarget.Debug) != 0;
             lblTilePickerLeftColor.BackColor = ConfigUtil.TilePickerLeftColor;
             lblTilePickerRightColor.BackColor = ConfigUtil.TilePickerRightColor;
             lblMapEditorGridColor.BackColor = ConfigUtil.MapEditorGridColor;
@@ -25,8 +25,8 @@ namespace GameEditor.MainEditor
         }
 
         private void btnOK_Click(object sender, EventArgs e) {
-            uint logWindow = (checkBoxLogWindow.Checked) ? Util.LOG_TARGET_WINDOW : 0;
-            uint logDotNet = (checkBoxLogDotNet.Checked) ? Util.LOG_TARGET_DEBUG : 0;
+            Util.LogTarget logWindow = (checkBoxLogWindow.Checked) ? Util.LogTarget.Window : 0;
+            Util.LogTarget logDotNet = (checkBoxLogDotNet.Checked) ? Util.LogTarget.Debug : 0;
             Util.LogTargets = logWindow | logDotNet;
             ConfigUtil.TilePickerLeftColor = lblTilePickerLeftColor.BackColor;
             ConfigUtil.TilePickerRightColor = lblTilePickerRightColor.BackColor;

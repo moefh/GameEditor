@@ -38,7 +38,6 @@ namespace GameEditor.MainEditor
         // ===================================================================
 
         public void RunCheck() {
-            if (Project == null) return;
             ProjectInspector inspector = new ProjectInspector(Project);
             inspector.Run();
             savedProblems = inspector.GetProblems();
@@ -46,7 +45,7 @@ namespace GameEditor.MainEditor
         }
 
         private void toolStripBtnOpenProblems_Click(object sender, EventArgs e) {
-            if (Project == null || MdiParent == null) return;
+            if (MdiParent == null) return;
             foreach (IAssetProblem p in savedProblems) {
                 p.Asset.ShowEditor(Project, MdiParent);
             }

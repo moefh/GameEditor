@@ -26,8 +26,6 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             TreeNode treeNode1 = new TreeNode("Tilesets", 0, 0);
             TreeNode treeNode2 = new TreeNode("Sprites", 1, 1);
             TreeNode treeNode3 = new TreeNode("Maps", 2, 2);
@@ -35,9 +33,7 @@
             TreeNode treeNode5 = new TreeNode("Sound Effects", 4, 4);
             TreeNode treeNode6 = new TreeNode("MODs", 5, 5);
             TreeNode treeNode7 = new TreeNode("Fonts", 6, 6);
-            ctxMenuAssetTree = new ContextMenuStrip(components);
-            newAssetToolStripMenuItem = new ToolStripMenuItem();
-            deleteAssetToolStripMenuItem = new ToolStripMenuItem();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainWindow));
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
             newToolStripMenuItem = new ToolStripMenuItem();
@@ -67,6 +63,7 @@
             lblDataSize = new ToolStripStatusLabel();
             lblModified = new ToolStripStatusLabel();
             toolStrip = new ToolStrip();
+            toolStripButtonNew = new ToolStripButton();
             toolStripButtonOpen = new ToolStripButton();
             toolStripButtonSave = new ToolStripButton();
             toolStripBtnLogWindow = new ToolStripButton();
@@ -74,40 +71,18 @@
             panel1 = new Panel();
             label1 = new Label();
             splitter1 = new Splitter();
-            ctxMenuAssetTree.SuspendLayout();
             menuStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             toolStrip.SuspendLayout();
             panel1.SuspendLayout();
             SuspendLayout();
             // 
-            // ctxMenuAssetTree
-            // 
-            ctxMenuAssetTree.Items.AddRange(new ToolStripItem[] { newAssetToolStripMenuItem, deleteAssetToolStripMenuItem });
-            ctxMenuAssetTree.Name = "contextMenuStripAssets";
-            ctxMenuAssetTree.Size = new Size(180, 52);
-            ctxMenuAssetTree.Opening += ctxMenuAsset_Opening;
-            // 
-            // newAssetToolStripMenuItem
-            // 
-            newAssetToolStripMenuItem.Name = "newAssetToolStripMenuItem";
-            newAssetToolStripMenuItem.Size = new Size(179, 24);
-            newAssetToolStripMenuItem.Text = "Add New [Asset]";
-            newAssetToolStripMenuItem.Click += newAssetToolStripMenuItem_Click;
-            // 
-            // deleteAssetToolStripMenuItem
-            // 
-            deleteAssetToolStripMenuItem.Name = "deleteAssetToolStripMenuItem";
-            deleteAssetToolStripMenuItem.Size = new Size(179, 24);
-            deleteAssetToolStripMenuItem.Text = "Delete [Asset]";
-            deleteAssetToolStripMenuItem.Click += deleteAssetToolStripMenuItem_Click;
-            // 
             // menuStrip
             // 
             menuStrip.Items.AddRange(new ToolStripItem[] { fileToolStripMenuItem, projectToolStripMenuItem, helpToolStripMenuItem });
             menuStrip.Location = new Point(0, 0);
             menuStrip.Name = "menuStrip";
-            menuStrip.Size = new Size(870, 27);
+            menuStrip.Size = new Size(574, 27);
             menuStrip.TabIndex = 2;
             menuStrip.Text = "menuStrip1";
             // 
@@ -120,11 +95,11 @@
             // 
             // newToolStripMenuItem
             // 
-            newToolStripMenuItem.Image = (Image)resources.GetObject("newToolStripMenuItem.Image");
+            newToolStripMenuItem.Image = Properties.Resources.NewIcon;
             newToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             newToolStripMenuItem.Name = "newToolStripMenuItem";
             newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
-            newToolStripMenuItem.Size = new Size(164, 24);
+            newToolStripMenuItem.Size = new Size(173, 24);
             newToolStripMenuItem.Text = "&New";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
@@ -134,14 +109,14 @@
             openToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
-            openToolStripMenuItem.Size = new Size(164, 24);
-            openToolStripMenuItem.Text = "&Open";
+            openToolStripMenuItem.Size = new Size(173, 24);
+            openToolStripMenuItem.Text = "&Open...";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new Size(161, 6);
+            toolStripSeparator.Size = new Size(170, 6);
             // 
             // saveToolStripMenuItem
             // 
@@ -149,39 +124,39 @@
             saveToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
-            saveToolStripMenuItem.Size = new Size(164, 24);
+            saveToolStripMenuItem.Size = new Size(173, 24);
             saveToolStripMenuItem.Text = "&Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(164, 24);
+            saveAsToolStripMenuItem.Size = new Size(173, 24);
             saveAsToolStripMenuItem.Text = "Save &As...";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(161, 6);
+            toolStripSeparator4.Size = new Size(170, 6);
             // 
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(164, 24);
+            settingsToolStripMenuItem.Size = new Size(173, 24);
             settingsToolStripMenuItem.Text = "Settings...";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(161, 6);
+            toolStripSeparator5.Size = new Size(170, 6);
             // 
             // exitToolStripMenuItem
             // 
             exitToolStripMenuItem.Image = Properties.Resources.ChickenIcon;
             exitToolStripMenuItem.Name = "exitToolStripMenuItem";
-            exitToolStripMenuItem.Size = new Size(164, 24);
+            exitToolStripMenuItem.Size = new Size(173, 24);
             exitToolStripMenuItem.Text = "E&xit";
             exitToolStripMenuItem.Click += quitToolStripMenuItem_Click;
             // 
@@ -196,81 +171,81 @@
             // 
             addTilesetToolStripMenuItem.Image = Properties.Resources.TilesetIcon;
             addTilesetToolStripMenuItem.Name = "addTilesetToolStripMenuItem";
-            addTilesetToolStripMenuItem.Size = new Size(240, 24);
-            addTilesetToolStripMenuItem.Text = "Add New &Tileset";
+            addTilesetToolStripMenuItem.Size = new Size(209, 24);
+            addTilesetToolStripMenuItem.Text = "Add &Tileset";
             addTilesetToolStripMenuItem.Click += addTilesetToolStripMenuItem_Click;
             // 
             // addSpriteToolStripMenuItem
             // 
             addSpriteToolStripMenuItem.Image = Properties.Resources.SpriteIcon;
             addSpriteToolStripMenuItem.Name = "addSpriteToolStripMenuItem";
-            addSpriteToolStripMenuItem.Size = new Size(240, 24);
-            addSpriteToolStripMenuItem.Text = "Add New &Sprite";
+            addSpriteToolStripMenuItem.Size = new Size(209, 24);
+            addSpriteToolStripMenuItem.Text = "Add &Sprite";
             addSpriteToolStripMenuItem.Click += addSpriteToolStripMenuItem_Click;
             // 
             // addMapToolStripMenuItem
             // 
             addMapToolStripMenuItem.Image = Properties.Resources.MapIcon;
             addMapToolStripMenuItem.Name = "addMapToolStripMenuItem";
-            addMapToolStripMenuItem.Size = new Size(240, 24);
-            addMapToolStripMenuItem.Text = "Add New &Map";
+            addMapToolStripMenuItem.Size = new Size(209, 24);
+            addMapToolStripMenuItem.Text = "Add &Map";
             addMapToolStripMenuItem.Click += addMapToolStripMenuItem_Click;
             // 
             // addSpriteAnimationToolStripMenuItem
             // 
             addSpriteAnimationToolStripMenuItem.Image = Properties.Resources.AnimationIcon;
             addSpriteAnimationToolStripMenuItem.Name = "addSpriteAnimationToolStripMenuItem";
-            addSpriteAnimationToolStripMenuItem.Size = new Size(240, 24);
-            addSpriteAnimationToolStripMenuItem.Text = "Add New Sprite &Animation";
+            addSpriteAnimationToolStripMenuItem.Size = new Size(209, 24);
+            addSpriteAnimationToolStripMenuItem.Text = "Add Sprite &Animation";
             addSpriteAnimationToolStripMenuItem.Click += addSpriteAnimationToolStripMenuItem_Click;
             // 
             // addSoundEffectToolStripMenuItem
             // 
             addSoundEffectToolStripMenuItem.Image = Properties.Resources.SfxIcon;
             addSoundEffectToolStripMenuItem.Name = "addSoundEffectToolStripMenuItem";
-            addSoundEffectToolStripMenuItem.Size = new Size(240, 24);
-            addSoundEffectToolStripMenuItem.Text = "Add New Sound &Effect";
+            addSoundEffectToolStripMenuItem.Size = new Size(209, 24);
+            addSoundEffectToolStripMenuItem.Text = "Add Sound &Effect";
             addSoundEffectToolStripMenuItem.Click += addSoundEffectToolStripMenuItem_Click;
             // 
             // addMODToolStripMenuItem
             // 
             addMODToolStripMenuItem.Image = Properties.Resources.MODIcon;
             addMODToolStripMenuItem.Name = "addMODToolStripMenuItem";
-            addMODToolStripMenuItem.Size = new Size(240, 24);
-            addMODToolStripMenuItem.Text = "Add New M&OD";
+            addMODToolStripMenuItem.Size = new Size(209, 24);
+            addMODToolStripMenuItem.Text = "Add M&OD";
             addMODToolStripMenuItem.Click += addMODToolStripMenuItem_Click;
             // 
             // addNewFontToolStripMenuItem
             // 
             addNewFontToolStripMenuItem.Image = Properties.Resources.FontIcon;
             addNewFontToolStripMenuItem.Name = "addNewFontToolStripMenuItem";
-            addNewFontToolStripMenuItem.Size = new Size(240, 24);
-            addNewFontToolStripMenuItem.Text = "Add New &Font";
+            addNewFontToolStripMenuItem.Size = new Size(209, 24);
+            addNewFontToolStripMenuItem.Text = "Add &Font";
             addNewFontToolStripMenuItem.Click += addNewFontToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(237, 6);
+            toolStripSeparator1.Size = new Size(206, 6);
             // 
             // runCheckToolStripMenuItem
             // 
             runCheckToolStripMenuItem.Name = "runCheckToolStripMenuItem";
             runCheckToolStripMenuItem.ShortcutKeys = Keys.F5;
-            runCheckToolStripMenuItem.Size = new Size(240, 24);
+            runCheckToolStripMenuItem.Size = new Size(209, 24);
             runCheckToolStripMenuItem.Text = "&Run Check";
             runCheckToolStripMenuItem.Click += runCheckToolStripMenuItem_Click;
             // 
             // toolStripSeparator6
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new Size(237, 6);
+            toolStripSeparator6.Size = new Size(206, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
             propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            propertiesToolStripMenuItem.Size = new Size(240, 24);
+            propertiesToolStripMenuItem.Size = new Size(209, 24);
             propertiesToolStripMenuItem.Text = "&Properties...";
             propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
@@ -293,7 +268,7 @@
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize, lblModified });
             statusStrip.Location = new Point(0, 257);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(870, 24);
+            statusStrip.Size = new Size(574, 24);
             statusStrip.TabIndex = 4;
             statusStrip.Text = "statusStrip1";
             // 
@@ -312,12 +287,23 @@
             // toolStrip
             // 
             toolStrip.AutoSize = false;
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonOpen, toolStripButtonSave, toolStripBtnLogWindow });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripButtonNew, toolStripButtonOpen, toolStripButtonSave, toolStripBtnLogWindow });
             toolStrip.Location = new Point(0, 27);
             toolStrip.Name = "toolStrip";
-            toolStrip.Size = new Size(870, 28);
+            toolStrip.Size = new Size(574, 28);
             toolStrip.TabIndex = 5;
             toolStrip.Text = "toolStrip1";
+            // 
+            // toolStripButtonNew
+            // 
+            toolStripButtonNew.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonNew.Image = Properties.Resources.NewIcon;
+            toolStripButtonNew.ImageTransparentColor = Color.Magenta;
+            toolStripButtonNew.Name = "toolStripButtonNew";
+            toolStripButtonNew.Size = new Size(23, 25);
+            toolStripButtonNew.Text = "New";
+            toolStripButtonNew.ToolTipText = "New Project";
+            toolStripButtonNew.Click += toolStripButtonNew_Click;
             // 
             // toolStripButtonOpen
             // 
@@ -355,7 +341,6 @@
             // assetTree
             // 
             assetTree.BorderStyle = BorderStyle.None;
-            assetTree.ContextMenuStrip = ctxMenuAssetTree;
             assetTree.Dock = DockStyle.Fill;
             assetTree.Location = new Point(0, 22);
             assetTree.Name = "assetTree";
@@ -390,8 +375,6 @@
             assetTree.Nodes.AddRange(new TreeNode[] { treeNode1, treeNode2, treeNode3, treeNode4, treeNode5, treeNode6, treeNode7 });
             assetTree.Size = new Size(198, 178);
             assetTree.TabIndex = 7;
-            assetTree.NodeMouseClick += assetTree_NodeMouseClick;
-            assetTree.DoubleClick += assetTree_DoubleClick;
             // 
             // panel1
             // 
@@ -425,7 +408,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(870, 281);
+            ClientSize = new Size(574, 281);
             Controls.Add(splitter1);
             Controls.Add(panel1);
             Controls.Add(toolStrip);
@@ -438,7 +421,6 @@
             Name = "MainWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Game Asset Editor";
-            ctxMenuAssetTree.ResumeLayout(false);
             menuStrip.ResumeLayout(false);
             menuStrip.PerformLayout();
             statusStrip.ResumeLayout(false);
@@ -487,9 +469,7 @@
         private TreeView assetTree;
         private Panel panel1;
         private Label label1;
-        private ContextMenuStrip ctxMenuAssetTree;
-        private ToolStripMenuItem newAssetToolStripMenuItem;
-        private ToolStripMenuItem deleteAssetToolStripMenuItem;
         private Splitter splitter1;
+        private ToolStripButton toolStripButtonNew;
     }
 }

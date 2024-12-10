@@ -28,13 +28,13 @@ namespace GameEditor.MainEditor
 
         public BaseProjectForm() {}  // to keep VS happy
 
-        public ProjectData? Project {
-            get { return project; }
+        public ProjectData Project {
+            get { if (project == null) throw new Exception("no project!"); return project; }
             set { project = value; OnProjectChanged(); }
         }
 
         protected void SetDirty() {
-            project?.SetDirty();
+            Project.SetDirty();
         }
 
         protected virtual void OnProjectChanged() {

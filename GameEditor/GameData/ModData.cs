@@ -29,13 +29,12 @@ namespace GameEditor.GameData
 
         public ModFile ModFile { get { return modFile; } }
 
-        public int GameDataSize { get { return CalcGameDataSize(); } }
+        public int DataSize { get { return CalcDataSize(); } }
 
         public void Dispose() {
         }
 
-
-        private int CalcGameDataSize() {
+        private int CalcDataSize() {
             // sample struct: len(4) + loopStart(4) + loopLen(4) + finetune(1) + volume(1) + padding(2) + dataPointer(4)
             int sampleStructSize = 4 + 4 + 4 + 1 + 1 + 2 + 4;
 

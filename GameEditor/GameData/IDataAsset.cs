@@ -18,9 +18,9 @@ namespace GameEditor.GameData
 
     public interface IDataAsset : IDisposable
     {
-        public string Name { get; set; }
         public DataAssetType AssetType { get; }
-        public int GameDataSize { get; }
+        public string Name { get; set; }
+        public int DataSize { get; }
 
     }
 }

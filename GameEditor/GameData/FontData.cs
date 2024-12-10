@@ -32,11 +32,11 @@ namespace GameEditor.GameData
 
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.Font; } }
-
+        
         public int Width { get { return images.Width; } }
         public int Height { get { return images.Height; } }
 
-        public int GameDataSize {
+        public int DataSize {
             get {
                 int frameSize = (Width+7)/8 * Height;
                 // each frame(frameSize) * numFrames +

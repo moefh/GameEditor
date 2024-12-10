@@ -29,14 +29,13 @@ namespace GameEditor.GameData
         }
 
         public string Name { get; set; }
-
         public DataAssetType AssetType { get { return DataAssetType.Sfx; } }
 
         public sbyte[] Samples { get { return data; } }
 
         public int NumSamples { get { return data.Length; } }
 
-        public int GameDataSize { get { return NumSamples + 4; } }
+        public int DataSize { get { return NumSamples + 4; } }
 
         public void Dispose() {
         }

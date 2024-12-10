@@ -1,5 +1,4 @@
-﻿using GameEditor.GameData;
-using GameEditor.Misc;
+﻿using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -341,7 +340,7 @@ namespace GameEditor.CustomControls
                 return;
             }
 
-            if ((ModifierKeys & Keys.Modifiers) == Keys.Control) {
+            if (SelectedTool != PaintTool.RectSelect && (ModifierKeys & Keys.Modifiers) == Keys.Control) {
                 ApplyColorPickerTool(e, action);
             } else {
                 switch (SelectedTool) {

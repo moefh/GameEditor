@@ -60,7 +60,7 @@ namespace GameEditor.SpriteEditor
 
         protected override void OnNameChanged(EventArgs e) {
             base.OnNameChanged(e);
-            Project?.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshSpriteUsers(Sprite, null);
         }
 
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
@@ -76,7 +76,7 @@ namespace GameEditor.SpriteEditor
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteFramePicker.Invalidate();
             SetDirty();
-            Project?.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshSpriteUsers(Sprite, null);
         }
 
         private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
@@ -100,7 +100,7 @@ namespace GameEditor.SpriteEditor
             SetDirty();
             spriteEditor.Invalidate();
             spriteFramePicker.Invalidate();
-            Project?.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshSpriteUsers(Sprite, null);
         }
 
         private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -123,12 +123,12 @@ namespace GameEditor.SpriteEditor
             Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
             SetDirty();
             FixFormTitle();
-            Project?.UpdateDataSize();
-            UpdateGameDataSize();
+            Project.UpdateDataSize();
+            UpdateDataSize();
             spriteFramePicker.ResetSize();
             spriteEditor.SelectedFrame = 0;
             spriteFramePicker.SelectedFrame = 0;
-            Project?.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshSpriteUsers(Sprite, null);
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
@@ -151,8 +151,8 @@ namespace GameEditor.SpriteEditor
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
                 SetDirty();
                 FixFormTitle();
-                UpdateGameDataSize();
-                Project?.UpdateDataSize();
+                UpdateDataSize();
+                Project.UpdateDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.ResetSize();
             } catch (Exception ex) {

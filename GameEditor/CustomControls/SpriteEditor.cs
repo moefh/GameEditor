@@ -27,7 +27,6 @@ namespace GameEditor.CustomControls
 
         protected override int EditImageWidth { get { return (Sprite != null) ? Sprite.Width : 0; } }
         protected override int EditImageHeight { get { return (Sprite != null) ? Sprite.Height : 0; } }
-        public bool ReadOnly { get; set; } // TODO: remove this (or move to AbstractImageEditor)
         public Color GridColor { get; set; }
 
         public RenderFlags RenderFlags {

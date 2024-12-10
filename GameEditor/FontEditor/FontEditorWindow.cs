@@ -90,8 +90,8 @@ namespace GameEditor.FontEditor
             fontEditor.Invalidate();
             SetDirty();
             FixFormTitle();
-            UpdateGameDataSize();
-            Project?.UpdateDataSize();
+            UpdateDataSize();
+            Project.UpdateDataSize();
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -105,8 +105,8 @@ namespace GameEditor.FontEditor
                 fontEditor.Invalidate();
                 SetDirty();
                 FixFormTitle();
-                UpdateGameDataSize();
-                Project?.UpdateDataSize();
+                UpdateDataSize();
+                Project.UpdateDataSize();
                 Util.Log($"== Imported font image from {dlg.ImportFileName}");
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Font");

@@ -1,8 +1,4 @@
-﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
-using GameEditor.MainEditor;
-using GameEditor.SpriteAnimationEditor;
-using GameEditor.SpriteEditor;
+﻿using GameEditor.MainEditor;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -20,30 +16,35 @@ namespace GameEditor.Misc
 {
     public static class Util
     {
-        public const uint LOG_TARGET_DEBUG = 1<<0;
-        public const uint LOG_TARGET_WINDOW = 1<<1;
+        [Flags]
+        public enum LogTarget {
+            Debug = 1<<0,
+            Window = 1<<1,
+        }
 
         private static Point nextWindowPosition;
-        private static uint logTargets;
+        private static LogTarget logTargets;
         private static bool logTargetsLoaded;
 
         static Util() {
             DesignMode = true;
             nextWindowPosition = new Point(20, 20);
-            logTargets = LOG_TARGET_WINDOW;
+            logTargets = LogTarget.Window;
             logTargetsLoaded = false;
         }
 
         public static bool DesignMode { get; set; }
-        public static uint LogTargets {
+        public static MainWindow? MainWindow { get; set; }
+
+        public static LogTarget LogTargets {
             get {
                 if (logTargetsLoaded) return logTargets;
                 try {
                     bool? saved = (bool?)Properties.Settings.Default[$"LogTargetsSaved"];
                     if (saved == true) {
-                        logTargets = (uint?)Properties.Settings.Default[$"LogTargets"] ?? LOG_TARGET_WINDOW;
+                        logTargets = (LogTarget)((uint?)Properties.Settings.Default[$"LogTargets"] ?? (uint)LogTarget.Window);
                     } else {
-                        logTargets = LOG_TARGET_WINDOW;
+                        logTargets = LogTarget.Window;
                     }
                 } catch (Exception) {
                     // ignore
@@ -55,7 +56,7 @@ namespace GameEditor.Misc
                 logTargets = value;
                 logTargetsLoaded = true;
                 try {
-                    Properties.Settings.Default[$"LogTargets"] = logTargets;
+                    Properties.Settings.Default[$"LogTargets"] = (uint)logTargets;
                     Properties.Settings.Default[$"LogTargetsSaved"] = true;
                     Properties.Settings.Default.Save();
                 } catch (Exception) {
@@ -64,13 +65,10 @@ namespace GameEditor.Misc
             }
         }
 
-        public static MainWindow? MainWindow { get; set; }
-
-
         public static void Log(string log) {
             if (DesignMode) return;
-            if ((LogTargets & LOG_TARGET_DEBUG) != 0) System.Diagnostics.Debug.WriteLine(log);
-            if ((LogTargets & LOG_TARGET_WINDOW) != 0) MainWindow?.AddLog(log + "\r\n");
+            if ((LogTargets & LogTarget.Debug) != 0) System.Diagnostics.Debug.WriteLine(log);
+            if ((LogTargets & LogTarget.Window) != 0) MainWindow?.AddLog(log + "\r\n");
         }
 
         public static void ShowError(Exception ex, string message, string title) {
@@ -139,8 +137,5 @@ namespace GameEditor.Misc
             return sb.ToString();
         }
 
-        public static Exception ProjectRequired() {
-            return new Exception("Project required");
-        }
     }
 }

@@ -36,10 +36,6 @@ namespace GameEditor.SfxEditor
         protected override void FixFormTitle() {
             Text = $"{Sfx.Name} [length {Sfx.NumSamples}] - Sound Effect";
         }
-        private void UpdateDataSize() {
-            lblDataSize.Text = $"{Util.FormatNumber(Sfx.GameDataSize)} bytes";
-        }
-
         private void RefreshSfx() {
             FixFormTitle();
             UpdateDataSize();

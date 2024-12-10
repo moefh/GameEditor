@@ -27,21 +27,16 @@ namespace GameEditor.GameData
 
         public Sprite(string name) {
             Name = name;
-            FileName = null;
             images = CreateDefaultImages(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_NUM_FRAMES);
         }
 
         public Sprite(string name, int width, int height, int numFrames) {
             Name = name;
-            FileName = null;
             images = CreateDefaultImages(width, height, numFrames);
         }
 
         public string Name { get; set; }
-
         public DataAssetType AssetType { get { return DataAssetType.Sprite; } }
-
-        public string? FileName { get; set; }
 
         public int Width { get { return images.Width; } }
 
@@ -49,7 +44,7 @@ namespace GameEditor.GameData
 
         public int NumFrames { get { return images.NumImages; } }
 
-        public int GameDataSize {
+        public int DataSize {
             get {
                 int frameSize = 4*((Width+3)/4) * Height;
                 // frames+mirrors(2) * each frame(frameSize) * numFrames +

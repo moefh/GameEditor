@@ -10,25 +10,26 @@ namespace GameEditor.GameData
 {
     public class MapTiles
     {
-        const int EMPTY_FG = -1;
-        const int EMPTY_BG = 0;
-        const int EMPTY_CLIP = -1;
+        public const int EMPTY_FG = -1;
+        public const int EMPTY_BG = 0;
+        public const int EMPTY_CLIP = -1;
+
+        [Flags]
+        public enum Layers {
+            Foreground = 1<<0,
+            Background = 1<<1,
+            Collision = 1<<2,
+        }
 
         public int[,] fg;
         public int[,] bg;
         public int[,] clip;
 
-        public MapTiles(int width, int height) {
+        public MapTiles(int width, int height, int initFg = EMPTY_FG, int initBg = EMPTY_BG, int initClip = EMPTY_CLIP) {
             fg = new int[width, height];
             bg = new int[width, height];
             clip = new int[width, height];
-            for (int y = 0; y < height; y++) {
-                for (int x = 0; x < width; x++) {
-                    bg[x, y] = EMPTY_BG;
-                    fg[x, y] = EMPTY_FG;
-                    clip[x, y] = EMPTY_CLIP;
-                }
-            }
+            Clear(initFg, initFg, initFg);
         }
 
         public MapTiles(int width, int height, List<byte> data) {
@@ -55,6 +56,28 @@ namespace GameEditor.GameData
         private int ByteToTile(byte b) {
             if (b == 0xff) return -1;
             return b;
+        }
+
+        public void Clear(int clearFg, int clearBg, int clearClip) {
+            for (int y = 0; y < Height; y++) {
+                for (int x = 0; x < Width; x++) {
+                    bg[x, y] = clearBg;
+                    fg[x, y] = clearFg;
+                    clip[x, y] = clearClip;
+                }
+            }
+        }
+
+        public void ClearRect(Rectangle rect, Layers layers, int clearFg = EMPTY_FG, int clearBg = EMPTY_BG, int clearClip = EMPTY_CLIP) {
+            for (int y = 0; y < rect.Height; y++) {
+                for (int x = 0; x < rect.Width; x++) {
+                    int mx = x + rect.X;
+                    int my = y + rect.Y;
+                    if (layers.HasFlag(Layers.Background)) bg[mx, my] = clearBg;
+                    if (layers.HasFlag(Layers.Foreground)) fg[mx, my] = clearFg;
+                    if (layers.HasFlag(Layers.Collision)) clip[mx, my] = clearClip;
+                }
+            }
         }
 
         private static int[,] Resize(int[,] block, int newW, int newH, int empty) {
@@ -109,5 +132,6 @@ namespace GameEditor.GameData
                 }
             }
         }
+
     }
 }

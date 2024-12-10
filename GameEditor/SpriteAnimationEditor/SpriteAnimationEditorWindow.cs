@@ -53,7 +53,6 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         public void RefreshSpriteList() {
-            if (Project == null) throw Util.ProjectRequired();
             toolStripComboSprite.ComboBox.Enabled = false;
 
             toolStripComboSprite.ComboBox.DataSource = null;
@@ -173,12 +172,11 @@ namespace GameEditor.SpriteAnimationEditor
         private void animEditor_ImageChanged(object sender, EventArgs e) {
             animLoopView.Invalidate();
             SetDirty();
-            Project?.RefreshSprite(Animation.Sprite);
-            Project?.RefreshSpriteUsers(Animation.Sprite, animationItem);
+            Project.RefreshSprite(Animation.Sprite);
+            Project.RefreshSpriteUsers(Animation.Sprite, animationItem);
         }
 
         private void toolStripComboSprite_SelectedIndexChanged(object sender, EventArgs e) {
-            if (Project == null) throw Util.ProjectRequired();
             if (toolStripComboSprite.SelectedIndex < 0 || toolStripComboSprite.SelectedIndex > Project.SpriteList.Count) return;
             if (!toolStripComboSprite.ComboBox.Enabled) return;
 

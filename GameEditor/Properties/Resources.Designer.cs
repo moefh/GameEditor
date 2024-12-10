@@ -93,6 +93,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap CollisionIcon {
+            get {
+                object obj = ResourceManager.GetObject("CollisionIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap DropCursor {
             get {
                 object obj = ResourceManager.GetObject("DropCursor", resourceCulture);
@@ -248,9 +258,39 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap NewIcon {
+            get {
+                object obj = ResourceManager.GetObject("NewIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap OpenIcon {
             get {
                 object obj = ResourceManager.GetObject("OpenIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PencilBgIcon {
+            get {
+                object obj = ResourceManager.GetObject("PencilBgIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap PencilFgIcon {
+            get {
+                object obj = ResourceManager.GetObject("PencilFgIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
@@ -308,6 +348,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap ScreenIcon {
+            get {
+                object obj = ResourceManager.GetObject("ScreenIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap SelRectIcon {
             get {
                 object obj = ResourceManager.GetObject("SelRectIcon", resourceCulture);
@@ -348,9 +398,29 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap TilesBgIcon {
+            get {
+                object obj = ResourceManager.GetObject("TilesBgIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap TilesetIcon {
             get {
                 object obj = ResourceManager.GetObject("TilesetIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TilesFgIcon {
+            get {
+                object obj = ResourceManager.GetObject("TilesFgIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

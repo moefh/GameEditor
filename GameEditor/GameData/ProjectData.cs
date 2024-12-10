@@ -18,6 +18,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Cryptography.Pkcs;
+using System.Reflection.Metadata.Ecma335;
 
 namespace GameEditor.GameData
 {
@@ -129,16 +130,12 @@ namespace GameEditor.GameData
             return -1;
         }
 
-        public int GetGameDataSize() {
+        public int GetDataSize() {
             int size = 0;
             foreach (AssetList<IDataAssetItem> list in assets.Values) {
-                size += list.Aggregate(0, (int cur, IDataAssetItem si) => cur + si.Asset.GameDataSize);
+                size += list.Aggregate(0, (int cur, IDataAssetItem si) => cur + si.Asset.DataSize);
             }
             return size;
-        }
-
-        public int GetGameDataSize(DataAssetType type) {
-            return assets[type].Aggregate(0, (int cur, IDataAssetItem si) => cur + si.Asset.GameDataSize);
         }
 
         public bool SaveProject(string filename) {
@@ -215,6 +212,19 @@ namespace GameEditor.GameData
         // ASSET CREATION
         // =======================================================================
 
+        private string GetAssetTypeName(DataAssetType type) {
+            return type switch {
+            DataAssetType.Font => "font",
+            DataAssetType.Map => "map",
+            DataAssetType.Mod => "mod",
+            DataAssetType.Sfx => "sfx",
+            DataAssetType.Sprite => "sprite",
+            DataAssetType.SpriteAnimation => "sprite_animation",
+            DataAssetType.Tileset => "tileset",
+            _ => "unknown",
+            };
+        }
+
         private string GetNewAssetName(DataAssetType type, string baseName) {
             string name = baseName;
             int next = 1;
@@ -227,93 +237,46 @@ namespace GameEditor.GameData
             return name;
         }
 
-        public IDataAssetItem? AddAsset(DataAssetType type) {
-            return type switch {
-                DataAssetType.Tileset => AddTileset(),
-                DataAssetType.Map => AddMap(),
-                DataAssetType.Sprite => AddSprite(),
-                DataAssetType.SpriteAnimation => AddSpriteAnimation(),
-                DataAssetType.Sfx => AddSfx(),
-                DataAssetType.Mod => AddMod(),
-                DataAssetType.Font => AddFont(),
-                _ => null,
+        public IDataAssetItem? CreateNewAsset(DataAssetType type) {
+            string name = GetNewAssetName(type, GetAssetTypeName(type));
+
+            IDataAssetItem? item = null;
+            switch (type) {
+            case DataAssetType.Tileset: item = new TilesetItem(new Tileset(name), this); break;
+            case DataAssetType.Sprite: item = new SpriteItem(new Sprite(name), this); break;
+            case DataAssetType.Sfx: item = new SfxDataItem(new SfxData(name), this); break;
+            case DataAssetType.Mod: item = new ModDataItem(new ModData(name), this); break;
+            case DataAssetType.Font: item = new FontDataItem(new FontData(name), this); break;
+
+            case DataAssetType.Map:
+                if (TilesetList.Count == 0) {
+                    MessageBox.Show(
+                        "You need at least one tileset to create a map.",
+                        "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } else {
+                    Tileset tileset = (Tileset)TilesetList[0].Asset;
+                    item = new MapDataItem(new MapData(name, 24, 16, tileset), this);
+                }
+                break;
+
+            case DataAssetType.SpriteAnimation:
+                if (SpriteList.Count == 0) {
+                    MessageBox.Show(
+                        "You need at least one sprite to create an animation.",
+                        "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                } else {
+                    Sprite sprite = (Sprite)SpriteList[0].Asset;
+                    item = new SpriteAnimationItem(new SpriteAnimation(sprite, name), this);
+                }
+                break;
             };
-        }
 
-        public TilesetItem AddTileset() {
-            string name = GetNewAssetName(DataAssetType.Tileset, "tileset");
-            TilesetItem ti = new TilesetItem(new Tileset(name), this);
-            AddAssetItem(ti);
-            SetDirty();
-            UpdateDataSize();
-            return ti;
-        }
-
-        public SpriteItem AddSprite() {
-            string name = GetNewAssetName(DataAssetType.Sprite, "sprite");
-            SpriteItem si = new SpriteItem(new Sprite(name), this);
-            AddAssetItem(si);
-            SetDirty();
-            UpdateDataSize();
-            return si;
-        }
-
-        public MapDataItem? AddMap() {
-            if (TilesetList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one tileset to create a map.",
-                    "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
+            if (item != null) {
+                AddAssetItem(item);
+                SetDirty();
+                UpdateDataSize();
             }
-            string name = GetNewAssetName(DataAssetType.Map, "map");
-            MapDataItem mi = new MapDataItem(new MapData(name, 24, 16, (Tileset)TilesetList[0].Asset), this);
-            AddAssetItem(mi);
-            SetDirty();
-            UpdateDataSize();
-            return mi;
-        }
-
-        public SpriteAnimationItem? AddSpriteAnimation() {
-            if (SpriteList.Count == 0) {
-                MessageBox.Show(
-                    "You need at least one sprite to create an animation.",
-                    "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                return null;
-            }
-            string name = GetNewAssetName(DataAssetType.SpriteAnimation, "sprite_animation");
-            Sprite sprite = (Sprite)SpriteList[0].Asset;
-            SpriteAnimationItem ai = new SpriteAnimationItem(new SpriteAnimation(sprite, name), this);
-            AddAssetItem(ai);
-            SetDirty();
-            UpdateDataSize();
-            return ai;
-        }
-
-        public SfxDataItem AddSfx() {
-            string name = GetNewAssetName(DataAssetType.Sfx, "sfx");
-            SfxDataItem si = new SfxDataItem(new SfxData(name), this);
-            AddAssetItem(si);
-            SetDirty();
-            UpdateDataSize();
-            return si;
-        }
-
-        public ModDataItem AddMod() {
-            string name = GetNewAssetName(DataAssetType.Mod, "mod");
-            ModDataItem mi = new ModDataItem(new ModData("new_mod"), this);
-            AddAssetItem(mi);
-            SetDirty();
-            UpdateDataSize();
-            return mi;
-        }
-
-        public FontDataItem AddFont() {
-            string name = GetNewAssetName(DataAssetType.Font, "font");
-            FontDataItem fi = new FontDataItem(new FontData(name), this);
-            AddAssetItem(fi);
-            SetDirty();
-            UpdateDataSize();
-            return fi;
+            return item;
         }
 
         // =======================================================================

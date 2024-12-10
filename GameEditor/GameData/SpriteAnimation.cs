@@ -113,7 +113,7 @@ namespace GameEditor.GameData
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.SpriteAnimation; } }
 
-        public int GameDataSize {
+        public int DataSize {
             get {
                 // frameDataOffset(2) + frameDataLength(2) + numHeadIndices*index(1) + numFootIndices*index(1)
                 int size = 0;

@@ -31,33 +31,27 @@ namespace GameEditor.GameData
 
         public Tileset(string name) {
             Name = name;
-            FileName = null;
             images = CreateDefaultImages(colors.Count);
         }
 
         public Tileset(string name, int numTiles) {
             Name = name;
-            FileName = null;
             images = CreateDefaultImages(numTiles);
         }
 
         public Tileset(string name, Bitmap bitmap) {
             Name = name;
-            FileName = null;
             this.images = new ImageCollection(bitmap, TILE_SIZE);
         }
 
         public string Name { get; set; }
-
         public DataAssetType AssetType { get { return DataAssetType.Tileset; } }
-
-        public string? FileName { get; set; }
 
         public int NumTiles {
             get { return images.NumImages; }
         }
         
-        public int GameDataSize {
+        public int DataSize {
             get { return TILE_SIZE*TILE_SIZE*NumTiles + 4*4 + 4; }
         }
 
