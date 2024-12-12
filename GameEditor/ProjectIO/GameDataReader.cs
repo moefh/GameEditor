@@ -722,7 +722,11 @@ namespace GameEditor.ProjectIO
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
-                Token numSamples = ExpectNumber();
+                Token length = ExpectNumber();
+                ExpectPunct(',');
+                Token loopStart = ExpectNumber();
+                ExpectPunct(',');
+                Token loopLength = ExpectNumber();
                 ExpectPunct(',');
                 Token dataIdent = ExpectIdent();
                 ExpectPunct('}');
@@ -731,14 +735,17 @@ namespace GameEditor.ProjectIO
                 if (! sfxSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
                     throw new ParseError($"invalid sfx: samples {dataIdent.Str} not found", dataIdent.LineNum);
                 }
-                if (numSamples.Num != data.Count) {
-                    throw new ParseError($"invalid sfx: expected {numSamples.Num} samples, got {data.Count}", dataIdent.LineNum);
+                if (length.Num != data.Count) {
+                    throw new ParseError($"invalid sfx: expected {length.Num} samples, got {data.Count}", dataIdent.LineNum);
+                }
+                if (loopStart.Num < 0 || loopStart.Num > length.Num || loopLength.Num < 0 || loopStart.Num + loopLength.Num > length.Num) {
+                    throw new ParseError($"invalid sfx: loop out of bounds", dataIdent.LineNum);
                 }
 
                 string name = ExtractGlobalLowerName(dataIdent.Str, "sfx_samples");
-                sfxList.Add(new SfxData(name, data));
+                sfxList.Add(new SfxData(name, (int)loopStart.Num, (int)loopLength.Num, data));
 
-                Util.Log($"-> got sfx for {dataIdent.Str} with {numSamples.Num} samples");
+                Util.Log($"-> got sfx for {dataIdent.Str} with {length.Num} samples");
             }
             ExpectPunct(';');
         }

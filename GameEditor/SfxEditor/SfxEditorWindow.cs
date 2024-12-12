@@ -26,7 +26,20 @@ namespace GameEditor.SfxEditor
             InitializeComponent();
             SetupAssetListControls(toolStripTxtName, lblDataSize);
 
-            soundSampleView.Samples = Sfx.Samples;
+            sampleView.MarkerColor[0] = lblLoopStartColor.BackColor;
+            sampleView.MarkerColor[1] = lblLoopLengthColor.BackColor;
+            sampleView.Samples = Sfx.Samples;
+            sampleView.Marker[0] = Sfx.LoopStart;
+            sampleView.Marker[1] = Sfx.LoopStart + Sfx.LoopLength;
+
+            numSampleLoopStart.Enabled = false;
+            lblSampleLength.Text = $"{Sfx.Length}";
+            numSampleLoopStart.Maximum = Sfx.Length;
+            numSampleLoopStart.Value = int.Clamp(Sfx.LoopStart, 0, Sfx.Length);
+            numSampleLoopLen.Maximum = Sfx.Length;
+            numSampleLoopLen.Value = int.Clamp(Sfx.LoopLength, 0, Sfx.Length-Sfx.LoopStart);
+            numSampleLoopStart.Enabled = true;
+
             numSampleRate.Value = SfxData.DEFAULT_SAMPLE_RATE;
             player = new SamplePlayer();
         }
@@ -34,13 +47,27 @@ namespace GameEditor.SfxEditor
         public SfxData Sfx { get { return sfxItem.Sfx; } }
 
         protected override void FixFormTitle() {
-            Text = $"{Sfx.Name} [length {Sfx.NumSamples}] - Sound Effect";
+            Text = $"{Sfx.Name} [length {Sfx.Length}] - Sound Effect";
         }
+
         private void RefreshSfx() {
             FixFormTitle();
             UpdateDataSize();
-            soundSampleView.Samples = Sfx.Samples;
-            soundSampleView.Invalidate();
+
+            numSampleLoopStart.Enabled = false;
+            lblSampleLength.Text = $"{Sfx.Length}";
+            numSampleLoopStart.Value = 0;
+            numSampleLoopStart.Maximum = Sfx.Length;
+            numSampleLoopStart.Value = int.Clamp(Sfx.LoopStart, 0, Sfx.Length);
+            numSampleLoopLen.Value = 0;
+            numSampleLoopLen.Maximum = Sfx.Length;
+            numSampleLoopLen.Value = int.Clamp(Sfx.LoopLength, 0, Sfx.Length-Sfx.LoopStart);
+            numSampleLoopStart.Enabled = true;
+
+            sampleView.Samples = Sfx.Samples;
+            sampleView.Marker[0] = (int) numSampleLoopStart.Value;
+            sampleView.Marker[1] = (int) (numSampleLoopStart.Value + numSampleLoopLen.Value);
+            sampleView.Invalidate();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
@@ -49,12 +76,12 @@ namespace GameEditor.SfxEditor
         }
 
         private void btnPlay_Click(object sender, EventArgs e) {
-            player.Play(Sfx.Samples, sampleVolumeControl.Value, (int) numSampleRate.Value);
+            player.Play(Sfx.Samples, sampleVolumeControl.Value, (int)numSampleRate.Value);
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
             SfxExportDialog dlg = new SfxExportDialog();
-            dlg.SampleRate = (int) numSampleRate.Value;
+            dlg.SampleRate = (int)numSampleRate.Value;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 try {
                     Sfx.Export(dlg.SfxFileName, dlg.SampleRate, dlg.Volume);
@@ -83,6 +110,36 @@ namespace GameEditor.SfxEditor
             }
             RefreshSfx();
             SetDirty();
+        }
+
+        // =========================================================================
+        // LOOP START/LENGTH
+        // =========================================================================
+
+        private void numSampleLoopStart_Enter(object sender, EventArgs e) {
+            sampleView.SelectedMarker = 0;
+        }
+
+        private void numSampleLoopLen_Enter(object sender, EventArgs e) {
+            sampleView.SelectedMarker = 1;
+        }
+
+        private void SampleParametersChanged(object sender, EventArgs e) {
+            if (sender == sampleView) {
+                int start = int.Clamp(sampleView.Marker[0], 0, Sfx.Length);
+                int end = int.Clamp(sampleView.Marker[1], start, Sfx.Length);
+                sampleView.Marker[0] = start;
+                sampleView.Marker[1] = end;
+                numSampleLoopStart.Value = start;
+                numSampleLoopLen.Value = int.Clamp(end - start, 0, Sfx.Length - start);
+            } else if (numSampleLoopStart.Enabled) {
+                Sfx.LoopStart = (int)numSampleLoopStart.Value;
+                Sfx.LoopLength = int.Clamp((int)numSampleLoopLen.Value, 0, Sfx.Length - Sfx.LoopStart);
+                sampleView.Marker[0] = Sfx.LoopStart;
+                sampleView.Marker[1] = Sfx.LoopStart + Sfx.LoopLength;
+                sampleView.Invalidate();
+                SetDirty();
+            }
         }
     }
 }

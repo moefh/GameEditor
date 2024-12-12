@@ -256,7 +256,7 @@ namespace GameEditor.ProjectIO
         protected void WriteSfxData(SfxData sfx) {
             string ident = identifiers.Add(sfx, "sfx_samples", sfx.Name);
             f.Write($"static const int8_t {ident}[] = {{");
-            for (int i = 0; i < sfx.NumSamples; i++) {
+            for (int i = 0; i < sfx.Length; i++) {
                 if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
                 f.Write($"{sfx.Samples[i]},");
             }
@@ -277,7 +277,10 @@ namespace GameEditor.ProjectIO
             f.WriteLine($"const struct {GetUpperGlobal("SFX")} {GetLowerGlobal("sfxs")}[] = {{");
             foreach (SfxDataItem si in Project.SfxList) {
                 string name = identifiers.Get(si.Sfx);
-                f.WriteLine($"  {{ {si.Sfx.NumSamples}, {name} }},");
+                int len = si.Sfx.Length;
+                int loopStart = si.Sfx.LoopStart;
+                int loopLen = si.Sfx.LoopLength;
+                f.WriteLine($"  {{ {len}, {loopStart}, {loopLen}, {name} }},");
             }
             f.WriteLine("};");
             f.WriteLine();

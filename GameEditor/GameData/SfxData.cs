@@ -23,8 +23,10 @@ namespace GameEditor.GameData
             data = CreateDefaultSamples();
         }
 
-        public SfxData(string name, List<sbyte> samples) {
+        public SfxData(string name, int loopStart, int loopLength, List<sbyte> samples) {
             Name = name;
+            LoopStart = loopStart;
+            LoopLength = loopLength;
             data = samples.ToArray();
         }
 
@@ -32,10 +34,11 @@ namespace GameEditor.GameData
         public DataAssetType AssetType { get { return DataAssetType.Sfx; } }
 
         public sbyte[] Samples { get { return data; } }
+        public int Length { get { return data.Length; } }
+        public int LoopStart { get; set; }
+        public int LoopLength { get; set; }
 
-        public int NumSamples { get { return data.Length; } }
-
-        public int DataSize { get { return NumSamples + 4; } }
+        public int DataSize { get { return 4+4+4 + Length; } }
 
         public void Dispose() {
         }
@@ -61,6 +64,8 @@ namespace GameEditor.GameData
             WaveFileReader r = new WaveFileReader(filename);
             if (newSampleRate <= 0) newSampleRate = r.SampleRate;
             data = r.GetSamples(channelBits, newSampleRate, volume);
+            LoopStart = int.Clamp(LoopStart, 0, data.Length);
+            LoopLength = int.Clamp(LoopLength, 0, data.Length - LoopStart);
         }
 
     }

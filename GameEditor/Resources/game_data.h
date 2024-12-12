@@ -31,8 +31,10 @@ struct ${PREFIX}_MOD_DATA {
 };
 
 struct ${PREFIX}_SFX {
-   int32_t num_samples;
-   const uint8_t *samples;
+   int32_t len;
+   int32_t loop_start;
+   int32_t loop_len;
+   const int8_t *samples;
 };
 
 struct ${PREFIX}_IMAGE {
@@ -51,7 +53,6 @@ struct ${PREFIX}_MAP {
    const struct ${PREFIX}_IMAGE *tileset;
    const uint8_t *tiles;
 };
-
 
 struct ${PREFIX}_SPRITE_ANIMATION_LOOP {
   uint16_t offset;   // offset into animation frame_indices

@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Globalization;
+using GameEditor.GameData;
 
 namespace GameEditor.Misc
 {
@@ -25,6 +26,7 @@ namespace GameEditor.Misc
         private static Point nextWindowPosition;
         private static LogTarget logTargets;
         private static bool logTargetsLoaded;
+        private static ProjectData? designModeDummyProject;
 
         static Util() {
             DesignMode = true;
@@ -35,6 +37,13 @@ namespace GameEditor.Misc
 
         public static bool DesignMode { get; set; }
         public static MainWindow? MainWindow { get; set; }
+
+        public static ProjectData DesignModeDummyProject {
+            get {
+                designModeDummyProject ??= new ProjectData();
+                return designModeDummyProject;
+            }
+        }
 
         public static LogTarget LogTargets {
             get {

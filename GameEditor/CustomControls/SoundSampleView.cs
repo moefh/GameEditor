@@ -86,7 +86,7 @@ namespace GameEditor.CustomControls
                 for (int m = 0; m < markers.Length; m++) {
                     if (markerX[m] != x) continue;
                     using Pen p = new Pen(markerColors[m]);
-                    pe.Graphics.DrawLine(p, x + MARGIN_WIDTH, MARGIN_HEIGHT, x + MARGIN_WIDTH, ClientSize.Height-MARGIN_HEIGHT);
+                    pe.Graphics.DrawLine(p, x + MARGIN_WIDTH, 0, x + MARGIN_WIDTH, ClientSize.Height);
                 }
                 pe.Graphics.DrawLine(Pens.White, x + MARGIN_WIDTH, yZero - y, x + MARGIN_WIDTH, yZero);
             }

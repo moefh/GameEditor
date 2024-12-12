@@ -183,6 +183,10 @@ namespace GameEditor.ModEditor
             for (int octave = 0; octave < ModUtil.PeriodTable.GetLength(0); octave++) {
                 comboPlaySampleOctave.Items.Add($"{octave - 1}");
             }
+            // set loop marker colors
+            sampleView.MarkerColor[0] = Color.FromArgb(128,192,255);
+            sampleView.MarkerColor[1] = Color.FromArgb(255,192,160);
+
 
             UpdateSampleListDisplay();
             UpdateSamplePlayVolumeDisplay();
