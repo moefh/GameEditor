@@ -43,32 +43,5 @@ namespace GameEditor.MainEditor
             Close();
         }
 
-        private void btnExportHeader_Click(object sender, EventArgs e) {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Save Header File";
-            dlg.Filter = "C header files (*.h)|*.h|All files|*.*";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-
-            string prefixLower = IdentifierPrefix.ToLowerInvariant();
-            string prefixUpper = IdentifierPrefix.ToUpperInvariant();
-            string content = Regex.Replace(Resources.game_data, """\${([A-Za-z0-9_]+)}""", delegate(Match m) {
-                string name = m.Groups[1].ToString();
-                return name switch {
-                    "prefix" => prefixLower,
-                    "PREFIX" => prefixUpper,
-                    _ => "?",
-                };
-            });
-            content.ReplaceLineEndings("\n");
-            try {
-                File.WriteAllBytes(dlg.FileName, Encoding.UTF8.GetBytes(content));
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error writing {dlg.FileName}", "Error Saving Header File");
-                return;
-            }
-            MessageBox.Show("Saved header file with declarations.", "File Saved",
-                            MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
     }
 }

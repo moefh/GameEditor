@@ -32,7 +32,6 @@
             txtIdentifierPrefix = new TextBox();
             btnCancel = new Button();
             btnOK = new Button();
-            btnExportHeader = new Button();
             toolTip = new ToolTip(components);
             SuspendLayout();
             // 
@@ -73,7 +72,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(276, 138);
+            btnCancel.Location = new Point(117, 138);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(96, 37);
             btnCancel.TabIndex = 2;
@@ -83,7 +82,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(378, 138);
+            btnOK.Location = new Point(219, 138);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(96, 37);
             btnOK.TabIndex = 3;
@@ -91,25 +90,13 @@
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += btnOK_Click;
             // 
-            // btnExportHeader
-            // 
-            btnExportHeader.Location = new Point(277, 73);
-            btnExportHeader.Name = "btnExportHeader";
-            btnExportHeader.Size = new Size(160, 28);
-            btnExportHeader.TabIndex = 4;
-            btnExportHeader.Text = "Export Header...";
-            toolTip.SetToolTip(btnExportHeader, "Generate header file with struct declarations");
-            btnExportHeader.UseVisualStyleBackColor = true;
-            btnExportHeader.Click += btnExportHeader_Click;
-            // 
             // ProjectPropertiesDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(486, 187);
-            Controls.Add(btnExportHeader);
+            ClientSize = new Size(327, 187);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
             Controls.Add(txtIdentifierPrefix);
@@ -134,7 +121,6 @@
         private TextBox txtIdentifierPrefix;
         private Button btnCancel;
         private Button btnOK;
-        private Button btnExportHeader;
         private ToolTip toolTip;
     }
 }

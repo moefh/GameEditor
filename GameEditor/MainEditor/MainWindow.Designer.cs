@@ -72,6 +72,7 @@
             panel1 = new Panel();
             label1 = new Label();
             splitter1 = new Splitter();
+            exportHeaderToolStripMenuItem = new ToolStripMenuItem();
             menuStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             toolStrip.SuspendLayout();
@@ -163,7 +164,7 @@
             // 
             // projectToolStripMenuItem
             // 
-            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, toolStripSeparator1, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
+            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             projectToolStripMenuItem.Size = new Size(63, 23);
             projectToolStripMenuItem.Text = "&Project";
@@ -410,6 +411,13 @@
             splitter1.TabIndex = 17;
             splitter1.TabStop = false;
             // 
+            // exportHeaderToolStripMenuItem
+            // 
+            exportHeaderToolStripMenuItem.Name = "exportHeaderToolStripMenuItem";
+            exportHeaderToolStripMenuItem.Size = new Size(209, 24);
+            exportHeaderToolStripMenuItem.Text = "Export Header...";
+            exportHeaderToolStripMenuItem.Click += exportHeaderToolStripMenuItem_Click;
+            // 
             // MainWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -478,5 +486,6 @@
         private Splitter splitter1;
         private ToolStripButton toolStripButtonNew;
         private ToolStripSeparator toolStripSeparator2;
+        private ToolStripMenuItem exportHeaderToolStripMenuItem;
     }
 }
