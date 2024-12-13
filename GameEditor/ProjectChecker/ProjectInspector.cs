@@ -128,7 +128,7 @@ namespace GameEditor.ProjectChecker
             const int TILE_SIZE = Tileset.TILE_SIZE;
 
             bool mapTooSmall = false;
-            if (map.Width * TILE_SIZE < SCREEN_WIDTH || map.Height * TILE_SIZE < SCREEN_HEIGHT) {
+            if (map.FgWidth * TILE_SIZE < SCREEN_WIDTH || map.FgHeight * TILE_SIZE < SCREEN_HEIGHT) {
                 AddProblem(ProblemType.MapTooSmall, new MapProblem(project, map));
                 mapTooSmall = true;
             }
@@ -136,19 +136,19 @@ namespace GameEditor.ProjectChecker
                 // only complain about bg being too small if map size is ok
                 AddProblem(ProblemType.MapBackgroundTooSmall, new MapProblem(project, map));
             }
-            if (map.BgWidth > map.Width || map.BgHeight > map.Height) {
+            if (map.BgWidth > map.FgWidth || map.BgHeight > map.FgHeight) {
                 AddProblem(ProblemType.MapBackgroundTooBig, new MapProblem(project, map));
             }
         }
 
         private void CheckMapUnusedBgTiles(MapData map) {
             // check if any background tile outside (BgWidth x BgHeight) is set to anything other than 0 or 0xff
-            MapTiles tiles = map.Tiles;
+            MapFgTiles tiles = map.FgTiles;
             Point firstTile = Point.Empty;
             int numTiles = 0;
             for (int y = 0; y < tiles.Height; y++) {
                 for (int x = 0; x < tiles.Width; x++) {
-                    if ((x >= map.BgWidth || y >= map.BgHeight) && tiles.bg[x, y] > 0) {
+                    if ((x >= map.BgWidth || y >= map.BgHeight) && tiles.fx[x, y] > 0) {
                         if (numTiles == 0) {
                             firstTile.X = x;
                             firstTile.Y = y;
@@ -170,16 +170,16 @@ namespace GameEditor.ProjectChecker
 
             // Build an array that marks all fg tile positions that may overlap a
             // transparent bg (i.e, no bg tile set).
-            bool[,] bgTransparency = new bool[map.Width, map.Height];
-            int pw = map.Width - map.BgWidth + 1;
-            int ph = map.Height - map.BgHeight + 1;
+            bool[,] bgTransparency = new bool[map.FgWidth, map.FgHeight];
+            int pw = map.FgWidth - map.BgWidth + 1;
+            int ph = map.FgHeight - map.BgHeight + 1;
             if (pw <= 0 || ph <= 0) {
                 // invalid bg size; this will be caught by another checker
                 return;
             }
             for (int y = 0; y < map.BgHeight; y++) {
                 for (int x = 0; x < map.BgWidth; x++) {
-                    if (map.Tiles.bg[x,y] >= 0) continue;  // bg is not transparent here
+                    if (map.BgTiles.bg[x,y] >= 0) continue;  // bg is not transparent here
                     for (int py = 0; py < ph; py++) {
                         for (int px = 0; px < pw; px++) {
                             bgTransparency[x+px,y+py] = true;
@@ -188,7 +188,7 @@ namespace GameEditor.ProjectChecker
                 }
             }
 
-            MapTiles tiles = map.Tiles;
+            MapFgTiles tiles = map.FgTiles;
             bool[] tileTransparent = tilesetTransparency[map.Tileset];
             Point firstTile = Point.Empty;
             int numTiles = 0;
@@ -219,11 +219,22 @@ namespace GameEditor.ProjectChecker
         private void CheckMapInvalidTileIndices(MapData map) {
             Point firstTile = Point.Empty;
             int numTiles = 0;
-            for (int y = 0; y < map.Height; y++) {
-                for (int x = 0; x < map.Width; x++) {
-                    int fg = map.Tiles.fg[x, y];
-                    int bg = map.Tiles.bg[x, y];
-                    if (fg < -1 || bg < -1 || fg >= map.Tileset.NumTiles || bg >= map.Tileset.NumTiles) {
+            for (int y = 0; y < map.FgHeight; y++) {
+                for (int x = 0; x < map.FgWidth; x++) {
+                    int fg = map.FgTiles.fg[x, y];
+                    if (fg < -1 || fg >= map.Tileset.NumTiles) {
+                        if (numTiles == 0) {
+                            firstTile.X = x;
+                            firstTile.Y = y;
+                        }
+                        numTiles++;
+                    }
+                }
+            }
+            for (int y = 0; y < map.BgHeight; y++) {
+                for (int x = 0; x < map.BgWidth; x++) {
+                    int bg = map.BgTiles.bg[x, y];
+                    if (bg < -1 || bg >= map.Tileset.NumTiles) {
                         if (numTiles == 0) {
                             firstTile.X = x;
                             firstTile.Y = y;

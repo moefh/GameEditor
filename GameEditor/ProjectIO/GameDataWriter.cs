@@ -418,29 +418,37 @@ namespace GameEditor.ProjectIO
 
         protected void WriteMapTiles(MapData map) {
             string ident = identifiers.Add(map, "map_tiles", map.Name);
-            MapTiles tiles = map.Tiles;
+            MapFgTiles fg = map.FgTiles;
+            MapBgTiles bg = map.BgTiles;
             f.WriteLine($"static const uint8_t {ident}[] = {{");
-            f.Write("  // background");
-            for (int y = 0; y < tiles.Height; y++) {
-                for (int x = 0; x < tiles.Width; x++) {
-                    if ((y*tiles.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                    f.Write($"0x{tiles.bg[x,y]&0xff:x02},");
-                }
-            }
             f.WriteLine();
             f.Write("  // foreground");
-            for (int y = 0; y < tiles.Height; y++) {
-                for (int x = 0; x < tiles.Width; x++) {
-                    if ((y*tiles.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                    f.Write($"0x{tiles.fg[x,y]&0xff:x02},");
+            for (int y = 0; y < fg.Height; y++) {
+                for (int x = 0; x < fg.Width; x++) {
+                    if ((y*fg.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
+                    f.Write($"0x{fg.fg[x,y]&0xff:x02},");
                 }
             }
             f.WriteLine();
             f.Write("  // collision");
-            for (int y = 0; y < tiles.Height; y++) {
-                for (int x = 0; x < tiles.Width; x++) {
-                    if ((y*tiles.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                    f.Write($"0x{tiles.clip[x,y]&0xff:x02},");
+            for (int y = 0; y < fg.Height; y++) {
+                for (int x = 0; x < fg.Width; x++) {
+                    if ((y*fg.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
+                    f.Write($"0x{fg.cl[x,y]&0xff:x02},");
+                }
+            }
+            f.Write("  // effects");
+            for (int y = 0; y < fg.Height; y++) {
+                for (int x = 0; x < fg.Width; x++) {
+                    if ((y*fg.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
+                    f.Write($"0x{fg.fx[x,y]&0xff:x02},");
+                }
+            }
+            f.Write("  // background");
+            for (int y = 0; y < bg.Height; y++) {
+                for (int x = 0; x < bg.Width; x++) {
+                    if ((y*bg.Width + x) % 16 == 0) { f.WriteLine(); f.Write("  "); }
+                    f.Write($"0x{bg.bg[x,y]&0xff:x02},");
                 }
             }
             f.WriteLine();
@@ -468,7 +476,7 @@ namespace GameEditor.ProjectIO
                 int tilesetIndex = Project.GetAssetIndex(mi.Map.Tileset);
                 string tileset = $"&{tilesetsIdent}[{tilesetIndex}]";
                 string tiles = identifiers.Get(mi.Map);
-                f.WriteLine($"  {{ {mi.Map.Width}, {mi.Map.Height}, {mi.Map.BgWidth}, {mi.Map.BgHeight}, {tileset}, {tiles} }},");
+                f.WriteLine($"  {{ {mi.Map.FgWidth}, {mi.Map.FgHeight}, {mi.Map.BgWidth}, {mi.Map.BgHeight}, {tileset}, {tiles} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -479,7 +487,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine($"const struct {GetUpperGlobal("MAP")} {GetLowerGlobal("maps")}[] = {{");
             string tileset = $"&{GetLowerGlobal("tilesets")}[0]";
             string tiles = identifiers.Get(map);
-            f.WriteLine($"  {{ {map.Width}, {map.Height}, {map.BgWidth}, {map.BgHeight}, {tileset}, {tiles} }},");
+            f.WriteLine($"  {{ {map.FgWidth}, {map.FgHeight}, {map.BgWidth}, {map.BgHeight}, {tileset}, {tiles} }},");
             f.WriteLine("};");
             f.WriteLine();
             f.Close();

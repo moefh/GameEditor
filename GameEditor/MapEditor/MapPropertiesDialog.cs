@@ -8,12 +8,12 @@ namespace GameEditor.MapEditor
             InitializeComponent();
         }
 
-        public int MapWidth {
+        public int MapFgWidth {
             get { return (int)numWidth.Value; }
             set { numWidth.Value = value; }
         }
 
-        public int MapHeight {
+        public int MapFgHeight {
             get { return (int)numHeight.Value; }
             set { numHeight.Value = value; }
         }
@@ -37,22 +37,22 @@ namespace GameEditor.MapEditor
 
         private void mapSize_ValueChanged(object sender, EventArgs e) {
             // if growing the map, set bg max before value (else we get an error)
-            if (MapWidth > numBgWidth.Maximum) numBgWidth.Maximum = MapWidth;
-            if (MapHeight > numBgHeight.Maximum) numBgHeight.Maximum = MapHeight;
+            if (MapFgWidth > numBgWidth.Maximum) numBgWidth.Maximum = MapFgWidth;
+            if (MapFgHeight > numBgHeight.Maximum) numBgHeight.Maximum = MapFgHeight;
 
             numBgWidth.Enabled = false;
             if (checkBgFollowsMap.Checked) {
-                numBgWidth.Value = MapWidth;
-                numBgHeight.Value = MapHeight;
+                numBgWidth.Value = MapFgWidth;
+                numBgHeight.Value = MapFgHeight;
             } else {
-                numBgWidth.Value = decimal.Clamp(numBgWidth.Value, 1, MapWidth);
-                numBgHeight.Value = decimal.Clamp(numBgHeight.Value, 1, MapHeight);
+                numBgWidth.Value = decimal.Clamp(numBgWidth.Value, 1, MapFgWidth);
+                numBgHeight.Value = decimal.Clamp(numBgHeight.Value, 1, MapFgHeight);
             }
             numBgWidth.Enabled = true;
 
             // set bg max to map width regardless if we set it before
-            numBgWidth.Maximum = MapWidth;
-            numBgHeight.Maximum = MapHeight;
+            numBgWidth.Maximum = MapFgWidth;
+            numBgHeight.Maximum = MapFgHeight;
         }
 
         private void bgSize_ValueChanged(object sender, EventArgs e) {
@@ -64,20 +64,20 @@ namespace GameEditor.MapEditor
         private void checkBgFollowsMap_CheckedChanged(object sender, EventArgs e) {
             if (checkBgFollowsMap.Checked) {
                 numBgWidth.Enabled = false;
-                numBgWidth.Value = MapWidth;
-                numBgHeight.Value = MapHeight;
+                numBgWidth.Value = MapFgWidth;
+                numBgHeight.Value = MapFgHeight;
                 numBgWidth.Enabled = true;
             }
         }
 
         private void MapPropertiesDialog_Activated(object sender, EventArgs e) {
             numBgWidth.Enabled = false;
-            numBgWidth.Value = decimal.Clamp(numBgWidth.Value, 1, MapWidth);
-            numBgHeight.Value = decimal.Clamp(numBgHeight.Value, 1, MapHeight);
-            numBgWidth.Maximum = MapWidth;
-            numBgHeight.Maximum = MapHeight;
+            numBgWidth.Value = decimal.Clamp(numBgWidth.Value, 1, MapFgWidth);
+            numBgHeight.Value = decimal.Clamp(numBgHeight.Value, 1, MapFgHeight);
+            numBgWidth.Maximum = MapFgWidth;
+            numBgHeight.Maximum = MapFgHeight;
             numBgWidth.Enabled = true;
-            checkBgFollowsMap.Checked = (MapBgWidth == MapWidth && MapBgHeight == MapHeight);
+            checkBgFollowsMap.Checked = (MapBgWidth == MapFgWidth && MapBgHeight == MapFgHeight);
         }
     }
 }

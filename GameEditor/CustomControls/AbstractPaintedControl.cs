@@ -13,9 +13,10 @@ namespace GameEditor.CustomControls
         Foreground = 1<<0,
         Background = 1<<1,
         Collision = 1<<2,
-        Grid = 1<<3,
-        Screen = 1<<4,
-        Transparent = 1<<5,
+        Effects = 1<<3,
+        Grid = 1<<4,
+        Screen = 1<<5,
+        Transparent = 1<<6,
     }
 
     public enum PaintTool {

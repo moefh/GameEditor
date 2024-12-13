@@ -4,6 +4,7 @@ using System.DirectoryServices.ActiveDirectory;
 using System.Drawing.Design;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
@@ -13,33 +14,36 @@ namespace GameEditor.GameData
     public class MapData : IDataAsset
     {
         private Tileset tileset;
-        private readonly MapTiles tiles;
+        private readonly MapFgTiles fg;
+        private readonly MapBgTiles bg;
 
         public MapData(string name, int width, int height, Tileset ts) {
             Name = name;
-            tiles = new MapTiles(width, height);
-            BgWidth = width;
-            BgHeight = height;
+            fg = new MapFgTiles(width, height);
+            bg = new MapBgTiles(width, height);
             tileset = ts;
         }
 
-        public MapData(string name, int width, int height, int bgWidth, int bgHeight, Tileset ts, List<byte> tileData) {
+        public MapData(string name, int fgWidth, int fgHeight, int bgWidth, int bgHeight, Tileset ts, List<byte> tileData) {
             Name = name;
-            tiles = new MapTiles(width, height, tileData);
-            BgWidth = bgWidth;
-            BgHeight = bgHeight;
+            fg = new MapFgTiles(fgWidth, fgHeight, tileData, 0);
+            bg = new MapBgTiles(bgWidth, bgHeight, tileData, 3*fgWidth*fgHeight);
             tileset = ts;
         }
 
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.Map; } }
-        public int Width { get { return Tiles.Width; } }
-        public int Height { get { return Tiles.Height; } }
-        public int BgWidth { get; set; }
-        public int BgHeight { get; set; }
+        public int FgWidth { get { return fg.Width; } }
+        public int FgHeight { get { return fg.Height; } }
+        public int BgWidth { get { return bg.Width; } }
+        public int BgHeight { get { return bg.Height; } }
 
-        public MapTiles Tiles {
-            get { return tiles; }
+        public MapFgTiles FgTiles {
+            get { return fg; }
+        }
+
+        public MapBgTiles BgTiles {
+            get { return bg; }
         }
 
         public Tileset Tileset {
@@ -49,26 +53,27 @@ namespace GameEditor.GameData
 
         public int DataSize {
             get {
-                // (fg(1) + bg(1) + collision(1)) * width * height
-                int tileSize = 3 * Tiles.Width * Tiles.Height;
-                // width(2) + height(2) + bgWidth(2) + bgHeight(2) + tilesetPtr(4) + tilesPtr(4)
-                return tileSize + 2+2+2+2 + 4+4;
+                return fg.DataSize + bg.DataSize + 4+4;
             }
         }
 
         public void Dispose() {
         }
 
-        public void Resize(int width, int height) {
-            tiles.Resize(width, height);
+        public static int ByteToTile(byte b) {
+            if (b == 0xff) return -1;
+            return b;
         }
 
+
         public void InsertedTile(int index, int count) {
-            tiles.InsertedTiles(index, count);
+            fg.InsertedTiles(index, count);
+            bg.InsertedTiles(index, count);
         }
 
         public void RemovedTiles(int index, int count) {
-            tiles.RemovedTiles(index, count);
+            fg.RemovedTiles(index, count);
+            bg.RemovedTiles(index, count);
         }
     }
 }

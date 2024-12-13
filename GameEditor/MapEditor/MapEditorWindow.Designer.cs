@@ -74,6 +74,8 @@ namespace GameEditor.MapEditor
             toolStripLabel6 = new ToolStripLabel();
             toolStripButtonToolTiles = new ToolStripButton();
             toolStripButtonToolSelect = new ToolStripButton();
+            toolStripButtonShowFx = new ToolStripButton();
+            toolStripButtonLayerEffects = new ToolStripButton();
             displayToolStrip.SuspendLayout();
             statusStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -87,7 +89,7 @@ namespace GameEditor.MapEditor
             // displayToolStrip
             // 
             displayToolStrip.AutoSize = false;
-            displayToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator5, toolStripLabel1, toolStripComboBoxZoom, toolStripLblMapCoords, toolStripSeparator3, toolStripBtnGridColor });
+            displayToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowFx, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator5, toolStripLabel1, toolStripComboBoxZoom, toolStripLblMapCoords, toolStripSeparator3, toolStripBtnGridColor });
             displayToolStrip.Location = new Point(0, 28);
             displayToolStrip.Name = "displayToolStrip";
             displayToolStrip.Size = new Size(662, 28);
@@ -392,7 +394,7 @@ namespace GameEditor.MapEditor
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator6, toolStripLabel5, toolStripButtonLayerFg, toolStripButtonLayerBg, toolStripButtonLayerCollision, toolStripSeparator2, toolStripLabel6, toolStripButtonToolTiles, toolStripButtonToolSelect });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButton1, toolStripSeparator6, toolStripLabel5, toolStripButtonLayerFg, toolStripButtonLayerBg, toolStripButtonLayerCollision, toolStripButtonLayerEffects, toolStripSeparator2, toolStripLabel6, toolStripButtonToolTiles, toolStripButtonToolSelect });
             toolsToolStrip.Location = new Point(0, 56);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(662, 28);
@@ -516,6 +518,24 @@ namespace GameEditor.MapEditor
             toolStripButtonToolSelect.Text = "toolStripButton2";
             toolStripButtonToolSelect.Click += toolStripButtonToolSelect_Click;
             // 
+            // toolStripButtonShowFx
+            // 
+            toolStripButtonShowFx.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonShowFx.Image = (Image)resources.GetObject("toolStripButtonShowFx.Image");
+            toolStripButtonShowFx.ImageTransparentColor = Color.Magenta;
+            toolStripButtonShowFx.Name = "toolStripButtonShowFx";
+            toolStripButtonShowFx.Size = new Size(23, 25);
+            toolStripButtonShowFx.Text = "Effects";
+            // 
+            // toolStripButtonLayerEffects
+            // 
+            toolStripButtonLayerEffects.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripButtonLayerEffects.Image = (Image)resources.GetObject("toolStripButtonLayerEffects.Image");
+            toolStripButtonLayerEffects.ImageTransparentColor = Color.Magenta;
+            toolStripButtonLayerEffects.Name = "toolStripButtonLayerEffects";
+            toolStripButtonLayerEffects.Size = new Size(23, 25);
+            toolStripButtonLayerEffects.Text = "Effects";
+            // 
             // MapEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -591,5 +611,7 @@ namespace GameEditor.MapEditor
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripMenuItem deleteSelectionToolStripMenuItem;
+        private ToolStripButton toolStripButtonShowFx;
+        private ToolStripButton toolStripButtonLayerEffects;
     }
 }

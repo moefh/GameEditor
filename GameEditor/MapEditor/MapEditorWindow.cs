@@ -40,6 +40,8 @@ namespace GameEditor.MapEditor
             mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
             mapEditor.LeftSelectedCollisionTile = 0;
             mapEditor.RightSelectedCollisionTile = -1;
+            mapEditor.LeftSelectedEffectsTile = 0;
+            mapEditor.RightSelectedEffectsTile = -1;
             ActiveLayer = CustomControls.MapEditor.Layer.Foreground;
             toolStripComboTiles.ComboBox.DataSource = Project.TilesetList;
             toolStripComboTiles.ComboBox.DisplayMember = "Name";
@@ -82,7 +84,7 @@ namespace GameEditor.MapEditor
         }
 
         protected override void FixFormTitle() {
-            Text = $"{Map.Name} [{Map.Width}x{Map.Height} - tileset {Map.Tileset.Name}] - Map";
+            Text = $"{Map.Name} [{Map.FgWidth}x{Map.FgHeight} - tileset {Map.Tileset.Name}] - Map";
         }
 
         private void UpdateRenderLayers() {
@@ -137,11 +139,7 @@ namespace GameEditor.MapEditor
         }
 
         private void mapEditor_MouseOver(object sender, Point p) {
-            if (p.X < 0 || p.Y < 0 || p.X >= Map.Width || p.Y >= Map.Height) {
-                toolStripLblMapCoords.Text = "";
-            } else {
-                toolStripLblMapCoords.Text = $"({p.X}, {p.Y})";
-            }
+            toolStripLblMapCoords.Text = $"({p.X}, {p.Y})";
         }
 
         // ====================================================================
@@ -191,16 +189,17 @@ namespace GameEditor.MapEditor
 
         private void btnProperties_Click(object sender, EventArgs e) {
             MapPropertiesDialog dlg = new MapPropertiesDialog();
-            dlg.MapWidth = Map.Width;
-            dlg.MapHeight = Map.Height;
+            dlg.MapFgWidth = Map.FgWidth;
+            dlg.MapFgHeight = Map.FgHeight;
             dlg.MapBgWidth = Map.BgWidth;
             dlg.MapBgHeight = Map.BgHeight;
             if (dlg.ShowDialog() == DialogResult.OK) {
-                if (dlg.MapWidth != Map.BgWidth || dlg.MapHeight != Map.BgHeight) {
-                    Map.Resize(dlg.MapWidth, dlg.MapHeight);
+                if (dlg.MapFgWidth != Map.FgWidth || dlg.MapFgHeight != Map.FgHeight) {
+                    Map.FgTiles.Resize(dlg.MapFgWidth, dlg.MapFgHeight);
                 }
-                Map.BgWidth = dlg.MapBgWidth;
-                Map.BgHeight = dlg.MapBgHeight;
+                if (dlg.MapBgWidth != Map.BgWidth || dlg.MapBgHeight != Map.BgHeight) {
+                    Map.BgTiles.Resize(dlg.MapBgWidth, dlg.MapBgHeight, mapEditor.RightSelectedTile);
+                }
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
