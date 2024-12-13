@@ -40,9 +40,7 @@ namespace GameEditor.MainEditor
             checkerWindow = new CheckerWindow(project);
             checkerWindow.MdiParent = this;
 
-            UpdateWindowTitle();
-            UpdateDataSize();
-            UpdateDirtyStatus();
+            SetupCurrentProject();
         }
 
         public void UpdateDataSize() {
@@ -100,17 +98,17 @@ namespace GameEditor.MainEditor
             assetManager.Project = project;
             logWindow.Project = project;
             checkerWindow.Project = project;
-            HookProjectEventHandlers();
-            UpdateWindowTitle();
-            UpdateDirtyStatus();
-            UpdateDataSize();
+            SetupCurrentProject();
             assetManager.ExpandPopulatedAssetTypes();
         }
 
-        private void HookProjectEventHandlers() {
+        private void SetupCurrentProject() {
             project.DirtyStatusChanged += Project_DirtyStatusChanged;
             project.DataSizeChanged += Project_DataSizeChanged;
             project.AssetNamesChanged += Project_AssetNamesChanged;
+            UpdateWindowTitle();
+            UpdateDataSize();
+            UpdateDirtyStatus();
         }
 
         private void Project_AssetNamesChanged(object? sender, EventArgs e) {
