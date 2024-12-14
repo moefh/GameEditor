@@ -12,6 +12,7 @@ namespace GameEditor.Misc
     public static class ImageUtil
     {
         private static Tileset? collisionTileset;
+        private static Tileset? effectsTileset;
         private static ImageAttributes? transparentGreen;
         private static ImageAttributes? grayscale;
         private static ImageAttributes? grayscaleTransparentGreen;
@@ -34,6 +35,10 @@ namespace GameEditor.Misc
             get { collisionTileset ??= CreateCollisionTileset(); return collisionTileset; }
         }
 
+        public static Tileset EffectsTileset {
+            get { effectsTileset ??= CreateEffectsTileset(); return effectsTileset; }
+        }
+
         public static void SetupTileGraphics(Graphics g) {
             g.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.NearestNeighbor;
             g.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
@@ -42,11 +47,11 @@ namespace GameEditor.Misc
         }
 
         private static Tileset CreateCollisionTileset() {
-            //Bitmap bmp = new Bitmap(Tileset.TILE_SIZE, 15*Tileset.TILE_SIZE);
-            //using Graphics g = Graphics.FromImage(bmp);
-            //g.FillRectangle(GreenBrush, 0, 0, bmp.Width, bmp.Height);
-            //return new Tileset("collision", bmp);
             return new Tileset("collision", Properties.Resources.CollisionBitmap);
+        }
+
+        private static Tileset CreateEffectsTileset() {
+            return new Tileset("effects", Properties.Resources.EffectsBitmap);
         }
 
         private static ImageAttributes CreateTransparentGreenImageAttributes() {

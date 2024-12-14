@@ -28,7 +28,7 @@ namespace GameEditor.MapEditor
         public MapEditorWindow(MapDataItem mapItem) : base(mapItem, "MapEditor") {
             mapDataItem = mapItem;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize);
             SetupMapZoom();
             tilePicker.Tileset = Map.Tileset;
             tilePicker.LeftSelectionColor = ConfigUtil.TilePickerLeftColor;
@@ -62,9 +62,13 @@ namespace GameEditor.MapEditor
                 toolStripButtonLayerFg.Checked = value == CustomControls.MapEditor.Layer.Foreground;
                 toolStripButtonLayerBg.Checked = value == CustomControls.MapEditor.Layer.Background;
                 toolStripButtonLayerCollision.Checked = value == CustomControls.MapEditor.Layer.Collision;
+                toolStripButtonLayerEffects.Checked = value == CustomControls.MapEditor.Layer.Effects;
                 if (value == CustomControls.MapEditor.Layer.Collision) {
                     tilePicker.Tileset = ImageUtil.CollisionTileset;
                     tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
+                } else if (value == CustomControls.MapEditor.Layer.Effects) {
+                    tilePicker.Tileset = ImageUtil.EffectsTileset;
+                    tilePicker.LeftSelectedTile = mapEditor.LeftSelectedEffectsTile;
                 } else {
                     tilePicker.Tileset = Map.Tileset;
                     tilePicker.LeftSelectedTile = mapEditor.LeftSelectedTile;
@@ -84,16 +88,17 @@ namespace GameEditor.MapEditor
         }
 
         protected override void FixFormTitle() {
-            Text = $"{Map.Name} [{Map.FgWidth}x{Map.FgHeight} - tileset {Map.Tileset.Name}] - Map";
+            Text = $"{Map.Name} [{Map.FgWidth}x{Map.FgHeight} - {Map.Tileset.Name}] - Map";
         }
 
         private void UpdateRenderLayers() {
             RenderFlags fg = toolStripButtonShowFG.Checked ? RenderFlags.Foreground : 0;
             RenderFlags bg = toolStripButtonShowBG.Checked ? RenderFlags.Background : 0;
             RenderFlags col = toolStripButtonShowCol.Checked ? RenderFlags.Collision : 0;
+            RenderFlags fx = toolStripButtonShowFx.Checked ? RenderFlags.Effects : 0;
             RenderFlags grid = toolStripButtonShowGrid.Checked ? RenderFlags.Grid : 0;
             RenderFlags screen = toolStripButtonShowScreen.Checked ? RenderFlags.Screen : 0;
-            EnabledRenderLayers = fg | bg | col | grid | screen;
+            EnabledRenderLayers = fg | bg | col | fx | grid | screen;
             mapEditor.Invalidate();
         }
 
@@ -114,6 +119,9 @@ namespace GameEditor.MapEditor
             if (ActiveLayer == CustomControls.MapEditor.Layer.Collision) {
                 mapEditor.LeftSelectedCollisionTile = tilePicker.LeftSelectedTile;
                 mapEditor.RightSelectedCollisionTile = tilePicker.RightSelectedTile;
+            } else if (ActiveLayer == CustomControls.MapEditor.Layer.Effects) {
+                mapEditor.LeftSelectedEffectsTile = tilePicker.LeftSelectedTile;
+                mapEditor.RightSelectedEffectsTile = tilePicker.RightSelectedTile;
             } else {
                 mapEditor.LeftSelectedTile = tilePicker.LeftSelectedTile;
                 mapEditor.RightSelectedTile = tilePicker.RightSelectedTile;
@@ -184,16 +192,18 @@ namespace GameEditor.MapEditor
         }
 
         // ====================================================================
-        // === TOP TOOLSTRIP (MAP NAME)
+        // === TOP TOOLSTRIP (PROPERTIES)
         // ====================================================================
 
         private void btnProperties_Click(object sender, EventArgs e) {
             MapPropertiesDialog dlg = new MapPropertiesDialog();
+            dlg.MapName = Map.Name;
             dlg.MapFgWidth = Map.FgWidth;
             dlg.MapFgHeight = Map.FgHeight;
             dlg.MapBgWidth = Map.BgWidth;
             dlg.MapBgHeight = Map.BgHeight;
             if (dlg.ShowDialog() == DialogResult.OK) {
+                Map.Name = dlg.MapName;
                 if (dlg.MapFgWidth != Map.FgWidth || dlg.MapFgHeight != Map.FgHeight) {
                     Map.FgTiles.Resize(dlg.MapFgWidth, dlg.MapFgHeight);
                 }
@@ -203,6 +213,7 @@ namespace GameEditor.MapEditor
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
+                Project.UpdateAssetNames(Map.AssetType);
                 Project.UpdateDataSize();
                 mapEditor.Invalidate();
             }
@@ -302,6 +313,10 @@ namespace GameEditor.MapEditor
             ActiveLayer = CustomControls.MapEditor.Layer.Collision;
         }
 
+        private void toolStripButtonLayerEffects_Click(object sender, EventArgs e) {
+            ActiveLayer = CustomControls.MapEditor.Layer.Effects;
+        }
+
         private void toolStripButtonToolTiles_Click(object sender, EventArgs e) {
             SetSelectedTool(CustomControls.MapEditor.Tool.Tile);
         }
@@ -321,5 +336,6 @@ namespace GameEditor.MapEditor
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
             mapEditor.PasteFromClipboard();
         }
+
     }
 }

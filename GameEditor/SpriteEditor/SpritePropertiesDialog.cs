@@ -16,6 +16,11 @@ namespace GameEditor.SpriteEditor
             InitializeComponent();
         }
 
+        public string SpriteName {
+            get { return txtSpriteName.Text; }
+            set { txtSpriteName.Text = value; }
+        }
+
         public int MaxSpriteFrames {
             get { return (int)numFrames.Maximum; }
             set { numFrames.Maximum = value; }

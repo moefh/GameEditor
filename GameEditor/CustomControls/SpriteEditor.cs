@@ -135,13 +135,8 @@ namespace GameEditor.CustomControls
             return Sprite?.CopyFromFrame(SelectedFrame, x, y, w, h);
         }
 
-        protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
-            if (Sprite == null) return null;
-
-            // get selection bitmap
-            Bitmap selection = Sprite.CopyFromFrame(SelectedFrame, rect);
-
-            // make a hole in the tile
+        protected override void DeleteSelectionFromImage(Rectangle rect) {
+            if (Sprite == null) return;
             byte[] pixels = new byte[4*Sprite.Width*Sprite.Height];
             Sprite.ReadFramePixels(SelectedFrame, pixels);
             for (int y = 0; y < rect.Height; y++) {
@@ -154,7 +149,13 @@ namespace GameEditor.CustomControls
                 }
             }
             Sprite.WriteFramePixels(SelectedFrame, pixels);
+        }
 
+        protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
+            if (Sprite == null) return null;
+
+            Bitmap selection = Sprite.CopyFromFrame(SelectedFrame, rect);
+            DeleteSelectionFromImage(rect);
             return selection;
         }
 

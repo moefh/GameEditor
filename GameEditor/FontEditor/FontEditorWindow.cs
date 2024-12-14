@@ -21,7 +21,7 @@ namespace GameEditor.FontEditor
         public FontEditorWindow(FontDataItem fontItem) : base(fontItem, "FontEditor") {
             this.fontItem = fontItem;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize, toolStripTxtName);
             SetupCharSelection();
             fontEditor.FontData = FontData;
             fontDisplay.FontData = FontData;

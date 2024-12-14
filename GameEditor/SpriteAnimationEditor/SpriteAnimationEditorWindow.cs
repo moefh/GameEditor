@@ -24,7 +24,7 @@ namespace GameEditor.SpriteAnimationEditor
         public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
             this.animationItem = animationItem;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize, toolStripTxtName);
             RefreshSpriteList();
             RefreshSpriteLoopList();
 

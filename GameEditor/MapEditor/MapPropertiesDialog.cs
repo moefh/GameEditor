@@ -8,6 +8,11 @@ namespace GameEditor.MapEditor
             InitializeComponent();
         }
 
+        public string MapName {
+            get { return txtMapName.Text; }
+            set { txtMapName.Text = value; }
+        }
+
         public int MapFgWidth {
             get { return (int)numWidth.Value; }
             set { numWidth.Value = value; }

@@ -41,7 +41,7 @@ namespace GameEditor.GameData
 
         public Tileset(string name, Bitmap bitmap) {
             Name = name;
-            this.images = new ImageCollection(bitmap, TILE_SIZE);
+            images = new ImageCollection(bitmap, TILE_SIZE);
         }
 
         public string Name { get; set; }

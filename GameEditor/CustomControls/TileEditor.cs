@@ -96,13 +96,9 @@ namespace GameEditor.CustomControls
             return Tileset.CopyFromTile(SelectedTile, x, y, w, h);
         }
 
-        protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
-            if (Tileset == null) return null;
+        protected override void DeleteSelectionFromImage(Rectangle rect) {
+            if (Tileset == null) return;
 
-            // get selection bitmap
-            Bitmap selection = Tileset.CopyFromTile(SelectedTile, rect);
-
-            // make a hole in the tile
             byte[] pixels = new byte[4*TILE_SIZE*TILE_SIZE];
             Tileset.ReadTilePixels(SelectedTile, pixels);
             for (int y = 0; y < rect.Height; y++) {
@@ -115,7 +111,13 @@ namespace GameEditor.CustomControls
                 }
             }
             Tileset.WriteTilePixels(SelectedTile, pixels);
+        }
 
+        protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
+            if (Tileset == null) return null;
+
+            Bitmap selection = Tileset.CopyFromTile(SelectedTile, rect);
+            DeleteSelectionFromImage(rect);
             return selection;
         }
 

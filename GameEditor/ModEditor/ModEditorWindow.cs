@@ -102,7 +102,7 @@ namespace GameEditor.ModEditor
         public ModEditorWindow(ModDataItem modItem) : base(modItem, "ModEditor") {
             this.modItem = modItem;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize, toolStripTxtName);
             SetupSampleDisplay();
             SetupPatternGridDisplay();
             UpdateModPattern();

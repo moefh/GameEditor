@@ -167,7 +167,7 @@ namespace GameEditor.CustomControls
         private MapFgTiles.Layers RenderFlagsToMapLayers(RenderFlags flags) {
             return (
                 (flags.HasFlag(RenderFlags.Foreground) ? MapFgTiles.Layers.Foreground : 0) |
-                (flags.HasFlag(RenderFlags.Background) ? MapFgTiles.Layers.Effects : 0) |
+                (flags.HasFlag(RenderFlags.Effects) ? MapFgTiles.Layers.Effects : 0) |
                 (flags.HasFlag(RenderFlags.Collision) ? MapFgTiles.Layers.Clip : 0)
             );
         }
@@ -208,7 +208,14 @@ namespace GameEditor.CustomControls
         public void DeleteSelection() {
             if (Map == null || activeSelection.Width <= 0 || activeSelection.Height <= 0) return;
             if (selectionTiles == null) {
-                Map.FgTiles.ClearRect(activeSelection, RenderFlagsToMapLayers(EnabledRenderLayers));
+                switch (ActiveLayerType) {
+                case IMapTiles.LayerType.Foreground:
+                    Map.FgTiles.ClearRect(activeSelection, RenderFlagsToMapLayers(EnabledRenderLayers));
+                    break;
+                case IMapTiles.LayerType.Background:
+                    Map.BgTiles.ClearRect(activeSelection, RightSelectedTile);
+                    break;
+                }
             } else {
                 selectionTiles = null;
             }
@@ -277,7 +284,7 @@ namespace GameEditor.CustomControls
         private void PaintTile(Graphics g, int tile, int x, int y, int w, int h, bool transparent, Layer layer, bool forceGray = false) {
             if (Map == null || tile < 0) return;
             Point org = GetOriginForLayerType(Map, layer);
-            bool grayscale = ((ActiveLayer != layer) && (ActiveLayer != Layer.Collision)) || forceGray;
+            bool grayscale = ((ActiveLayer != layer) && (ActiveLayer != Layer.Collision) && (ActiveLayer != Layer.Effects)) || forceGray;
             Map?.Tileset.DrawTileAt(g, tile, x - org.X, y - org.Y, w, h, transparent, grayscale);
         }
 
@@ -288,8 +295,7 @@ namespace GameEditor.CustomControls
 
         private void PaintEffects(Graphics g, int tile, int x, int y, int w, int h, bool transparent) {
             if (tile < 0) return;
-            // TODO:
-            //ImageUtil.EffectsTileset.DrawTileAt(g, tile, x - origin.X, y - origin.Y, w, h, transparent);
+            ImageUtil.EffectsTileset.DrawTileAt(g, tile, x - origin.X, y - origin.Y, w, h, transparent);
         }
 
         private void DrawBgTiles(Graphics g, MapBgTiles tiles, int otx, int oty, Rectangle exclude) {
@@ -434,15 +440,17 @@ namespace GameEditor.CustomControls
             bool left = e.Button == MouseButtons.Left;
             if (left) {
                 switch (ActiveLayer) {
-                case Layer.Background: LeftSelectedTile = Map.FgTiles.fx[t.X, t.Y]; break;
+                case Layer.Background: LeftSelectedTile = Map.BgTiles.bg[t.X, t.Y]; break;
                 case Layer.Foreground: LeftSelectedTile = Map.FgTiles.fg[t.X, t.Y]; break;
                 case Layer.Collision: LeftSelectedCollisionTile = Map.FgTiles.cl[t.X, t.Y]; break;
+                case Layer.Effects: LeftSelectedEffectsTile = Map.FgTiles.fx[t.X, t.Y]; break;
                 }
             } else {
                 switch (ActiveLayer) {
-                case Layer.Background: RightSelectedTile = Map.FgTiles.fx[t.X, t.Y]; break;
+                case Layer.Background: RightSelectedTile = Map.BgTiles.bg[t.X, t.Y]; break;
                 case Layer.Foreground: RightSelectedTile = Map.FgTiles.fg[t.X, t.Y]; break;
                 case Layer.Collision: RightSelectedCollisionTile = Map.FgTiles.cl[t.X, t.Y]; break;
+                case Layer.Effects: RightSelectedEffectsTile = Map.FgTiles.fx[t.X, t.Y]; break;
                 }
             }
             NotifySelectedTilesChanged();

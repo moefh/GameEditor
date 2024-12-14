@@ -29,13 +29,15 @@
             btnCancel = new Button();
             label1 = new Label();
             numTiles = new NumericUpDown();
+            label2 = new Label();
+            txtTilesetName = new TextBox();
             ((System.ComponentModel.ISupportInitialize)numTiles).BeginInit();
             SuspendLayout();
             // 
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(150, 84);
+            btnOK.Location = new Point(181, 121);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(90, 34);
             btnOK.TabIndex = 0;
@@ -46,7 +48,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(54, 84);
+            btnCancel.Location = new Point(85, 121);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(90, 34);
             btnCancel.TabIndex = 1;
@@ -56,7 +58,7 @@
             // label1
             // 
             label1.AutoSize = true;
-            label1.Location = new Point(60, 31);
+            label1.Location = new Point(24, 63);
             label1.Name = "label1";
             label1.Size = new Size(38, 19);
             label1.TabIndex = 2;
@@ -64,7 +66,7 @@
             // 
             // numTiles
             // 
-            numTiles.Location = new Point(104, 29);
+            numTiles.Location = new Point(68, 61);
             numTiles.Maximum = new decimal(new int[] { 255, 0, 0, 0 });
             numTiles.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numTiles.Name = "numTiles";
@@ -72,13 +74,31 @@
             numTiles.TabIndex = 3;
             numTiles.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
+            // label2
+            // 
+            label2.AutoSize = true;
+            label2.Location = new Point(14, 23);
+            label2.Name = "label2";
+            label2.Size = new Size(48, 19);
+            label2.TabIndex = 4;
+            label2.Text = "Name:";
+            // 
+            // txtTilesetName
+            // 
+            txtTilesetName.Location = new Point(68, 20);
+            txtTilesetName.Name = "txtTilesetName";
+            txtTilesetName.Size = new Size(203, 26);
+            txtTilesetName.TabIndex = 5;
+            // 
             // TilesetPropertiesDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(252, 130);
+            ClientSize = new Size(283, 167);
+            Controls.Add(txtTilesetName);
+            Controls.Add(label2);
             Controls.Add(numTiles);
             Controls.Add(label1);
             Controls.Add(btnCancel);
@@ -100,5 +120,7 @@
         private Button btnCancel;
         private Label label1;
         private NumericUpDown numTiles;
+        private Label label2;
+        private TextBox txtTilesetName;
     }
 }

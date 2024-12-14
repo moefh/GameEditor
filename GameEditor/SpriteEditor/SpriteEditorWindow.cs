@@ -23,7 +23,7 @@ namespace GameEditor.SpriteEditor
         public SpriteEditorWindow(SpriteItem spriteItem) : base(spriteItem, "SpriteEditor") {
             this.spriteItem = spriteItem;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize);
             spriteFramePicker.Sprite = Sprite;
             spriteFramePicker.SelectedFrame = 0;
             spriteEditor.Sprite = Sprite;
@@ -87,48 +87,27 @@ namespace GameEditor.SpriteEditor
         // === TOOLSTRIP BUTTONS
         // =====================================================================
 
-        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
-            try {
-                Image? img = Clipboard.GetImage();
-                if (img == null) return;
-                //bool transparent = (spriteEditor.RenderFlags & RenderFlags.Transparent) != 0;
-                //Sprite.PasteIntoFrame(img, spriteEditor.SelectedFrame, 0, 0, transparent);
-                spriteEditor.PasteImage(img);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
-            }
-            SetDirty();
-            spriteEditor.Invalidate();
-            spriteFramePicker.Invalidate();
-            Project.RefreshSpriteUsers(Sprite, null);
-        }
-
-        private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
-            using Bitmap? frame = spriteEditor.GetSelectionCopy();
-            if (frame == null) return;
-            try {
-                Clipboard.SetImage(frame);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
-            }
-        }
-
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
             SpritePropertiesDialog dlg = new SpritePropertiesDialog();
+            dlg.SpriteName = Sprite.Name;
             dlg.MaxSpriteFrames = Sprite.MAX_NUM_FRAMES;
             dlg.SpriteWidth = Sprite.Width;
             dlg.SpriteHeight = Sprite.Height;
             dlg.SpriteFrames = Sprite.NumFrames;
             if (dlg.ShowDialog() != DialogResult.OK) return;
-            Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
+            Sprite.Name = dlg.SpriteName;
+            if (dlg.SpriteWidth != Sprite.Width || dlg.SpriteHeight != Sprite.Height || dlg.SpriteFrames != Sprite.NumFrames) {
+                Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
+                Project.UpdateDataSize();
+                UpdateDataSize();
+                spriteFramePicker.ResetSize();
+                spriteEditor.SelectedFrame = 0;
+                spriteFramePicker.SelectedFrame = 0;
+            }
             SetDirty();
-            FixFormTitle();
-            Project.UpdateDataSize();
-            UpdateDataSize();
-            spriteFramePicker.ResetSize();
-            spriteEditor.SelectedFrame = 0;
-            spriteFramePicker.SelectedFrame = 0;
+            Project.UpdateAssetNames(Sprite.AssetType);
             Project.RefreshSpriteUsers(Sprite, null);
+            FixFormTitle();
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
@@ -198,5 +177,40 @@ namespace GameEditor.SpriteEditor
         private void toolStripBtnToolHFlip_Click(object sender, EventArgs e) {
             spriteEditor.HFlipSelection();
         }
+
+        // ====================================================================
+        // === MENU
+        // ====================================================================
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
+            try {
+                Image? img = Clipboard.GetImage();
+                if (img == null) return;
+                //bool transparent = (spriteEditor.RenderFlags & RenderFlags.Transparent) != 0;
+                //Sprite.PasteIntoFrame(img, spriteEditor.SelectedFrame, 0, 0, transparent);
+                spriteEditor.PasteImage(img);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error reading clipboard image: {ex.Message}", "Error Pasting Image");
+            }
+            SetDirty();
+            spriteEditor.Invalidate();
+            spriteFramePicker.Invalidate();
+            Project.RefreshSpriteUsers(Sprite, null);
+        }
+
+        private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {
+            using Bitmap? frame = spriteEditor.GetSelectionCopy();
+            if (frame == null) return;
+            try {
+                Clipboard.SetImage(frame);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error copying image: {ex.Message}", "Error Copying Image");
+            }
+        }
+
+        private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
+            spriteEditor.DeleteSelection();
+        }
+
     }
 }

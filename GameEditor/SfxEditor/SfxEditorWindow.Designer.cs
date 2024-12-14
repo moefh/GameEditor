@@ -274,18 +274,22 @@
             // lblLoopLengthColor
             // 
             lblLoopLengthColor.BackColor = Color.FromArgb(255, 192, 160);
+            lblLoopLengthColor.BorderStyle = BorderStyle.FixedSingle;
             lblLoopLengthColor.Location = new Point(190, 77);
             lblLoopLengthColor.Name = "lblLoopLengthColor";
             lblLoopLengthColor.Size = new Size(24, 23);
             lblLoopLengthColor.TabIndex = 22;
+            lblLoopLengthColor.Click += lblLoopLengthColor_Click;
             // 
             // lblLoopStartColor
             // 
             lblLoopStartColor.BackColor = Color.FromArgb(128, 192, 255);
+            lblLoopStartColor.BorderStyle = BorderStyle.FixedSingle;
             lblLoopStartColor.Location = new Point(190, 45);
             lblLoopStartColor.Name = "lblLoopStartColor";
             lblLoopStartColor.Size = new Size(24, 23);
             lblLoopStartColor.TabIndex = 21;
+            lblLoopStartColor.Click += lblLoopStartColor_Click;
             // 
             // label2
             // 

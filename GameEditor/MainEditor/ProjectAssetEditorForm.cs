@@ -34,17 +34,19 @@ namespace GameEditor.MainEditor
 
         public ProjectAssetEditorForm() {}  // to keep VS happy
 
-        public void SetupAssetListControls(ToolStripTextBox assetNameTextBox, ToolStripStatusLabel assetDataSizeLabel) {
+        public void SetupAssetControls(ToolStripStatusLabel assetDataSizeLabel, ToolStripTextBox? assetNameTextBox = null) {
             this.assetNameTextBox = assetNameTextBox;
             this.assetDataSizeLabel = assetDataSizeLabel;
             FixFormTitle();
             UpdateDataSize();
-            if (assetItem != null) {
-                assetNameTextBox.ReadOnly = true;
-                assetNameTextBox.Text = assetItem.Name;
-                assetNameTextBox.ReadOnly = false;
+            if (assetNameTextBox != null) {
+                if (assetItem != null) {
+                    assetNameTextBox.ReadOnly = true;
+                    assetNameTextBox.Text = assetItem.Name;
+                    assetNameTextBox.ReadOnly = false;
+                }
+                assetNameTextBox.TextChanged += AssetNameTextBox_TextChanged;
             }
-            assetNameTextBox.TextChanged += AssetNameTextBox_TextChanged;
         }
 
         protected void UpdateDataSize() {

@@ -133,6 +133,12 @@
   <data name="DropCursor" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\DropCursor.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>
+  <data name="EffectsBitmap" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EffectsBitmap.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
+  <data name="EffectsIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
+    <value>..\Resources\EffectsIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
+  </data>
   <data name="ExportIcon" type="System.Resources.ResXFileRef, System.Windows.Forms">
     <value>..\Resources\ExportIcon.png;System.Drawing.Bitmap, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a</value>
   </data>

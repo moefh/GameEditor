@@ -24,7 +24,7 @@ namespace GameEditor.TilesetEditor
         public TilesetEditorWindow(TilesetItem ts) : base(ts, "TilesetEditor") {
             tileset = ts;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize);
             tileEditor.Tileset = Tileset;
             tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
             tileEditor.ForePen = colorPicker.SelectedForeColor;
@@ -55,7 +55,6 @@ namespace GameEditor.TilesetEditor
                 ((toolStripBtnGrid.Checked) ? RenderFlags.Grid : 0) |
                 ((toolStripBtnTransparent.Checked) ? RenderFlags.Transparent : 0);
         }
-
 
         private void tilePicker_SelectedTileChanged(object sender, EventArgs e) {
             tileEditor.SelectedTile = tilePicker.LeftSelectedTile;
@@ -99,11 +98,19 @@ namespace GameEditor.TilesetEditor
 
         private void toolStripBtnProperties_Click(object sender, EventArgs e) {
             TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
+            dlg.TilesetName = Tileset.Name;
             dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
             dlg.NumTiles = Tileset.NumTiles;
             if (dlg.ShowDialog() != DialogResult.OK) return;
-            Tileset.Resize(dlg.NumTiles, colorPicker.SelectedBackColor);
-            OnTilesetResized();
+            Tileset.Name = dlg.TilesetName;
+            if (Tileset.NumTiles != dlg.NumTiles) {
+                Tileset.Resize(dlg.NumTiles, colorPicker.SelectedBackColor);
+                OnTilesetResized();
+            }
+            SetDirty();
+            FixFormTitle();
+            Project.UpdateAssetNames(Tileset.AssetType);
+            OnNameChanged(EventArgs.Empty);
         }
 
         private void toolStripBtnImport_Click(object sender, EventArgs e) {
@@ -194,6 +201,10 @@ namespace GameEditor.TilesetEditor
             tileEditor.Invalidate();
             tilePicker.Invalidate();
             Project.RefreshTilesetUsers(Tileset);
+        }
+
+        private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
+            tileEditor.DeleteSelection();
         }
 
         private void CheckTooManyTiles() {
@@ -316,5 +327,6 @@ namespace GameEditor.TilesetEditor
         private void toolStripBtnToolHFlip_Click(object sender, EventArgs e) {
             tileEditor.HFlipSelection();
         }
+
     }
 }

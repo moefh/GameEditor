@@ -24,7 +24,7 @@ namespace GameEditor.SfxEditor
         public SfxEditorWindow(SfxDataItem sfxItem) : base(sfxItem, "SfxEditor") {
             this.sfxItem = sfxItem;
             InitializeComponent();
-            SetupAssetListControls(toolStripTxtName, lblDataSize);
+            SetupAssetControls(lblDataSize, toolStripTxtName);
 
             sampleView.MarkerColor[0] = lblLoopStartColor.BackColor;
             sampleView.MarkerColor[1] = lblLoopLengthColor.BackColor;
@@ -37,7 +37,7 @@ namespace GameEditor.SfxEditor
             numSampleLoopStart.Maximum = Sfx.Length;
             numSampleLoopStart.Value = int.Clamp(Sfx.LoopStart, 0, Sfx.Length);
             numSampleLoopLen.Maximum = Sfx.Length;
-            numSampleLoopLen.Value = int.Clamp(Sfx.LoopLength, 0, Sfx.Length-Sfx.LoopStart);
+            numSampleLoopLen.Value = int.Clamp(Sfx.LoopLength, 0, Sfx.Length - Sfx.LoopStart);
             numSampleLoopStart.Enabled = true;
 
             numSampleRate.Value = SfxData.DEFAULT_SAMPLE_RATE;
@@ -61,12 +61,12 @@ namespace GameEditor.SfxEditor
             numSampleLoopStart.Value = int.Clamp(Sfx.LoopStart, 0, Sfx.Length);
             numSampleLoopLen.Value = 0;
             numSampleLoopLen.Maximum = Sfx.Length;
-            numSampleLoopLen.Value = int.Clamp(Sfx.LoopLength, 0, Sfx.Length-Sfx.LoopStart);
+            numSampleLoopLen.Value = int.Clamp(Sfx.LoopLength, 0, Sfx.Length - Sfx.LoopStart);
             numSampleLoopStart.Enabled = true;
 
             sampleView.Samples = Sfx.Samples;
-            sampleView.Marker[0] = (int) numSampleLoopStart.Value;
-            sampleView.Marker[1] = (int) (numSampleLoopStart.Value + numSampleLoopLen.Value);
+            sampleView.Marker[0] = (int)numSampleLoopStart.Value;
+            sampleView.Marker[1] = (int)(numSampleLoopStart.Value + numSampleLoopLen.Value);
             sampleView.Invalidate();
         }
 
@@ -124,6 +124,14 @@ namespace GameEditor.SfxEditor
             sampleView.SelectedMarker = 1;
         }
 
+        private void lblLoopStartColor_Click(object sender, EventArgs e) {
+            sampleView.SelectedMarker = 0;
+        }
+
+        private void lblLoopLengthColor_Click(object sender, EventArgs e) {
+            sampleView.SelectedMarker = 1;
+        }
+
         private void SampleParametersChanged(object sender, EventArgs e) {
             if (sender == sampleView) {
                 int start = int.Clamp(sampleView.Marker[0], 0, Sfx.Length);
@@ -141,5 +149,6 @@ namespace GameEditor.SfxEditor
                 SetDirty();
             }
         }
+
     }
 }

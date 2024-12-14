@@ -16,6 +16,11 @@ namespace GameEditor.TilesetEditor
             InitializeComponent();
         }
 
+        public string TilesetName {
+            get { return txtTilesetName.Text; }
+            set { txtTilesetName.Text = value; }
+        }
+
         public int MaxNumTiles {
             get { return (int)numTiles.Maximum; }
             set { numTiles.Maximum = value; }

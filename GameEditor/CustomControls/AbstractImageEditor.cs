@@ -148,6 +148,21 @@ namespace GameEditor.CustomControls
             }
         }
 
+        public void DeleteSelection() {
+            if (selectionBmp == null) {
+                DeleteSelectionFromImage(selectedRect);
+                selectedRect = Rectangle.Empty;
+                Invalidate();
+                ImageChanged?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+            selectionBmp.Dispose();
+            selectionBmp = null;
+            selectedRect = Rectangle.Empty;
+            Invalidate();
+            ImageChanged?.Invoke(this, EventArgs.Empty);
+        }
+
         protected void DropSelection() {
             if (selectionBmp == null) {
                 selectedRect = Rectangle.Empty;
@@ -420,6 +435,7 @@ namespace GameEditor.CustomControls
         protected abstract bool GetImageRenderRect(out int zoom, out Rectangle rect);
         protected abstract void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp);
         protected abstract Bitmap? LiftSelectionBitmap(Rectangle selectedRect);
+        protected abstract void DeleteSelectionFromImage(Rectangle selectedRect);
         protected abstract Color GetImagePixel(int x, int y);
         protected abstract void SetImagePixel(int x, int y, Color color);
         protected abstract void FloodFillImage(int x, int y, Color color);

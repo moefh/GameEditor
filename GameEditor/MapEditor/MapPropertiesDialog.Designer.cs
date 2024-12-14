@@ -39,6 +39,8 @@
             label4 = new Label();
             numBgHeight = new NumericUpDown();
             numBgWidth = new NumericUpDown();
+            label5 = new Label();
+            txtMapName = new TextBox();
             ((System.ComponentModel.ISupportInitialize)numWidth).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numHeight).BeginInit();
             groupMapSize.SuspendLayout();
@@ -68,7 +70,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(329, 182);
+            btnOK.Location = new Point(329, 234);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(86, 35);
             btnOK.TabIndex = 3;
@@ -80,7 +82,7 @@
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(237, 182);
+            btnCancel.Location = new Point(237, 234);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(86, 35);
             btnCancel.TabIndex = 2;
@@ -115,7 +117,7 @@
             groupMapSize.Controls.Add(label1);
             groupMapSize.Controls.Add(numHeight);
             groupMapSize.Controls.Add(numWidth);
-            groupMapSize.Location = new Point(9, 12);
+            groupMapSize.Location = new Point(12, 59);
             groupMapSize.Name = "groupMapSize";
             groupMapSize.Size = new Size(194, 146);
             groupMapSize.TabIndex = 4;
@@ -130,7 +132,7 @@
             groupBgSize.Controls.Add(label4);
             groupBgSize.Controls.Add(numBgHeight);
             groupBgSize.Controls.Add(numBgWidth);
-            groupBgSize.Location = new Point(221, 12);
+            groupBgSize.Location = new Point(224, 59);
             groupBgSize.Name = "groupBgSize";
             groupBgSize.Size = new Size(194, 146);
             groupBgSize.TabIndex = 5;
@@ -188,13 +190,31 @@
             numBgWidth.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numBgWidth.ValueChanged += bgSize_ValueChanged;
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(12, 20);
+            label5.Name = "label5";
+            label5.Size = new Size(48, 19);
+            label5.TabIndex = 6;
+            label5.Text = "Name:";
+            // 
+            // txtMapName
+            // 
+            txtMapName.Location = new Point(66, 17);
+            txtMapName.Name = "txtMapName";
+            txtMapName.Size = new Size(349, 26);
+            txtMapName.TabIndex = 7;
+            // 
             // MapPropertiesDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(427, 229);
+            ClientSize = new Size(427, 281);
+            Controls.Add(txtMapName);
+            Controls.Add(label5);
             Controls.Add(groupBgSize);
             Controls.Add(groupMapSize);
             Controls.Add(btnCancel);
@@ -215,6 +235,7 @@
             ((System.ComponentModel.ISupportInitialize)numBgHeight).EndInit();
             ((System.ComponentModel.ISupportInitialize)numBgWidth).EndInit();
             ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion
@@ -232,5 +253,7 @@
         private NumericUpDown numBgHeight;
         private NumericUpDown numBgWidth;
         private CheckBox checkBgFollowsMap;
+        private Label label5;
+        private TextBox txtMapName;
     }
 }
