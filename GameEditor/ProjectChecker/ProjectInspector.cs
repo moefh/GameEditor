@@ -6,11 +6,13 @@ using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.DirectoryServices.ActiveDirectory;
+using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.ProjectChecker
 {
@@ -258,6 +260,24 @@ namespace GameEditor.ProjectChecker
             }
         }
 
+        private bool x = false;
+        private int CheckModPatternNote(ModCell cell) {
+            if (cell.Period == 0) return -1;
+            for (int oct = 0; oct < ModUtil.PeriodTable.GetLength(0); oct++) {
+                for (int note = 0; note < 12; note++) {
+                    int periodInTable = ModUtil.PeriodTable[oct,note];
+                    if (cell.Period >= periodInTable) {
+                        if (cell.Period > periodInTable) {
+                            if (! x) { Util.Log($"PROBLEM IN {oct},{note}"); x = true; }
+                            return periodInTable;
+                        }
+                        return -1;
+                    }
+                }
+            }
+            return 0;
+        }
+
         private void CheckModPattern(ModData mod) {
             ModFile file = mod.ModFile;
             List<string> errors = [];
@@ -265,15 +285,10 @@ namespace GameEditor.ProjectChecker
                 for (int row = 0; row < 64; row++) {
                     for (int chan = 0; chan < file.NumChannels; chan++) {
                         ModCell cell = file.Pattern[(pat*64+row)*file.NumChannels + chan];
-                        for (int oct = 0; oct < ModUtil.PeriodTable.GetLength(0); oct++) {
-                            for (int note = 0; note < 12; note++) {
-                                int periodInTable = ModUtil.PeriodTable[oct,note];
-                                if (cell.Period >= periodInTable) {
-                                    if (cell.Period > periodInTable) {
-                                        errors.Append($"pat {pat}, row {row}, chan {chan}: period {cell.Period} > {periodInTable}");
-                                    }
-                                }
-                            }
+                        int correctNotePeriod = CheckModPatternNote(cell);
+                        if (correctNotePeriod >= 0) {
+                            string note = ModUtil.GetPeriodNoteName(cell.Period);
+                            errors.Add($"pat {pat}, row {row}, chan {chan}: \"{note}\" is too sharp (period {cell.Period} > {correctNotePeriod})");
                         }
                     }
                 }

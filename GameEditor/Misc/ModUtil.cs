@@ -43,7 +43,7 @@ namespace GameEditor.Misc
         }
 
         public static bool GetPeriodNote(int period, out Note note, out int octave) {
-            for (int oct = 0; oct < PeriodTable.Length; oct++) {
+            for (int oct = 0; oct < PeriodTable.GetLength(0); oct++) {
                 for (int n = 0; n < 12; n++) {
                     if (period >= PeriodTable[oct,n]) {
                         note = (Note) n;
