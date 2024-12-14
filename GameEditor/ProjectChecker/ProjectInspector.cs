@@ -1,6 +1,7 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
+using GameEditor.ModEditor;
 using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
@@ -22,6 +23,7 @@ namespace GameEditor.ProjectChecker
         MapBackgroundTooBig,
         TilesetTooBig,
         SpriteTooBig,
+        ModNoteOutOfTune,
     }
 
     public class ProjectInspector
@@ -36,6 +38,7 @@ namespace GameEditor.ProjectChecker
             [ProblemType.MapBackgroundTooBig] = "Map background is larger than actual map size",
             [ProblemType.TilesetTooBig] = "tileset with too many tiles",
             [ProblemType.SpriteTooBig] = "sprite with too many frames",
+            [ProblemType.ModNoteOutOfTune] = "mod note out of tune",
         };
 
         private readonly ProjectData project;
@@ -249,9 +252,34 @@ namespace GameEditor.ProjectChecker
             }
         }
 
-        public void CheckTilesetTooBig(Tileset tileset) {
+        private void CheckTilesetTooBig(Tileset tileset) {
             if (tileset.NumTiles > Tileset.MAX_NUM_TILES) {
                 AddProblem(ProblemType.TilesetTooBig, new TilesetProblem(project, tileset));
+            }
+        }
+
+        private void CheckModPattern(ModData mod) {
+            ModFile file = mod.ModFile;
+            List<string> errors = [];
+            for (int pat = 0; pat < file.NumPatterns; pat++) {
+                for (int row = 0; row < 64; row++) {
+                    for (int chan = 0; chan < file.NumChannels; chan++) {
+                        ModCell cell = file.Pattern[(pat*64+row)*file.NumChannels + chan];
+                        for (int oct = 0; oct < ModUtil.PeriodTable.GetLength(0); oct++) {
+                            for (int note = 0; note < 12; note++) {
+                                int periodInTable = ModUtil.PeriodTable[oct,note];
+                                if (cell.Period >= periodInTable) {
+                                    if (cell.Period > periodInTable) {
+                                        errors.Append($"pat {pat}, row {row}, chan {chan}: period {cell.Period} > {periodInTable}");
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (errors.Count > 0) {
+                AddProblem(ProblemType.ModNoteOutOfTune, new ModPatternProblem(project, mod, errors));
             }
         }
 
@@ -268,6 +296,10 @@ namespace GameEditor.ProjectChecker
 
             foreach (TilesetItem ti in project.TilesetList) {
                 CheckTilesetTooBig(ti.Tileset);
+            }
+
+            foreach (ModDataItem mi in project.ModList) {
+                CheckModPattern(mi.Mod);
             }
         }
 

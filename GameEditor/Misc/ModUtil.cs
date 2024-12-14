@@ -32,7 +32,7 @@ namespace GameEditor.Misc
         };
 
         public static string GetPeriodNoteName(int period) {
-            for (int oct = 0; oct < PeriodTable.Length; oct++) {
+            for (int oct = 0; oct < PeriodTable.GetLength(0); oct++) {
                 for (int note = 0; note < 12; note++) {
                     if (period >= PeriodTable[oct,note]) {
                         return $"{NoteNames[note],-2}{oct-1}";
