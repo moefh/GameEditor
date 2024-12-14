@@ -785,7 +785,7 @@ namespace GameEditor.ProjectIO
 
                 Token sample = ExpectNumber();
                 ExpectPunct(',');
-                Token period = ExpectNumber();
+                Token noteIndex = ExpectNumber();
                 ExpectPunct(',');
                 Token effect = ExpectNumber();
                 ExpectPunct(',');
@@ -793,9 +793,11 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('}');
                 ExpectPunct(',');
 
+                ushort period = (noteIndex.Num == 0xff) ? (ushort)0 : ModUtil.GetNotePeriod((ModUtil.Note) (noteIndex.Num % 12), (int) (noteIndex.Num / 12));
+
                 ModCell cell;
                 cell.Sample = (byte) sample.Num;
-                cell.Period = (ushort) period.Num;
+                cell.Period = period;
                 cell.Effect = (ushort) effect.Num;
                 data.Add(cell);
             }
@@ -821,7 +823,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token loopLength = ExpectNumber();
                 ExpectPunct(',');
-                int finetune = (int) ReadSignedNumber(ExpectToken());
+                Token finetune = ExpectNumber();
                 ExpectPunct(',');
                 Token volume = ExpectNumber();
                 ExpectPunct(',');
@@ -835,7 +837,7 @@ namespace GameEditor.ProjectIO
                 sample.Len = length.Num;
                 sample.LoopStart = loopStart.Num;
                 sample.LoopLen = loopLength.Num;
-                sample.Finetune = (sbyte) finetune;
+                sample.Finetune = (sbyte) ((finetune.Num > 7) ? finetune.Num - 16 : finetune.Num);
                 sample.Volume = (byte) volume.Num;
                 sample.Title = dataIdent.Str;
 

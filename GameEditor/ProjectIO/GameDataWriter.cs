@@ -151,12 +151,17 @@ namespace GameEditor.ProjectIO
         // === MOD
         // =============================================================
 
-        private static bool AreSamplesEqual(sbyte[] spl1, sbyte[] spl2) {
+        private static bool AreModSamplesEqual(sbyte[] spl1, sbyte[] spl2) {
             if (spl1.Length != spl2.Length) return false;
             for (int i = 0; i < spl1.Length; i++) {
                 if (spl1[i] != spl2[i]) return false;
             }
             return true;
+        }
+
+        private static byte GetModPeriodNoteIndex(int period) {
+            ModUtil.GetPeriodNote(period, out ModUtil.Note note, out int octave);
+            return (byte) (12*octave + note);
         }
 
         private void MergeModSamples(out Dictionary<ModData, List<string>> modSampleIds, out Dictionary<string, sbyte[]> modSamplesById) {
@@ -192,7 +197,7 @@ namespace GameEditor.ProjectIO
                         for (int spl2 = 0; spl2 < file2.NumSamples; spl2++) {
                             sbyte[]? data2 = file2.Sample[spl2].Data;
                             if (data2 == null) continue;
-                            if (! AreSamplesEqual(data1, data2)) continue;
+                            if (! AreModSamplesEqual(data1, data2)) continue;
                             modSampleIds[mod2][spl2] = modSampleIds[mod1][spl1];
                             Util.Log($"-> merging MOD samples {mod1.Name}[{spl1+1}] and {mod2.Name}[{spl2+1}]");
                         }
@@ -232,7 +237,9 @@ namespace GameEditor.ProjectIO
                                 f.Write("  ");
                             }
                         }
-                        f.Write($"{{ {file.Pattern[cell].Sample,2}, {file.Pattern[cell].Period,5}, 0x{file.Pattern[cell].Effect:x03}, }}, ");
+                        byte noteIndex = GetModPeriodNoteIndex(file.Pattern[cell].Period);
+                        string note = (noteIndex == 0) ? "0xff" : $"0x{noteIndex:x02}";
+                        f.Write($"{{ {file.Pattern[cell].Sample,2}, {note}, 0x{file.Pattern[cell].Effect:x03}, }}, ");
                         cell++;
                     }
                 }
@@ -252,9 +259,11 @@ namespace GameEditor.ProjectIO
             f.WriteLine("    {");
             for (int spl = 0; spl < file.NumSamples; spl++) {
                 string splIdent = sampleIdents[spl];
+                int splFinetune = file.Sample[spl].Finetune;
+                if (splFinetune < 0) splFinetune += 16;
                 f.Write("      {");
                 f.Write($" {file.Sample[spl].Len,5}, {file.Sample[spl].LoopStart,5}, {file.Sample[spl].LoopLen,5},");
-                f.Write($" {file.Sample[spl].Finetune}, {file.Sample[spl].Volume,2}, {splIdent}, ");
+                f.Write($" 0x{splFinetune:x02}, {file.Sample[spl].Volume,2}, {splIdent}, ");
                 f.WriteLine("},");
             }
             f.WriteLine("    },");

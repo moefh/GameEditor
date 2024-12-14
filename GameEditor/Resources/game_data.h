@@ -8,14 +8,14 @@ struct ${PREFIX}_MOD_SAMPLE {
   uint32_t       len;
   uint32_t       loop_start;
   uint32_t       loop_len;
-  int8_t         finetune;
+  uint8_t        finetune;
   uint8_t        volume;
   const int8_t  *data;
 };
 
 struct ${PREFIX}_MOD_CELL {
   uint8_t  sample;
-  uint16_t period;
+  uint8_t  note_index;
   uint16_t effect;
 };
 

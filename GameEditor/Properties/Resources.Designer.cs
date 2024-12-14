@@ -191,14 +191,14 @@ namespace GameEditor.Properties {
         ///  uint32_t       len;
         ///  uint32_t       loop_start;
         ///  uint32_t       loop_len;
-        ///  int8_t         finetune;
+        ///  uint8_t        finetune;
         ///  uint8_t        volume;
         ///  const int8_t  *data;
         ///};
         ///
         ///struct ${PREFIX}_MOD_CELL {
         ///  uint8_t  sample;
-        ///  uint16_t period;
+        ///  uint8_t  note_index;
         ///  uint16_t effect;
         ///};
         ///
@@ -207,7 +207,7 @@ namespace GameEditor.Properties {
         ///  uint8_t num_channels;
         ///
         ///  uint8_t num_song_positions;
-        ///  uint8_ [rest of string was truncated]&quot;;.
+        ///  ui [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string game_data {
             get {
