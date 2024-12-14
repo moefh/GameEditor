@@ -39,11 +39,14 @@ namespace GameEditor.CustomControls
         const int GAME_SCREEN_WIDTH = ProjectData.SCREEN_WIDTH;
         const int GAME_SCREEN_HEIGHT = ProjectData.SCREEN_HEIGHT;
 
+        private MapData? map;
         private double zoom = 3.0f;
+        private Layer activeLayer;
+        private RenderFlags enabledRenderLayers;
+        private Color gridColor;
+
         private Point scrollOrigin;
         private Point origin;
-        private Layer activeLayer;
-
         private Rectangle activeSelection;
         private Point selectionOrigin;
         private bool movingSelection;
@@ -68,16 +71,32 @@ namespace GameEditor.CustomControls
             ZoomStep = 0.5;
         }
 
-        public MapData? Map { get; set; }
         public Tool SelectedTool { get; set; }
-        public RenderFlags EnabledRenderLayers { get; set; }
         public int LeftSelectedTile { get; set; }
         public int RightSelectedTile { get; set; }
         public int LeftSelectedCollisionTile { get; set; }
         public int RightSelectedCollisionTile { get; set; }
         public int LeftSelectedEffectsTile { get; set; }
         public int RightSelectedEffectsTile { get; set; }
-        public Color GridColor { get; set; }
+
+        public double MaxZoom { get; set; }
+        public double MinZoom { get; set; }
+        public double ZoomStep { get; set; }
+
+        public MapData? Map {
+            get { return map; }
+            set { map = value; Invalidate(); }
+        }
+
+        public Color GridColor {
+            get { return gridColor; }
+            set { gridColor = value; Invalidate(); }
+        }
+
+        public RenderFlags EnabledRenderLayers {
+            get { return enabledRenderLayers; }
+            set { enabledRenderLayers = value; Invalidate(); }
+        }
 
         public Layer ActiveLayer {
             get { return activeLayer; }
@@ -87,26 +106,28 @@ namespace GameEditor.CustomControls
                 if (ActiveLayerType != oldType) {
                     DropSelection();
                 }
+                Invalidate();
             }
         }
 
         public double Zoom {
             get { return zoom; }
-            set { zoom = double.Clamp(value, MinZoom, MaxZoom); ClampScroll(); Invalidate(); }
+            set {
+                zoom = double.Clamp(value, MinZoom, MaxZoom);
+                ClampScroll();
+                Invalidate();
+            }
         }
 
-        public double MaxZoom { get; set; }
-        public double MinZoom { get; set; }
-        public double ZoomStep { get; set; }
+        private int ZoomedTileSize {
+            get {
+                return (int) (zoom * TILE_SIZE);
+            }
+        }
 
         private IMapTiles.LayerType ActiveLayerType {
             get {
                 return (ActiveLayer == Layer.Background) ? IMapTiles.LayerType.Background : IMapTiles.LayerType.Foreground;
-            }
-        }
-        private int ZoomedTileSize {
-            get {
-                return (int) (zoom * TILE_SIZE);
             }
         }
 

@@ -73,7 +73,7 @@
             btnOK.Location = new Point(329, 234);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(86, 35);
-            btnOK.TabIndex = 3;
+            btnOK.TabIndex = 6;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += btnOK_Click;
@@ -85,7 +85,7 @@
             btnCancel.Location = new Point(237, 234);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(86, 35);
-            btnCancel.TabIndex = 2;
+            btnCancel.TabIndex = 7;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
@@ -96,7 +96,7 @@
             numWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.Name = "numWidth";
             numWidth.Size = new Size(79, 26);
-            numWidth.TabIndex = 0;
+            numWidth.TabIndex = 1;
             numWidth.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.ValueChanged += mapSize_ValueChanged;
             // 
@@ -107,7 +107,7 @@
             numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.Name = "numHeight";
             numHeight.Size = new Size(79, 26);
-            numHeight.TabIndex = 1;
+            numHeight.TabIndex = 2;
             numHeight.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.ValueChanged += mapSize_ValueChanged;
             // 
@@ -145,7 +145,7 @@
             checkBgFollowsMap.Location = new Point(53, 112);
             checkBgFollowsMap.Name = "checkBgFollowsMap";
             checkBgFollowsMap.Size = new Size(124, 23);
-            checkBgFollowsMap.TabIndex = 3;
+            checkBgFollowsMap.TabIndex = 5;
             checkBgFollowsMap.Text = "Follow map size";
             checkBgFollowsMap.UseVisualStyleBackColor = true;
             checkBgFollowsMap.CheckedChanged += checkBgFollowsMap_CheckedChanged;
@@ -175,7 +175,7 @@
             numBgHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numBgHeight.Name = "numBgHeight";
             numBgHeight.Size = new Size(79, 26);
-            numBgHeight.TabIndex = 1;
+            numBgHeight.TabIndex = 4;
             numBgHeight.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numBgHeight.ValueChanged += bgSize_ValueChanged;
             // 
@@ -186,7 +186,7 @@
             numBgWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numBgWidth.Name = "numBgWidth";
             numBgWidth.Size = new Size(79, 26);
-            numBgWidth.TabIndex = 0;
+            numBgWidth.TabIndex = 3;
             numBgWidth.Value = new decimal(new int[] { 1, 0, 0, 0 });
             numBgWidth.ValueChanged += bgSize_ValueChanged;
             // 
@@ -204,7 +204,7 @@
             txtMapName.Location = new Point(66, 17);
             txtMapName.Name = "txtMapName";
             txtMapName.Size = new Size(349, 26);
-            txtMapName.TabIndex = 7;
+            txtMapName.TabIndex = 0;
             // 
             // MapPropertiesDialog
             // 

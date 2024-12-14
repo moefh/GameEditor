@@ -275,7 +275,7 @@ namespace GameEditor.TilesetEditor
                                 MessageBoxButtons.OK, MessageBoxIcon.Error);
                 return;
             }
-            if (MessageBox.Show("Are you sure you want do delete this nice tile?", "Delete Tile",
+            if (MessageBox.Show("Are you sure you want to delete this nice tile?", "Delete Tile",
                                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) {
                 return;
             }

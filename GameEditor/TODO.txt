@@ -2,6 +2,8 @@
 
 - make editor for map connections (world editor)
 
+- fix finetune in mod player
+
 - new map layer for effects. Effects tiles:
   0xff = no effect
   0x00 = (reserved)

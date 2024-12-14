@@ -40,7 +40,7 @@
             btnOK.Location = new Point(181, 121);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(90, 34);
-            btnOK.TabIndex = 0;
+            btnOK.TabIndex = 2;
             btnOK.Text = "OK";
             btnOK.UseVisualStyleBackColor = true;
             btnOK.Click += btnOK_Click;
@@ -51,18 +51,18 @@
             btnCancel.Location = new Point(85, 121);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(90, 34);
-            btnCancel.TabIndex = 1;
+            btnCancel.TabIndex = 3;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(24, 63);
+            label1.Location = new Point(12, 63);
             label1.Name = "label1";
-            label1.Size = new Size(38, 19);
+            label1.Size = new Size(50, 19);
             label1.TabIndex = 2;
             label1.Text = "Tiles:";
+            label1.TextAlign = ContentAlignment.TopRight;
             // 
             // numTiles
             // 
@@ -71,24 +71,24 @@
             numTiles.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numTiles.Name = "numTiles";
             numTiles.Size = new Size(76, 26);
-            numTiles.TabIndex = 3;
+            numTiles.TabIndex = 1;
             numTiles.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(14, 23);
+            label2.Location = new Point(12, 23);
             label2.Name = "label2";
-            label2.Size = new Size(48, 19);
+            label2.Size = new Size(50, 19);
             label2.TabIndex = 4;
             label2.Text = "Name:";
+            label2.TextAlign = ContentAlignment.TopRight;
             // 
             // txtTilesetName
             // 
             txtTilesetName.Location = new Point(68, 20);
             txtTilesetName.Name = "txtTilesetName";
             txtTilesetName.Size = new Size(203, 26);
-            txtTilesetName.TabIndex = 5;
+            txtTilesetName.TabIndex = 0;
             // 
             // TilesetPropertiesDialog
             // 

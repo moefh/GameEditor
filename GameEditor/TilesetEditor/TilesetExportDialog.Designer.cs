@@ -66,21 +66,21 @@
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(88, 119);
+            label1.Location = new Point(17, 119);
             label1.Name = "label1";
-            label1.Size = new Size(32, 19);
+            label1.Size = new Size(103, 19);
             label1.TabIndex = 6;
             label1.Text = "File:";
+            label1.TextAlign = ContentAlignment.TopRight;
             // 
             // label2
             // 
-            label2.AutoSize = true;
             label2.Location = new Point(17, 22);
             label2.Name = "label2";
             label2.Size = new Size(103, 19);
             label2.TabIndex = 5;
             label2.Text = "Horizontal tiles:";
+            label2.TextAlign = ContentAlignment.TopRight;
             // 
             // txtFileName
             // 
@@ -117,12 +117,12 @@
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(28, 86);
+            label3.Location = new Point(17, 86);
             label3.Name = "label3";
-            label3.Size = new Size(92, 19);
+            label3.Size = new Size(103, 19);
             label3.TabIndex = 20;
             label3.Text = "Between tiles:";
+            label3.TextAlign = ContentAlignment.TopRight;
             // 
             // numBorder
             // 
@@ -133,12 +133,12 @@
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(67, 54);
+            label4.Location = new Point(17, 54);
             label4.Name = "label4";
-            label4.Size = new Size(53, 19);
+            label4.Size = new Size(103, 19);
             label4.TabIndex = 18;
             label4.Text = "Border:";
+            label4.TextAlign = ContentAlignment.TopRight;
             // 
             // TilesetExportDialog
             // 

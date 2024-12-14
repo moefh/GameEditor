@@ -421,7 +421,6 @@ namespace GameEditor.ProjectIO
             MapFgTiles fg = map.FgTiles;
             MapBgTiles bg = map.BgTiles;
             f.WriteLine($"static const uint8_t {ident}[] = {{");
-            f.WriteLine();
             f.Write("  // foreground");
             for (int y = 0; y < fg.Height; y++) {
                 for (int x = 0; x < fg.Width; x++) {
@@ -437,6 +436,7 @@ namespace GameEditor.ProjectIO
                     f.Write($"0x{fg.cl[x,y]&0xff:x02},");
                 }
             }
+            f.WriteLine();
             f.Write("  // effects");
             for (int y = 0; y < fg.Height; y++) {
                 for (int x = 0; x < fg.Width; x++) {
@@ -444,6 +444,7 @@ namespace GameEditor.ProjectIO
                     f.Write($"0x{fg.fx[x,y]&0xff:x02},");
                 }
             }
+            f.WriteLine();
             f.Write("  // background");
             for (int y = 0; y < bg.Height; y++) {
                 for (int x = 0; x < bg.Width; x++) {

@@ -38,10 +38,6 @@
             pasteToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator4 = new ToolStripSeparator();
             deleteSelectionToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator3 = new ToolStripSeparator();
-            toolStripLabel1 = new ToolStripLabel();
-            toolStripBtnGrid = new ToolStripButton();
-            toolStripBtnTransparent = new ToolStripButton();
             toolStripSeparator2 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
             toolStripBtnToolPen = new ToolStripButton();
@@ -49,6 +45,9 @@
             toolStripBtnToolSelect = new ToolStripButton();
             toolStripBtnToolVFlip = new ToolStripButton();
             toolStripBtnToolHFlip = new ToolStripButton();
+            toolStripLabel1 = new ToolStripLabel();
+            toolStripBtnGrid = new ToolStripButton();
+            toolStripBtnTransparent = new ToolStripButton();
             mainSplit = new SplitContainer();
             spriteFramePicker = new CustomControls.SpriteFramePicker();
             framePickerScroll = new VScrollBar();
@@ -71,9 +70,9 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip1.Location = new Point(0, 305);
+            statusStrip1.Location = new Point(0, 240);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(632, 24);
+            statusStrip1.Size = new Size(557, 24);
             statusStrip1.TabIndex = 0;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -89,7 +88,7 @@
             infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnProperties, toolStripBtnExport, toolStripBtnImport });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
-            infoToolStrip.Size = new Size(632, 27);
+            infoToolStrip.Size = new Size(557, 27);
             infoToolStrip.TabIndex = 1;
             infoToolStrip.Text = "toolStrip1";
             // 
@@ -131,10 +130,10 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { editToolStripDropDownButton, toolStripSeparator2, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip, toolStripSeparator3, toolStripLabel1, toolStripBtnGrid, toolStripBtnTransparent });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { editToolStripDropDownButton, toolStripSeparator2, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip, toolStripBtnTransparent, toolStripBtnGrid, toolStripLabel1 });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
-            toolsToolStrip.Size = new Size(632, 27);
+            toolsToolStrip.Size = new Size(557, 27);
             toolsToolStrip.TabIndex = 2;
             toolsToolStrip.Text = "toolStrip2";
             // 
@@ -178,51 +177,9 @@
             deleteSelectionToolStripMenuItem.Text = "Delete Selection";
             deleteSelectionToolStripMenuItem.Click += deleteSelectionToolStripMenuItem_Click;
             // 
-            // toolStripSeparator3
-            // 
-            toolStripSeparator3.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator3.Name = "toolStripSeparator3";
-            toolStripSeparator3.Size = new Size(6, 27);
-            // 
-            // toolStripLabel1
-            // 
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(56, 24);
-            toolStripLabel1.Text = "Display:";
-            // 
-            // toolStripBtnGrid
-            // 
-            toolStripBtnGrid.Checked = true;
-            toolStripBtnGrid.CheckOnClick = true;
-            toolStripBtnGrid.CheckState = CheckState.Checked;
-            toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnGrid.Image = Properties.Resources.GridIcon;
-            toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
-            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnGrid.Name = "toolStripBtnGrid";
-            toolStripBtnGrid.Size = new Size(23, 24);
-            toolStripBtnGrid.Text = "Grid";
-            toolStripBtnGrid.ToolTipText = "Grid";
-            toolStripBtnGrid.CheckedChanged += toolStripBtnGrid_CheckedChanged;
-            // 
-            // toolStripBtnTransparent
-            // 
-            toolStripBtnTransparent.Checked = true;
-            toolStripBtnTransparent.CheckOnClick = true;
-            toolStripBtnTransparent.CheckState = CheckState.Checked;
-            toolStripBtnTransparent.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnTransparent.Image = Properties.Resources.TransparencyIcon;
-            toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
-            toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnTransparent.Name = "toolStripBtnTransparent";
-            toolStripBtnTransparent.Size = new Size(23, 24);
-            toolStripBtnTransparent.Text = "Transparent";
-            toolStripBtnTransparent.ToolTipText = "Transparency";
-            toolStripBtnTransparent.CheckedChanged += toolStripBtnTransparent_CheckedChanged;
-            // 
             // toolStripSeparator2
             // 
-            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
+            toolStripSeparator2.Margin = new Padding(10, 0, 10, 0);
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
             // 
@@ -285,6 +242,45 @@
             toolStripBtnToolHFlip.Text = "Horizontal Flip";
             toolStripBtnToolHFlip.Click += toolStripBtnToolHFlip_Click;
             // 
+            // toolStripLabel1
+            // 
+            toolStripLabel1.Alignment = ToolStripItemAlignment.Right;
+            toolStripLabel1.Name = "toolStripLabel1";
+            toolStripLabel1.Size = new Size(56, 24);
+            toolStripLabel1.Text = "Display:";
+            // 
+            // toolStripBtnGrid
+            // 
+            toolStripBtnGrid.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnGrid.Checked = true;
+            toolStripBtnGrid.CheckOnClick = true;
+            toolStripBtnGrid.CheckState = CheckState.Checked;
+            toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnGrid.Image = Properties.Resources.GridIcon;
+            toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
+            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnGrid.Name = "toolStripBtnGrid";
+            toolStripBtnGrid.Size = new Size(23, 24);
+            toolStripBtnGrid.Text = "Grid";
+            toolStripBtnGrid.ToolTipText = "Grid";
+            toolStripBtnGrid.CheckedChanged += toolStripBtnGrid_CheckedChanged;
+            // 
+            // toolStripBtnTransparent
+            // 
+            toolStripBtnTransparent.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnTransparent.Checked = true;
+            toolStripBtnTransparent.CheckOnClick = true;
+            toolStripBtnTransparent.CheckState = CheckState.Checked;
+            toolStripBtnTransparent.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnTransparent.Image = Properties.Resources.TransparencyIcon;
+            toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
+            toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnTransparent.Name = "toolStripBtnTransparent";
+            toolStripBtnTransparent.Size = new Size(23, 24);
+            toolStripBtnTransparent.Text = "Transparent";
+            toolStripBtnTransparent.ToolTipText = "Transparency";
+            toolStripBtnTransparent.CheckedChanged += toolStripBtnTransparent_CheckedChanged;
+            // 
             // mainSplit
             // 
             mainSplit.Dock = DockStyle.Fill;
@@ -303,7 +299,7 @@
             // 
             mainSplit.Panel2.Controls.Add(spriteLoopSplitter);
             mainSplit.Panel2MinSize = 100;
-            mainSplit.Size = new Size(632, 251);
+            mainSplit.Size = new Size(557, 186);
             mainSplit.SplitterDistance = 100;
             mainSplit.TabIndex = 3;
             // 
@@ -315,7 +311,7 @@
             spriteFramePicker.Scrollbar = framePickerScroll;
             spriteFramePicker.SelectedFrame = 0;
             spriteFramePicker.ShowEmptyFrame = false;
-            spriteFramePicker.Size = new Size(83, 251);
+            spriteFramePicker.Size = new Size(83, 186);
             spriteFramePicker.TabIndex = 0;
             spriteFramePicker.Zoom = 4;
             spriteFramePicker.SelectedFrameChanged += spriteFramePicker_SelectedFrameChanged;
@@ -325,7 +321,7 @@
             framePickerScroll.Dock = DockStyle.Right;
             framePickerScroll.Location = new Point(83, 0);
             framePickerScroll.Name = "framePickerScroll";
-            framePickerScroll.Size = new Size(17, 251);
+            framePickerScroll.Size = new Size(17, 186);
             framePickerScroll.TabIndex = 1;
             // 
             // spriteLoopSplitter
@@ -344,8 +340,8 @@
             // 
             spriteLoopSplitter.Panel2.Controls.Add(colorPicker);
             spriteLoopSplitter.Panel2MinSize = 100;
-            spriteLoopSplitter.Size = new Size(528, 251);
-            spriteLoopSplitter.SplitterDistance = 380;
+            spriteLoopSplitter.Size = new Size(453, 186);
+            spriteLoopSplitter.SplitterDistance = 305;
             spriteLoopSplitter.TabIndex = 1;
             // 
             // spriteEditor
@@ -358,7 +354,7 @@
             spriteEditor.Name = "spriteEditor";
             spriteEditor.SelectedFrame = 0;
             spriteEditor.SelectedTool = CustomControls.PaintTool.Pen;
-            spriteEditor.Size = new Size(380, 251);
+            spriteEditor.Size = new Size(305, 186);
             spriteEditor.Sprite = null;
             spriteEditor.TabIndex = 0;
             spriteEditor.Text = "spriteEditor";
@@ -374,7 +370,7 @@
             colorPicker.SelectedBackColor = Color.FromArgb(0, 255, 0);
             colorPicker.SelectedForeColor = Color.FromArgb(0, 0, 0);
             colorPicker.SingleSelection = false;
-            colorPicker.Size = new Size(144, 251);
+            colorPicker.Size = new Size(144, 186);
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
@@ -383,7 +379,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(632, 329);
+            ClientSize = new Size(557, 264);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
@@ -432,7 +428,6 @@
         private ToolStripMenuItem copyFrameToolStripMenuItem;
         private ToolStripButton toolStripBtnExport;
         private VScrollBar framePickerScroll;
-        private ToolStripSeparator toolStripSeparator3;
         private ToolStripLabel toolStripLabel2;
         private ToolStripButton toolStripBtnToolPen;
         private ToolStripButton toolStripBtnToolSelect;

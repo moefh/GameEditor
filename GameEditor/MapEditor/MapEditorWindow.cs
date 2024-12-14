@@ -58,21 +58,24 @@ namespace GameEditor.MapEditor
             get { return mapEditor.ActiveLayer; }
             set {
                 mapEditor.ActiveLayer = value;
-                mapEditor.Invalidate();
                 toolStripButtonLayerFg.Checked = value == CustomControls.MapEditor.Layer.Foreground;
                 toolStripButtonLayerBg.Checked = value == CustomControls.MapEditor.Layer.Background;
                 toolStripButtonLayerCollision.Checked = value == CustomControls.MapEditor.Layer.Collision;
                 toolStripButtonLayerEffects.Checked = value == CustomControls.MapEditor.Layer.Effects;
-                if (value == CustomControls.MapEditor.Layer.Collision) {
-                    tilePicker.Tileset = ImageUtil.CollisionTileset;
-                    tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
-                } else if (value == CustomControls.MapEditor.Layer.Effects) {
-                    tilePicker.Tileset = ImageUtil.EffectsTileset;
-                    tilePicker.LeftSelectedTile = mapEditor.LeftSelectedEffectsTile;
-                } else {
-                    tilePicker.Tileset = Map.Tileset;
-                    tilePicker.LeftSelectedTile = mapEditor.LeftSelectedTile;
-                }
+                UpdateTilePickerTileset();
+            }
+        }
+
+        public void UpdateTilePickerTileset() {
+            if (ActiveLayer == CustomControls.MapEditor.Layer.Collision) {
+                tilePicker.Tileset = ImageUtil.CollisionTileset;
+                tilePicker.LeftSelectedTile = mapEditor.LeftSelectedCollisionTile;
+            } else if (ActiveLayer == CustomControls.MapEditor.Layer.Effects) {
+                tilePicker.Tileset = ImageUtil.EffectsTileset;
+                tilePicker.LeftSelectedTile = mapEditor.LeftSelectedEffectsTile;
+            } else {
+                tilePicker.Tileset = Map.Tileset;
+                tilePicker.LeftSelectedTile = mapEditor.LeftSelectedTile;
             }
         }
 
@@ -99,7 +102,6 @@ namespace GameEditor.MapEditor
             RenderFlags grid = toolStripButtonShowGrid.Checked ? RenderFlags.Grid : 0;
             RenderFlags screen = toolStripButtonShowScreen.Checked ? RenderFlags.Screen : 0;
             EnabledRenderLayers = fg | bg | col | fx | grid | screen;
-            mapEditor.Invalidate();
         }
 
         public void RefreshTileset(Tileset tileset) {
@@ -143,7 +145,6 @@ namespace GameEditor.MapEditor
             if (tilePicker.LeftSelectedTile >= 0) tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             if (tilePicker.RightSelectedTile >= 0) tilePicker.ScrollTileIntoView(tilePicker.RightSelectedTile);
             if (tilePicker.LeftSelectedTile >= 0) tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
-            tilePicker.Invalidate();
         }
 
         private void mapEditor_MouseOver(object sender, Point p) {
@@ -210,12 +211,12 @@ namespace GameEditor.MapEditor
                 if (dlg.MapBgWidth != Map.BgWidth || dlg.MapBgHeight != Map.BgHeight) {
                     Map.BgTiles.Resize(dlg.MapBgWidth, dlg.MapBgHeight, mapEditor.RightSelectedTile);
                 }
+                mapEditor.Invalidate();
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
                 Project.UpdateAssetNames(Map.AssetType);
                 Project.UpdateDataSize();
-                mapEditor.Invalidate();
             }
         }
 
@@ -230,10 +231,9 @@ namespace GameEditor.MapEditor
             if (newTileset == Map.Tileset) return;
 
             Map.Tileset = newTileset;
-            tilePicker.Tileset = Map.Tileset;
-            SetDirty();
             mapEditor.Invalidate();
-            tilePicker.Invalidate();
+            UpdateTilePickerTileset();
+            SetDirty();
             FixFormTitle();
         }
 
@@ -258,7 +258,6 @@ namespace GameEditor.MapEditor
             FixFormTitle();
             UpdateDataSize();
             Project.UpdateDataSize();
-            mapEditor.Invalidate();
         }
 
         private void toolStripBtnExport_Click(object sender, EventArgs e) {
@@ -292,7 +291,6 @@ namespace GameEditor.MapEditor
             dlg.SolidColorOnly = true;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 mapEditor.GridColor = dlg.Color;
-                mapEditor.Invalidate();
             }
         }
 
@@ -303,18 +301,22 @@ namespace GameEditor.MapEditor
 
         private void toolStripButtonLayerFg_Click(object sender, EventArgs e) {
             ActiveLayer = CustomControls.MapEditor.Layer.Foreground;
+            toolStripButtonShowFG.Checked = true;
         }
 
         private void toolStripButtonLayerBg_Click(object sender, EventArgs e) {
             ActiveLayer = CustomControls.MapEditor.Layer.Background;
+            toolStripButtonShowBG.Checked = true;
         }
 
         private void toolStripButtonLayerCollision_Click(object sender, EventArgs e) {
             ActiveLayer = CustomControls.MapEditor.Layer.Collision;
+            toolStripButtonShowCol.Checked = true;
         }
 
         private void toolStripButtonLayerEffects_Click(object sender, EventArgs e) {
             ActiveLayer = CustomControls.MapEditor.Layer.Effects;
+            toolStripButtonShowFx.Checked = true;
         }
 
         private void toolStripButtonToolTiles_Click(object sender, EventArgs e) {

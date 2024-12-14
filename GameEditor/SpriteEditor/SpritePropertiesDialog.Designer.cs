@@ -57,16 +57,15 @@
             btnCancel.Location = new Point(149, 163);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(87, 35);
-            btnCancel.TabIndex = 3;
+            btnCancel.TabIndex = 5;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(32, 54);
+            label1.Location = new Point(12, 54);
             label1.Name = "label1";
-            label1.Size = new Size(49, 19);
+            label1.Size = new Size(69, 19);
             label1.TabIndex = 2;
             label1.Text = "Width:";
             label1.TextAlign = ContentAlignment.TopRight;
@@ -79,7 +78,7 @@
             numWidth.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numWidth.Name = "numWidth";
             numWidth.Size = new Size(81, 26);
-            numWidth.TabIndex = 0;
+            numWidth.TabIndex = 1;
             numWidth.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // numHeight
@@ -90,15 +89,14 @@
             numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.Name = "numHeight";
             numHeight.Size = new Size(81, 26);
-            numHeight.TabIndex = 1;
+            numHeight.TabIndex = 2;
             numHeight.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(28, 86);
+            label2.Location = new Point(12, 86);
             label2.Name = "label2";
-            label2.Size = new Size(53, 19);
+            label2.Size = new Size(69, 19);
             label2.TabIndex = 4;
             label2.Text = "Height:";
             label2.TextAlign = ContentAlignment.TopRight;
@@ -111,34 +109,33 @@
             numFrames.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numFrames.Name = "numFrames";
             numFrames.Size = new Size(81, 26);
-            numFrames.TabIndex = 2;
+            numFrames.TabIndex = 3;
             numFrames.Value = new decimal(new int[] { 1, 0, 0, 0 });
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(25, 118);
+            label3.Location = new Point(12, 118);
             label3.Name = "label3";
-            label3.Size = new Size(56, 19);
+            label3.Size = new Size(69, 19);
             label3.TabIndex = 6;
             label3.Text = "Frames:";
             label3.TextAlign = ContentAlignment.TopRight;
             // 
             // label4
             // 
-            label4.AutoSize = true;
-            label4.Location = new Point(34, 23);
+            label4.Location = new Point(12, 23);
             label4.Name = "label4";
-            label4.Size = new Size(48, 19);
+            label4.Size = new Size(70, 19);
             label4.TabIndex = 7;
             label4.Text = "Name:";
+            label4.TextAlign = ContentAlignment.TopRight;
             // 
             // txtSpriteName
             // 
             txtSpriteName.Location = new Point(88, 21);
             txtSpriteName.Name = "txtSpriteName";
             txtSpriteName.Size = new Size(241, 26);
-            txtSpriteName.TabIndex = 8;
+            txtSpriteName.TabIndex = 0;
             // 
             // SpritePropertiesDialog
             // 

@@ -66,27 +66,27 @@
             // 
             // label2
             // 
-            label2.AutoSize = true;
-            label2.Location = new Point(61, 23);
+            label2.Location = new Point(12, 23);
             label2.Name = "label2";
-            label2.Size = new Size(53, 19);
+            label2.Size = new Size(102, 19);
             label2.TabIndex = 12;
             label2.Text = "Border:";
+            label2.TextAlign = ContentAlignment.TopRight;
             // 
             // label1
             // 
-            label1.AutoSize = true;
-            label1.Location = new Point(82, 88);
+            label1.Location = new Point(12, 88);
             label1.Name = "label1";
-            label1.Size = new Size(32, 19);
+            label1.Size = new Size(102, 19);
             label1.TabIndex = 13;
             label1.Text = "File:";
+            label1.TextAlign = ContentAlignment.TopRight;
             // 
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             btnCancel.DialogResult = DialogResult.Cancel;
-            btnCancel.Location = new Point(194, 141);
+            btnCancel.Location = new Point(189, 141);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(88, 36);
             btnCancel.TabIndex = 6;
@@ -96,7 +96,7 @@
             // btnOk
             // 
             btnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOk.Location = new Point(288, 141);
+            btnOk.Location = new Point(283, 141);
             btnOk.Name = "btnOk";
             btnOk.Size = new Size(88, 36);
             btnOk.TabIndex = 5;
@@ -113,12 +113,12 @@
             // 
             // label3
             // 
-            label3.AutoSize = true;
-            label3.Location = new Point(22, 55);
+            label3.Location = new Point(12, 55);
             label3.Name = "label3";
-            label3.Size = new Size(92, 19);
+            label3.Size = new Size(102, 19);
             label3.TabIndex = 16;
             label3.Text = "Between tiles:";
+            label3.TextAlign = ContentAlignment.TopRight;
             // 
             // TilesetImportDialog
             // 
@@ -126,7 +126,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(388, 189);
+            ClientSize = new Size(383, 189);
             Controls.Add(numBetweenTiles);
             Controls.Add(label3);
             Controls.Add(numBorder);

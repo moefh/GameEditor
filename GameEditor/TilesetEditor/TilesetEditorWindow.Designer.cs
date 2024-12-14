@@ -44,6 +44,8 @@
             copyToolStripMenuItem = new ToolStripMenuItem();
             pasteToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator4 = new ToolStripSeparator();
+            deleteSelectionToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
             insertTileToolStripMenuItem = new ToolStripMenuItem();
             appendTileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator3 = new ToolStripSeparator();
@@ -52,18 +54,15 @@
             toolStripSeparator6 = new ToolStripSeparator();
             deleteTileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator2 = new ToolStripSeparator();
-            toolStripLabel3 = new ToolStripLabel();
-            toolStripBtnGrid = new ToolStripButton();
-            toolStripBtnTransparent = new ToolStripButton();
-            toolStripSeparator5 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
             toolStripBtnToolPen = new ToolStripButton();
             toolStripBtnToolFill = new ToolStripButton();
             toolStripBtnToolSelect = new ToolStripButton();
             toolStripBtnToolVFlip = new ToolStripButton();
             toolStripBtnToolHFlip = new ToolStripButton();
-            toolStripSeparator1 = new ToolStripSeparator();
-            deleteSelectionToolStripMenuItem = new ToolStripMenuItem();
+            toolStripBtnTransparent = new ToolStripButton();
+            toolStripBtnGrid = new ToolStripButton();
+            toolStripLabel3 = new ToolStripLabel();
             infoToolStrip.SuspendLayout();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
@@ -83,7 +82,7 @@
             infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnExport, toolStripBtnImport, toolStripBtnProperties });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
-            infoToolStrip.Size = new Size(686, 27);
+            infoToolStrip.Size = new Size(636, 27);
             infoToolStrip.TabIndex = 0;
             infoToolStrip.Text = "toolStrip1";
             // 
@@ -125,9 +124,9 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip1.Location = new Point(0, 455);
+            statusStrip1.Location = new Point(0, 257);
             statusStrip1.Name = "statusStrip1";
-            statusStrip1.Size = new Size(686, 24);
+            statusStrip1.Size = new Size(636, 24);
             statusStrip1.TabIndex = 1;
             statusStrip1.Text = "statusStrip1";
             // 
@@ -155,7 +154,7 @@
             // mainSplit.Panel2
             // 
             mainSplit.Panel2.Controls.Add(tileSplit);
-            mainSplit.Size = new Size(686, 397);
+            mainSplit.Size = new Size(636, 199);
             mainSplit.SplitterDistance = 244;
             mainSplit.TabIndex = 2;
             // 
@@ -172,7 +171,7 @@
             tilePicker.RightSelectionColor = Color.FromArgb(0, 255, 0);
             tilePicker.Scrollbar = tilePickerScroll;
             tilePicker.ShowEmptyTile = false;
-            tilePicker.Size = new Size(227, 397);
+            tilePicker.Size = new Size(227, 199);
             tilePicker.TabIndex = 0;
             tilePicker.Tileset = null;
             tilePicker.Zoom = 5;
@@ -183,7 +182,7 @@
             tilePickerScroll.Dock = DockStyle.Right;
             tilePickerScroll.Location = new Point(227, 0);
             tilePickerScroll.Name = "tilePickerScroll";
-            tilePickerScroll.Size = new Size(17, 397);
+            tilePickerScroll.Size = new Size(17, 199);
             tilePickerScroll.TabIndex = 1;
             // 
             // tileSplit
@@ -200,8 +199,8 @@
             // tileSplit.Panel2
             // 
             tileSplit.Panel2.Controls.Add(colorPicker);
-            tileSplit.Size = new Size(438, 397);
-            tileSplit.SplitterDistance = 261;
+            tileSplit.Size = new Size(388, 199);
+            tileSplit.SplitterDistance = 211;
             tileSplit.TabIndex = 5;
             // 
             // tileEditor
@@ -214,7 +213,7 @@
             tileEditor.Name = "tileEditor";
             tileEditor.SelectedTile = 0;
             tileEditor.SelectedTool = CustomControls.PaintTool.Pen;
-            tileEditor.Size = new Size(261, 397);
+            tileEditor.Size = new Size(211, 199);
             tileEditor.TabIndex = 4;
             tileEditor.Tileset = null;
             tileEditor.ImageChanged += tileEditor_ImageChanged;
@@ -230,17 +229,17 @@
             colorPicker.SelectedBackColor = Color.FromArgb(0, 0, 255);
             colorPicker.SelectedForeColor = Color.FromArgb(255, 0, 0);
             colorPicker.SingleSelection = false;
-            colorPicker.Size = new Size(173, 397);
+            colorPicker.Size = new Size(173, 199);
             colorPicker.TabIndex = 0;
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel3, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator5, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownEdit, toolStripSeparator2, toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip, toolStripBtnTransparent, toolStripBtnGrid, toolStripLabel3 });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
-            toolsToolStrip.Size = new Size(686, 27);
+            toolsToolStrip.Size = new Size(636, 27);
             toolsToolStrip.TabIndex = 3;
             toolsToolStrip.Text = "toolStrip1";
             // 
@@ -273,6 +272,19 @@
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
             toolStripSeparator4.Size = new Size(222, 6);
+            // 
+            // deleteSelectionToolStripMenuItem
+            // 
+            deleteSelectionToolStripMenuItem.Name = "deleteSelectionToolStripMenuItem";
+            deleteSelectionToolStripMenuItem.ShortcutKeys = Keys.Delete;
+            deleteSelectionToolStripMenuItem.Size = new Size(225, 24);
+            deleteSelectionToolStripMenuItem.Text = "Delete Selection";
+            deleteSelectionToolStripMenuItem.Click += deleteSelectionToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(222, 6);
             // 
             // insertTileToolStripMenuItem
             // 
@@ -324,48 +336,6 @@
             toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator2.Name = "toolStripSeparator2";
             toolStripSeparator2.Size = new Size(6, 27);
-            // 
-            // toolStripLabel3
-            // 
-            toolStripLabel3.Name = "toolStripLabel3";
-            toolStripLabel3.Size = new Size(56, 24);
-            toolStripLabel3.Text = "Display:";
-            // 
-            // toolStripBtnGrid
-            // 
-            toolStripBtnGrid.Checked = true;
-            toolStripBtnGrid.CheckOnClick = true;
-            toolStripBtnGrid.CheckState = CheckState.Checked;
-            toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnGrid.Image = Properties.Resources.GridIcon;
-            toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
-            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnGrid.Name = "toolStripBtnGrid";
-            toolStripBtnGrid.Size = new Size(23, 24);
-            toolStripBtnGrid.Text = "Grid";
-            toolStripBtnGrid.ToolTipText = "Grid";
-            toolStripBtnGrid.Click += toolStripBtnGrid_Click;
-            // 
-            // toolStripBtnTransparent
-            // 
-            toolStripBtnTransparent.Checked = true;
-            toolStripBtnTransparent.CheckOnClick = true;
-            toolStripBtnTransparent.CheckState = CheckState.Checked;
-            toolStripBtnTransparent.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnTransparent.Image = Properties.Resources.TransparencyIcon;
-            toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
-            toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnTransparent.Name = "toolStripBtnTransparent";
-            toolStripBtnTransparent.Size = new Size(23, 24);
-            toolStripBtnTransparent.Text = "Transparent";
-            toolStripBtnTransparent.ToolTipText = "Transparency";
-            toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
-            // 
-            // toolStripSeparator5
-            // 
-            toolStripSeparator5.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(6, 27);
             // 
             // toolStripLabel2
             // 
@@ -426,24 +396,50 @@
             toolStripBtnToolHFlip.Text = "Horizontal Flip";
             toolStripBtnToolHFlip.Click += toolStripBtnToolHFlip_Click;
             // 
-            // toolStripSeparator1
+            // toolStripBtnTransparent
             // 
-            toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(222, 6);
+            toolStripBtnTransparent.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnTransparent.Checked = true;
+            toolStripBtnTransparent.CheckOnClick = true;
+            toolStripBtnTransparent.CheckState = CheckState.Checked;
+            toolStripBtnTransparent.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnTransparent.Image = Properties.Resources.TransparencyIcon;
+            toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
+            toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnTransparent.Name = "toolStripBtnTransparent";
+            toolStripBtnTransparent.Size = new Size(23, 24);
+            toolStripBtnTransparent.Text = "Transparent";
+            toolStripBtnTransparent.ToolTipText = "Transparency";
+            toolStripBtnTransparent.Click += toolStripBtnTransparent_Click;
             // 
-            // deleteSelectionToolStripMenuItem
+            // toolStripBtnGrid
             // 
-            deleteSelectionToolStripMenuItem.Name = "deleteSelectionToolStripMenuItem";
-            deleteSelectionToolStripMenuItem.ShortcutKeys = Keys.Delete;
-            deleteSelectionToolStripMenuItem.Size = new Size(225, 24);
-            deleteSelectionToolStripMenuItem.Text = "Delete Selection";
-            deleteSelectionToolStripMenuItem.Click += deleteSelectionToolStripMenuItem_Click;
+            toolStripBtnGrid.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnGrid.Checked = true;
+            toolStripBtnGrid.CheckOnClick = true;
+            toolStripBtnGrid.CheckState = CheckState.Checked;
+            toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnGrid.Image = Properties.Resources.GridIcon;
+            toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
+            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnGrid.Name = "toolStripBtnGrid";
+            toolStripBtnGrid.Size = new Size(23, 24);
+            toolStripBtnGrid.Text = "Grid";
+            toolStripBtnGrid.ToolTipText = "Grid";
+            toolStripBtnGrid.Click += toolStripBtnGrid_Click;
+            // 
+            // toolStripLabel3
+            // 
+            toolStripLabel3.Alignment = ToolStripItemAlignment.Right;
+            toolStripLabel3.Name = "toolStripLabel3";
+            toolStripLabel3.Size = new Size(56, 24);
+            toolStripLabel3.Text = "Display:";
             // 
             // TilesetEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(686, 479);
+            ClientSize = new Size(636, 281);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(infoToolStrip);
@@ -498,7 +494,6 @@
         private ToolStripMenuItem copyToolStripMenuItem;
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
-        private ToolStripSeparator toolStripSeparator5;
         private ToolStripButton toolStripBtnToolPen;
         private ToolStripButton toolStripBtnToolSelect;
         private ToolStripButton toolStripBtnToolFill;

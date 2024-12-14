@@ -88,7 +88,7 @@ namespace GameEditor.MapEditor
             displayToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowFx, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator5, toolStripComboBoxZoom, toolStripLblMapCoords, toolStripSeparator3, toolStripBtnGridColor });
             displayToolStrip.Location = new Point(0, 28);
             displayToolStrip.Name = "displayToolStrip";
-            displayToolStrip.Size = new Size(662, 28);
+            displayToolStrip.Size = new Size(560, 28);
             displayToolStrip.TabIndex = 2;
             displayToolStrip.Text = "toolStrip";
             // 
@@ -224,7 +224,7 @@ namespace GameEditor.MapEditor
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
             statusStrip.Location = new Point(0, 255);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(662, 24);
+            statusStrip.Size = new Size(560, 24);
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip";
             // 
@@ -253,7 +253,7 @@ namespace GameEditor.MapEditor
             // 
             mainSplit.Panel2.Controls.Add(mapEditor);
             mainSplit.Panel2.Padding = new Padding(3);
-            mainSplit.Size = new Size(662, 171);
+            mainSplit.Size = new Size(560, 171);
             mainSplit.SplitterDistance = 205;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
@@ -304,7 +304,7 @@ namespace GameEditor.MapEditor
             mapEditor.RightSelectedEffectsTile = 0;
             mapEditor.RightSelectedTile = 0;
             mapEditor.SelectedTool = CustomControls.MapEditor.Tool.Tile;
-            mapEditor.Size = new Size(446, 165);
+            mapEditor.Size = new Size(344, 165);
             mapEditor.TabIndex = 0;
             mapEditor.Zoom = 0D;
             mapEditor.ZoomStep = 0.5D;
@@ -319,7 +319,7 @@ namespace GameEditor.MapEditor
             infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripComboTiles, toolStripBtnExport, toolStripBtnImport, toolStripSeparator4, btnProperties });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
-            infoToolStrip.Size = new Size(662, 28);
+            infoToolStrip.Size = new Size(560, 28);
             infoToolStrip.TabIndex = 7;
             infoToolStrip.Text = "toolStrip1";
             // 
@@ -383,7 +383,7 @@ namespace GameEditor.MapEditor
             toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButtonEdit, toolStripSeparator6, toolStripLabel5, toolStripButtonLayerFg, toolStripButtonLayerBg, toolStripButtonLayerCollision, toolStripButtonLayerEffects, toolStripSeparator2, toolStripLabel6, toolStripButtonToolTiles, toolStripButtonToolSelect });
             toolsToolStrip.Location = new Point(0, 56);
             toolsToolStrip.Name = "toolsToolStrip";
-            toolsToolStrip.Size = new Size(662, 28);
+            toolsToolStrip.Size = new Size(560, 28);
             toolsToolStrip.TabIndex = 8;
             toolsToolStrip.Text = "toolStrip1";
             // 
@@ -518,7 +518,7 @@ namespace GameEditor.MapEditor
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(662, 279);
+            ClientSize = new Size(560, 279);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(displayToolStrip);
