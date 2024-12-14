@@ -10,6 +10,7 @@ using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
+using System.Data;
 using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
@@ -150,16 +151,62 @@ namespace GameEditor.ProjectIO
         // === MOD
         // =============================================================
 
-        protected void WriteModData(ModData mod) {
-            ModFile file = mod.ModFile;
+        private static bool AreSamplesEqual(sbyte[] spl1, sbyte[] spl2) {
+            if (spl1.Length != spl2.Length) return false;
+            for (int i = 0; i < spl1.Length; i++) {
+                if (spl1[i] != spl2[i]) return false;
+            }
+            return true;
+        }
 
-            // sample data
-            for (int spl = 0; spl < file.NumSamples; spl++) {
-                sbyte[]? sampleData = file.Sample[spl].Data;
-                if (file.Sample[spl].Len == 0 || sampleData == null) continue;
-                string sampleIdent = identifiers.Add(file.Sample[spl], "mod_samples", mod.Name, $"sample{spl+1:D02}");
+        private void MergeModSamples(out Dictionary<ModData, List<string>> modSampleIds, out Dictionary<string, sbyte[]> modSamplesById) {
+            modSampleIds = [];
+            modSamplesById = [];
+
+            foreach (ModDataItem modItem in Project.ModList) {
+                ModData mod = modItem.Mod;
+                ModFile file = mod.ModFile;
+                List<string> sampleIdentifiers = [];
+                for (int spl = 0; spl < file.NumSamples; spl++) {
+                    sbyte[]? sampleData = file.Sample[spl].Data;
+                    if (sampleData == null) {
+                        sampleIdentifiers.Add("NULL");
+                    } else {
+                        string sampleIdent = identifiers.Add(file.Sample[spl], "mod_samples", mod.Name, $"sample{spl+1:D02}");
+                        sampleIdentifiers.Add(sampleIdent);
+                        modSamplesById[sampleIdent] = sampleData;
+                    }
+                }
+                modSampleIds[mod] = sampleIdentifiers;
+            }
+
+            for (int m1 = 0; m1 < Project.ModList.Count; m1++) {
+                ModData mod1 = (ModData) Project.ModList[m1].Asset;
+                ModFile file1 = mod1.ModFile;
+                for (int spl1 = 0; spl1 < file1.NumSamples; spl1++) {
+                    sbyte[]? data1 = file1.Sample[spl1].Data;
+                    if (data1 == null) continue;
+                    for (int m2 = m1+1; m2 < Project.ModList.Count; m2++) {
+                        ModData mod2 = (ModData) Project.ModList[m2].Asset;
+                        ModFile file2 = mod2.ModFile;
+                        for (int spl2 = 0; spl2 < file2.NumSamples; spl2++) {
+                            sbyte[]? data2 = file2.Sample[spl2].Data;
+                            if (data2 == null) continue;
+                            if (! AreSamplesEqual(data1, data2)) continue;
+                            modSampleIds[mod2][spl2] = modSampleIds[mod1][spl1];
+                            Util.Log($"-> merging MOD samples {mod1.Name}[{spl1+1}] and {mod2.Name}[{spl2+1}]");
+                        }
+                    }
+                }
+            }
+        }
+
+        protected void WriteModSamples(Dictionary<string, sbyte[]> samplesById) {
+            foreach (KeyValuePair<string, sbyte[]> kv in samplesById) {
+                string sampleIdent = kv.Key;
+                sbyte[] sampleData = kv.Value;
                 f.Write($"static const int8_t {sampleIdent}[] = {{");
-                for (int i = 0; i < file.Sample[spl].Len; i++) {
+                for (int i = 0; i < sampleData.Length; i++) {
                     if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
                     f.Write($"{sampleData[i]},");
                 }
@@ -167,8 +214,10 @@ namespace GameEditor.ProjectIO
                 f.WriteLine("};");
                 f.WriteLine();
             }
+        }
 
-            // patterns
+        protected void WriteModPatterns(ModData mod) {
+            ModFile file = mod.ModFile;
             string ident = identifiers.Add(file.Pattern, "mod_pattern", mod.Name);
             f.Write($"static const struct {GetUpperGlobal("MOD_CELL")} {ident}[] = {{");
             int cell = 0;
@@ -193,7 +242,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        protected void WriteMod(ModData mod) {
+        protected void WriteMod(ModData mod, List<string> sampleIdents) {
             ModFile file = mod.ModFile;
 
             f.WriteLine("  {");
@@ -202,7 +251,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine("    // samples:");
             f.WriteLine("    {");
             for (int spl = 0; spl < file.NumSamples; spl++) {
-                string splIdent = (file.Sample[spl].Len == 0) ? "NULL" : identifiers.Get(file.Sample[spl]);
+                string splIdent = sampleIdents[spl];
                 f.Write("      {");
                 f.Write($" {file.Sample[spl].Len,5}, {file.Sample[spl].LoopStart,5}, {file.Sample[spl].LoopLen,5},");
                 f.Write($" {file.Sample[spl].Finetune}, {file.Sample[spl].Volume,2}, {splIdent}, ");
@@ -237,13 +286,23 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === MOD");
             f.WriteLine("// ================================================================");
             f.WriteLine();
+
+            // merge identical samples
+            MergeModSamples(out Dictionary<ModData, List<string>> modSampleIds,
+                            out Dictionary<string, sbyte[]> modSamplesById);
+
+            // write samples
+            WriteModSamples(modSamplesById);
+
+            // write patterns
             foreach (ModDataItem mi in Project.ModList) {
-                WriteModData(mi.Mod);
+                WriteModPatterns(mi.Mod);
             }
 
+            // write mod list
             f.WriteLine($"const struct {GetUpperGlobal("MOD_DATA")} {GetLowerGlobal("mods")}[] = {{");
             foreach (ModDataItem mi in Project.ModList) {
-                WriteMod(mi.Mod);
+                WriteMod(mi.Mod, modSampleIds[mi.Mod]);
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -588,6 +647,7 @@ namespace GameEditor.ProjectIO
         // =============================================================
 
         public void WriteProject() {
+            Util.Log($"== started writing project");
             WriteHeader();
             WriteDataStart();
             WriteFonts();
@@ -600,6 +660,7 @@ namespace GameEditor.ProjectIO
             WriteDataEnd();
             WriteDataIds();
             WriteFooter();
+            Util.Log($"== finished writing project");
         }
     }
 }

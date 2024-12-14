@@ -7,7 +7,6 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.Misc
 {
