@@ -28,13 +28,15 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LogWindow));
             toolStrip = new ToolStrip();
             toolStripBtnClear = new ToolStripButton();
+            toolStripSeparator1 = new ToolStripSeparator();
+            toolStripBtnAlwaysOnTop = new ToolStripButton();
             txtLog = new TextBox();
             toolStrip.SuspendLayout();
             SuspendLayout();
             // 
             // toolStrip
             // 
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnClear });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnClear, toolStripSeparator1, toolStripBtnAlwaysOnTop });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(547, 26);
@@ -43,13 +45,30 @@
             // 
             // toolStripBtnClear
             // 
-            toolStripBtnClear.Image = (Image)resources.GetObject("toolStripBtnClear.Image");
+            toolStripBtnClear.Image = Properties.Resources.TrashIcon;
             toolStripBtnClear.ImageTransparentColor = Color.Magenta;
             toolStripBtnClear.Name = "toolStripBtnClear";
             toolStripBtnClear.Size = new Size(60, 23);
             toolStripBtnClear.Text = "Clear";
             toolStripBtnClear.ToolTipText = "Clear Log";
             toolStripBtnClear.Click += toolStripBtnClear_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Margin = new Padding(10, 0, 10, 0);
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(6, 26);
+            // 
+            // toolStripBtnAlwaysOnTop
+            // 
+            toolStripBtnAlwaysOnTop.CheckOnClick = true;
+            toolStripBtnAlwaysOnTop.Image = Properties.Resources.OnTopIcon;
+            toolStripBtnAlwaysOnTop.ImageTransparentColor = Color.Magenta;
+            toolStripBtnAlwaysOnTop.Name = "toolStripBtnAlwaysOnTop";
+            toolStripBtnAlwaysOnTop.Size = new Size(120, 23);
+            toolStripBtnAlwaysOnTop.Text = "Always On Top";
+            toolStripBtnAlwaysOnTop.ToolTipText = "Stay Always On Top";
+            toolStripBtnAlwaysOnTop.Click += toolStripBtnAlwaysOnTop_Click;
             // 
             // txtLog
             // 
@@ -87,5 +106,7 @@
         private ToolStrip toolStrip;
         private ToolStripButton toolStripBtnClear;
         private TextBox txtLog;
+        private ToolStripButton toolStripBtnAlwaysOnTop;
+        private ToolStripSeparator toolStripSeparator1;
     }
 }

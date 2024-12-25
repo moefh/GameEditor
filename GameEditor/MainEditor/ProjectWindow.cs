@@ -21,26 +21,29 @@ using GameEditor.Properties;
 
 namespace GameEditor.MainEditor
 {
-    public partial class MainWindow : Form
+    public partial class ProjectWindow : Form
     {
-        private readonly LogWindow logWindow;
         private readonly CheckerWindow checkerWindow;
         private readonly AssetTreeManager assetManager;
+        private readonly Point startLocation;
+        private readonly bool hasStartLocation;
         private ProjectData project;
 
-        public MainWindow() {
+        public ProjectWindow() {
             InitializeComponent();
 
             project = new ProjectData();
             assetManager = new AssetTreeManager(this, assetTree, project, components);
 
-            logWindow = new LogWindow(project);
-            logWindow.MdiParent = this;
-
             checkerWindow = new CheckerWindow(project);
             checkerWindow.MdiParent = this;
 
             SetupCurrentProject();
+        }
+
+        public ProjectWindow(Point startLocation) : this() {
+            this.startLocation = startLocation;
+            hasStartLocation = true;
         }
 
         public void UpdateDataSize() {
@@ -60,10 +63,6 @@ namespace GameEditor.MainEditor
             Text = $"{name} - Game Asset Editor";
         }
 
-        public void AddLog(string log) {
-            logWindow.AddLog(log);
-        }
-
         protected override void OnFormClosing(FormClosingEventArgs e) {
             if (!ConfirmLoseData()) {
                 e.Cancel = true;
@@ -71,20 +70,23 @@ namespace GameEditor.MainEditor
             }
 
             Util.SaveMainWindowPosition(this, "MainWindow");
-            logWindow.Close();
             checkerWindow.Close();
 
             base.OnFormClosing(e);
         }
 
+        protected override void OnClosed(EventArgs e) {
+            project.Dispose();
+            Util.ProjectWindowClosed(this);
+            base.OnClosed(e);
+        }
+
         protected override void OnLoad(EventArgs e) {
             base.OnLoad(e);
             Util.LoadMainWindowPosition(this, "MainWindow");
-        }
-
-        protected override void OnShown(EventArgs e) {
-            base.OnShown(e);
-            Util.Log("== Ready");
+            if (hasStartLocation && WindowState == FormWindowState.Normal) {
+                Location = startLocation;
+            }
         }
 
         // ======================================================================
@@ -96,7 +98,6 @@ namespace GameEditor.MainEditor
             project.Dispose();
             project = proj;
             assetManager.Project = project;
-            logWindow.Project = project;
             checkerWindow.Project = project;
             SetupCurrentProject();
             assetManager.ExpandPopulatedAssetTypes();
@@ -193,16 +194,8 @@ namespace GameEditor.MainEditor
         // === MENU
         // ======================================================================
 
-        private void quitToolStripMenuItem_Click(object sender, EventArgs e) {
-            Close();
-        }
-
-        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
-            new AboutDialog().ShowDialog();
-        }
-
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            NewProject();
+            Util.CreateProjectWindow(Location).Show();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -219,6 +212,20 @@ namespace GameEditor.MainEditor
                 SaveProject(savefile);
             }
         }
+
+        private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {
+            EditorSettingsDialog dlg = new EditorSettingsDialog();
+            dlg.ShowDialog();
+        }
+
+        private void closeToolStripMenuItem_Click(object sender, EventArgs e) {
+            Close();
+        }
+
+        private void aboutToolStripMenuItem_Click(object sender, EventArgs e) {
+            new AboutDialog().ShowDialog();
+        }
+
         private void exportHeaderToolStripMenuItem_Click(object sender, EventArgs e) {
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Export Header File";
@@ -291,17 +298,13 @@ namespace GameEditor.MainEditor
             checkerWindow.RunCheck();
         }
 
-        private void settingsToolStripMenuItem_Click(object sender, EventArgs e) {
-            EditorSettingsDialog dlg = new EditorSettingsDialog();
-            dlg.ShowDialog();
-        }
-
         // ======================================================================
         // === BUTTONS
         // ======================================================================
 
         private void toolStripButtonNew_Click(object sender, EventArgs e) {
-            NewProject();
+            //NewProject();
+            Util.CreateProjectWindow(Location).Show();
         }
 
         private void toolStripButtonOpen_Click(object sender, EventArgs e) {
@@ -313,8 +316,8 @@ namespace GameEditor.MainEditor
         }
 
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
-            logWindow.Show();
-            logWindow.Activate();
+            Util.LogWindow.Show();
+            Util.LogWindow.Activate();
         }
 
     }

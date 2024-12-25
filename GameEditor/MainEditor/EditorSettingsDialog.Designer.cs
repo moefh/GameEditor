@@ -101,6 +101,7 @@
             // 
             lblMapEditorGridColor.BackColor = Color.Red;
             lblMapEditorGridColor.BorderStyle = BorderStyle.FixedSingle;
+            lblMapEditorGridColor.Cursor = Cursors.Hand;
             lblMapEditorGridColor.ForeColor = Color.Black;
             lblMapEditorGridColor.Location = new Point(170, 62);
             lblMapEditorGridColor.Name = "lblMapEditorGridColor";
@@ -149,6 +150,7 @@
             // 
             lblSpriteEditorGridColor.BackColor = Color.Red;
             lblSpriteEditorGridColor.BorderStyle = BorderStyle.FixedSingle;
+            lblSpriteEditorGridColor.Cursor = Cursors.Hand;
             lblSpriteEditorGridColor.ForeColor = Color.Black;
             lblSpriteEditorGridColor.Location = new Point(170, 126);
             lblSpriteEditorGridColor.Name = "lblSpriteEditorGridColor";
@@ -169,6 +171,7 @@
             // 
             lblTileEditorGridColor.BackColor = Color.Red;
             lblTileEditorGridColor.BorderStyle = BorderStyle.FixedSingle;
+            lblTileEditorGridColor.Cursor = Cursors.Hand;
             lblTileEditorGridColor.ForeColor = Color.Black;
             lblTileEditorGridColor.Location = new Point(170, 94);
             lblTileEditorGridColor.Name = "lblTileEditorGridColor";
@@ -189,6 +192,7 @@
             // 
             lblTilePickerLeftColor.BackColor = Color.Red;
             lblTilePickerLeftColor.BorderStyle = BorderStyle.FixedSingle;
+            lblTilePickerLeftColor.Cursor = Cursors.Hand;
             lblTilePickerLeftColor.ForeColor = Color.Black;
             lblTilePickerLeftColor.Location = new Point(170, 29);
             lblTilePickerLeftColor.Name = "lblTilePickerLeftColor";
@@ -200,6 +204,7 @@
             // 
             lblTilePickerRightColor.BackColor = Color.Red;
             lblTilePickerRightColor.BorderStyle = BorderStyle.FixedSingle;
+            lblTilePickerRightColor.Cursor = Cursors.Hand;
             lblTilePickerRightColor.ForeColor = Color.Black;
             lblTilePickerRightColor.Location = new Point(216, 29);
             lblTilePickerRightColor.Name = "lblTilePickerRightColor";

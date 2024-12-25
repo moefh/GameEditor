@@ -1,3 +1,4 @@
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 
 namespace GameEditor
@@ -9,8 +10,8 @@ namespace GameEditor
         {
             Util.DesignMode = false;
             ApplicationConfiguration.Initialize();
-            Util.MainWindow = new MainEditor.MainWindow();
-            Application.Run(Util.MainWindow);
+            Util.CreateProjectWindow(Point.Empty).Show();
+            Application.Run();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace GameEditor.MainEditor
 {
     public class AssetTreeManager
     {
-        private readonly MainWindow mainWindow;
+        private readonly ProjectWindow mainWindow;
         private readonly TreeView tree;
         private readonly Dictionary<DataAssetType,int> nodeIndicesByType = [];
         private readonly Dictionary<DataAssetType,TreeNode> rootNodesByType = [];
@@ -27,7 +27,7 @@ namespace GameEditor.MainEditor
         private readonly Dictionary<string,IDataAssetItem> assetsById = [];
         private int nextId = 0;
 
-        public AssetTreeManager(MainWindow win, TreeView tree, ProjectData project, IContainer? container) {
+        public AssetTreeManager(ProjectWindow win, TreeView tree, ProjectData project, IContainer? container) {
             this.mainWindow = win;
             this.tree = tree;
             this.project = project;

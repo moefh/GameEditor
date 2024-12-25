@@ -12,6 +12,7 @@ using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Globalization;
 using GameEditor.GameData;
+using System.Reflection.Metadata.Ecma335;
 
 namespace GameEditor.Misc
 {
@@ -23,8 +24,10 @@ namespace GameEditor.Misc
             Window = 1<<1,
         }
 
+        private static readonly List<ProjectWindow> projectWindows = [];
         private static Point nextWindowPosition;
         private static LogTarget logTargets;
+        private static LogWindow? logWindow;
         private static bool logTargetsLoaded;
         private static ProjectData? designModeDummyProject;
 
@@ -36,7 +39,11 @@ namespace GameEditor.Misc
         }
 
         public static bool DesignMode { get; set; }
-        public static MainWindow? MainWindow { get; set; }
+
+        public static LogWindow LogWindow {
+            get { logWindow ??= new LogWindow(); return logWindow; }
+            private set { logWindow = value; }
+        }
 
         public static ProjectData DesignModeDummyProject {
             get {
@@ -74,10 +81,24 @@ namespace GameEditor.Misc
             }
         }
 
+        public static ProjectWindow CreateProjectWindow(Point baseLocation) {
+            baseLocation.Offset(40, 40);
+            ProjectWindow w = (projectWindows.Count == 0) ? new ProjectWindow() : new ProjectWindow(baseLocation);
+            projectWindows.Add(w);
+            return w;
+        }
+
+        public static void ProjectWindowClosed(ProjectWindow w) {
+            projectWindows.Remove(w);
+            if (projectWindows.Count == 0) {
+                Application.ExitThread();
+            }
+        }
+
         public static void Log(string log) {
             if (DesignMode) return;
             if ((LogTargets & LogTarget.Debug) != 0) System.Diagnostics.Debug.WriteLine(log);
-            if ((LogTargets & LogTarget.Window) != 0) MainWindow?.AddLog(log + "\r\n");
+            if ((LogTargets & LogTarget.Window) != 0) LogWindow.AddLog(log + "\r\n");
         }
 
         public static void ShowError(Exception ex, string message, string title) {

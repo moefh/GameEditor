@@ -298,6 +298,16 @@ namespace GameEditor.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap OnTopIcon {
+            get {
+                object obj = ResourceManager.GetObject("OnTopIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap OpenIcon {
             get {
                 object obj = ResourceManager.GetObject("OpenIcon", resourceCulture);
@@ -471,6 +481,16 @@ namespace GameEditor.Properties {
         internal static System.Drawing.Bitmap TransparencyIcon {
             get {
                 object obj = ResourceManager.GetObject("TransparencyIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap TrashIcon {
+            get {
+                object obj = ResourceManager.GetObject("TrashIcon", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

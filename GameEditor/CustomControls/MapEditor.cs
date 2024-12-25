@@ -237,6 +237,7 @@ namespace GameEditor.CustomControls
                     Map.BgTiles.ClearRect(activeSelection, RightSelectedTile);
                     break;
                 }
+                SetDirty();
             } else {
                 selectionTiles = null;
             }

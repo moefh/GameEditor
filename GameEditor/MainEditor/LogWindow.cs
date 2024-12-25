@@ -12,10 +12,24 @@ using System.Windows.Forms;
 
 namespace GameEditor.MainEditor
 {
-    public partial class LogWindow : ProjectUnclosableForm
+    public partial class LogWindow : Form
     {
-        public LogWindow(ProjectData proj) : base(proj, "LogWindow") {
+        public LogWindow() {
             InitializeComponent();
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e) {
+            base.OnFormClosing(e);
+            Util.SaveWindowPosition(this, "LogWindow");
+            if (e.CloseReason == CloseReason.UserClosing) {
+                e.Cancel = true;
+                Hide();
+            }
+        }
+
+        protected override void OnLoad(EventArgs e) {
+            base.OnLoad(e);
+            Util.LoadWindowPosition(this, "LogWindow");
         }
 
         protected override void OnVisibleChanged(EventArgs e) {
@@ -27,7 +41,11 @@ namespace GameEditor.MainEditor
             txtLog.Clear();
         }
 
-        public void ScrollToBottom() {
+        private void toolStripBtnAlwaysOnTop_Click(object sender, EventArgs e) {
+            TopMost = toolStripBtnAlwaysOnTop.Checked;
+        }
+
+        private void ScrollToBottom() {
             txtLog.SelectionStart = txtLog.Text.Length;
             txtLog.SelectionLength = 0;
             txtLog.ScrollToCaret();
