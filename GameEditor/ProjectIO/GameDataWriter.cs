@@ -198,6 +198,7 @@ namespace GameEditor.ProjectIO
                             sbyte[]? data2 = file2.Sample[spl2].Data;
                             if (data2 == null) continue;
                             if (! AreModSamplesEqual(data1, data2)) continue;
+                            modSamplesById.Remove(modSampleIds[mod2][spl2]);
                             modSampleIds[mod2][spl2] = modSampleIds[mod1][spl1];
                             Util.Log($"-> merging MOD samples {mod1.Name}[{spl1+1}] and {mod2.Name}[{spl2+1}]");
                         }
@@ -207,9 +208,10 @@ namespace GameEditor.ProjectIO
         }
 
         protected void WriteModSamples(Dictionary<string, sbyte[]> samplesById) {
-            foreach (KeyValuePair<string, sbyte[]> kv in samplesById) {
-                string sampleIdent = kv.Key;
-                sbyte[] sampleData = kv.Value;
+            List<string> ids = [.. samplesById.Keys];
+            ids.Sort();
+            foreach (string sampleIdent in ids) {
+                sbyte[] sampleData = samplesById[sampleIdent];
                 f.Write($"static const int8_t {sampleIdent}[] = {{");
                 for (int i = 0; i < sampleData.Length; i++) {
                     if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
