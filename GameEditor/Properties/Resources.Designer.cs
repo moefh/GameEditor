@@ -181,6 +181,16 @@ namespace GameEditor.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap FwFontIcon {
+            get {
+                object obj = ResourceManager.GetObject("FwFontIcon", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to #ifndef ${PREFIX}_DATA_H_FILE
         ///#define ${PREFIX}_DATA_H_FILE
         ///

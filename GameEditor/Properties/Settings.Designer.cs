@@ -62,42 +62,6 @@ namespace GameEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point WorldEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["WorldEditorLocation"]));
-            }
-            set {
-                this["WorldEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size WorldEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["WorldEditorSize"]));
-            }
-            set {
-                this["WorldEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool WorldEditorSaved {
-            get {
-                return ((bool)(this["WorldEditorSaved"]));
-            }
-            set {
-                this["WorldEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
         public global::System.Drawing.Point MapEditorLocation {
             get {
                 return ((global::System.Drawing.Point)(this["MapEditorLocation"]));
@@ -128,42 +92,6 @@ namespace GameEditor.Properties {
             }
             set {
                 this["MapEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point TilesetListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["TilesetListEditorLocation"]));
-            }
-            set {
-                this["TilesetListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size TilesetListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["TilesetListEditorSize"]));
-            }
-            set {
-                this["TilesetListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool TilesetListEditorSaved {
-            get {
-                return ((bool)(this["TilesetListEditorSaved"]));
-            }
-            set {
-                this["TilesetListEditorSaved"] = value;
             }
         }
         
@@ -254,78 +182,6 @@ namespace GameEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point MapListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["MapListEditorLocation"]));
-            }
-            set {
-                this["MapListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size MapListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["MapListEditorSize"]));
-            }
-            set {
-                this["MapListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool MapListEditorSaved {
-            get {
-                return ((bool)(this["MapListEditorSaved"]));
-            }
-            set {
-                this["MapListEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point SpriteListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["SpriteListEditorLocation"]));
-            }
-            set {
-                this["SpriteListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size SpriteListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["SpriteListEditorSize"]));
-            }
-            set {
-                this["SpriteListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool SpriteListEditorSaved {
-            get {
-                return ((bool)(this["SpriteListEditorSaved"]));
-            }
-            set {
-                this["SpriteListEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
         public global::System.Drawing.Point SpriteEditorLocation {
             get {
                 return ((global::System.Drawing.Point)(this["SpriteEditorLocation"]));
@@ -362,42 +218,6 @@ namespace GameEditor.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point SpriteAnimationListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["SpriteAnimationListEditorLocation"]));
-            }
-            set {
-                this["SpriteAnimationListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size SpriteAnimationListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["SpriteAnimationListEditorSize"]));
-            }
-            set {
-                this["SpriteAnimationListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool SpriteAnimationListEditorSaved {
-            get {
-                return ((bool)(this["SpriteAnimationListEditorSaved"]));
-            }
-            set {
-                this["SpriteAnimationListEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
         public global::System.Drawing.Point SpriteAnimationEditorLocation {
             get {
                 return ((global::System.Drawing.Point)(this["SpriteAnimationEditorLocation"]));
@@ -428,42 +248,6 @@ namespace GameEditor.Properties {
             }
             set {
                 this["SpriteAnimationEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point SfxListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["SfxListEditorLocation"]));
-            }
-            set {
-                this["SfxListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size SfxListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["SfxListEditorSize"]));
-            }
-            set {
-                this["SfxListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool SfxListEditorSaved {
-            get {
-                return ((bool)(this["SfxListEditorSaved"]));
-            }
-            set {
-                this["SfxListEditorSaved"] = value;
             }
         }
         
@@ -541,42 +325,6 @@ namespace GameEditor.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point ModListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["ModListEditorLocation"]));
-            }
-            set {
-                this["ModListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size ModListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["ModListEditorSize"]));
-            }
-            set {
-                this["ModListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool ModListEditorSaved {
-            get {
-                return ((bool)(this["ModListEditorSaved"]));
-            }
-            set {
-                this["ModListEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("0")]
         public uint LogTargets {
             get {
@@ -632,42 +380,6 @@ namespace GameEditor.Properties {
             }
             set {
                 this["FontEditorSaved"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Point FontListEditorLocation {
-            get {
-                return ((global::System.Drawing.Point)(this["FontListEditorLocation"]));
-            }
-            set {
-                this["FontListEditorLocation"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
-        public global::System.Drawing.Size FontListEditorSize {
-            get {
-                return ((global::System.Drawing.Size)(this["FontListEditorSize"]));
-            }
-            set {
-                this["FontListEditorSize"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool FontListEditorSaved {
-            get {
-                return ((bool)(this["FontListEditorSaved"]));
-            }
-            set {
-                this["FontListEditorSaved"] = value;
             }
         }
         
@@ -764,6 +476,42 @@ namespace GameEditor.Properties {
             }
             set {
                 this["ValidatorWindowSaved"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Point PropFontEditorLocation {
+            get {
+                return ((global::System.Drawing.Point)(this["PropFontEditorLocation"]));
+            }
+            set {
+                this["PropFontEditorLocation"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size PropFontEditorSize {
+            get {
+                return ((global::System.Drawing.Size)(this["PropFontEditorSize"]));
+            }
+            set {
+                this["PropFontEditorSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool PropFontEditorSaved {
+            get {
+                return ((bool)(this["PropFontEditorSaved"]));
+            }
+            set {
+                this["PropFontEditorSaved"] = value;
             }
         }
     }

@@ -3,6 +3,7 @@ using GameEditor.MapEditor;
 using GameEditor.ModEditor;
 using GameEditor.Misc;
 using GameEditor.ProjectIO;
+using GameEditor.PropFont;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
@@ -48,6 +49,7 @@ namespace GameEditor.GameData
           DataAssetType.Sprite,
           DataAssetType.Tileset,
           DataAssetType.Font,
+          DataAssetType.PropFont,
         ];
         private readonly Dictionary<DataAssetType, AssetList<IDataAssetItem>> assets = [];
 
@@ -85,6 +87,7 @@ namespace GameEditor.GameData
         public AssetList<IDataAssetItem> SfxList { get { return assets[DataAssetType.Sfx]; } }
         public AssetList<IDataAssetItem> ModList { get { return assets[DataAssetType.Mod]; } }
         public AssetList<IDataAssetItem> FontList { get { return assets[DataAssetType.Font]; } }
+        public AssetList<IDataAssetItem> PropFontList { get { return assets[DataAssetType.PropFont]; } }
 
         public AssetList<IDataAssetItem> GetAssetList(DataAssetType type) {
             return assets[type];
@@ -165,6 +168,7 @@ namespace GameEditor.GameData
                 foreach (SfxData s in reader.SfxList) AddAssetItem(new SfxDataItem(s, this));
                 foreach (ModData m in reader.ModList) AddAssetItem(new ModDataItem(m, this));
                 foreach (FontData f in reader.FontList) AddAssetItem(new FontDataItem(f, this));
+                //foreach (PropFontData f in reader.PropFontList) AddAssetItem(new PropFontDataItem(f, this)); // TODO
                 reader.ConsumeData();  // prevent read data from being disposed
                 SetDirty(false);
                 return true;
@@ -215,6 +219,7 @@ namespace GameEditor.GameData
         private string GetAssetTypeName(DataAssetType type) {
             return type switch {
             DataAssetType.Font => "font",
+            DataAssetType.PropFont => "prop_font",
             DataAssetType.Map => "map",
             DataAssetType.Mod => "mod",
             DataAssetType.Sfx => "sfx",
@@ -247,6 +252,7 @@ namespace GameEditor.GameData
             case DataAssetType.Sfx: item = new SfxDataItem(new SfxData(name), this); break;
             case DataAssetType.Mod: item = new ModDataItem(new ModData(name), this); break;
             case DataAssetType.Font: item = new FontDataItem(new FontData(name), this); break;
+            case DataAssetType.PropFont: item = new PropFontDataItem(new PropFontData(name), this); break;
 
             case DataAssetType.Map:
                 if (TilesetList.Count == 0) {

@@ -193,10 +193,47 @@ namespace GameEditor.MapEditor
         }
 
         // ====================================================================
-        // === TOP TOOLSTRIP (PROPERTIES)
+        // === TOP TOOLSTRIP (MENUS)
         // ====================================================================
 
-        private void btnProperties_Click(object sender, EventArgs e) {
+        private void importToolStripMenuItem_Click(object sender, EventArgs e) {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Import Map";
+            dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                using GameDataReader r = new GameDataReader(dlg.FileName, "PREFIX");
+                r.ReadSingleMap(Map.Tileset);
+                if (r.MapList.Count != 1) throw new Exception("invalid map file: must contain exactly one map");
+                mapDataItem.Map = r.MapList[0];
+                mapEditor.Map = Map;
+                r.ConsumeData();
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error importing map from {dlg.FileName}", "Error Importing Map");
+                return;
+            }
+            SetDirty();
+            FixFormTitle();
+            UpdateDataSize();
+            Project.UpdateDataSize();
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export Map";
+            dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                using GameDataWriter w = new GameDataWriter(Project, dlg.FileName, "PREFIX");
+                w.WriteMap(Map);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error exporting map to {dlg.FileName}", "Error Exporting Map");
+            }
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
             MapPropertiesDialog dlg = new MapPropertiesDialog();
             dlg.MapName = Map.Name;
             dlg.MapFgWidth = Map.FgWidth;
@@ -220,6 +257,18 @@ namespace GameEditor.MapEditor
             }
         }
 
+        private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapEditor.DeleteSelection();
+        }
+
+        private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapEditor.CopyToClipboard();
+        }
+
+        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
+            mapEditor.PasteFromClipboard();
+        }
+
         private void toolStripComboTiles_DropdownClosed(object sender, EventArgs e) {
             AssetList<IDataAssetItem> tilesetList = Project.TilesetList;
             int sel = toolStripComboTiles.SelectedIndex;
@@ -235,43 +284,6 @@ namespace GameEditor.MapEditor
             UpdateTilePickerTileset();
             SetDirty();
             FixFormTitle();
-        }
-
-        private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Export Map";
-            dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                using GameDataReader r = new GameDataReader(dlg.FileName, "PREFIX");
-                r.ReadSingleMap(Map.Tileset);
-                if (r.MapList.Count != 1) throw new Exception("invalid map file: must contain exactly one map");
-                mapDataItem.Map = r.MapList[0];
-                mapEditor.Map = Map;
-                r.ConsumeData();
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error importing map from {dlg.FileName}", "Error Importing Map");
-                return;
-            }
-            SetDirty();
-            FixFormTitle();
-            UpdateDataSize();
-            Project.UpdateDataSize();
-        }
-
-        private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Export Map";
-            dlg.Filter = "Project map files (*.pmap)|*.pmap|All files|*.*";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                using GameDataWriter w = new GameDataWriter(Project, dlg.FileName, "PREFIX");
-                w.WriteMap(Map);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error exporting map to {dlg.FileName}", "Error Exporting Map");
-            }
         }
 
         // ====================================================================
@@ -326,18 +338,5 @@ namespace GameEditor.MapEditor
         private void toolStripButtonToolSelect_Click(object sender, EventArgs e) {
             SetSelectedTool(CustomControls.MapEditor.Tool.RectSelect);
         }
-
-        private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
-            mapEditor.DeleteSelection();
-        }
-
-        private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
-            mapEditor.CopyToClipboard();
-        }
-
-        private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
-            mapEditor.PasteFromClipboard();
-        }
-
     }
 }

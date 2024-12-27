@@ -8,6 +8,7 @@ namespace GameEditor.GameData
 {
     public enum DataAssetType {
         Font,
+        PropFont,
         Sfx,
         Mod,
         Tileset,

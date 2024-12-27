@@ -235,7 +235,7 @@ namespace GameEditor.MainEditor
 
             string prefixLower = project.IdentifierPrefix.ToLowerInvariant();
             string prefixUpper = project.IdentifierPrefix.ToUpperInvariant();
-            string content = Regex.Replace(Resources.game_data, """\${([A-Za-z0-9_]+)}""", delegate(Match m) {
+            string content = Regex.Replace(Resources.game_data, """\${([A-Za-z0-9_]+)}""", delegate (Match m) {
                 string name = m.Groups[1].ToString();
                 return name switch {
                     "prefix" => prefixLower,
@@ -290,6 +290,10 @@ namespace GameEditor.MainEditor
 
         private void addNewFontToolStripMenuItem_Click(object sender, EventArgs e) {
             project.CreateNewAsset(DataAssetType.Font)?.ShowEditor(this);
+        }
+
+        private void addNewPropFontToolStripMenuItem_Click(object sender, EventArgs e) {
+            project.CreateNewAsset(DataAssetType.PropFont)?.ShowEditor(this);
         }
 
         private void runCheckToolStripMenuItem_Click(object sender, EventArgs e) {

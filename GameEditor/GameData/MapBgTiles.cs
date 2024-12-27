@@ -138,13 +138,19 @@ namespace GameEditor.GameData
         }
 
         public void SetInMap(MapData map, int mx, int my) {
-            int width = int.Min(Width, map.BgWidth - mx);
-            int height = int.Min(Height, map.BgHeight - my);
+            int sx = 0;
+            int sy = 0;
+            if (mx < 0) { sx = -mx; mx = 0; }
+            if (my < 0) { sy = -my; my = 0; }
+            int width = int.Min(Width - sx, map.BgWidth - mx);
+            int height = int.Min(Height - sy, map.BgHeight - my);
             for (int y = 0; y < height; y++) {
+                int srcY = y + sy;
                 int mapY = y + my;
                 for (int x = 0; x < width; x++) {
+                    int srcX = x + sx;
                     int mapX = x + mx;
-                    if (bg[x,y] >= 0) map.BgTiles.bg[mapX, mapY] = bg[x,y];
+                    if (bg[srcX,srcY] >= 0) map.BgTiles.bg[mapX,mapY] = bg[srcX,srcY];
                 }
             }
         }

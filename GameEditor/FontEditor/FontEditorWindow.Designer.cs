@@ -159,7 +159,7 @@
             fontDisplay.Name = "fontDisplay";
             fontDisplay.Size = new Size(600, 42);
             fontDisplay.TabIndex = 0;
-            fontDisplay.Text = "fontDisplay1";
+            fontDisplay.Text = "fontDisplay";
             // 
             // fontEditor
             // 
@@ -167,7 +167,6 @@
             fontEditor.FontData = null;
             fontEditor.Location = new Point(0, 0);
             fontEditor.Name = "fontEditor";
-            fontEditor.RenderFlags = 0U;
             fontEditor.SelectedCharacter = 0;
             fontEditor.Size = new Size(600, 169);
             fontEditor.TabIndex = 0;
@@ -198,7 +197,7 @@
             // 
             copyImageToolStripMenuItem.Name = "copyImageToolStripMenuItem";
             copyImageToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
-            copyImageToolStripMenuItem.Size = new Size(180, 24);
+            copyImageToolStripMenuItem.Size = new Size(161, 24);
             copyImageToolStripMenuItem.Text = "Copy";
             copyImageToolStripMenuItem.Click += copyImageToolStripMenuItem_Click;
             // 
@@ -206,7 +205,7 @@
             // 
             pasteImageToolStripMenuItem.Name = "pasteImageToolStripMenuItem";
             pasteImageToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
-            pasteImageToolStripMenuItem.Size = new Size(180, 24);
+            pasteImageToolStripMenuItem.Size = new Size(161, 24);
             pasteImageToolStripMenuItem.Text = "Paste";
             pasteImageToolStripMenuItem.Click += pasteImageToolStripMenuItem_Click;
             // 

@@ -49,20 +49,20 @@ namespace GameEditor.MapEditor
             tilePicker = new TilePicker();
             tilePickerScroll = new VScrollBar();
             mapEditor = new CustomControls.MapEditor();
-            infoToolStrip = new ToolStrip();
-            toolStripLabel2 = new ToolStripLabel();
+            menuToolStrip = new ToolStrip();
+            toolStripDropDownMap = new ToolStripDropDownButton();
+            importToolStripMenuItem = new ToolStripMenuItem();
+            exportToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            propertiesToolStripMenuItem = new ToolStripMenuItem();
             toolStripComboTiles = new ToolStripComboBox();
-            toolStripBtnExport = new ToolStripButton();
-            toolStripBtnImport = new ToolStripButton();
-            toolStripSeparator4 = new ToolStripSeparator();
-            btnProperties = new ToolStripButton();
-            toolsToolStrip = new ToolStrip();
+            toolStripLabel2 = new ToolStripLabel();
             toolStripDropDownButtonEdit = new ToolStripDropDownButton();
             copyToolStripMenuItem = new ToolStripMenuItem();
             pasteToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator7 = new ToolStripSeparator();
             deleteSelectionToolStripMenuItem = new ToolStripMenuItem();
-            toolStripSeparator6 = new ToolStripSeparator();
+            toolsToolStrip = new ToolStrip();
             toolStripLabel5 = new ToolStripLabel();
             toolStripButtonLayerFg = new ToolStripButton();
             toolStripButtonLayerBg = new ToolStripButton();
@@ -78,7 +78,7 @@ namespace GameEditor.MapEditor
             mainSplit.Panel1.SuspendLayout();
             mainSplit.Panel2.SuspendLayout();
             mainSplit.SuspendLayout();
-            infoToolStrip.SuspendLayout();
+            menuToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -88,7 +88,7 @@ namespace GameEditor.MapEditor
             displayToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel4, toolStripButtonShowFG, toolStripButtonShowBG, toolStripButtonShowCol, toolStripButtonShowFx, toolStripButtonShowGrid, toolStripButtonShowScreen, toolStripSeparator5, toolStripComboBoxZoom, toolStripLblMapCoords, toolStripSeparator3, toolStripBtnGridColor });
             displayToolStrip.Location = new Point(0, 28);
             displayToolStrip.Name = "displayToolStrip";
-            displayToolStrip.Size = new Size(560, 28);
+            displayToolStrip.Size = new Size(561, 28);
             displayToolStrip.TabIndex = 2;
             displayToolStrip.Text = "toolStrip";
             // 
@@ -224,7 +224,7 @@ namespace GameEditor.MapEditor
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
             statusStrip.Location = new Point(0, 255);
             statusStrip.Name = "statusStrip";
-            statusStrip.Size = new Size(560, 24);
+            statusStrip.Size = new Size(561, 24);
             statusStrip.TabIndex = 5;
             statusStrip.Text = "statusStrip";
             // 
@@ -253,7 +253,7 @@ namespace GameEditor.MapEditor
             // 
             mainSplit.Panel2.Controls.Add(mapEditor);
             mainSplit.Panel2.Padding = new Padding(3);
-            mainSplit.Size = new Size(560, 171);
+            mainSplit.Size = new Size(561, 171);
             mainSplit.SplitterDistance = 205;
             mainSplit.SplitterWidth = 5;
             mainSplit.TabIndex = 6;
@@ -304,7 +304,7 @@ namespace GameEditor.MapEditor
             mapEditor.RightSelectedEffectsTile = 0;
             mapEditor.RightSelectedTile = 0;
             mapEditor.SelectedTool = CustomControls.MapEditor.Tool.Tile;
-            mapEditor.Size = new Size(344, 165);
+            mapEditor.Size = new Size(345, 165);
             mapEditor.TabIndex = 0;
             mapEditor.Zoom = 0D;
             mapEditor.ZoomStep = 0.5D;
@@ -313,79 +313,70 @@ namespace GameEditor.MapEditor
             mapEditor.ZoomChanged += mapEditor_ZoomChanged;
             mapEditor.MouseOver += mapEditor_MouseOver;
             // 
-            // infoToolStrip
+            // menuToolStrip
             // 
-            infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripComboTiles, toolStripBtnExport, toolStripBtnImport, toolStripSeparator4, btnProperties });
-            infoToolStrip.Location = new Point(0, 0);
-            infoToolStrip.Name = "infoToolStrip";
-            infoToolStrip.Size = new Size(560, 28);
-            infoToolStrip.TabIndex = 7;
-            infoToolStrip.Text = "toolStrip1";
+            menuToolStrip.AutoSize = false;
+            menuToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownMap, toolStripComboTiles, toolStripLabel2, toolStripDropDownButtonEdit });
+            menuToolStrip.Location = new Point(0, 0);
+            menuToolStrip.Name = "menuToolStrip";
+            menuToolStrip.Size = new Size(561, 28);
+            menuToolStrip.TabIndex = 7;
+            menuToolStrip.Text = "toolStrip1";
             // 
-            // toolStripLabel2
+            // toolStripDropDownMap
             // 
-            toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(50, 25);
-            toolStripLabel2.Text = "Tileset:";
+            toolStripDropDownMap.AutoToolTip = false;
+            toolStripDropDownMap.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownMap.DropDownItems.AddRange(new ToolStripItem[] { importToolStripMenuItem, exportToolStripMenuItem, toolStripSeparator1, propertiesToolStripMenuItem });
+            toolStripDropDownMap.Image = (Image)resources.GetObject("toolStripDropDownMap.Image");
+            toolStripDropDownMap.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownMap.Name = "toolStripDropDownMap";
+            toolStripDropDownMap.Size = new Size(50, 25);
+            toolStripDropDownMap.Text = "Map";
+            // 
+            // importToolStripMenuItem
+            // 
+            importToolStripMenuItem.Image = Properties.Resources.ImportIcon;
+            importToolStripMenuItem.Name = "importToolStripMenuItem";
+            importToolStripMenuItem.Size = new Size(140, 24);
+            importToolStripMenuItem.Text = "Import";
+            importToolStripMenuItem.Click += importToolStripMenuItem_Click;
+            // 
+            // exportToolStripMenuItem
+            // 
+            exportToolStripMenuItem.Image = Properties.Resources.ExportIcon;
+            exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            exportToolStripMenuItem.Size = new Size(140, 24);
+            exportToolStripMenuItem.Text = "Export";
+            exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator1
+            // 
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(137, 6);
+            // 
+            // propertiesToolStripMenuItem
+            // 
+            propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
+            propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            propertiesToolStripMenuItem.Size = new Size(140, 24);
+            propertiesToolStripMenuItem.Text = "Properties";
+            propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
             // toolStripComboTiles
             // 
+            toolStripComboTiles.Alignment = ToolStripItemAlignment.Right;
             toolStripComboTiles.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboTiles.Name = "toolStripComboTiles";
             toolStripComboTiles.Size = new Size(200, 28);
             toolStripComboTiles.DropDownClosed += toolStripComboTiles_DropdownClosed;
             // 
-            // toolStripBtnExport
+            // toolStripLabel2
             // 
-            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
-            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(23, 25);
-            toolStripBtnExport.Text = "Export";
-            toolStripBtnExport.ToolTipText = "Export map to file";
-            toolStripBtnExport.Click += toolStripBtnExport_Click;
-            // 
-            // toolStripBtnImport
-            // 
-            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
-            toolStripBtnImport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(23, 25);
-            toolStripBtnImport.Text = "Import";
-            toolStripBtnImport.ToolTipText = "Import map from file";
-            toolStripBtnImport.Click += toolStripBtnImport_Click;
-            // 
-            // toolStripSeparator4
-            // 
-            toolStripSeparator4.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(6, 28);
-            // 
-            // btnProperties
-            // 
-            btnProperties.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            btnProperties.Image = Properties.Resources.PropertiesIcon;
-            btnProperties.ImageTransparentColor = Color.Magenta;
-            btnProperties.Name = "btnProperties";
-            btnProperties.Size = new Size(23, 25);
-            btnProperties.Text = "Properties";
-            btnProperties.ToolTipText = "Map Properties";
-            btnProperties.Click += btnProperties_Click;
-            // 
-            // toolsToolStrip
-            // 
-            toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownButtonEdit, toolStripSeparator6, toolStripLabel5, toolStripButtonLayerFg, toolStripButtonLayerBg, toolStripButtonLayerCollision, toolStripButtonLayerEffects, toolStripSeparator2, toolStripLabel6, toolStripButtonToolTiles, toolStripButtonToolSelect });
-            toolsToolStrip.Location = new Point(0, 56);
-            toolsToolStrip.Name = "toolsToolStrip";
-            toolsToolStrip.Size = new Size(560, 28);
-            toolsToolStrip.TabIndex = 8;
-            toolsToolStrip.Text = "toolStrip1";
+            toolStripLabel2.Alignment = ToolStripItemAlignment.Right;
+            toolStripLabel2.Name = "toolStripLabel2";
+            toolStripLabel2.Size = new Size(50, 25);
+            toolStripLabel2.Text = "Tileset:";
             // 
             // toolStripDropDownButtonEdit
             // 
@@ -427,11 +418,15 @@ namespace GameEditor.MapEditor
             deleteSelectionToolStripMenuItem.Text = "Delete Selection";
             deleteSelectionToolStripMenuItem.Click += deleteSelectionToolStripMenuItem_Click;
             // 
-            // toolStripSeparator6
+            // toolsToolStrip
             // 
-            toolStripSeparator6.Margin = new Padding(10, 0, 10, 0);
-            toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new Size(6, 28);
+            toolsToolStrip.AutoSize = false;
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel5, toolStripButtonLayerFg, toolStripButtonLayerBg, toolStripButtonLayerCollision, toolStripButtonLayerEffects, toolStripSeparator2, toolStripLabel6, toolStripButtonToolTiles, toolStripButtonToolSelect });
+            toolsToolStrip.Location = new Point(0, 56);
+            toolsToolStrip.Name = "toolsToolStrip";
+            toolsToolStrip.Size = new Size(561, 28);
+            toolsToolStrip.TabIndex = 8;
+            toolsToolStrip.Text = "toolStrip1";
             // 
             // toolStripLabel5
             // 
@@ -518,11 +513,11 @@ namespace GameEditor.MapEditor
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(560, 279);
+            ClientSize = new Size(561, 279);
             Controls.Add(mainSplit);
             Controls.Add(toolsToolStrip);
             Controls.Add(displayToolStrip);
-            Controls.Add(infoToolStrip);
+            Controls.Add(menuToolStrip);
             Controls.Add(statusStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
             MinimizeBox = false;
@@ -536,8 +531,8 @@ namespace GameEditor.MapEditor
             mainSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplit).EndInit();
             mainSplit.ResumeLayout(false);
-            infoToolStrip.ResumeLayout(false);
-            infoToolStrip.PerformLayout();
+            menuToolStrip.ResumeLayout(false);
+            menuToolStrip.PerformLayout();
             toolsToolStrip.ResumeLayout(false);
             toolsToolStrip.PerformLayout();
             ResumeLayout(false);
@@ -555,18 +550,14 @@ namespace GameEditor.MapEditor
         private ToolStripButton toolStripButtonShowGrid;
         private ToolStripSeparator toolStripSeparator3;
         private ToolStripComboBox toolStripComboBoxZoom;
-        private ToolStrip infoToolStrip;
+        private ToolStrip menuToolStrip;
         private ToolStripComboBox toolStripComboTiles;
-        private ToolStripButton btnProperties;
         private ToolStripLabel toolStripLabel2;
         private CustomControls.TilePicker tilePicker;
         private ToolStripStatusLabel lblDataSize;
         private ToolStripButton toolStripButtonShowScreen;
         private ToolStripButton toolStripBtnGridColor;
         private VScrollBar tilePickerScroll;
-        private ToolStripSeparator toolStripSeparator4;
-        private ToolStripButton toolStripBtnExport;
-        private ToolStripButton toolStripBtnImport;
         private ToolStripLabel toolStripLblMapCoords;
         private ToolStripSeparator toolStripSeparator5;
         private ToolStripLabel toolStripLabel4;
@@ -575,17 +566,21 @@ namespace GameEditor.MapEditor
         private ToolStripButton toolStripButtonLayerFg;
         private ToolStripButton toolStripButtonLayerBg;
         private ToolStripButton toolStripButtonLayerCollision;
-        private ToolStripSeparator toolStripSeparator6;
         private ToolStripLabel toolStripLabel6;
         private ToolStripButton toolStripButtonToolTiles;
         private ToolStripButton toolStripButtonToolSelect;
-        private ToolStripDropDownButton toolStripDropDownButtonEdit;
         private ToolStripSeparator toolStripSeparator2;
+        private ToolStripButton toolStripButtonShowFx;
+        private ToolStripButton toolStripButtonLayerEffects;
+        private ToolStripDropDownButton toolStripDropDownMap;
+        private ToolStripMenuItem importToolStripMenuItem;
+        private ToolStripMenuItem exportToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem propertiesToolStripMenuItem;
+        private ToolStripDropDownButton toolStripDropDownButtonEdit;
         private ToolStripMenuItem copyToolStripMenuItem;
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator7;
         private ToolStripMenuItem deleteSelectionToolStripMenuItem;
-        private ToolStripButton toolStripButtonShowFx;
-        private ToolStripButton toolStripButtonLayerEffects;
     }
 }

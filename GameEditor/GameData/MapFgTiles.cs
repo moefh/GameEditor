@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
@@ -172,15 +173,21 @@ namespace GameEditor.GameData
         }
 
         public void SetInMap(MapData map, int mx, int my) {
-            int width = int.Min(Width, map.FgWidth - mx);
-            int height = int.Min(Height, map.FgHeight - my);
+            int sx = 0;
+            int sy = 0;
+            if (mx < 0) { sx = -mx; mx = 0; }
+            if (my < 0) { sy = -my; my = 0; }
+            int width = int.Min(Width - sx, map.FgWidth - mx);
+            int height = int.Min(Height - sx, map.FgHeight - my);
             for (int y = 0; y < height; y++) {
+                int srcY = y + sy;
                 int mapY = y + my;
                 for (int x = 0; x < width; x++) {
+                    int srcX = x + sx;
                     int mapX = x + mx;
-                    if (fg[x,y] >= 0) map.FgTiles.fg[mapX, mapY] = fg[x,y];
-                    if (fx[x,y] >= 0) map.FgTiles.fx[mapX, mapY] = fx[x,y];
-                    if (cl[x,y] >= 0) map.FgTiles.cl[mapX, mapY] = cl[x,y];
+                    if (fg[srcX,srcY] >= 0) map.FgTiles.fg[mapX,mapY] = fg[srcX,srcY];
+                    if (fx[srcX,srcY] >= 0) map.FgTiles.fx[mapX,mapY] = fx[srcX,srcY];
+                    if (cl[srcX,srcY] >= 0) map.FgTiles.cl[mapX,mapY] = cl[srcX,srcY];
                 }
             }
         }

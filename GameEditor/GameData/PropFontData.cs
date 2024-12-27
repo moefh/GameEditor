@@ -1,66 +1,60 @@
 ﻿using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
-using System.Drawing.Imaging;
 using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace GameEditor.GameData
 {
-    public class FontData : IDataAsset, IDisposable
+    public class PropFontData : IDataAsset, IDisposable
     {
         public const int FIRST_CHAR = 32;
         public const int NUM_CHARS = 128 - FIRST_CHAR;
+        public const int MAX_WIDTH = 64;
 
-        private const int DEFAULT_WIDTH = 6;
         private const int DEFAULT_HEIGHT = 8;
 
+        private readonly int[] charWidth = new int[NUM_CHARS];
         private readonly ImageCollection images;
 
-        public FontData(string name) {
+        public PropFontData(string name) {
             Name = name;
-            images = CreateDefaultImages(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+            images = CreateDefaultImages(DEFAULT_HEIGHT);
         }
 
-        public FontData(string name, int width, int height) {
+        public PropFontData(string name, int height) {
             Name = name;
-            images = CreateDefaultImages(width, height);
+            images = CreateDefaultImages(height);
         }
 
         public string Name { get; set; }
-        public DataAssetType AssetType { get { return DataAssetType.Font; } }
-        
-        public int Width { get { return images.Width; } }
-        public int Height { get { return images.Height; } }
+        public DataAssetType AssetType { get { return DataAssetType.PropFont; } }
 
-        public int DataSize {
-            get {
-                int frameSize = (Width+7)/8 * Height;
-                // each frame(frameSize) * numFrames +
-                //   width(1) + height(1) + data(4)
-                return frameSize*NUM_CHARS + 1 + 1 + 4;
-            }
+        public int Height { get { return images.Height; } }
+        public int[] CharWidth { get { return charWidth; } }
+
+        public int DataSize {    // TODO
+            get { return 0; }
         }
 
         public void Dispose() {
             images.Dispose();
         }
 
+        private static ImageCollection CreateDefaultImages(int h) {
+            Bitmap bmp = new Bitmap(MAX_WIDTH, h * NUM_CHARS);
+            using Graphics g = Graphics.FromImage(bmp);
+            g.Clear(Color.FromArgb(0,255,0));
+            return new ImageCollection(bmp, h);
+        }
+        
         public void DrawCharAt(Graphics g, byte ch, int x, int y, int w, int h, bool transparent) {
             images.DrawImageAt(g, ch, x, y, w, h, transparent, false);
         }
 
         public void SetCharPixel(byte ch, int x, int y, Color color) {
             images.SetImagePixel(ch, x, y, color);
-        }
-
-        private static ImageCollection CreateDefaultImages(int w, int h) {
-            Bitmap bmp = new Bitmap(w, h * NUM_CHARS);
-            using Graphics g = Graphics.FromImage(bmp);
-            g.Clear(Color.FromArgb(0,255,0));
-            return new ImageCollection(bmp, h);
         }
 
         public void WriteCharPixels(int ch, byte[] pixels) {
@@ -84,13 +78,11 @@ namespace GameEditor.GameData
         }
 
         public Bitmap CopyFromChar(int ch) {
-            return images.CopyFromImage(ch, 0, 0, Width, Height);
+            return images.CopyFromImage(ch, 0, 0, CharWidth[ch], Height);
         }
 
         public void PasteIntoChar(Image image, int ch) {
             images.PasteIntoImage(image, ch, 0, 0, false);
         }
-
-
     }
 }

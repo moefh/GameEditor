@@ -256,8 +256,8 @@ namespace GameEditor.CustomControls
             Rectangle sel = activeSelection;
             if (sel.Width <= 0 || sel.Height <= 0) {
                 sel = ActiveLayerType switch {
-                IMapTiles.LayerType.Background => new Rectangle(0, 0, Map.FgWidth, Map.FgHeight),
-                IMapTiles.LayerType.Foreground => new Rectangle(0, 0, Map.BgWidth, Map.BgHeight),
+                IMapTiles.LayerType.Foreground => new Rectangle(0, 0, Map.FgWidth, Map.FgHeight),
+                IMapTiles.LayerType.Background => new Rectangle(0, 0, Map.BgWidth, Map.BgHeight),
                 _ => Rectangle.Empty,
                 };
                 if (sel.IsEmpty) return;

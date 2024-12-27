@@ -26,13 +26,14 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            TreeNode treeNode8 = new TreeNode("Tilesets", 0, 0);
-            TreeNode treeNode9 = new TreeNode("Sprites", 1, 1);
-            TreeNode treeNode10 = new TreeNode("Maps", 2, 2);
-            TreeNode treeNode11 = new TreeNode("Animations", 3, 3);
-            TreeNode treeNode12 = new TreeNode("Sound Effects", 4, 4);
-            TreeNode treeNode13 = new TreeNode("MODs", 5, 5);
-            TreeNode treeNode14 = new TreeNode("Fonts", 6, 6);
+            TreeNode treeNode1 = new TreeNode("Tilesets", 0, 0);
+            TreeNode treeNode2 = new TreeNode("Sprites", 1, 1);
+            TreeNode treeNode3 = new TreeNode("Maps", 2, 2);
+            TreeNode treeNode4 = new TreeNode("Animations", 3, 3);
+            TreeNode treeNode5 = new TreeNode("Sound Effects", 4, 4);
+            TreeNode treeNode6 = new TreeNode("MODs", 5, 5);
+            TreeNode treeNode7 = new TreeNode("Fonts", 6, 6);
+            TreeNode treeNode8 = new TreeNode("Proportional Fonts", 7, 7);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectWindow));
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -53,6 +54,7 @@
             addSoundEffectToolStripMenuItem = new ToolStripMenuItem();
             addMODToolStripMenuItem = new ToolStripMenuItem();
             addNewFontToolStripMenuItem = new ToolStripMenuItem();
+            addNewPropFontToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             exportHeaderToolStripMenuItem = new ToolStripMenuItem();
             runCheckToolStripMenuItem = new ToolStripMenuItem();
@@ -101,7 +103,7 @@
             newToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             newToolStripMenuItem.Name = "newToolStripMenuItem";
             newToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.N;
-            newToolStripMenuItem.Size = new Size(180, 24);
+            newToolStripMenuItem.Size = new Size(173, 24);
             newToolStripMenuItem.Text = "&New";
             newToolStripMenuItem.Click += newToolStripMenuItem_Click;
             // 
@@ -111,14 +113,14 @@
             openToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             openToolStripMenuItem.Name = "openToolStripMenuItem";
             openToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.O;
-            openToolStripMenuItem.Size = new Size(180, 24);
+            openToolStripMenuItem.Size = new Size(173, 24);
             openToolStripMenuItem.Text = "&Open...";
             openToolStripMenuItem.Click += openToolStripMenuItem_Click;
             // 
             // toolStripSeparator
             // 
             toolStripSeparator.Name = "toolStripSeparator";
-            toolStripSeparator.Size = new Size(177, 6);
+            toolStripSeparator.Size = new Size(170, 6);
             // 
             // saveToolStripMenuItem
             // 
@@ -126,45 +128,45 @@
             saveToolStripMenuItem.ImageTransparentColor = Color.Magenta;
             saveToolStripMenuItem.Name = "saveToolStripMenuItem";
             saveToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.S;
-            saveToolStripMenuItem.Size = new Size(180, 24);
+            saveToolStripMenuItem.Size = new Size(173, 24);
             saveToolStripMenuItem.Text = "&Save";
             saveToolStripMenuItem.Click += saveToolStripMenuItem_Click;
             // 
             // saveAsToolStripMenuItem
             // 
             saveAsToolStripMenuItem.Name = "saveAsToolStripMenuItem";
-            saveAsToolStripMenuItem.Size = new Size(180, 24);
+            saveAsToolStripMenuItem.Size = new Size(173, 24);
             saveAsToolStripMenuItem.Text = "Save &As...";
             saveAsToolStripMenuItem.Click += saveAsToolStripMenuItem_Click;
             // 
             // toolStripSeparator4
             // 
             toolStripSeparator4.Name = "toolStripSeparator4";
-            toolStripSeparator4.Size = new Size(177, 6);
+            toolStripSeparator4.Size = new Size(170, 6);
             // 
             // settingsToolStripMenuItem
             // 
             settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
-            settingsToolStripMenuItem.Size = new Size(180, 24);
+            settingsToolStripMenuItem.Size = new Size(173, 24);
             settingsToolStripMenuItem.Text = "Settings...";
             settingsToolStripMenuItem.Click += settingsToolStripMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(177, 6);
+            toolStripSeparator5.Size = new Size(170, 6);
             // 
             // closeToolStripMenuItem
             // 
             closeToolStripMenuItem.Image = Properties.Resources.ChickenIcon;
             closeToolStripMenuItem.Name = "closeToolStripMenuItem";
-            closeToolStripMenuItem.Size = new Size(180, 24);
+            closeToolStripMenuItem.Size = new Size(173, 24);
             closeToolStripMenuItem.Text = "&Close";
             closeToolStripMenuItem.Click += closeToolStripMenuItem_Click;
             // 
             // projectToolStripMenuItem
             // 
-            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
+            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, addNewPropFontToolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             projectToolStripMenuItem.Size = new Size(63, 23);
             projectToolStripMenuItem.Text = "&Project";
@@ -173,7 +175,7 @@
             // 
             addTilesetToolStripMenuItem.Image = Properties.Resources.TilesetIcon;
             addTilesetToolStripMenuItem.Name = "addTilesetToolStripMenuItem";
-            addTilesetToolStripMenuItem.Size = new Size(209, 24);
+            addTilesetToolStripMenuItem.Size = new Size(215, 24);
             addTilesetToolStripMenuItem.Text = "Add &Tileset";
             addTilesetToolStripMenuItem.Click += addTilesetToolStripMenuItem_Click;
             // 
@@ -181,7 +183,7 @@
             // 
             addSpriteToolStripMenuItem.Image = Properties.Resources.SpriteIcon;
             addSpriteToolStripMenuItem.Name = "addSpriteToolStripMenuItem";
-            addSpriteToolStripMenuItem.Size = new Size(209, 24);
+            addSpriteToolStripMenuItem.Size = new Size(215, 24);
             addSpriteToolStripMenuItem.Text = "Add &Sprite";
             addSpriteToolStripMenuItem.Click += addSpriteToolStripMenuItem_Click;
             // 
@@ -189,7 +191,7 @@
             // 
             addMapToolStripMenuItem.Image = Properties.Resources.MapIcon;
             addMapToolStripMenuItem.Name = "addMapToolStripMenuItem";
-            addMapToolStripMenuItem.Size = new Size(209, 24);
+            addMapToolStripMenuItem.Size = new Size(215, 24);
             addMapToolStripMenuItem.Text = "Add &Map";
             addMapToolStripMenuItem.Click += addMapToolStripMenuItem_Click;
             // 
@@ -197,7 +199,7 @@
             // 
             addSpriteAnimationToolStripMenuItem.Image = Properties.Resources.AnimationIcon;
             addSpriteAnimationToolStripMenuItem.Name = "addSpriteAnimationToolStripMenuItem";
-            addSpriteAnimationToolStripMenuItem.Size = new Size(209, 24);
+            addSpriteAnimationToolStripMenuItem.Size = new Size(215, 24);
             addSpriteAnimationToolStripMenuItem.Text = "Add Sprite &Animation";
             addSpriteAnimationToolStripMenuItem.Click += addSpriteAnimationToolStripMenuItem_Click;
             // 
@@ -205,7 +207,7 @@
             // 
             addSoundEffectToolStripMenuItem.Image = Properties.Resources.SfxIcon;
             addSoundEffectToolStripMenuItem.Name = "addSoundEffectToolStripMenuItem";
-            addSoundEffectToolStripMenuItem.Size = new Size(209, 24);
+            addSoundEffectToolStripMenuItem.Size = new Size(215, 24);
             addSoundEffectToolStripMenuItem.Text = "Add Sound &Effect";
             addSoundEffectToolStripMenuItem.Click += addSoundEffectToolStripMenuItem_Click;
             // 
@@ -213,27 +215,35 @@
             // 
             addMODToolStripMenuItem.Image = Properties.Resources.MODIcon;
             addMODToolStripMenuItem.Name = "addMODToolStripMenuItem";
-            addMODToolStripMenuItem.Size = new Size(209, 24);
+            addMODToolStripMenuItem.Size = new Size(215, 24);
             addMODToolStripMenuItem.Text = "Add M&OD";
             addMODToolStripMenuItem.Click += addMODToolStripMenuItem_Click;
             // 
             // addNewFontToolStripMenuItem
             // 
-            addNewFontToolStripMenuItem.Image = Properties.Resources.FontIcon;
+            addNewFontToolStripMenuItem.Image = Properties.Resources.FwFontIcon;
             addNewFontToolStripMenuItem.Name = "addNewFontToolStripMenuItem";
-            addNewFontToolStripMenuItem.Size = new Size(209, 24);
+            addNewFontToolStripMenuItem.Size = new Size(215, 24);
             addNewFontToolStripMenuItem.Text = "Add &Font";
             addNewFontToolStripMenuItem.Click += addNewFontToolStripMenuItem_Click;
+            // 
+            // addNewPropFontToolStripMenuItem
+            // 
+            addNewPropFontToolStripMenuItem.Image = Properties.Resources.FontIcon;
+            addNewPropFontToolStripMenuItem.Name = "addNewPropFontToolStripMenuItem";
+            addNewPropFontToolStripMenuItem.Size = new Size(215, 24);
+            addNewPropFontToolStripMenuItem.Text = "Add Proportional Fon&t";
+            addNewPropFontToolStripMenuItem.Click += addNewPropFontToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(206, 6);
+            toolStripSeparator1.Size = new Size(212, 6);
             // 
             // exportHeaderToolStripMenuItem
             // 
             exportHeaderToolStripMenuItem.Name = "exportHeaderToolStripMenuItem";
-            exportHeaderToolStripMenuItem.Size = new Size(209, 24);
+            exportHeaderToolStripMenuItem.Size = new Size(215, 24);
             exportHeaderToolStripMenuItem.Text = "Export Header...";
             exportHeaderToolStripMenuItem.Click += exportHeaderToolStripMenuItem_Click;
             // 
@@ -241,20 +251,20 @@
             // 
             runCheckToolStripMenuItem.Name = "runCheckToolStripMenuItem";
             runCheckToolStripMenuItem.ShortcutKeys = Keys.F5;
-            runCheckToolStripMenuItem.Size = new Size(209, 24);
+            runCheckToolStripMenuItem.Size = new Size(215, 24);
             runCheckToolStripMenuItem.Text = "&Run Check";
             runCheckToolStripMenuItem.Click += runCheckToolStripMenuItem_Click;
             // 
             // toolStripSeparator6
             // 
             toolStripSeparator6.Name = "toolStripSeparator6";
-            toolStripSeparator6.Size = new Size(206, 6);
+            toolStripSeparator6.Size = new Size(212, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
             propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            propertiesToolStripMenuItem.Size = new Size(209, 24);
+            propertiesToolStripMenuItem.Size = new Size(215, 24);
             propertiesToolStripMenuItem.Text = "&Properties...";
             propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
@@ -268,14 +278,14 @@
             // aboutToolStripMenuItem
             // 
             aboutToolStripMenuItem.Name = "aboutToolStripMenuItem";
-            aboutToolStripMenuItem.Size = new Size(125, 24);
+            aboutToolStripMenuItem.Size = new Size(180, 24);
             aboutToolStripMenuItem.Text = "About...";
             aboutToolStripMenuItem.Click += aboutToolStripMenuItem_Click;
             // 
             // statusStrip
             // 
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize, lblModified });
-            statusStrip.Location = new Point(0, 257);
+            statusStrip.Location = new Point(0, 258);
             statusStrip.Name = "statusStrip";
             statusStrip.Size = new Size(574, 24);
             statusStrip.TabIndex = 4;
@@ -358,36 +368,40 @@
             assetTree.Dock = DockStyle.Fill;
             assetTree.Location = new Point(0, 22);
             assetTree.Name = "assetTree";
-            treeNode8.ImageIndex = 0;
-            treeNode8.Name = "NodeTilesets";
-            treeNode8.SelectedImageIndex = 0;
-            treeNode8.Text = "Tilesets";
-            treeNode9.ImageIndex = 1;
-            treeNode9.Name = "NodeSprites";
-            treeNode9.SelectedImageIndex = 1;
-            treeNode9.Text = "Sprites";
-            treeNode10.ImageIndex = 2;
-            treeNode10.Name = "NodeMaps";
-            treeNode10.SelectedImageIndex = 2;
-            treeNode10.Text = "Maps";
-            treeNode11.ImageIndex = 3;
-            treeNode11.Name = "NodeSpriteAnimations";
-            treeNode11.SelectedImageIndex = 3;
-            treeNode11.Text = "Animations";
-            treeNode12.ImageIndex = 4;
-            treeNode12.Name = "NodeSfxs";
-            treeNode12.SelectedImageIndex = 4;
-            treeNode12.Text = "Sound Effects";
-            treeNode13.ImageIndex = 5;
-            treeNode13.Name = "NodeMods";
-            treeNode13.SelectedImageIndex = 5;
-            treeNode13.Text = "MODs";
-            treeNode14.ImageIndex = 6;
-            treeNode14.Name = "NodeFonts";
-            treeNode14.SelectedImageIndex = 6;
-            treeNode14.Text = "Fonts";
-            assetTree.Nodes.AddRange(new TreeNode[] { treeNode8, treeNode9, treeNode10, treeNode11, treeNode12, treeNode13, treeNode14 });
-            assetTree.Size = new Size(198, 178);
+            treeNode1.ImageIndex = 0;
+            treeNode1.Name = "NodeTilesets";
+            treeNode1.SelectedImageIndex = 0;
+            treeNode1.Text = "Tilesets";
+            treeNode2.ImageIndex = 1;
+            treeNode2.Name = "NodeSprites";
+            treeNode2.SelectedImageIndex = 1;
+            treeNode2.Text = "Sprites";
+            treeNode3.ImageIndex = 2;
+            treeNode3.Name = "NodeMaps";
+            treeNode3.SelectedImageIndex = 2;
+            treeNode3.Text = "Maps";
+            treeNode4.ImageIndex = 3;
+            treeNode4.Name = "NodeSpriteAnimations";
+            treeNode4.SelectedImageIndex = 3;
+            treeNode4.Text = "Animations";
+            treeNode5.ImageIndex = 4;
+            treeNode5.Name = "NodeSfxs";
+            treeNode5.SelectedImageIndex = 4;
+            treeNode5.Text = "Sound Effects";
+            treeNode6.ImageIndex = 5;
+            treeNode6.Name = "NodeMods";
+            treeNode6.SelectedImageIndex = 5;
+            treeNode6.Text = "MODs";
+            treeNode7.ImageIndex = 6;
+            treeNode7.Name = "NodeFonts";
+            treeNode7.SelectedImageIndex = 6;
+            treeNode7.Text = "Fonts";
+            treeNode8.ImageIndex = 7;
+            treeNode8.Name = "NodePropFont";
+            treeNode8.SelectedImageIndex = 7;
+            treeNode8.Text = "Proportional Fonts";
+            assetTree.Nodes.AddRange(new TreeNode[] { treeNode1, treeNode2, treeNode3, treeNode4, treeNode5, treeNode6, treeNode7, treeNode8 });
+            assetTree.Size = new Size(198, 179);
             assetTree.TabIndex = 7;
             // 
             // panel1
@@ -398,7 +412,7 @@
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(0, 55);
             panel1.Name = "panel1";
-            panel1.Size = new Size(200, 202);
+            panel1.Size = new Size(200, 203);
             panel1.TabIndex = 15;
             // 
             // label1
@@ -414,7 +428,7 @@
             // 
             splitter1.Location = new Point(200, 55);
             splitter1.Name = "splitter1";
-            splitter1.Size = new Size(3, 202);
+            splitter1.Size = new Size(3, 203);
             splitter1.TabIndex = 17;
             splitter1.TabStop = false;
             // 
@@ -422,7 +436,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(574, 281);
+            ClientSize = new Size(574, 282);
             Controls.Add(splitter1);
             Controls.Add(panel1);
             Controls.Add(toolStrip);
@@ -487,5 +501,6 @@
         private ToolStripButton toolStripButtonNew;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem exportHeaderToolStripMenuItem;
+        private ToolStripMenuItem addNewPropFontToolStripMenuItem;
     }
 }

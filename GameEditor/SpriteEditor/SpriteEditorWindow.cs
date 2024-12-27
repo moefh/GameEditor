@@ -87,58 +87,6 @@ namespace GameEditor.SpriteEditor
         // === TOOLSTRIP BUTTONS
         // =====================================================================
 
-        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
-            SpritePropertiesDialog dlg = new SpritePropertiesDialog();
-            dlg.SpriteName = Sprite.Name;
-            dlg.MaxSpriteFrames = Sprite.MAX_NUM_FRAMES;
-            dlg.SpriteWidth = Sprite.Width;
-            dlg.SpriteHeight = Sprite.Height;
-            dlg.SpriteFrames = Sprite.NumFrames;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            Sprite.Name = dlg.SpriteName;
-            if (dlg.SpriteWidth != Sprite.Width || dlg.SpriteHeight != Sprite.Height || dlg.SpriteFrames != Sprite.NumFrames) {
-                Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
-                Project.UpdateDataSize();
-                UpdateDataSize();
-                spriteFramePicker.ResetSize();
-                spriteEditor.SelectedFrame = 0;
-                spriteFramePicker.SelectedFrame = 0;
-            }
-            SetDirty();
-            Project.UpdateAssetNames(Sprite.AssetType);
-            Project.RefreshSpriteUsers(Sprite, null);
-            FixFormTitle();
-        }
-
-        private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            SpriteExportDialog dlg = new SpriteExportDialog();
-            dlg.NumHorzFrames = 1;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                Sprite.ExportBitmap(dlg.FileName, dlg.NumHorzFrames);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Sprite");
-            }
-        }
-
-        private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            SpriteImportDialog dlg = new SpriteImportDialog();
-            dlg.SpriteWidth = Sprite.Width;
-            dlg.SpriteHeight = Sprite.Height;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
-                SetDirty();
-                FixFormTitle();
-                UpdateDataSize();
-                Project.UpdateDataSize();
-                spriteEditor.Invalidate();
-                spriteFramePicker.ResetSize();
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error importing sprite from {dlg.FileName} with size {dlg.SpriteWidth}x{dlg.SpriteHeight}", "Error Importing Sprite");
-            }
-        }
-
         private void toolStripBtnGrid_CheckedChanged(object sender, EventArgs e) {
             FixRenderFlags();
         }
@@ -146,10 +94,6 @@ namespace GameEditor.SpriteEditor
         private void toolStripBtnTransparent_CheckedChanged(object sender, EventArgs e) {
             FixRenderFlags();
         }
-
-        // ====================================================================
-        // === TOOLS
-        // ====================================================================
 
         private void SelectTool(PaintTool tool) {
             spriteEditor.SelectedTool = tool;
@@ -182,6 +126,58 @@ namespace GameEditor.SpriteEditor
         // === MENU
         // ====================================================================
 
+        private void importToolStripMenuItem_Click(object sender, EventArgs e) {
+            SpriteImportDialog dlg = new SpriteImportDialog();
+            dlg.SpriteWidth = Sprite.Width;
+            dlg.SpriteHeight = Sprite.Height;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
+                SetDirty();
+                FixFormTitle();
+                UpdateDataSize();
+                Project.UpdateDataSize();
+                spriteEditor.Invalidate();
+                spriteFramePicker.ResetSize();
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error importing sprite from {dlg.FileName} with size {dlg.SpriteWidth}x{dlg.SpriteHeight}", "Error Importing Sprite");
+            }
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
+            SpriteExportDialog dlg = new SpriteExportDialog();
+            dlg.NumHorzFrames = 1;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                Sprite.ExportBitmap(dlg.FileName, dlg.NumHorzFrames);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Sprite");
+            }
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            SpritePropertiesDialog dlg = new SpritePropertiesDialog();
+            dlg.SpriteName = Sprite.Name;
+            dlg.MaxSpriteFrames = Sprite.MAX_NUM_FRAMES;
+            dlg.SpriteWidth = Sprite.Width;
+            dlg.SpriteHeight = Sprite.Height;
+            dlg.SpriteFrames = Sprite.NumFrames;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Sprite.Name = dlg.SpriteName;
+            if (dlg.SpriteWidth != Sprite.Width || dlg.SpriteHeight != Sprite.Height || dlg.SpriteFrames != Sprite.NumFrames) {
+                Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
+                Project.UpdateDataSize();
+                UpdateDataSize();
+                spriteFramePicker.ResetSize();
+                spriteEditor.SelectedFrame = 0;
+                spriteFramePicker.SelectedFrame = 0;
+            }
+            SetDirty();
+            Project.UpdateAssetNames(Sprite.AssetType);
+            Project.RefreshSpriteUsers(Sprite, null);
+            FixFormTitle();
+        }
+
         private void pasteToolStripMenuItem_Click(object sender, EventArgs e) {
             try {
                 Image? img = Clipboard.GetImage();
@@ -211,6 +207,5 @@ namespace GameEditor.SpriteEditor
         private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
             spriteEditor.DeleteSelection();
         }
-
     }
 }

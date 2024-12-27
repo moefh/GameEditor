@@ -93,27 +93,10 @@ namespace GameEditor.TilesetEditor
         }
 
         // ====================================================================
-        // === TOOLSTRIP BUTTONS
+        // === TILESET MENU
         // ====================================================================
 
-        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
-            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
-            dlg.TilesetName = Tileset.Name;
-            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
-            dlg.NumTiles = Tileset.NumTiles;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            Tileset.Name = dlg.TilesetName;
-            if (Tileset.NumTiles != dlg.NumTiles) {
-                Tileset.Resize(dlg.NumTiles, colorPicker.SelectedBackColor);
-                OnTilesetResized();
-            }
-            SetDirty();
-            FixFormTitle();
-            Project.UpdateAssetNames(Tileset.AssetType);
-            OnNameChanged(EventArgs.Empty);
-        }
-
-        private void toolStripBtnImport_Click(object sender, EventArgs e) {
+        private void importToolStripMenuItem_Click(object sender, EventArgs e) {
             TilesetImportDialog dlg = new TilesetImportDialog();
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
@@ -153,7 +136,7 @@ namespace GameEditor.TilesetEditor
             return num;
         }
 
-        private void toolStripBtnExport_Click(object sender, EventArgs e) {
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
             TilesetExportDialog dlg = new TilesetExportDialog();
             dlg.MaxHorzTiles = Tileset.NumTiles;
             dlg.NumHorzTiles = SuggestNumHorzTiles();
@@ -166,6 +149,29 @@ namespace GameEditor.TilesetEditor
             }
         }
 
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            TilesetPropertiesDialog dlg = new TilesetPropertiesDialog();
+            dlg.TilesetName = Tileset.Name;
+            dlg.MaxNumTiles = Tileset.MAX_NUM_TILES;
+            dlg.NumTiles = Tileset.NumTiles;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Tileset.Name = dlg.TilesetName;
+            if (Tileset.NumTiles != dlg.NumTiles) {
+                Tileset.Resize(dlg.NumTiles, colorPicker.SelectedBackColor);
+                OnTilesetResized();
+            }
+            SetDirty();
+            FixFormTitle();
+            Project.UpdateAssetNames(Tileset.AssetType);
+            OnNameChanged(EventArgs.Empty);
+        }
+
+        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
+        }
+
+        private void toolStripBtnExport_Click(object sender, EventArgs e) {
+        }
+
         private void toolStripBtnGrid_Click(object sender, EventArgs e) {
             UpdateRenderFlags();
         }
@@ -175,7 +181,7 @@ namespace GameEditor.TilesetEditor
         }
 
         // ====================================================================
-        // === MENU
+        // === EDIT MENU
         // ====================================================================
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
