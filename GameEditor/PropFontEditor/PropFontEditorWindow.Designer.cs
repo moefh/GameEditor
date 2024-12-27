@@ -62,7 +62,7 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip1.Location = new Point(0, 214);
+            statusStrip1.Location = new Point(0, 236);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(642, 24);
             statusStrip1.TabIndex = 0;
@@ -98,26 +98,28 @@
             // 
             importToolStripMenuItem.Image = Properties.Resources.ImportIcon;
             importToolStripMenuItem.Name = "importToolStripMenuItem";
-            importToolStripMenuItem.Size = new Size(180, 24);
+            importToolStripMenuItem.Size = new Size(140, 24);
             importToolStripMenuItem.Text = "Import";
+            importToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
             // exportToolStripMenuItem
             // 
             exportToolStripMenuItem.Image = Properties.Resources.ExportIcon;
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(180, 24);
+            exportToolStripMenuItem.Size = new Size(140, 24);
             exportToolStripMenuItem.Text = "Export";
+            exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
+            toolStripSeparator1.Size = new Size(137, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
             propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            propertiesToolStripMenuItem.Size = new Size(180, 24);
+            propertiesToolStripMenuItem.Size = new Size(140, 24);
             propertiesToolStripMenuItem.Text = "Properties";
             propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
@@ -135,14 +137,18 @@
             // copyToolStripMenuItem
             // 
             copyToolStripMenuItem.Name = "copyToolStripMenuItem";
-            copyToolStripMenuItem.Size = new Size(111, 24);
+            copyToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.C;
+            copyToolStripMenuItem.Size = new Size(161, 24);
             copyToolStripMenuItem.Text = "Copy";
+            copyToolStripMenuItem.Click += copyToolStripMenuItem_Click;
             // 
             // pasteToolStripMenuItem
             // 
             pasteToolStripMenuItem.Name = "pasteToolStripMenuItem";
-            pasteToolStripMenuItem.Size = new Size(111, 24);
+            pasteToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.V;
+            pasteToolStripMenuItem.Size = new Size(161, 24);
             pasteToolStripMenuItem.Text = "Paste";
+            pasteToolStripMenuItem.Click += pasteToolStripMenuItem_Click;
             // 
             // mainSplit
             // 
@@ -159,7 +165,7 @@
             // mainSplit.Panel2
             // 
             mainSplit.Panel2.Controls.Add(propFontEditor);
-            mainSplit.Size = new Size(642, 161);
+            mainSplit.Size = new Size(642, 183);
             mainSplit.SplitterDistance = 41;
             mainSplit.TabIndex = 2;
             // 
@@ -179,7 +185,7 @@
             propFontEditor.Name = "propFontEditor";
             propFontEditor.PropFontData = null;
             propFontEditor.SelectedCharacter = 0;
-            propFontEditor.Size = new Size(642, 116);
+            propFontEditor.Size = new Size(642, 138);
             propFontEditor.TabIndex = 0;
             propFontEditor.ImageChanged += propFontEditor_ImageChanged;
             // 
@@ -200,7 +206,9 @@
             // 
             // toolStripComboSelChar
             // 
+            toolStripComboSelChar.DropDownHeight = 400;
             toolStripComboSelChar.DropDownStyle = ComboBoxStyle.DropDownList;
+            toolStripComboSelChar.IntegralHeight = false;
             toolStripComboSelChar.Name = "toolStripComboSelChar";
             toolStripComboSelChar.Size = new Size(75, 27);
             toolStripComboSelChar.SelectedIndexChanged += toolStripComboSelChar_SelectedIndexChanged;
@@ -253,7 +261,6 @@
             // 
             // toolStripTxtSample
             // 
-            toolStripTxtSample.Font = new Font("Segoe UI", 10.5F);
             toolStripTxtSample.Name = "toolStripTxtSample";
             toolStripTxtSample.Size = new Size(200, 27);
             toolStripTxtSample.TextChanged += toolStripTxtSample_TextChanged;
@@ -262,7 +269,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(642, 238);
+            ClientSize = new Size(642, 260);
             Controls.Add(mainSplit);
             Controls.Add(toolToolStrip);
             Controls.Add(menuToolStrip);

@@ -148,7 +148,7 @@
             Controls.Add(label1);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
-            FormBorderStyle = FormBorderStyle.Fixed3D;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
             MinimizeBox = false;
             Name = "FontImportDialog";

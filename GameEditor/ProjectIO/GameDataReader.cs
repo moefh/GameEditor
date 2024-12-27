@@ -488,7 +488,6 @@ namespace GameEditor.ProjectIO
         }
 
         private List<byte> ReadPropFontCharWidths() {
-            ExpectPunct('{');
             List<byte> charWidth = [];
             while (true) {
                 Token next = ExpectToken();
@@ -513,6 +512,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token dataIdent = ExpectIdent();
                 ExpectPunct(',');
+                Token charWidthsStart = ExpectPunct('{');
                 List<byte> charWidth = ReadPropFontCharWidths();
                 ExpectPunct('}');
                 ExpectPunct(',');
@@ -520,8 +520,17 @@ namespace GameEditor.ProjectIO
                 if (! propFontData.TryGetValue(dataIdent.Str, out List<byte>? data)) {
                     throw new ParseError($"invalid font: font data {dataIdent.Str} not found", dataIdent.LineNum);
                 }
-                if (false) { // TODO: check data size against char widths
-                    throw new ParseError($"invalid font: expected TODO bytes, got {data.Count}", dataIdent.LineNum);
+
+                if (charWidth.Count != PropFontData.NUM_CHARS) {
+                    throw new ParseError($"invalid font: expected {PropFontData.NUM_CHARS} widths, got {charWidth.Count}", charWidthsStart.LineNum);
+                }
+
+                int expectedSize = 0;
+                for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
+                    expectedSize += (charWidth[ch] + 7) / 8 * (int)height.Num;
+                }
+                if (expectedSize != data.Count) {
+                    throw new ParseError($"invalid font: expected {expectedSize} bytes, got {data.Count}", dataIdent.LineNum);
                 }
 
                 string name = ExtractGlobalLowerName(dataIdent.Str, "prop_font_data");

@@ -21,7 +21,7 @@ namespace GameEditor.FontEditor
         public FontEditorWindow(FontDataItem fontItem) : base(fontItem, "FontEditor") {
             this.fontItem = fontItem;
             InitializeComponent();
-            SetupAssetControls(lblDataSize, toolStripTxtName);
+            SetupAssetControls(lblDataSize);
             SetupCharSelection();
             fontEditor.FontData = FontData;
             fontDisplay.FontData = FontData;
@@ -54,7 +54,7 @@ namespace GameEditor.FontEditor
             SetDirty();
         }
 
-        private void toolStripComboSelChar_DropDownClosed(object sender, EventArgs e) {
+        private void toolStripComboSelChar_SelectedIndexChanged(object sender, EventArgs e) {
             fontEditor.SelectedCharacter = (byte)toolStripComboSelChar.SelectedIndex;
         }
 
@@ -74,57 +74,6 @@ namespace GameEditor.FontEditor
 
         private void toolStripTxtSample_TextChanged(object sender, EventArgs e) {
             fontDisplay.Text = toolStripTxtSample.Text;
-        }
-
-        // ===================================================================
-        // TOOLSTRIP BUTTONS
-        // ===================================================================
-
-        private void toolStripBtnProperties_Click(object sender, EventArgs e) {
-            FontPropertiesDialog dlg = new FontPropertiesDialog();
-            dlg.FontDataWidth = FontData.Width;
-            dlg.FontDataHeight = FontData.Height;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            FontData.Resize(dlg.FontDataWidth, dlg.FontDataHeight);
-            fontDisplay.Invalidate();
-            fontEditor.Invalidate();
-            SetDirty();
-            FixFormTitle();
-            UpdateDataSize();
-            Project.UpdateDataSize();
-        }
-
-        private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            FontImportDialog dlg = new FontImportDialog();
-            dlg.ImportWidth = FontData.Width;
-            dlg.ImportHeight = FontData.Height;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                FontData.ImportBitmap(dlg.ImportFileName, dlg.ImportWidth, dlg.ImportHeight);
-                fontDisplay.Invalidate();
-                fontEditor.Invalidate();
-                SetDirty();
-                FixFormTitle();
-                UpdateDataSize();
-                Project.UpdateDataSize();
-                Util.Log($"== Imported font image from {dlg.ImportFileName}");
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Font");
-            }
-        }
-
-        private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Export Font Image";
-            dlg.Filter = "Image Files (*.bmp;*.png)|*.bmp;*.png|All files (*.*)|*.*";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                FontData.ExportBitmap(dlg.FileName, 16);
-                Util.Log($"== Exported font image to {dlg.FileName}");
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Font");
-            }
         }
 
         // ===================================================================
@@ -152,6 +101,58 @@ namespace GameEditor.FontEditor
             SetDirty();
             fontEditor.Invalidate();
             fontDisplay.Invalidate();
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e) {
+            FontImportDialog dlg = new FontImportDialog();
+            dlg.ImportWidth = FontData.Width;
+            dlg.ImportHeight = FontData.Height;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                FontData.ImportBitmap(dlg.ImportFileName, dlg.ImportWidth, dlg.ImportHeight);
+                fontDisplay.Invalidate();
+                fontEditor.Invalidate();
+                SetDirty();
+                FixFormTitle();
+                UpdateDataSize();
+                Project.UpdateDataSize();
+                Util.Log($"== Imported font image from {dlg.ImportFileName}");
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Font");
+            }
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export Font Image";
+            dlg.Filter = "Image Files (*.bmp;*.png)|*.bmp;*.png|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                FontData.ExportBitmap(dlg.FileName, 16);
+                Util.Log($"== Exported font image to {dlg.FileName}");
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"ERROR saving bitmap to {dlg.FileName}", "Error Exporting Font");
+            }
+        }
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            FontPropertiesDialog dlg = new FontPropertiesDialog();
+            dlg.FontDataName = FontData.Name;
+            dlg.FontDataWidth = FontData.Width;
+            dlg.FontDataHeight = FontData.Height;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            FontData.Name = dlg.FontDataName;
+            if (FontData.Width != dlg.FontDataWidth || FontData.Height != dlg.FontDataHeight) {
+                FontData.Resize(dlg.FontDataWidth, dlg.FontDataHeight);
+                fontDisplay.Invalidate();
+                fontEditor.Invalidate();
+                UpdateDataSize();
+                Project.UpdateDataSize();
+            }
+            SetDirty();
+            FixFormTitle();
+            Project.UpdateAssetNames(FontData.AssetType);
         }
 
     }

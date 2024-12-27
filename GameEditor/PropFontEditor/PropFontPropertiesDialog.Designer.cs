@@ -37,7 +37,7 @@
             // numHeight
             // 
             numHeight.Location = new Point(87, 66);
-            numHeight.Maximum = new decimal(new int[] { 1024, 0, 0, 0 });
+            numHeight.Maximum = new decimal(new int[] { 127, 0, 0, 0 });
             numHeight.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
             numHeight.Name = "numHeight";
             numHeight.Size = new Size(81, 26);

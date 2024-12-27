@@ -236,18 +236,22 @@ namespace GameEditor.Misc
         }
 
         public void ExportBitmap(string filename, int numHorzImages) {
+            ExportBitmap(filename, Width, Height, numHorzImages);
+        }
+
+        public void ExportBitmap(string filename, int width, int height, int numHorzImages) {
             if (numHorzImages <= 0 || numHorzImages > NumImages) {
                 throw new Exception($"Invalid number of horizontal images: {numHorzImages}");
             }
             int numVertImages = (NumImages + numHorzImages - 1) / numHorzImages;
 
-            using Bitmap images = new Bitmap(numHorzImages * Width, numVertImages * Height);
+            using Bitmap images = new Bitmap(numHorzImages * width, numVertImages * height);
             using Graphics g = Graphics.FromImage(images);
             g.Clear(Color.FromArgb(0,255,0,0));
             for (int y = 0; y < numVertImages; y++) {
                 for (int x = 0; x < numHorzImages; x++) {
-                    g.DrawImage(bitmap, new Rectangle(x * Width, y * Height, Width, Height),
-                                0, (x + y * numHorzImages) * Height, Width, Height,
+                    g.DrawImage(bitmap, new Rectangle(x * width, y * height, width, height),
+                                0, (x + y * numHorzImages) * Height, width, height,
                                 GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
                 }
             }

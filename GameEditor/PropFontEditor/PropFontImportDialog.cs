@@ -8,11 +8,11 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace GameEditor.FontEditor
+namespace GameEditor.PropFontEditor
 {
-    public partial class FontImportDialog : Form
+    public partial class PropFontImportDialog : Form
     {
-        public FontImportDialog() {
+        public PropFontImportDialog() {
             InitializeComponent();
         }
 
@@ -33,7 +33,7 @@ namespace GameEditor.FontEditor
 
         private void btnSelectFile_Click(object sender, EventArgs e) {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Import Font";
+            dlg.Title = "Import Proportional Font";
             dlg.Filter = "Image Files (*.bmp, *.png, *.jpg, *.gif)|*.bmp;*.png;*.jpg;*.gif|All files (*.*)|*.*";
             dlg.RestoreDirectory = true;
             dlg.FileName = ImportFileName;
@@ -51,6 +51,5 @@ namespace GameEditor.FontEditor
             DialogResult = DialogResult.OK;
             Close();
         }
-
     }
 }

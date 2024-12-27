@@ -16,6 +16,11 @@ namespace GameEditor.FontEditor
             InitializeComponent();
         }
 
+        public string FontDataName {
+            get { return txtName.Text; }
+            set { txtName.Text = value; }
+        }
+
         public int FontDataWidth {
             get { return (int) numWidth.Value; }
             set { numWidth.Value = value; }

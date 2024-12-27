@@ -36,8 +36,15 @@ namespace GameEditor.GameData
         public int MaxCharWidth { get { return images.Width; } }
         public int[] CharWidth { get { return charWidth; } }
 
-        public int DataSize {    // TODO
-            get { return 0; }
+        public int DataSize {
+            get {
+                int bitmaps = 0;
+                for (int ch = 0; ch < NUM_CHARS; ch++) {
+                    bitmaps += (CharWidth[ch] + 7) / 8 * Height;
+                }
+                // height(1) + data(4) + widths(NUM_CHARS) + bitmaps
+                return 1 + 4 + NUM_CHARS + bitmaps;
+            }
         }
 
         public void Dispose() {
@@ -80,10 +87,42 @@ namespace GameEditor.GameData
 
         public void ImportBitmap(string filename, int fontWidth, int fontHeight) {
             images.ImportBitmap(filename, fontWidth, fontHeight, 0, 0);
+
+            byte[] pixels = new byte[4 * fontWidth * fontHeight];
+            for (int ch = 0; ch < NUM_CHARS; ch++) {
+                ReadCharPixels(ch, pixels);
+                int charWidth = 1;
+                for (int y = 0; y < fontHeight; y++) {
+                    for (int x = charWidth; x < fontWidth; x++) {
+                        if (! (pixels[4*(y*fontWidth+x) + 3] == 0 ||
+                               (pixels[4*(y*fontWidth+x) + 0] ==   0 &&
+                                pixels[4*(y*fontWidth+x) + 1] == 255 &&
+                                pixels[4*(y*fontWidth+x) + 2] ==   0 &&
+                                pixels[4*(y*fontWidth+x) + 3] == 255))) {
+                            charWidth = x+1;
+                        }
+                    }
+                }
+                if (ch == 0 && charWidth == 1) {
+                    // if space character is empty, make it half of font height
+                    CharWidth[ch] = Height/2;
+                } else {
+                    CharWidth[ch] = charWidth;
+                }
+            }
+
+            // adjust the width
+            images.Resize(2*Height, Height, NUM_CHARS, Color.FromArgb(0,255,0)); 
         }
 
         public void ExportBitmap(string filename, int numHorzChars) {
-            images.ExportBitmap(filename, numHorzChars);
+            int width = 1;
+            for (int ch = 0; ch < NUM_CHARS; ch++) {
+                if (width < CharWidth[ch]) {
+                    width = CharWidth[ch];
+                }
+            }
+            images.ExportBitmap(filename, width, Height, numHorzChars);
         }
 
         public Bitmap CopyFromChar(int ch) {
