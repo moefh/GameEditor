@@ -58,6 +58,12 @@ namespace GameEditor.Misc
             DrawBitmapImageAt(bitmap, g, Width, Height, image, x, y, w, h, transparent, grayscale);
         }
 
+        public void DrawImageAt(Graphics g, int image, int srcW, int srcH, int x, int y, int w, int h, bool transparent = false, bool grayscale = false) {
+            srcW = int.Min(srcW, Width);
+            srcH = int.Min(srcH, Height);
+            DrawBitmapImageAt(bitmap, g, srcW, srcH, image, x, y, w, h, transparent, grayscale);
+        }
+
         // ===============================================================
         // COPY/PASTE
         // ===============================================================

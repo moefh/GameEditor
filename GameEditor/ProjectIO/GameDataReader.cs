@@ -29,6 +29,7 @@ namespace GameEditor.ProjectIO
             "SPRITE_ANIMATION",
             "MAP",
             "FONT",
+            "PROP_FONT",
         ];
 
         // parsing stuff:
@@ -43,6 +44,7 @@ namespace GameEditor.ProjectIO
         private string globalPrefixUpper;
         private readonly Dictionary<string,List<uint>> tilesetData = [];
         private readonly Dictionary<string,List<byte>> fontData = [];
+        private readonly Dictionary<string,List<byte>> propFontData = [];
         private readonly Dictionary<string,List<uint>> spriteData = [];
         private readonly Dictionary<string,List<byte>> mapTiles = [];
         private readonly Dictionary<string,List<byte>> spriteAnimationFrames = [];
@@ -50,6 +52,7 @@ namespace GameEditor.ProjectIO
         private readonly Dictionary<string,List<sbyte>> modSamples = [];
         private readonly Dictionary<string,List<ModCell>> modPattern = [];
         private readonly List<FontData> fontList = [];
+        private readonly List<PropFontData> propFontList = [];
         private readonly List<Sprite> spriteList = [];
         private readonly List<Tileset> tilesetList = [];
         private readonly List<MapData> mapList = [];
@@ -73,6 +76,7 @@ namespace GameEditor.ProjectIO
 
         public List<Tileset> TilesetList { get { return tilesetList; } }
         public List<FontData> FontList { get { return fontList; } }
+        public List<PropFontData> PropFontList { get { return propFontList; } }
         public List<Sprite> SpriteList { get { return spriteList; } }
         public List<SpriteAnimation> SpriteAnimationList { get { return spriteAnimationList; } }
         public List<MapData> MapList { get { return mapList; } }
@@ -418,6 +422,112 @@ namespace GameEditor.ProjectIO
                 fontList.Add(CreateFont(name, (int) width.Num, (int) height.Num, data));
 
                 Util.Log($"-> got font for {dataIdent.Str} with size {width.Num}x{height.Num}");
+            }
+            ExpectPunct(';');
+        }
+
+        // ======================================================================
+        // === PROPORTIONAL FONT
+        // ======================================================================
+
+        private void ReadPropFontData(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<byte> data = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                data.Add((byte) next.Num);
+                ExpectPunct(',');
+            }
+            ExpectPunct(';');
+
+            propFontData[ident.Str] = data;
+            Util.Log($"-> got prop font data {ident.Str}");
+        }
+
+        private void ClearPropFontChar(byte[] bmp, int w, int h) {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
+                    bmp[4*(y*w + x) + 0] = 0;
+                    bmp[4*(y*w + x) + 1] = 255;
+                    bmp[4*(y*w + x) + 2] = 0;
+                    bmp[4*(y*w + x) + 3] = 255;
+                }
+            }
+        }
+
+        private PropFontData CreatePropFont(string name, int height, List<byte> charWidth, List<byte> data) {
+            PropFontData font = new PropFontData(name, height);
+
+            byte[] bmp = new byte[4 * font.MaxCharWidth * height];
+            for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
+                font.CharWidth[ch] = charWidth[ch];
+                ClearPropFontChar(bmp, font.MaxCharWidth, font.Height);
+                int bytesPerLine = (charWidth[ch] + 7) / 8;
+                for (int y = 0; y < height; y++) {
+                    for (int n = 0; n < bytesPerLine; n++) {
+                        byte dataByte = data[(ch*height+y)*bytesPerLine + n];
+                        int numPixelsInByte = int.Min(8, charWidth[ch]-n*8);
+                        for (int p = 0; p < numPixelsInByte; p++) {
+                            int x = n*8 + p;
+                            bool val = (dataByte & (1<<p)) != 0;
+                            bmp[(y*font.MaxCharWidth + x)*4 + 0] = 0;
+                            bmp[(y*font.MaxCharWidth + x)*4 + 1] = (byte) (val ? 0 : 255);
+                            bmp[(y*font.MaxCharWidth + x)*4 + 2] = 0;
+                            bmp[(y*font.MaxCharWidth + x)*4 + 3] = 255;
+                        }
+                    }
+                }
+                font.WriteCharPixels(ch, bmp);
+            }
+            return font;
+        }
+
+        private List<byte> ReadPropFontCharWidths() {
+            ExpectPunct('{');
+            List<byte> charWidth = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                charWidth.Add((byte) next.Num);
+                ExpectPunct(',');
+            }
+            return charWidth;
+        }
+
+        private void ReadPropFontList(Token start) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+                Token height = ExpectNumber();
+                ExpectPunct(',');
+                Token dataIdent = ExpectIdent();
+                ExpectPunct(',');
+                List<byte> charWidth = ReadPropFontCharWidths();
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                if (! propFontData.TryGetValue(dataIdent.Str, out List<byte>? data)) {
+                    throw new ParseError($"invalid font: font data {dataIdent.Str} not found", dataIdent.LineNum);
+                }
+                if (false) { // TODO: check data size against char widths
+                    throw new ParseError($"invalid font: expected TODO bytes, got {data.Count}", dataIdent.LineNum);
+                }
+
+                string name = ExtractGlobalLowerName(dataIdent.Str, "prop_font_data");
+                propFontList.Add(CreatePropFont(name, (int) height.Num, charWidth, data));
+
+                Util.Log($"-> got prop font for {dataIdent.Str} with height {height.Num}");
             }
             ExpectPunct(';');
         }
@@ -952,7 +1062,7 @@ namespace GameEditor.ProjectIO
         }
 
         // ======================================================================
-        // === PUBLIC READERS
+        // === PUBLIC INTERFACE
         // ======================================================================
 
         public void ReadSingleMap(Tileset tileset) {
@@ -1043,6 +1153,16 @@ namespace GameEditor.ProjectIO
                     continue;
                 }
 
+                // proportional font stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "prop_font_data")) {
+                    ReadPropFontData(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "prop_fonts")) {
+                    ReadPropFontList(t.Value);
+                    continue;
+                }
+
                 // sprite stuff
                 if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sprite_data")) {
                     ReadSpriteData(t.Value);
@@ -1092,6 +1212,7 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "FONT")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "PROP_FONT")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SFX")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_DATA")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_CELL")) continue;

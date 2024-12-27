@@ -3,6 +3,7 @@ using GameEditor.GameData;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using GameEditor.ModEditor;
+using GameEditor.PropFontEditor;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
@@ -142,6 +143,74 @@ namespace GameEditor.ProjectIO
                 int h = fi.Font.Height;
                 string ident = identifiers.Get(fi.Font);
                 f.WriteLine($"  {{ {w}, {h}, {ident} }},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        // =============================================================
+        // === PROPORTIONAL FONT
+        // =============================================================
+
+        protected void WritePropFontData(PropFontData font) {
+            string ident = identifiers.Add(font, "prop_font_data", font.Name);
+            f.Write($"static const uint8_t {ident}[] = {{");
+
+            byte[] bmp = new byte[4 * font.MaxCharWidth * font.Height];
+            for (int ch = 0; ch < FontData.NUM_CHARS; ch++) {
+                int charWidth = font.CharWidth[ch];
+                int bytesPerLine = (charWidth + 7) / 8;
+                f.WriteLine();
+                f.Write("  ");
+                font.ReadCharPixels(ch, bmp);
+                for (int y = 0; y < font.Height; y++) {
+                    for (int n = 0; n < bytesPerLine; n++) {
+                        byte data = 0;
+                        int x = n * 8;
+                        int pixelsInByte = int.Min(8, charWidth-x);
+                        for (int p = 0; p < pixelsInByte; p++) {
+                            if (bmp[y*font.MaxCharWidth*4 + (x+p)*4 + 1] == 0) {
+                                data |= (byte) (1<<p);
+                            }
+                        }
+                        f.Write("0x{0:x02},", data);
+                    }
+                }
+                if (ch + 32 < 127) {
+                    f.Write($"  // '{(char)(ch + 32)}'");
+                }
+            }
+
+            f.WriteLine();
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected void WritePropFonts() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === PROPORTIONAL FONTS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+            foreach (PropFontDataItem fi in Project.PropFontList) {
+                WritePropFontData(fi.PropFont);
+            }
+
+            f.WriteLine($"const struct {GetUpperGlobal("PROP_FONT")} {GetLowerGlobal("prop_fonts")}[] = {{");
+            foreach (PropFontDataItem fi in Project.PropFontList) {
+                int h = fi.PropFont.Height;
+                string ident = identifiers.Get(fi.PropFont);
+                f.WriteLine("  {");
+                f.Write($"    {h}, {ident}, {{");
+                for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
+                    if (ch % 24 == 0) {
+                        f.WriteLine();
+                        f.Write("      ");
+                    }
+                    f.Write($"{fi.PropFont.CharWidth[ch]},");
+                }
+                f.WriteLine();
+                f.WriteLine("    }");
+                f.WriteLine("  },");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -645,6 +714,7 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
 
             WriteDataIdsForType(Project.FontList.GetAssetList(), "FONT");
+            WriteDataIdsForType(Project.PropFontList.GetAssetList(), "PROP_FONT");
             WriteDataIdsForType(Project.ModList.GetAssetList(), "MOD");
             WriteDataIdsForType(Project.SfxList.GetAssetList(), "SFX");
             WriteDataIdsForType(Project.TilesetList.GetAssetList(), "TILESET");
@@ -662,6 +732,7 @@ namespace GameEditor.ProjectIO
             WriteHeader();
             WriteDataStart();
             WriteFonts();
+            WritePropFonts();
             WriteMods();
             WriteSfxs();
             WriteTilesets();

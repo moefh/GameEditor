@@ -3,7 +3,7 @@ using GameEditor.MapEditor;
 using GameEditor.ModEditor;
 using GameEditor.Misc;
 using GameEditor.ProjectIO;
-using GameEditor.PropFont;
+using GameEditor.PropFontEditor;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
@@ -168,7 +168,7 @@ namespace GameEditor.GameData
                 foreach (SfxData s in reader.SfxList) AddAssetItem(new SfxDataItem(s, this));
                 foreach (ModData m in reader.ModList) AddAssetItem(new ModDataItem(m, this));
                 foreach (FontData f in reader.FontList) AddAssetItem(new FontDataItem(f, this));
-                //foreach (PropFontData f in reader.PropFontList) AddAssetItem(new PropFontDataItem(f, this)); // TODO
+                foreach (PropFontData f in reader.PropFontList) AddAssetItem(new PropFontDataItem(f, this));
                 reader.ConsumeData();  // prevent read data from being disposed
                 SetDirty(false);
                 return true;

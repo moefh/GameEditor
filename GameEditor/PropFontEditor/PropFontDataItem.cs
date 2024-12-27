@@ -8,7 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEditor.PropFont
+namespace GameEditor.PropFontEditor
 {
     public class PropFontDataItem : IDataAssetItem
     {

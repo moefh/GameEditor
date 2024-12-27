@@ -148,7 +148,7 @@
             // 
             mainSplit.Panel2.Controls.Add(fontEditor);
             mainSplit.Size = new Size(600, 215);
-            mainSplit.SplitterDistance = 42;
+            mainSplit.SplitterDistance = 41;
             mainSplit.TabIndex = 2;
             // 
             // fontDisplay
@@ -157,7 +157,7 @@
             fontDisplay.FontData = null;
             fontDisplay.Location = new Point(0, 0);
             fontDisplay.Name = "fontDisplay";
-            fontDisplay.Size = new Size(600, 42);
+            fontDisplay.Size = new Size(600, 41);
             fontDisplay.TabIndex = 0;
             fontDisplay.Text = "fontDisplay";
             // 
@@ -168,7 +168,7 @@
             fontEditor.Location = new Point(0, 0);
             fontEditor.Name = "fontEditor";
             fontEditor.SelectedCharacter = 0;
-            fontEditor.Size = new Size(600, 169);
+            fontEditor.Size = new Size(600, 170);
             fontEditor.TabIndex = 0;
             fontEditor.Text = "fontEditor1";
             fontEditor.ImageChanged += fontEditor_ImageChanged;

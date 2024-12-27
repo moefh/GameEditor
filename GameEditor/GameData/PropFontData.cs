@@ -11,7 +11,6 @@ namespace GameEditor.GameData
     {
         public const int FIRST_CHAR = 32;
         public const int NUM_CHARS = 128 - FIRST_CHAR;
-        public const int MAX_WIDTH = 64;
 
         private const int DEFAULT_HEIGHT = 8;
 
@@ -21,17 +20,20 @@ namespace GameEditor.GameData
         public PropFontData(string name) {
             Name = name;
             images = CreateDefaultImages(DEFAULT_HEIGHT);
+            InitCharWidth(DEFAULT_HEIGHT);
         }
 
         public PropFontData(string name, int height) {
             Name = name;
             images = CreateDefaultImages(height);
+            InitCharWidth(height);
         }
 
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.PropFont; } }
 
         public int Height { get { return images.Height; } }
+        public int MaxCharWidth { get { return images.Width; } }
         public int[] CharWidth { get { return charWidth; } }
 
         public int DataSize {    // TODO
@@ -43,14 +45,21 @@ namespace GameEditor.GameData
         }
 
         private static ImageCollection CreateDefaultImages(int h) {
-            Bitmap bmp = new Bitmap(MAX_WIDTH, h * NUM_CHARS);
+            Bitmap bmp = new Bitmap(2*h, h * NUM_CHARS);
             using Graphics g = Graphics.FromImage(bmp);
             g.Clear(Color.FromArgb(0,255,0));
             return new ImageCollection(bmp, h);
         }
         
+        private void InitCharWidth(int height) {
+            int width = 3 * (height + 1) / 4;
+            for (int i = 0; i < NUM_CHARS; i++) {
+                CharWidth[i] = width;
+            }
+        }
+
         public void DrawCharAt(Graphics g, byte ch, int x, int y, int w, int h, bool transparent) {
-            images.DrawImageAt(g, ch, x, y, w, h, transparent, false);
+            images.DrawImageAt(g, ch, CharWidth[ch], images.Height, x, y, w, h, transparent, false);
         }
 
         public void SetCharPixel(byte ch, int x, int y, Color color) {
@@ -65,8 +74,8 @@ namespace GameEditor.GameData
             images.ReadImagePixels(ch, pixels);
         }
 
-        public void Resize(int newWidth, int newHeight) {
-            images.Resize(newWidth, newHeight, NUM_CHARS, Color.FromArgb(0,255,0));
+        public void Resize(int newHeight) {
+            images.Resize(2*newHeight, newHeight, NUM_CHARS, Color.FromArgb(0,255,0));
         }
 
         public void ImportBitmap(string filename, int fontWidth, int fontHeight) {
