@@ -53,6 +53,8 @@
             label1 = new Label();
             tabSampleData = new TabPage();
             groupSampleParameters = new GroupBox();
+            lblSampleLoopLengthColor = new Label();
+            lblSampleLoopStartColor = new Label();
             lblSampleLength = new Label();
             label8 = new Label();
             label3 = new Label();
@@ -376,6 +378,8 @@
             // 
             // groupSampleParameters
             // 
+            groupSampleParameters.Controls.Add(lblSampleLoopLengthColor);
+            groupSampleParameters.Controls.Add(lblSampleLoopStartColor);
             groupSampleParameters.Controls.Add(lblSampleLength);
             groupSampleParameters.Controls.Add(label8);
             groupSampleParameters.Controls.Add(label3);
@@ -388,10 +392,31 @@
             groupSampleParameters.Controls.Add(numSampleVolume);
             groupSampleParameters.Location = new Point(6, 6);
             groupSampleParameters.Name = "groupSampleParameters";
-            groupSampleParameters.Size = new Size(238, 198);
+            groupSampleParameters.Size = new Size(272, 198);
             groupSampleParameters.TabIndex = 14;
             groupSampleParameters.TabStop = false;
             groupSampleParameters.Text = "Parameters";
+            // 
+            // lblSampleLoopLengthColor
+            // 
+            lblSampleLoopLengthColor.BackColor = Color.FromArgb(255, 192, 160);
+            lblSampleLoopLengthColor.Cursor = Cursors.Hand;
+            lblSampleLoopLengthColor.Location = new Point(207, 87);
+            lblSampleLoopLengthColor.Name = "lblSampleLoopLengthColor";
+            lblSampleLoopLengthColor.Size = new Size(24, 23);
+            lblSampleLoopLengthColor.TabIndex = 24;
+            lblSampleLoopLengthColor.Click += lblLoopLengthColor_Click;
+            // 
+            // lblSampleLoopStartColor
+            // 
+            lblSampleLoopStartColor.BackColor = Color.FromArgb(128, 192, 255);
+            lblSampleLoopStartColor.BorderStyle = BorderStyle.FixedSingle;
+            lblSampleLoopStartColor.Cursor = Cursors.Hand;
+            lblSampleLoopStartColor.Location = new Point(207, 55);
+            lblSampleLoopStartColor.Name = "lblSampleLoopStartColor";
+            lblSampleLoopStartColor.Size = new Size(24, 23);
+            lblSampleLoopStartColor.TabIndex = 23;
+            lblSampleLoopStartColor.Click += lblLoopStartColor_Click;
             // 
             // lblSampleLength
             // 
@@ -488,7 +513,7 @@
             // btnImportSample
             // 
             btnImportSample.Image = Properties.Resources.ImportIcon;
-            btnImportSample.Location = new Point(261, 17);
+            btnImportSample.Location = new Point(293, 17);
             btnImportSample.Name = "btnImportSample";
             btnImportSample.Size = new Size(39, 34);
             btnImportSample.TabIndex = 4;
@@ -499,7 +524,7 @@
             // btnExportSample
             // 
             btnExportSample.Image = Properties.Resources.ExportIcon;
-            btnExportSample.Location = new Point(306, 17);
+            btnExportSample.Location = new Point(338, 17);
             btnExportSample.Name = "btnExportSample";
             btnExportSample.Size = new Size(39, 34);
             btnExportSample.TabIndex = 5;
@@ -645,5 +670,7 @@
         private GroupBox groupSampleParameters;
         private Label lblSampleLength;
         private Label label8;
+        private Label lblSampleLoopLengthColor;
+        private Label lblSampleLoopStartColor;
     }
 }

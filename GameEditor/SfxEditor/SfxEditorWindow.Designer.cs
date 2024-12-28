@@ -274,7 +274,7 @@
             // lblLoopLengthColor
             // 
             lblLoopLengthColor.BackColor = Color.FromArgb(255, 192, 160);
-            lblLoopLengthColor.BorderStyle = BorderStyle.FixedSingle;
+            lblLoopLengthColor.Cursor = Cursors.Hand;
             lblLoopLengthColor.Location = new Point(190, 77);
             lblLoopLengthColor.Name = "lblLoopLengthColor";
             lblLoopLengthColor.Size = new Size(24, 23);
@@ -285,6 +285,7 @@
             // 
             lblLoopStartColor.BackColor = Color.FromArgb(128, 192, 255);
             lblLoopStartColor.BorderStyle = BorderStyle.FixedSingle;
+            lblLoopStartColor.Cursor = Cursors.Hand;
             lblLoopStartColor.Location = new Point(190, 45);
             lblLoopStartColor.Name = "lblLoopStartColor";
             lblLoopStartColor.Size = new Size(24, 23);
@@ -294,9 +295,10 @@
             // label2
             // 
             label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 10.2F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label2.Location = new Point(10, 10);
             label2.Name = "label2";
-            label2.Size = new Size(71, 19);
+            label2.Size = new Size(79, 19);
             label2.TabIndex = 20;
             label2.Text = "Properties";
             // 

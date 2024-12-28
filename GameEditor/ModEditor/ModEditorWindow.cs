@@ -23,6 +23,9 @@ namespace GameEditor.ModEditor
 {
     public partial class ModEditorWindow : ProjectAssetEditorForm
     {
+        private const int SAMPLE_MARKER_LOOP_START = 0;
+        private const int SAMPLE_MARKER_LOOP_END = 1;
+
         private struct SampleItem(ModSample sample, int index)
         {
             public ModSample sample = sample;
@@ -184,10 +187,10 @@ namespace GameEditor.ModEditor
                 comboPlaySampleOctave.Items.Add($"{octave - 1}");
             }
             // set loop marker colors
-            sampleView.MarkerColor[0] = Color.FromArgb(128,192,255);
-            sampleView.MarkerColor[1] = Color.FromArgb(255,192,160);
+            sampleView.MarkerColor[0] = Color.FromArgb(128, 192, 255);
+            sampleView.MarkerColor[1] = Color.FromArgb(255, 192, 160);
 
-
+            SelectSampleMarker(SAMPLE_MARKER_LOOP_START);
             UpdateSampleListDisplay();
             UpdateSamplePlayVolumeDisplay();
         }
@@ -211,7 +214,7 @@ namespace GameEditor.ModEditor
                 numSampleLoopStart.Maximum = sampleLen;
                 numSampleLoopStart.Value = uint.Clamp(loopStart, 0, sampleLen);
                 numSampleLoopLen.Maximum = sampleLen;
-                numSampleLoopLen.Value = uint.Clamp(loopLen, 0, sampleLen-loopStart);
+                numSampleLoopLen.Value = uint.Clamp(loopLen, 0, sampleLen - loopStart);
                 numSampleVolume.Value = int.Clamp(ModFile.Sample[spl].Volume, 0, 64);
                 comboSampleFinetune.SelectedIndex = int.Clamp(ModFile.Sample[spl].Finetune, -8, 7) + 8;
             } else {
@@ -292,12 +295,31 @@ namespace GameEditor.ModEditor
             UpdateSamplePlayVolumeDisplay();
         }
 
+        private void SelectSampleMarker(int marker) {
+            sampleView.SelectedMarker = marker;
+            if (marker == SAMPLE_MARKER_LOOP_START) {
+                lblSampleLoopStartColor.BorderStyle = BorderStyle.FixedSingle;
+                lblSampleLoopLengthColor.BorderStyle = BorderStyle.None;
+            } else {
+                lblSampleLoopStartColor.BorderStyle = BorderStyle.None;
+                lblSampleLoopLengthColor.BorderStyle = BorderStyle.FixedSingle;
+            }
+        }
+
         private void numSampleLoopStart_Enter(object sender, EventArgs e) {
-            sampleView.SelectedMarker = 0;
+            SelectSampleMarker(SAMPLE_MARKER_LOOP_START);
         }
 
         private void numSampleLoopLen_Enter(object sender, EventArgs e) {
-            sampleView.SelectedMarker = 1;
+            SelectSampleMarker(SAMPLE_MARKER_LOOP_END);
+        }
+
+        private void lblLoopStartColor_Click(object sender, EventArgs e) {
+            SelectSampleMarker(SAMPLE_MARKER_LOOP_START);
+        }
+
+        private void lblLoopLengthColor_Click(object sender, EventArgs e) {
+            SelectSampleMarker(SAMPLE_MARKER_LOOP_END);
         }
 
         private void btnExportSample_Click(object sender, EventArgs e) {
@@ -331,20 +353,20 @@ namespace GameEditor.ModEditor
             }
 
             switch (dlg.UserSelection) {
-                case ModSampleImportLimitDialog.Result.ClipToProject: {
+            case ModSampleImportLimitDialog.Result.ClipToProject: {
                     int clipToSize = wav.GetNumSamplesForTargetAfterResampling(importSampleRate, ModData.MAX_SAMPLE_LENGTH);
                     wav.ClipSamples(clipToSize);
                     return ModSampleImportLimitDialog.Result.Proceed;
                 }
 
-                case ModSampleImportLimitDialog.Result.ClipToMod: {
+            case ModSampleImportLimitDialog.Result.ClipToMod: {
                     int clipToSize = wav.GetNumSamplesForTargetAfterResampling(importSampleRate, ModFile.MAX_SAMPLE_LENGTH);
                     wav.ClipSamples(clipToSize);
                     return ModSampleImportLimitDialog.Result.Proceed;
                 }
 
-                default:
-                    return dlg.UserSelection;
+            default:
+                return dlg.UserSelection;
             }
         }
 
