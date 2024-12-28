@@ -35,10 +35,11 @@
             LeftToolStripPanel = new ToolStripPanel();
             ContentPanel = new ToolStripContentPanel();
             infoToolStrip = new ToolStrip();
-            toolStripLabel3 = new ToolStripLabel();
-            toolStripTxtName = new ToolStripTextBox();
-            toolStripBtnExport = new ToolStripButton();
-            toolStripBtnImport = new ToolStripButton();
+            toolStripDropDownSfx = new ToolStripDropDownButton();
+            importToolStripMenuItem = new ToolStripMenuItem();
+            exportToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            propertiesToolStripMenuItem = new ToolStripMenuItem();
             mainSplitContainer = new SplitContainer();
             label1 = new Label();
             numSampleRate = new NumericUpDown();
@@ -125,46 +126,51 @@
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownSfx });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(486, 27);
             infoToolStrip.TabIndex = 1;
             // 
-            // toolStripLabel3
+            // toolStripDropDownSfx
             // 
-            toolStripLabel3.Name = "toolStripLabel3";
-            toolStripLabel3.Size = new Size(48, 24);
-            toolStripLabel3.Text = "Name:";
+            toolStripDropDownSfx.AutoToolTip = false;
+            toolStripDropDownSfx.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownSfx.DropDownItems.AddRange(new ToolStripItem[] { importToolStripMenuItem, exportToolStripMenuItem, toolStripSeparator1, propertiesToolStripMenuItem });
+            toolStripDropDownSfx.Image = (Image)resources.GetObject("toolStripDropDownSfx.Image");
+            toolStripDropDownSfx.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownSfx.Name = "toolStripDropDownSfx";
+            toolStripDropDownSfx.Size = new Size(98, 24);
+            toolStripDropDownSfx.Text = "Sound Effect";
             // 
-            // toolStripTxtName
+            // importToolStripMenuItem
             // 
-            toolStripTxtName.Name = "toolStripTxtName";
-            toolStripTxtName.Size = new Size(100, 27);
+            importToolStripMenuItem.Image = Properties.Resources.ImportIcon;
+            importToolStripMenuItem.Name = "importToolStripMenuItem";
+            importToolStripMenuItem.Size = new Size(180, 24);
+            importToolStripMenuItem.Text = "Import";
+            importToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
-            // toolStripBtnExport
+            // exportToolStripMenuItem
             // 
-            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
-            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(23, 24);
-            toolStripBtnExport.Text = "Export";
-            toolStripBtnExport.ToolTipText = "Export sample to WAV file";
-            toolStripBtnExport.Click += toolStripBtnExport_Click;
+            exportToolStripMenuItem.Image = Properties.Resources.ExportIcon;
+            exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            exportToolStripMenuItem.Size = new Size(180, 24);
+            exportToolStripMenuItem.Text = "Export";
+            exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
             // 
-            // toolStripBtnImport
+            // toolStripSeparator1
             // 
-            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
-            toolStripBtnImport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(23, 24);
-            toolStripBtnImport.Text = "Import";
-            toolStripBtnImport.ToolTipText = "Import sample from WAV file";
-            toolStripBtnImport.Click += toolStripBtnImport_Click;
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(177, 6);
+            // 
+            // propertiesToolStripMenuItem
+            // 
+            propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
+            propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            propertiesToolStripMenuItem.Size = new Size(180, 24);
+            propertiesToolStripMenuItem.Text = "Properties";
+            propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
             // mainSplitContainer
             // 
@@ -401,10 +407,6 @@
         private ToolStripPanel LeftToolStripPanel;
         private ToolStripContentPanel ContentPanel;
         private ToolStrip infoToolStrip;
-        private ToolStripLabel toolStripLabel3;
-        private ToolStripTextBox toolStripTxtName;
-        private ToolStripButton toolStripBtnExport;
-        private ToolStripButton toolStripBtnImport;
         private SplitContainer mainSplitContainer;
         private Button btnPlay;
         private CustomControls.VolumeControl sampleVolumeControl;
@@ -422,5 +424,10 @@
         private Label label4;
         private Label lblLoopLengthColor;
         private Label lblLoopStartColor;
+        private ToolStripDropDownButton toolStripDropDownSfx;
+        private ToolStripMenuItem importToolStripMenuItem;
+        private ToolStripMenuItem exportToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem propertiesToolStripMenuItem;
     }
 }

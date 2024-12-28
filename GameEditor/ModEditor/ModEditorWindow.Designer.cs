@@ -30,10 +30,11 @@
             statusStrip1 = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             toolStrip = new ToolStrip();
-            toolStripLabel1 = new ToolStripLabel();
-            toolStripTxtName = new ToolStripTextBox();
-            toolStripBtnExport = new ToolStripButton();
-            toolStripBtnImport = new ToolStripButton();
+            toolStripDropDownMod = new ToolStripDropDownButton();
+            importToolStripMenuItem = new ToolStripMenuItem();
+            exportToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator1 = new ToolStripSeparator();
+            propertiesToolStripMenuItem = new ToolStripMenuItem();
             mainTabControl = new TabControl();
             tabSamples = new TabPage();
             splitSampleList = new SplitContainer();
@@ -116,46 +117,51 @@
             // toolStrip
             // 
             toolStrip.AutoSize = false;
-            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel1, toolStripTxtName, toolStripBtnExport, toolStripBtnImport });
+            toolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownMod });
             toolStrip.Location = new Point(0, 0);
             toolStrip.Name = "toolStrip";
             toolStrip.Size = new Size(636, 25);
             toolStrip.TabIndex = 1;
             // 
-            // toolStripLabel1
+            // toolStripDropDownMod
             // 
-            toolStripLabel1.Name = "toolStripLabel1";
-            toolStripLabel1.Size = new Size(48, 22);
-            toolStripLabel1.Text = "Name:";
+            toolStripDropDownMod.AutoToolTip = false;
+            toolStripDropDownMod.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownMod.DropDownItems.AddRange(new ToolStripItem[] { importToolStripMenuItem, exportToolStripMenuItem, toolStripSeparator1, propertiesToolStripMenuItem });
+            toolStripDropDownMod.Image = (Image)resources.GetObject("toolStripDropDownMod.Image");
+            toolStripDropDownMod.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownMod.Name = "toolStripDropDownMod";
+            toolStripDropDownMod.Size = new Size(56, 22);
+            toolStripDropDownMod.Text = "MOD";
             // 
-            // toolStripTxtName
+            // importToolStripMenuItem
             // 
-            toolStripTxtName.Name = "toolStripTxtName";
-            toolStripTxtName.Size = new Size(100, 25);
+            importToolStripMenuItem.Image = Properties.Resources.ImportIcon;
+            importToolStripMenuItem.Name = "importToolStripMenuItem";
+            importToolStripMenuItem.Size = new Size(180, 24);
+            importToolStripMenuItem.Text = "Import";
+            importToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
-            // toolStripBtnExport
+            // exportToolStripMenuItem
             // 
-            toolStripBtnExport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnExport.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnExport.Image = Properties.Resources.ExportIcon;
-            toolStripBtnExport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnExport.Name = "toolStripBtnExport";
-            toolStripBtnExport.Size = new Size(23, 22);
-            toolStripBtnExport.Text = "Export";
-            toolStripBtnExport.ToolTipText = "Export MOD file";
-            toolStripBtnExport.Click += toolStripBtnExport_Click;
+            exportToolStripMenuItem.Image = Properties.Resources.ExportIcon;
+            exportToolStripMenuItem.Name = "exportToolStripMenuItem";
+            exportToolStripMenuItem.Size = new Size(180, 24);
+            exportToolStripMenuItem.Text = "Export";
+            exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
             // 
-            // toolStripBtnImport
+            // toolStripSeparator1
             // 
-            toolStripBtnImport.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnImport.DisplayStyle = ToolStripItemDisplayStyle.Image;
-            toolStripBtnImport.Image = Properties.Resources.ImportIcon;
-            toolStripBtnImport.ImageTransparentColor = Color.Magenta;
-            toolStripBtnImport.Name = "toolStripBtnImport";
-            toolStripBtnImport.Size = new Size(23, 22);
-            toolStripBtnImport.Text = "Import";
-            toolStripBtnImport.ToolTipText = "Import MOD file";
-            toolStripBtnImport.Click += toolStripBtnImport_Click;
+            toolStripSeparator1.Name = "toolStripSeparator1";
+            toolStripSeparator1.Size = new Size(177, 6);
+            // 
+            // propertiesToolStripMenuItem
+            // 
+            propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
+            propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            propertiesToolStripMenuItem.Size = new Size(180, 24);
+            propertiesToolStripMenuItem.Text = "Properties";
+            propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
             // mainTabControl
             // 
@@ -629,9 +635,6 @@
         private StatusStrip statusStrip1;
         private ToolStripStatusLabel lblDataSize;
         private ToolStrip toolStrip;
-        private ToolStripLabel toolStripLabel1;
-        private ToolStripTextBox toolStripTxtName;
-        private ToolStripButton toolStripBtnImport;
         private TabControl mainTabControl;
         private TabPage tabSamples;
         private TabPage tabPattern;
@@ -651,7 +654,6 @@
         private ToolStrip patternToolStrip;
         private ToolStripLabel toolStripLabel2;
         private ToolStripComboBox toolStripComboPatternOrder;
-        private ToolStripButton toolStripBtnExport;
         private Label label4;
         private Label label3;
         private ComboBox comboSampleFinetune;
@@ -672,5 +674,10 @@
         private Label label8;
         private Label lblSampleLoopLengthColor;
         private Label lblSampleLoopStartColor;
+        private ToolStripDropDownButton toolStripDropDownMod;
+        private ToolStripMenuItem importToolStripMenuItem;
+        private ToolStripMenuItem exportToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator1;
+        private ToolStripMenuItem propertiesToolStripMenuItem;
     }
 }

@@ -29,19 +29,19 @@
             statusStrip = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             infoToolStrip = new ToolStrip();
-            toolStripLabel3 = new ToolStripLabel();
-            toolStripTxtName = new ToolStripTextBox();
+            toolStripDropDownSpriteAnim = new ToolStripDropDownButton();
+            propertiesToolStripMenuItem = new ToolStripMenuItem();
             toolStripComboSprite = new ToolStripComboBox();
             toolStripLabel1 = new ToolStripLabel();
             toolsToolStrip = new ToolStrip();
             toolStripBtnPenHead = new ToolStripButton();
             toolStripBtnPenFoot = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
-            toolStripBtnGrid = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
-            toolStripSeparator2 = new ToolStripSeparator();
             toolStripLabel2 = new ToolStripLabel();
             toolStripTxtFootOverlap = new ToolStripTextBox();
+            toolStripBtnGrid = new ToolStripButton();
+            toolStripLabel3 = new ToolStripLabel();
             mainSplit = new SplitContainer();
             loopsListBox = new ListBox();
             spriteLoopSplitter = new SplitContainer();
@@ -49,6 +49,8 @@
             animEditor = new CustomControls.SpriteAnimationEditor();
             animLoopView = new CustomControls.SpriteFrameListView();
             colorPicker = new CustomControls.ColorPicker();
+            toolStripBtnDecFootOverlap = new ToolStripButton();
+            toolStripBtnIncFootOverlap = new ToolStripButton();
             statusStrip.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -84,23 +86,31 @@
             // infoToolStrip
             // 
             infoToolStrip.AutoSize = false;
-            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel3, toolStripTxtName, toolStripComboSprite, toolStripLabel1 });
+            infoToolStrip.Items.AddRange(new ToolStripItem[] { toolStripDropDownSpriteAnim, toolStripComboSprite, toolStripLabel1 });
             infoToolStrip.Location = new Point(0, 0);
             infoToolStrip.Name = "infoToolStrip";
             infoToolStrip.Size = new Size(632, 29);
             infoToolStrip.TabIndex = 1;
             infoToolStrip.Text = "toolStrip1";
             // 
-            // toolStripLabel3
+            // toolStripDropDownSpriteAnim
             // 
-            toolStripLabel3.Name = "toolStripLabel3";
-            toolStripLabel3.Size = new Size(48, 26);
-            toolStripLabel3.Text = "Name:";
+            toolStripDropDownSpriteAnim.AutoToolTip = false;
+            toolStripDropDownSpriteAnim.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripDropDownSpriteAnim.DropDownItems.AddRange(new ToolStripItem[] { propertiesToolStripMenuItem });
+            toolStripDropDownSpriteAnim.Image = (Image)resources.GetObject("toolStripDropDownSpriteAnim.Image");
+            toolStripDropDownSpriteAnim.ImageTransparentColor = Color.Magenta;
+            toolStripDropDownSpriteAnim.Name = "toolStripDropDownSpriteAnim";
+            toolStripDropDownSpriteAnim.Size = new Size(124, 26);
+            toolStripDropDownSpriteAnim.Text = "Sprite Animation";
             // 
-            // toolStripTxtName
+            // propertiesToolStripMenuItem
             // 
-            toolStripTxtName.Name = "toolStripTxtName";
-            toolStripTxtName.Size = new Size(150, 29);
+            propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
+            propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
+            propertiesToolStripMenuItem.Size = new Size(140, 24);
+            propertiesToolStripMenuItem.Text = "Properties";
+            propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
             // toolStripComboSprite
             // 
@@ -120,7 +130,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnPenHead, toolStripBtnPenFoot, toolStripSeparator1, toolStripBtnGrid, toolStripBtnTransparent, toolStripSeparator2, toolStripLabel2, toolStripTxtFootOverlap });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnPenHead, toolStripBtnPenFoot, toolStripSeparator1, toolStripBtnTransparent, toolStripLabel2, toolStripBtnDecFootOverlap, toolStripTxtFootOverlap, toolStripBtnGrid, toolStripLabel3, toolStripBtnIncFootOverlap });
             toolsToolStrip.Location = new Point(0, 29);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -157,37 +167,20 @@
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 27);
             // 
-            // toolStripBtnGrid
-            // 
-            toolStripBtnGrid.Checked = true;
-            toolStripBtnGrid.CheckOnClick = true;
-            toolStripBtnGrid.CheckState = CheckState.Checked;
-            toolStripBtnGrid.Image = Properties.Resources.EyeIcon;
-            toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
-            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
-            toolStripBtnGrid.Name = "toolStripBtnGrid";
-            toolStripBtnGrid.Size = new Size(55, 24);
-            toolStripBtnGrid.Text = "Grid";
-            toolStripBtnGrid.CheckedChanged += toolStripBtnGrid_CheckedChanged;
-            // 
             // toolStripBtnTransparent
             // 
+            toolStripBtnTransparent.Alignment = ToolStripItemAlignment.Right;
             toolStripBtnTransparent.Checked = true;
             toolStripBtnTransparent.CheckOnClick = true;
             toolStripBtnTransparent.CheckState = CheckState.Checked;
-            toolStripBtnTransparent.Image = Properties.Resources.EyeIcon;
+            toolStripBtnTransparent.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnTransparent.Image = Properties.Resources.TransparencyIcon;
             toolStripBtnTransparent.ImageTransparentColor = Color.Magenta;
             toolStripBtnTransparent.Margin = new Padding(1, 1, 1, 2);
             toolStripBtnTransparent.Name = "toolStripBtnTransparent";
-            toolStripBtnTransparent.Size = new Size(101, 24);
+            toolStripBtnTransparent.Size = new Size(23, 24);
             toolStripBtnTransparent.Text = "Transparent";
             toolStripBtnTransparent.CheckedChanged += toolStripBtnTransparent_CheckedChanged;
-            // 
-            // toolStripSeparator2
-            // 
-            toolStripSeparator2.Margin = new Padding(5, 0, 5, 0);
-            toolStripSeparator2.Name = "toolStripSeparator2";
-            toolStripSeparator2.Size = new Size(6, 27);
             // 
             // toolStripLabel2
             // 
@@ -201,6 +194,28 @@
             toolStripTxtFootOverlap.Size = new Size(50, 27);
             toolStripTxtFootOverlap.Leave += toolStripTxtFootOverlap_Leave;
             toolStripTxtFootOverlap.KeyDown += toolStripTxtFootOverlap_KeyDown;
+            // 
+            // toolStripBtnGrid
+            // 
+            toolStripBtnGrid.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnGrid.Checked = true;
+            toolStripBtnGrid.CheckOnClick = true;
+            toolStripBtnGrid.CheckState = CheckState.Checked;
+            toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnGrid.Image = Properties.Resources.GridIcon;
+            toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
+            toolStripBtnGrid.Margin = new Padding(1, 1, 1, 2);
+            toolStripBtnGrid.Name = "toolStripBtnGrid";
+            toolStripBtnGrid.Size = new Size(23, 24);
+            toolStripBtnGrid.Text = "Grid";
+            toolStripBtnGrid.CheckedChanged += toolStripBtnGrid_CheckedChanged;
+            // 
+            // toolStripLabel3
+            // 
+            toolStripLabel3.Alignment = ToolStripItemAlignment.Right;
+            toolStripLabel3.Name = "toolStripLabel3";
+            toolStripLabel3.Size = new Size(56, 24);
+            toolStripLabel3.Text = "Display:";
             // 
             // mainSplit
             // 
@@ -328,6 +343,28 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
+            // toolStripBtnDecFootOverlap
+            // 
+            toolStripBtnDecFootOverlap.AutoToolTip = false;
+            toolStripBtnDecFootOverlap.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripBtnDecFootOverlap.Image = (Image)resources.GetObject("toolStripBtnDecFootOverlap.Image");
+            toolStripBtnDecFootOverlap.ImageTransparentColor = Color.Magenta;
+            toolStripBtnDecFootOverlap.Name = "toolStripBtnDecFootOverlap";
+            toolStripBtnDecFootOverlap.Size = new Size(23, 24);
+            toolStripBtnDecFootOverlap.Text = "-";
+            toolStripBtnDecFootOverlap.Click += toolStripBtnDecFootOverlap_Click;
+            // 
+            // toolStripBtnIncFootOverlap
+            // 
+            toolStripBtnIncFootOverlap.AutoToolTip = false;
+            toolStripBtnIncFootOverlap.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripBtnIncFootOverlap.Image = (Image)resources.GetObject("toolStripBtnIncFootOverlap.Image");
+            toolStripBtnIncFootOverlap.ImageTransparentColor = Color.Magenta;
+            toolStripBtnIncFootOverlap.Name = "toolStripBtnIncFootOverlap";
+            toolStripBtnIncFootOverlap.Size = new Size(23, 24);
+            toolStripBtnIncFootOverlap.Text = "+";
+            toolStripBtnIncFootOverlap.Click += toolStripBtnIncFootOverlap_Click;
+            // 
             // SpriteAnimationEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -369,8 +406,6 @@
         private StatusStrip statusStrip;
         private ToolStrip infoToolStrip;
         private ToolStrip toolsToolStrip;
-        private ToolStripLabel toolStripLabel3;
-        private ToolStripTextBox toolStripTxtName;
         private ToolStripButton toolStripBtnGrid;
         private SplitContainer mainSplit;
         private SplitContainer spriteSplit;
@@ -388,6 +423,10 @@
         private ToolStripTextBox toolStripTxtFootOverlap;
         private ToolStripButton toolStripBtnPenHead;
         private ToolStripButton toolStripBtnPenFoot;
-        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripDropDownButton toolStripDropDownSpriteAnim;
+        private ToolStripMenuItem propertiesToolStripMenuItem;
+        private ToolStripLabel toolStripLabel3;
+        private ToolStripButton toolStripBtnDecFootOverlap;
+        private ToolStripButton toolStripBtnIncFootOverlap;
     }
 }

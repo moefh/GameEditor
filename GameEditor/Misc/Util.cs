@@ -95,6 +95,10 @@ namespace GameEditor.Misc
             }
         }
 
+        public static void Debug(string log) {
+            System.Diagnostics.Debug.WriteLine(log);
+        }
+
         public static void Log(string log) {
             if (DesignMode) return;
             if ((LogTargets & LogTarget.Debug) != 0) System.Diagnostics.Debug.WriteLine(log);

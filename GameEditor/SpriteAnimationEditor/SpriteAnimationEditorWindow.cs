@@ -24,7 +24,7 @@ namespace GameEditor.SpriteAnimationEditor
         public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
             this.animationItem = animationItem;
             InitializeComponent();
-            SetupAssetControls(lblDataSize, toolStripTxtName);
+            SetupAssetControls(lblDataSize);
             RefreshSpriteList();
             RefreshSpriteLoopList();
 
@@ -192,6 +192,14 @@ namespace GameEditor.SpriteAnimationEditor
             FixFormTitle();
         }
 
+        private void toolStripBtnPenHead_Click(object sender, EventArgs e) {
+            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Head);
+        }
+
+        private void toolStripBtnPenFoot_Click(object sender, EventArgs e) {
+            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Foot);
+        }
+
         // =========================================================================
         // FOOT OVERLAP TEXT VALIDATION
         // =========================================================================
@@ -220,12 +228,39 @@ namespace GameEditor.SpriteAnimationEditor
             OnFootOverlapTextChanged();
         }
 
-        private void toolStripBtnPenHead_Click(object sender, EventArgs e) {
-            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Head);
+        private void toolStripBtnDecFootOverlap_Click(object sender, EventArgs e) {
+            if (! int.TryParse(toolStripTxtFootOverlap.Text, out int footOverlap)) return;
+            if (footOverlap <= sbyte.MinValue) return;
+            footOverlap--;
+            toolStripTxtFootOverlap.Text = footOverlap.ToString();
+            Animation.FootOverlap = footOverlap;
+            animLoopView.FootOverlap = footOverlap;
+            animEditor.FootOverlap = footOverlap;
+            SetDirty();
         }
 
-        private void toolStripBtnPenFoot_Click(object sender, EventArgs e) {
-            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Foot);
+        private void toolStripBtnIncFootOverlap_Click(object sender, EventArgs e) {
+            if (! int.TryParse(toolStripTxtFootOverlap.Text, out int footOverlap)) return;
+            if (footOverlap >= sbyte.MaxValue) return;
+            footOverlap++;
+            toolStripTxtFootOverlap.Text = footOverlap.ToString();
+            Animation.FootOverlap = footOverlap;
+            animLoopView.FootOverlap = footOverlap;
+            animEditor.FootOverlap = footOverlap;
+            SetDirty();
+        }
+
+        // =========================================================================
+        // MENU
+        // =========================================================================
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            SpriteAnimationPropertiesDialog dlg = new SpriteAnimationPropertiesDialog();
+            dlg.SpriteAnimationName = Animation.Name;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Animation.Name = dlg.SpriteAnimationName;
+            FixFormTitle();
+            Project.UpdateAssetNames(Animation.AssetType);
         }
 
     }

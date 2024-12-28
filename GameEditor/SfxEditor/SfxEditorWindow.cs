@@ -12,7 +12,6 @@ using System.Media;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.SfxEditor
 {
@@ -27,7 +26,7 @@ namespace GameEditor.SfxEditor
         public SfxEditorWindow(SfxDataItem sfxItem) : base(sfxItem, "SfxEditor") {
             this.sfxItem = sfxItem;
             InitializeComponent();
-            SetupAssetControls(lblDataSize, toolStripTxtName);
+            SetupAssetControls(lblDataSize);
 
             sampleView.Samples = Sfx.Samples;
             sampleView.MarkerColor[MARKER_LOOP_START] = lblLoopStartColor.BackColor;
@@ -83,39 +82,6 @@ namespace GameEditor.SfxEditor
             player.Play(Sfx.Samples, sampleVolumeControl.Value, (int)numSampleRate.Value);
         }
 
-        private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            SfxExportDialog dlg = new SfxExportDialog();
-            dlg.SampleRate = (int)numSampleRate.Value;
-            if (dlg.ShowDialog() == DialogResult.OK) {
-                try {
-                    Sfx.Export(dlg.SfxFileName, dlg.SampleRate, dlg.Volume);
-                } catch (Exception ex) {
-                    Util.ShowError(ex, $"Error saving WAV: {ex.Message}", "Error Exporting SFX");
-                    return;
-                }
-                Util.Log($"Exported sfx {Sfx.Name} to file {dlg.SfxFileName}");
-            }
-        }
-
-        private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            SfxImportDialog dlg = new SfxImportDialog();
-            dlg.SfxFileName = "";
-            dlg.UseChannel = SfxImportDialog.Channel.Both;
-            dlg.Resample = true;
-            dlg.SampleRate = SfxData.DEFAULT_SAMPLE_RATE;
-            dlg.Volume = 1.0;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                int sampleRate = dlg.Resample ? dlg.SampleRate : 0;
-                Sfx.Import(dlg.SfxFileName, dlg.UseChannelBits, sampleRate, dlg.Volume);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error reading WAV: {ex.Message}", "Error Importing SFX");
-                return;
-            }
-            RefreshSfx();
-            SetDirty();
-        }
-
         // =========================================================================
         // LOOP START/LENGTH
         // =========================================================================
@@ -165,5 +131,50 @@ namespace GameEditor.SfxEditor
             }
         }
 
+        // =========================================================================
+        // MENU
+        // =========================================================================
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            SfxPropertiesDialog dlg = new SfxPropertiesDialog();
+            dlg.SfxName = Sfx.Name;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Sfx.Name = dlg.SfxName;
+            FixFormTitle();
+            Project.UpdateAssetNames(Sfx.AssetType);
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e) {
+            SfxImportDialog dlg = new SfxImportDialog();
+            dlg.SfxFileName = "";
+            dlg.UseChannel = SfxImportDialog.Channel.Both;
+            dlg.Resample = true;
+            dlg.SampleRate = SfxData.DEFAULT_SAMPLE_RATE;
+            dlg.Volume = 1.0;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                int sampleRate = dlg.Resample ? dlg.SampleRate : 0;
+                Sfx.Import(dlg.SfxFileName, dlg.UseChannelBits, sampleRate, dlg.Volume);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error reading WAV: {ex.Message}", "Error Importing SFX");
+                return;
+            }
+            RefreshSfx();
+            SetDirty();
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
+            SfxExportDialog dlg = new SfxExportDialog();
+            dlg.SampleRate = (int)numSampleRate.Value;
+            if (dlg.ShowDialog() == DialogResult.OK) {
+                try {
+                    Sfx.Export(dlg.SfxFileName, dlg.SampleRate, dlg.Volume);
+                } catch (Exception ex) {
+                    Util.ShowError(ex, $"Error saving WAV: {ex.Message}", "Error Exporting SFX");
+                    return;
+                }
+                Util.Log($"Exported sfx {Sfx.Name} to file {dlg.SfxFileName}");
+            }
+        }
     }
 }

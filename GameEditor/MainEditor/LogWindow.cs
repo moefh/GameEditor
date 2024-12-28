@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -34,6 +35,11 @@ namespace GameEditor.MainEditor
 
         protected override void OnVisibleChanged(EventArgs e) {
             base.OnVisibleChanged(e);
+            ScrollToBottom();
+        }
+
+        protected override void OnShown(EventArgs e) {
+            base.OnShown(e);
             ScrollToBottom();
         }
 

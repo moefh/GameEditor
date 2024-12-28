@@ -105,7 +105,7 @@ namespace GameEditor.ModEditor
         public ModEditorWindow(ModDataItem modItem) : base(modItem, "ModEditor") {
             this.modItem = modItem;
             InitializeComponent();
-            SetupAssetControls(lblDataSize, toolStripTxtName);
+            SetupAssetControls(lblDataSize);
             SetupSampleDisplay();
             SetupPatternGridDisplay();
             UpdateModPattern();
@@ -137,36 +137,6 @@ namespace GameEditor.ModEditor
         protected override void OnFormClosed(FormClosedEventArgs e) {
             base.OnFormClosed(e);
             player.Dispose();
-        }
-
-        private void toolStripBtnImport_Click(object sender, EventArgs e) {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.Title = "Import MOD File";
-            dlg.Filter = "MOD files (*.mod)|*.mod|All files (*.*)|*.*";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                Mod.Import(dlg.FileName);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error importing MOD from {dlg.FileName}", "Error Importing MOD");
-                return;
-            }
-            SetDirty();
-            RefreshMod();
-        }
-
-        private void toolStripBtnExport_Click(object sender, EventArgs e) {
-            SaveFileDialog dlg = new SaveFileDialog();
-            dlg.Title = "Export MOD File";
-            dlg.Filter = "MOD files (*.mod)|*.mod|All files (*.*)|*.*";
-            dlg.RestoreDirectory = true;
-            if (dlg.ShowDialog() != DialogResult.OK) return;
-            try {
-                Mod.Export(dlg.FileName);
-            } catch (Exception ex) {
-                Util.ShowError(ex, $"Error exporting MOD to {dlg.FileName}", "Error Exporting MOD");
-                return;
-            }
         }
 
         // ============================================================
@@ -514,5 +484,47 @@ namespace GameEditor.ModEditor
             }
         }
 
+        // ============================================================
+        // ==== MENU
+        // ============================================================
+
+        private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
+            ModPropertiesDialog dlg = new ModPropertiesDialog();
+            dlg.ModName = Mod.Name;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            Mod.Name = dlg.ModName;
+            FixFormTitle();
+            Project.UpdateAssetNames(Mod.AssetType);
+        }
+
+        private void importToolStripMenuItem_Click(object sender, EventArgs e) {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.Title = "Import MOD File";
+            dlg.Filter = "MOD files (*.mod)|*.mod|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                Mod.Import(dlg.FileName);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error importing MOD from {dlg.FileName}", "Error Importing MOD");
+                return;
+            }
+            SetDirty();
+            RefreshMod();
+        }
+
+        private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
+            SaveFileDialog dlg = new SaveFileDialog();
+            dlg.Title = "Export MOD File";
+            dlg.Filter = "MOD files (*.mod)|*.mod|All files (*.*)|*.*";
+            dlg.RestoreDirectory = true;
+            if (dlg.ShowDialog() != DialogResult.OK) return;
+            try {
+                Mod.Export(dlg.FileName);
+            } catch (Exception ex) {
+                Util.ShowError(ex, $"Error exporting MOD to {dlg.FileName}", "Error Exporting MOD");
+                return;
+            }
+        }
     }
 }

@@ -72,6 +72,12 @@ struct ${PREFIX}_FONT {
   const uint8_t *data;
 };
 
+struct ${PREFIX}_PROP_FONT {
+  uint8_t height;
+  const uint8_t *data;
+  uint8_t char_width[96];
+};
+
 extern const struct ${PREFIX}_FONT ${prefix}_fonts[];
 extern const struct ${PREFIX}_MOD_DATA ${prefix}_mods[];
 extern const struct ${PREFIX}_SFX ${prefix}_sfxs[];
