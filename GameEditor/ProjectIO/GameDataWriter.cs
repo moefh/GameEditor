@@ -120,6 +120,8 @@ namespace GameEditor.ProjectIO
                 }
                 if (ch + 32 < 127) {
                     f.Write($"  // '{(char)(ch + 32)}'");
+                } else {
+                    f.Write("  // DEL");
                 }
             }
 
@@ -178,6 +180,8 @@ namespace GameEditor.ProjectIO
                 }
                 if (ch + 32 < 127) {
                     f.Write($"  // '{(char)(ch + 32)}'");
+                } else {
+                    f.Write("  // DEL");
                 }
             }
 
@@ -197,16 +201,31 @@ namespace GameEditor.ProjectIO
 
             f.WriteLine($"const struct {GetUpperGlobal("PROP_FONT")} {GetLowerGlobal("prop_fonts")}[] = {{");
             foreach (PropFontDataItem fi in Project.PropFontList) {
+                PropFontData pfont = fi.PropFont;
                 int h = fi.PropFont.Height;
-                string ident = identifiers.Get(fi.PropFont);
+                string ident = identifiers.Get(pfont);
                 f.WriteLine("  {");
-                f.Write($"    {h}, {ident}, {{");
+                f.WriteLine($"    {h},");
+                f.WriteLine($"    {ident},");
+                f.Write("    {  // char widths");
                 for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
                     if (ch % 24 == 0) {
                         f.WriteLine();
                         f.Write("      ");
                     }
-                    f.Write($"{fi.PropFont.CharWidth[ch]},");
+                    f.Write($"{pfont.CharWidth[ch]},");
+                }
+                f.WriteLine();
+                f.WriteLine("    },");
+                f.Write("    {  // char offsets");
+                int charOffset = 0;
+                for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
+                    if (ch % 8 == 0) {
+                        f.WriteLine();
+                        f.Write("      ");
+                    }
+                    f.Write($"{charOffset,4},");
+                    charOffset += (pfont.CharWidth[ch] + 7) / 8 * pfont.Height;
                 }
                 f.WriteLine();
                 f.WriteLine("    }");

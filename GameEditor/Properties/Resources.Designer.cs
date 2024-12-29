@@ -198,26 +198,25 @@ namespace GameEditor.Properties {
         ///#include &lt;stdint.h&gt;
         ///
         ///struct ${PREFIX}_MOD_SAMPLE {
-        ///  uint32_t       len;
-        ///  uint32_t       loop_start;
-        ///  uint32_t       loop_len;
-        ///  uint8_t        finetune;
-        ///  uint8_t        volume;
-        ///  const int8_t  *data;
+        ///    uint32_t       len;
+        ///    uint32_t       loop_start;
+        ///    uint32_t       loop_len;
+        ///    uint8_t        finetune;
+        ///    uint8_t        volume;
+        ///    const int8_t  *data;
         ///};
         ///
         ///struct ${PREFIX}_MOD_CELL {
-        ///  uint8_t  sample;
-        ///  uint8_t  note_index;
-        ///  uint16_t effect;
+        ///    uint8_t  sample;
+        ///    uint8_t  note_index;
+        ///    uint16_t effect;
         ///};
         ///
         ///struct ${PREFIX}_MOD_DATA {
-        ///  struct ${PREFIX}_MOD_SAMPLE samples[31];
-        ///  uint8_t num_channels;
+        ///    struct ${PREFIX}_MOD_SAMPLE samples[31];
+        ///    uint8_t num_channels;
         ///
-        ///  uint8_t num_song_positions;
-        ///  ui [rest of string was truncated]&quot;;.
+        ///    uint8_t  [rest of string was truncated]&quot;;.
         /// </summary>
         internal static string game_data {
             get {

@@ -10,7 +10,7 @@ namespace GameEditor
         {
             Util.DesignMode = false;
             ApplicationConfiguration.Initialize();
-            Util.CreateProjectWindow(Point.Empty).Show();
+            Util.CreateProjectWindow().Show();
             Application.Run();
         }
     }

@@ -3,6 +3,7 @@ using GameEditor.Misc;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Design;
 using System.Globalization;
@@ -460,7 +461,7 @@ namespace GameEditor.ProjectIO
             }
         }
 
-        private PropFontData CreatePropFont(string name, int height, List<byte> charWidth, List<byte> data) {
+        private PropFontData CreatePropFont(string name, int height, List<byte> charWidth, List<ushort> charOffsets, List<byte> data) {
             PropFontData font = new PropFontData(name, height);
 
             byte[] bmp = new byte[4 * font.MaxCharWidth * height];
@@ -470,7 +471,7 @@ namespace GameEditor.ProjectIO
                 int bytesPerLine = (charWidth[ch] + 7) / 8;
                 for (int y = 0; y < height; y++) {
                     for (int n = 0; n < bytesPerLine; n++) {
-                        byte dataByte = data[(ch*height+y)*bytesPerLine + n];
+                        byte dataByte = data[charOffsets[ch] + y*bytesPerLine + n];
                         int numPixelsInByte = int.Min(8, charWidth[ch]-n*8);
                         for (int p = 0; p < numPixelsInByte; p++) {
                             int x = n*8 + p;
@@ -499,6 +500,18 @@ namespace GameEditor.ProjectIO
             return charWidth;
         }
 
+        private List<ushort> ReadPropFontCharOffsets() {
+            List<ushort> charOffset = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                charOffset.Add((ushort) next.Num);
+                ExpectPunct(',');
+            }
+            return charOffset;
+        }
+
         private void ReadPropFontList(Token start) {
             ExpectPunct('[');
             ExpectPunct(']');
@@ -514,6 +527,9 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token charWidthsStart = ExpectPunct('{');
                 List<byte> charWidth = ReadPropFontCharWidths();
+                ExpectPunct(',');
+                Token charOffsetsStart = ExpectPunct('{');
+                List<ushort> charOffset = ReadPropFontCharOffsets();
                 ExpectPunct('}');
                 ExpectPunct(',');
 
@@ -533,8 +549,14 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid font: expected {expectedSize} bytes, got {data.Count}", dataIdent.LineNum);
                 }
 
+                for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
+                    if (charOffset[ch] >= data.Count) {
+                        throw new ParseError($"invalid font: character {ch} has invalid offset {charOffset[ch]}", charOffsetsStart.LineNum);
+                    }
+                }
+
                 string name = ExtractGlobalLowerName(dataIdent.Str, "prop_font_data");
-                propFontList.Add(CreatePropFont(name, (int) height.Num, charWidth, data));
+                propFontList.Add(CreatePropFont(name, (int) height.Num, charWidth, charOffset, data));
 
                 Util.Log($"-> got prop font for {dataIdent.Str} with height {height.Num}");
             }

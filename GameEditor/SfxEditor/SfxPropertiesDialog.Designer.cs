@@ -84,7 +84,7 @@
             MinimizeBox = false;
             Name = "SfxPropertiesDialog";
             StartPosition = FormStartPosition.CenterParent;
-            Text = "SfxPropertiesDialog";
+            Text = "Sound Effect Properties";
             ResumeLayout(false);
             PerformLayout();
         }

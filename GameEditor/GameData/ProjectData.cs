@@ -89,6 +89,15 @@ namespace GameEditor.GameData
         public AssetList<IDataAssetItem> FontList { get { return assets[DataAssetType.Font]; } }
         public AssetList<IDataAssetItem> PropFontList { get { return assets[DataAssetType.PropFont]; } }
 
+        public bool IsEmpty {
+            get {
+                foreach (AssetList<IDataAssetItem> list in assets.Values) {
+                    if (list.Count != 0) return false;
+                }
+                return true;
+            }
+        }
+
         public AssetList<IDataAssetItem> GetAssetList(DataAssetType type) {
             return assets[type];
         }

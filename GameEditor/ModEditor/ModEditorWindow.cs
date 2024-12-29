@@ -171,9 +171,9 @@ namespace GameEditor.ModEditor
             bool enable = (sampleData != null && sampleData.Length > 0);
             sampleView.Samples = sampleData;
             sampleView.Enabled = enable;
-            tabSamplePlay.Enabled = enable;
-            groupSampleParameters.Enabled = enable;
             btnExportSample.Enabled = enable;
+            groupSampleParameters.Enabled = enable;
+            groupSamplePlayback.Enabled = enable;
             if (enable) {
                 uint sampleLen = ModFile.Sample[spl].Len;
                 uint loopStart = ModFile.Sample[spl].LoopStart;
@@ -181,12 +181,14 @@ namespace GameEditor.ModEditor
                 sampleView.Marker[0] = (int)loopStart;
                 sampleView.Marker[1] = (int)(loopStart + loopLen);
                 lblSampleLength.Text = $"{ModFile.Sample[spl].Len}";
+                groupSampleParameters.Enabled = false;
                 numSampleLoopStart.Maximum = sampleLen;
                 numSampleLoopStart.Value = uint.Clamp(loopStart, 0, sampleLen);
                 numSampleLoopLen.Maximum = sampleLen;
                 numSampleLoopLen.Value = uint.Clamp(loopLen, 0, sampleLen - loopStart);
                 numSampleVolume.Value = int.Clamp(ModFile.Sample[spl].Volume, 0, 64);
                 comboSampleFinetune.SelectedIndex = int.Clamp(ModFile.Sample[spl].Finetune, -8, 7) + 8;
+                groupSampleParameters.Enabled = true;
             } else {
                 lblSampleLength.Text = "(no sample)";
                 numSampleLoopStart.Value = 0;
@@ -206,7 +208,7 @@ namespace GameEditor.ModEditor
         }
 
         private void UpdateSamplePlayVolumeDisplay() {
-            lblSamplePlaybackVolume.Text = $"{volPlaySample.Value} %";
+            lblSamplePlaybackVolume.Text = $"{volPlaySample.Value}%";
         }
 
         private void SampleParametersChanged(object sender, EventArgs e) {
@@ -220,7 +222,7 @@ namespace GameEditor.ModEditor
                 sampleView.Marker[1] = end;
                 numSampleLoopStart.Value = start;
                 numSampleLoopLen.Value = int.Clamp(end - start, 0, sampleLen - start);
-            } else if (tabSampleData.Enabled) {
+            } else if (groupSampleParameters.Enabled) {
                 ModFile.Sample[spl].LoopStart = (uint)numSampleLoopStart.Value;
                 ModFile.Sample[spl].LoopLen = uint.Clamp((uint)numSampleLoopLen.Value, 0, ModFile.Sample[spl].Len - ModFile.Sample[spl].LoopStart);
                 ModFile.Sample[spl].Volume = (byte)numSampleVolume.Value;
@@ -233,9 +235,7 @@ namespace GameEditor.ModEditor
         }
 
         private void sampleList_SelectedIndexChanged(object sender, EventArgs e) {
-            tabSampleData.Enabled = false;
             UpdateSampleDisplay();
-            tabSampleData.Enabled = true;
         }
 
         private void comboPlaySampleNote_SelectedIndexChanged(object sender, EventArgs e) {

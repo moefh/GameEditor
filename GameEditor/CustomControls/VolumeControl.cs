@@ -19,10 +19,10 @@ namespace GameEditor.CustomControls
 
         private int val;
         private int dragXOffset;
-        private int dragInitialValue;
         private bool dragging;
 
         public event EventHandler? ValueChanged;
+        public event EventHandler? ValueChanging;
 
         public VolumeControl() {
             InitializeComponent();
@@ -49,6 +49,10 @@ namespace GameEditor.CustomControls
 
         private void NotifyValueChanged() {
             ValueChanged?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void NotifyValueChanging() {
+            ValueChanging?.Invoke(this, EventArgs.Empty);
         }
 
         protected override void OnPaint(PaintEventArgs pe) {
@@ -105,7 +109,6 @@ namespace GameEditor.CustomControls
             if (e.X >= knobXMin && e.X <= knobXMax && e.Y >= knobYMin && e.Y <= knobYMax) {
                 Capture = true;
                 dragging = true;
-                dragInitialValue = Value;
                 dragXOffset = e.X - knobX;
                 Refresh();
             }
@@ -120,6 +123,7 @@ namespace GameEditor.CustomControls
 
             val = int.Clamp(MinValue + (newKnobX - x1) * (MaxValue - MinValue) / (x2 - x1), MinValue, MaxValue);
             Refresh();
+            NotifyValueChanging();
         }
 
         protected override void OnMouseUp(MouseEventArgs e) {
@@ -127,9 +131,7 @@ namespace GameEditor.CustomControls
                 Capture = false;
                 dragging = false;
                 Refresh();
-                if (val != dragInitialValue) {
-                    NotifyValueChanged();
-                }
+                NotifyValueChanged();
             }
         }
 

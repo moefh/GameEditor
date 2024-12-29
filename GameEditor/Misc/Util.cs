@@ -1,4 +1,5 @@
 ﻿using GameEditor.MainEditor;
+using GameEditor.GameData;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -11,11 +12,32 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using System.Globalization;
-using GameEditor.GameData;
-using System.Reflection.Metadata.Ecma335;
 
 namespace GameEditor.Misc
 {
+    public class WindowPositionInfo {
+        public FormWindowState WindowState;
+        public Point Location;
+        public Size Size;
+
+        public WindowPositionInfo(Form form) {
+            WindowState = form.WindowState;
+            if (WindowState != FormWindowState.Normal) {
+                Location = form.RestoreBounds.Location;
+                Size = form.RestoreBounds.Size;
+            } else {
+                Location = form.Location;
+                Size = form.Size;
+            }
+        }
+
+        public void ApplyToForm(Form form) {
+            form.Location = Location;
+            form.Size = Size;
+            form.WindowState = WindowState;
+        }
+    }
+
     public static class Util
     {
         [Flags]
@@ -81,9 +103,12 @@ namespace GameEditor.Misc
             }
         }
 
-        public static ProjectWindow CreateProjectWindow(Point baseLocation) {
-            baseLocation.Offset(40, 40);
-            ProjectWindow w = (projectWindows.Count == 0) ? new ProjectWindow() : new ProjectWindow(baseLocation);
+        public static ProjectWindow CreateProjectWindow() {
+            return CreateProjectWindow(new ProjectData(), null);
+        }
+
+        public static ProjectWindow CreateProjectWindow(ProjectData project, WindowPositionInfo? pos) {
+            ProjectWindow w = new ProjectWindow(project, pos);
             projectWindows.Add(w);
             return w;
         }
@@ -116,41 +141,55 @@ namespace GameEditor.Misc
             if (form.WindowState == FormWindowState.Normal) {
                 Properties.Settings.Default[$"{name}Location"] = form.Location;
                 Properties.Settings.Default[$"{name}Size"] = form.Size;
-                Properties.Settings.Default[$"{name}Saved"] = true;
-                Properties.Settings.Default.Save();
+            } else {
+                Properties.Settings.Default[$"{name}Location"] = form.RestoreBounds.Location;
+                Properties.Settings.Default[$"{name}Size"] = form.RestoreBounds.Size;
             }
-        }
-
-        public static bool LoadWindowPosition(Form form, string name) {
-            try {
-                bool? saved = (bool?)Properties.Settings.Default[$"{name}Saved"];
-                if (saved == true) {
-                    form.Location = (Point?)Properties.Settings.Default[$"{name}Location"] ?? form.Location;
-                    form.Size = (Size?)Properties.Settings.Default[$"{name}Size"] ?? form.Size;
-                    return true;
-                }
-            } catch (Exception) {
-                form.Location = nextWindowPosition;
-                nextWindowPosition.X += 20;
-                nextWindowPosition.Y += 20;
-            }
-            return false;
+            Properties.Settings.Default[$"{name}Saved"] = true;
+            Properties.Settings.Default.Save();
         }
 
         public static void SaveMainWindowPosition(Form form, string name) {
             if (form.WindowState == FormWindowState.Maximized) {
                 Properties.Settings.Default[$"{name}Maximized"] = true;
-                Properties.Settings.Default.Save();
             } else {
                 Properties.Settings.Default[$"{name}Maximized"] = false;
-                SaveWindowPosition(form, name);
             }
+            SaveWindowPosition(form, name);
         }
 
-        public static void LoadMainWindowPosition(Form form, string name) {
-            if (!LoadWindowPosition(form, name)) return;  // not saved
+        public static bool LoadWindowPosition(string name, WindowPositionInfo pos) {
+            try {
+                bool? saved = (bool?)Properties.Settings.Default[$"{name}Saved"];
+                if (saved == true) {
+                    pos.Location = (Point?)Properties.Settings.Default[$"{name}Location"] ?? pos.Location;
+                    pos.Size = (Size?)Properties.Settings.Default[$"{name}Size"] ?? pos.Size;
+                    return true;
+                }
+            } catch (Exception) {
+                // ignore
+            }
+            return false;
+        }
+
+        public static bool LoadWindowPosition(Form form, string name) {
+            WindowPositionInfo pos = new WindowPositionInfo(form);
+            if (LoadWindowPosition(name, pos)) {
+                form.Location = pos.Location;
+                form.Size = pos.Size;
+                form.WindowState = pos.WindowState;
+                return true;
+            }
+            form.Location = nextWindowPosition;
+            nextWindowPosition.X += 20;
+            nextWindowPosition.Y += 20;
+            return false;
+        }
+
+        public static void LoadMainWindowPosition(string name, WindowPositionInfo pos) {
+            if (!LoadWindowPosition(name, pos)) return;  // not saved
             if ((bool?)Properties.Settings.Default[$"{name}Maximized"] == true) {
-                form.WindowState = FormWindowState.Maximized;
+                pos.WindowState = FormWindowState.Maximized;
             }
         }
 

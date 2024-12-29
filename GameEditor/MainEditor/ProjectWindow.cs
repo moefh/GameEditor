@@ -1,5 +1,6 @@
 ﻿using GameEditor.GameData;
 using GameEditor.Misc;
+using GameEditor.Properties;
 using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections;
@@ -17,7 +18,6 @@ using System.Windows.Forms;
 using System.Windows.Forms.VisualStyles;
 using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
-using GameEditor.Properties;
 
 namespace GameEditor.MainEditor
 {
@@ -25,25 +25,23 @@ namespace GameEditor.MainEditor
     {
         private readonly CheckerWindow checkerWindow;
         private readonly AssetTreeManager assetManager;
-        private readonly Point startLocation;
-        private readonly bool hasStartLocation;
+        private readonly WindowPositionInfo? startPosition;
         private ProjectData project;
 
-        public ProjectWindow() {
+        public ProjectWindow(ProjectData project, WindowPositionInfo? startPosition = null) {
             InitializeComponent();
 
-            project = new ProjectData();
+            this.project = project;
             assetManager = new AssetTreeManager(this, assetTree, project, components);
 
             checkerWindow = new CheckerWindow(project);
             checkerWindow.MdiParent = this;
 
+            this.startPosition = startPosition;
             SetupCurrentProject();
         }
 
-        public ProjectWindow(Point startLocation) : this() {
-            this.startLocation = startLocation;
-            hasStartLocation = true;
+        public ProjectWindow() : this(new ProjectData()) {
         }
 
         public void UpdateDataSize() {
@@ -83,33 +81,13 @@ namespace GameEditor.MainEditor
 
         protected override void OnLoad(EventArgs e) {
             base.OnLoad(e);
-            Util.LoadMainWindowPosition(this, "MainWindow");
-            if (hasStartLocation && WindowState == FormWindowState.Normal) {
-                Location = startLocation;
+            if (startPosition != null) {
+                startPosition.ApplyToForm(this);
+            } else {
+                WindowPositionInfo pos = new WindowPositionInfo(this);
+                Util.LoadMainWindowPosition("MainWindow", pos);
+                pos.ApplyToForm(this);
             }
-        }
-
-        // ======================================================================
-        // === NEW/SAVE/LOAD STUFF
-        // ======================================================================
-
-        private void ReplaceCurrentProject(ProjectData proj) {
-            checkerWindow.ClearResults();
-            project.Dispose();
-            project = proj;
-            assetManager.Project = project;
-            checkerWindow.Project = project;
-            SetupCurrentProject();
-            assetManager.ExpandPopulatedAssetTypes();
-        }
-
-        private void SetupCurrentProject() {
-            project.DirtyStatusChanged += Project_DirtyStatusChanged;
-            project.DataSizeChanged += Project_DataSizeChanged;
-            project.AssetNamesChanged += Project_AssetNamesChanged;
-            UpdateWindowTitle();
-            UpdateDataSize();
-            UpdateDirtyStatus();
         }
 
         private void Project_AssetNamesChanged(object? sender, EventArgs e) {
@@ -130,6 +108,35 @@ namespace GameEditor.MainEditor
             return dlg.ShowDialog() == DialogResult.OK;
         }
 
+        // ======================================================================
+        // === NEW/SAVE/LOAD STUFF
+        // ======================================================================
+
+        private void CreateProjectWindow(ProjectData project) {
+            WindowPositionInfo pos = new WindowPositionInfo(this);
+            pos.Location.Offset(40, 40);
+            Util.CreateProjectWindow(project, pos).Show();
+        }
+
+        private void ReplaceCurrentProject(ProjectData proj) {
+            checkerWindow.ClearResults();
+            project.Dispose();
+            project = proj;
+            assetManager.Project = project;
+            checkerWindow.Project = project;
+            SetupCurrentProject();
+            assetManager.ExpandPopulatedAssetTypes();
+        }
+
+        private void SetupCurrentProject() {
+            project.DirtyStatusChanged += Project_DirtyStatusChanged;
+            project.DataSizeChanged += Project_DataSizeChanged;
+            project.AssetNamesChanged += Project_AssetNamesChanged;
+            UpdateWindowTitle();
+            UpdateDataSize();
+            UpdateDirtyStatus();
+        }
+
         private string? GetProjectSaveFilename() {
             SaveFileDialog dlg = new SaveFileDialog();
             dlg.Title = "Save Project As";
@@ -140,9 +147,7 @@ namespace GameEditor.MainEditor
         }
 
         public void NewProject() {
-            if (!ConfirmLoseData()) return;
-            ReplaceCurrentProject(new ProjectData());
-            Util.Log("== created new project");
+            CreateProjectWindow(new ProjectData());
         }
 
         private void SaveProject() {
@@ -166,7 +171,6 @@ namespace GameEditor.MainEditor
         }
 
         private void OpenProject() {
-            if (!ConfirmLoseData()) return;
             OpenFileDialog dlg = new OpenFileDialog();
             dlg.Title = "Open Project";
             dlg.Filter = "Game project files (*.h)|*.h|All files|*.*";
@@ -186,7 +190,11 @@ namespace GameEditor.MainEditor
                                 "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            ReplaceCurrentProject(newProject);
+            if (project.IsEmpty && ! project.IsDirty) {
+                ReplaceCurrentProject(newProject);
+            } else {
+                CreateProjectWindow(newProject);
+            }
             Util.Log("== loaded project");
         }
 
@@ -195,7 +203,7 @@ namespace GameEditor.MainEditor
         // ======================================================================
 
         private void newToolStripMenuItem_Click(object sender, EventArgs e) {
-            Util.CreateProjectWindow(Location).Show();
+            NewProject();
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -307,8 +315,7 @@ namespace GameEditor.MainEditor
         // ======================================================================
 
         private void toolStripButtonNew_Click(object sender, EventArgs e) {
-            //NewProject();
-            Util.CreateProjectWindow(Location).Show();
+            NewProject();
         }
 
         private void toolStripButtonOpen_Click(object sender, EventArgs e) {

@@ -95,7 +95,9 @@ namespace GameEditor.CustomControls
         private void SetMarkerFromMouse(int mouseX) {
             if (SelectedMarker < 0 || SelectedMarker >= markers.Length) return;
             if (Samples == null) return;
-            markers[SelectedMarker] = (mouseX - MARGIN_WIDTH) * Samples.Length / ClientSize.Width;
+            int xMax = ClientSize.Width - 2 * MARGIN_WIDTH + 1;
+            long step = ((long) Samples.Length << 16) / (xMax - 1);
+            markers[SelectedMarker] = (int) (((mouseX - MARGIN_WIDTH) * step) >> 16);
             MarkerChanged?.Invoke(this, EventArgs.Empty);
             Invalidate();
         }

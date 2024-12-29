@@ -42,8 +42,8 @@ namespace GameEditor.GameData
                 for (int ch = 0; ch < NUM_CHARS; ch++) {
                     bitmaps += (CharWidth[ch] + 7) / 8 * Height;
                 }
-                // height(1) + data(4) + widths(NUM_CHARS) + bitmaps
-                return 1 + 4 + NUM_CHARS + bitmaps;
+                // height(1) + data(4) + widths(NUM_CHARS) + offsets(2*NUM_CHARS) + bitmaps
+                return 1 + 4 + NUM_CHARS + 2*NUM_CHARS + bitmaps;
             }
         }
 

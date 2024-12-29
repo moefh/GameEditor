@@ -104,6 +104,7 @@ namespace GameEditor.MainEditor
                 PopulateAssetTypeNode(type);
             }
             tree.EndUpdate();
+            tree.Nodes[0].EnsureVisible();
         }
 
         private void HandleListChanged(object? sender, ListChangedEventArgs e) {
