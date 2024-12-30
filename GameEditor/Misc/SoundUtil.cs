@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms.Design;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace GameEditor.Misc
 {

@@ -17,9 +17,6 @@ using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.DirectoryServices.ActiveDirectory;
-using System.Security.Cryptography.Pkcs;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 
 namespace GameEditor.GameData

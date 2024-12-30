@@ -1,5 +1,4 @@
-﻿using GameEditor.CustomControls;
-using GameEditor.GameData;
+﻿using GameEditor.GameData;
 using System;
 using System.Collections.Generic;
 using System.Linq;

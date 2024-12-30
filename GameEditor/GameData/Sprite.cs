@@ -10,7 +10,6 @@ using System.Runtime.InteropServices;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.Window;
 
 namespace GameEditor.GameData
 {
