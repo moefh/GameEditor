@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
@@ -20,6 +21,7 @@ namespace GameEditor.ModEditor
         public ProjectData Project { get; }
         public ModData Mod { get; }
         public ModEditorWindow? Editor { get; private set; }
+        public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Mod.Name; } }
 
         public void ShowEditor(Form parent) {

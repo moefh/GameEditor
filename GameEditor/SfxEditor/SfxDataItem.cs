@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace GameEditor.SfxEditor
         public ProjectData Project { get; }
         public SfxData Sfx { get; }
         public SfxEditorWindow? Editor { get; private set; }
+        public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Sfx.Name; } }
 
         public void ShowEditor(Form parent) {
@@ -32,10 +34,6 @@ namespace GameEditor.SfxEditor
                 Editor.MdiParent = parent;
                 Editor.Show();
             }
-        }
-
-        public void CloseEditor() {
-            Editor?.Close();
         }
 
         public void EditorClosed() {

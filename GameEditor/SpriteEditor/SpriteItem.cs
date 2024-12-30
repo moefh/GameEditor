@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using GameEditor.SpriteAnimationEditor;
@@ -22,6 +23,7 @@ namespace GameEditor.SpriteEditor
         public ProjectData Project { get; }
         public Sprite Sprite { get; }
         public SpriteEditorWindow? Editor { get; private set; }
+        public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Sprite.Name; } }
 
         public void ShowEditor(Form parent) {
@@ -35,10 +37,6 @@ namespace GameEditor.SpriteEditor
                 Editor.MdiParent = parent;
                 Editor.Show();
             }
-        }
-
-        public void CloseEditor() {
-            Editor?.Close();
         }
 
         public void EditorClosed() {

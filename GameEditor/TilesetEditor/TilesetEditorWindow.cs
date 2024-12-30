@@ -47,7 +47,7 @@ namespace GameEditor.TilesetEditor
 
         protected override void OnNameChanged(EventArgs e) {
             base.OnNameChanged(e);
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
         }
 
         private void UpdateRenderFlags() {
@@ -63,7 +63,7 @@ namespace GameEditor.TilesetEditor
         private void tileEditor_ImageChanged(object sender, EventArgs e) {
             tilePicker.Invalidate();
             SetDirty();
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
         }
 
         private void tileEditor_SelectedColorsChanged(object sender, EventArgs e) {
@@ -89,7 +89,7 @@ namespace GameEditor.TilesetEditor
                 tileEditor.Invalidate();
             }
             tilePicker.Invalidate();
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
         }
 
         // ====================================================================
@@ -118,7 +118,7 @@ namespace GameEditor.TilesetEditor
 
             tileEditor.Invalidate();
 
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
 
             if (Tileset.NumTiles > Tileset.MAX_NUM_TILES) {
                 MessageBox.Show(
@@ -206,7 +206,7 @@ namespace GameEditor.TilesetEditor
             SetDirty();
             tileEditor.Invalidate();
             tilePicker.Invalidate();
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
         }
 
         private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -236,7 +236,7 @@ namespace GameEditor.TilesetEditor
             tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
             CheckTooManyTiles();
         }
 
@@ -263,7 +263,7 @@ namespace GameEditor.TilesetEditor
             tilePicker.ScrollTileIntoView(tilePicker.LeftSelectedTile);
             tilePicker.Invalidate();
 
-            Project.RefreshTilesetUsers(Tileset);
+            Project.RefreshAssetUsers(Tileset);
             CheckTooManyTiles();
         }
 

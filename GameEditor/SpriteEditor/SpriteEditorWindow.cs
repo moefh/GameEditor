@@ -44,6 +44,12 @@ namespace GameEditor.SpriteEditor
             Text = $"{Sprite.Name} - {Sprite.Width}x{Sprite.Height} [{Sprite.NumFrames} frames] - Sprite";
         }
 
+        public override void RefreshAsset() {
+            base.RefreshAsset();
+            spriteEditor.Invalidate();
+            spriteFramePicker.Invalidate();
+        }
+
         private void FixRenderFlags() {
             RenderFlags editorRenderGrid = toolStripBtnGrid.Checked ? RenderFlags.Grid : 0;
             RenderFlags editorRenderTransparent = toolStripBtnTransparent.Checked ? RenderFlags.Transparent : 0;
@@ -53,14 +59,9 @@ namespace GameEditor.SpriteEditor
             spriteFramePicker.RenderFlags = pickerRenderTransparent;
         }
 
-        public void RefreshSprite() {
-            spriteEditor.Invalidate();
-            spriteFramePicker.Invalidate();
-        }
-
         protected override void OnNameChanged(EventArgs e) {
             base.OnNameChanged(e);
-            Project.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshAssetUsers(Sprite);
         }
 
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
@@ -76,7 +77,7 @@ namespace GameEditor.SpriteEditor
         private void spriteEditor_ImageChanged(object sender, EventArgs e) {
             spriteFramePicker.Invalidate();
             SetDirty();
-            Project.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshAssetUsers(Sprite);
         }
 
         private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
@@ -174,7 +175,7 @@ namespace GameEditor.SpriteEditor
             }
             SetDirty();
             Project.UpdateAssetNames(Sprite.AssetType);
-            Project.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshAssetUsers(Sprite);
             FixFormTitle();
         }
 
@@ -191,7 +192,7 @@ namespace GameEditor.SpriteEditor
             SetDirty();
             spriteEditor.Invalidate();
             spriteFramePicker.Invalidate();
-            Project.RefreshSpriteUsers(Sprite, null);
+            Project.RefreshAssetUsers(Sprite);
         }
 
         private void copyFrameToolStripMenuItem_Click(object sender, EventArgs e) {

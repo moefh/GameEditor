@@ -14,9 +14,9 @@ namespace GameEditor.Misc
         public IDataAsset Asset { get; }
         public string Name { get; }
         public ProjectData Project { get; }
+        public ProjectAssetEditorForm? EditorForm { get; }
 
         public void ShowEditor(Form parent);
-        public void CloseEditor();
         public void EditorClosed();
         public bool CheckRemovalAllowed();
     }

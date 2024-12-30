@@ -54,6 +54,10 @@ namespace GameEditor.MainEditor
             assetDataSizeLabel.Text = $"{Util.FormatNumber(assetItem.Asset.DataSize)} bytes";
         }
 
+        public virtual void RefreshAsset() {
+            FixFormTitle();
+        }
+
         protected virtual void FixFormTitle() {
             if (assetItem == null) return;
             Text = $"{assetItem.Name}";

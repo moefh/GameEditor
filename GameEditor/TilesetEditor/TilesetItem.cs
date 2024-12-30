@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
@@ -20,6 +21,7 @@ namespace GameEditor.TilesetEditor
         public ProjectData Project { get; }
         public Tileset Tileset { get; }
         public TilesetEditorWindow? Editor { get; private set; }
+        public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Tileset.Name; } }
 
         public void ShowEditor(Form parent) {
@@ -33,10 +35,6 @@ namespace GameEditor.TilesetEditor
                 Editor.MdiParent = parent;
                 Editor.Show();
             }
-        }
-
-        public void CloseEditor() {
-            Editor?.Close();
         }
 
         public void EditorClosed() {

@@ -1,5 +1,6 @@
 ﻿using GameEditor.GameData;
 using GameEditor.Misc;
+using GameEditor.ProjectChecker;
 using GameEditor.Properties;
 using System;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 using System.Windows.Forms.PropertyGridInternal;
 using System.Xml;
 
@@ -167,11 +169,10 @@ namespace GameEditor.MainEditor
             }
             for (int i = 0; i < root.Nodes.Count; i++) {
                 string id = root.Nodes[i].Name;
-                if (! assetsById.ContainsKey(id)) {
-                    Util.Log($"!!! failed repairing tree for type {type}: id '{id}' not found");
-                    return false;  // there's an unknown item in the tree (!?)
+                if (! assetsById.TryGetValue(id, out IDataAssetItem? asset)) {
+                    Util.Log($"!!! failed repairing tree for type {type}: '{id}' not found");
+                    return false;  // unknown item in the tree (!?)
                 }
-                IDataAssetItem asset = assetsById[id];
                 if (root.Nodes[i].Text != asset.Name) {
                     root.Nodes[i].Text = asset.Name;   // repair name
                 }
@@ -209,6 +210,7 @@ namespace GameEditor.MainEditor
             contextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
             contextMenuStrip.Items.Add("Add <asset>", null, NewAssetToolStripMenuItem_Click);
             contextMenuStrip.Items.Add(new ToolStripSeparator());
+            contextMenuStrip.Items.Add("Rename <asset>", null, RenameAssetToolStripMenuItem_Click);
             contextMenuStrip.Items.Add("Delete <asset>", null, DeleteAssetToolStripMenuItem_Click);
             contextMenuStrip.ImageList = imageList;
             contextMenuStrip.Opening += ContextMenuStrip_Opening;
@@ -216,6 +218,8 @@ namespace GameEditor.MainEditor
             tree.ContextMenuStrip = contextMenuStrip;
             tree.DoubleClick += TreeView_DoubleClick;
             tree.NodeMouseClick += TreeView_NodeMouseClick;
+            tree.BeforeLabelEdit += Tree_BeforeLabelEdit;
+            tree.AfterLabelEdit += Tree_AfterLabelEdit;
         }
 
         private static string? GetDataAssetTypeName(DataAssetType type) {
@@ -232,6 +236,45 @@ namespace GameEditor.MainEditor
             };
         }
 
+        private void Tree_AfterLabelEdit(object? sender, NodeLabelEditEventArgs e) {
+            TreeNode? node = tree.SelectedNode;
+            IDataAssetItem? asset = GetSelectedItem();
+
+            // no node (?), non-asset node or no change in text: just cancel the edit
+            if (node == null || asset == null || e.Label == null) {
+                e.CancelEdit = true;
+                tree.LabelEdit = false;
+                return;
+            }
+
+            // invalid text entered, cancel edit and open for editing again
+            if (e.Label.Length == 0) {
+                e.CancelEdit = true;
+                tree.LabelEdit = false;
+                MessageBox.Show("The asset name must not be empty", "Invalid Name",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                tree.LabelEdit = true;
+                node.BeginEdit();
+                return;
+            }
+
+            // accept the change
+            node.EndEdit(false);
+            tree.LabelEdit = false;
+            asset.Asset.Name = e.Label;
+            asset.EditorForm?.RefreshAsset();
+            project.SetDirty();
+            project.RefreshAssetUsers(asset.Asset);
+        }
+
+        private void Tree_BeforeLabelEdit(object? sender, NodeLabelEditEventArgs e) {
+            IDataAssetItem? asset = GetSelectedItem();
+            if (asset == null) {
+                e.CancelEdit = true;
+                tree.LabelEdit = false;
+            }
+        }
+
         private void NewAssetToolStripMenuItem_Click(object? sender, EventArgs e) {
             DataAssetType? type = GetSelectedRootType();
             if (type != null) {
@@ -243,6 +286,16 @@ namespace GameEditor.MainEditor
             if (asset != null) {
                 project.CreateNewAsset(asset.Asset.AssetType);
                 return;
+            }
+        }
+
+        private void RenameAssetToolStripMenuItem_Click(object? sender, EventArgs e) {
+            IDataAssetItem? asset = GetSelectedItem();
+            TreeNode? node = tree.SelectedNode;
+
+            if (node != null && asset != null) {
+                tree.LabelEdit = true;
+                node.BeginEdit();
             }
         }
 
@@ -267,6 +320,7 @@ namespace GameEditor.MainEditor
                 contextMenuStrip.Items[0].ImageIndex = nodeIndicesByType[type.Value];
                 contextMenuStrip.Items[1].Visible = false;
                 contextMenuStrip.Items[2].Visible = false;
+                contextMenuStrip.Items[3].Visible = false;
                 return;
             }
 
@@ -276,8 +330,10 @@ namespace GameEditor.MainEditor
                 contextMenuStrip.Items[0].Text = $"Add {name}";
                 contextMenuStrip.Items[0].ImageIndex = nodeIndicesByType[asset.Asset.AssetType];
                 contextMenuStrip.Items[1].Visible = true;
-                contextMenuStrip.Items[2].Text = $"Delete {name}";
+                contextMenuStrip.Items[2].Text = $"Rename {name}";
                 contextMenuStrip.Items[2].Visible = true;
+                contextMenuStrip.Items[3].Text = $"Delete {name}";
+                contextMenuStrip.Items[3].Visible = true;
                 return;
             }
 

@@ -172,8 +172,8 @@ namespace GameEditor.SpriteAnimationEditor
         private void animEditor_ImageChanged(object sender, EventArgs e) {
             animLoopView.Invalidate();
             SetDirty();
-            Project.RefreshSprite(Animation.Sprite);
-            Project.RefreshSpriteUsers(Animation.Sprite, animationItem);
+            Project.RefreshAsset(Animation.Sprite);
+            Project.RefreshAssetUsers(Animation.Sprite, animationItem);
         }
 
         private void toolStripComboSprite_SelectedIndexChanged(object sender, EventArgs e) {

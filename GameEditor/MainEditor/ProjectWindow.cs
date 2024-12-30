@@ -190,7 +190,7 @@ namespace GameEditor.MainEditor
                                 "Error Loading Project", MessageBoxButtons.OK, MessageBoxIcon.Stop);
                 return;
             }
-            if (project.IsEmpty && ! project.IsDirty) {
+            if (project.IsEmpty && !project.IsDirty) {
                 ReplaceCurrentProject(newProject);
             } else {
                 CreateProjectWindow(newProject);

@@ -20,6 +20,7 @@ using System.Threading.Tasks;
 using System.DirectoryServices.ActiveDirectory;
 using System.Security.Cryptography.Pkcs;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Policy;
 
 namespace GameEditor.GameData
 {
@@ -114,7 +115,7 @@ namespace GameEditor.GameData
             foreach (DataAssetType type in ASSET_TYPES_IN_DESTROY_ORDER) {
                 AssetList<IDataAssetItem> list = GetAssetList(type);
                 foreach (IDataAssetItem asset in list) {
-                    asset.CloseEditor();
+                    asset.EditorForm?.Close();
                     asset.Asset.Dispose();
                 }
                 list.Clear();
@@ -189,27 +190,28 @@ namespace GameEditor.GameData
             return false;
         }
 
-        public void RefreshTilesetUsers(Tileset tileset) {
-            foreach (MapDataItem map in MapList) {
-                if (map.Editor != null) {
-                    map.Editor.RefreshTileset(tileset);
+        public void RefreshAsset(IDataAsset asset) {
+            foreach (IDataAssetItem item in assets[asset.AssetType]) {
+                if (item.EditorForm != null && item.Asset == asset) {
+                    item.EditorForm.RefreshAsset();
                 }
             }
         }
 
-        public void RefreshSprite(Sprite sprite) {
-            foreach (SpriteItem si in SpriteList) {
-                if (si.Editor != null && si.Sprite == sprite) {
-                    si.Editor.RefreshSprite();
+        public void RefreshAssetUsers(IDataAsset asset, IDataAssetItem? except = null) {
+            switch (asset.AssetType) {
+            case DataAssetType.Tileset:
+                foreach (MapDataItem map in MapList) {
+                    map.Editor?.RefreshTileset((Tileset) asset);
                 }
-            }
-        }
+                break;
 
-        public void RefreshSpriteUsers(Sprite sprite, SpriteAnimationItem? exceptAnimationItem) {
-            foreach (SpriteAnimationItem ai in SpriteAnimationList) {
-                if (ai.Editor != null && ai != exceptAnimationItem) {
-                    ai.Editor.RefreshSprite(sprite);
+            case DataAssetType.Sprite:
+                foreach (SpriteAnimationItem ai in SpriteAnimationList) {
+                    if (ai == except) continue;
+                    ai.Editor?.RefreshSprite((Sprite) asset);
                 }
+                break;
             }
         }
 

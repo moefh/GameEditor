@@ -1,5 +1,6 @@
 ﻿using GameEditor.FontEditor;
 using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using Microsoft.VisualBasic.Logging;
 using System;
@@ -21,6 +22,7 @@ namespace GameEditor.PropFontEditor
         public PropFontData PropFont { get; }
         public ProjectData Project { get; }
         public PropFontEditorWindow? Editor { get; private set; }
+        public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return PropFont.Name; } }
 
         public void ShowEditor(Form parent) {
@@ -36,12 +38,7 @@ namespace GameEditor.PropFontEditor
             }
         }
 
-        public void CloseEditor() {
-            Editor?.Close();
-        }
-
         public void EditorClosed() {
-            Util.Log("EDITOR WAS CLOSED");
             Editor = null;
         }
 

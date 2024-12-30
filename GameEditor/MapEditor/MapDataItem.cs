@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -19,6 +20,7 @@ namespace GameEditor.MapEditor
         public MapData Map { get; set; }
         public ProjectData Project { get; }
         public MapEditorWindow? Editor { get; private set; }
+        public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Map.Name; } }
 
         public void ShowEditor(Form parent) {
@@ -32,10 +34,6 @@ namespace GameEditor.MapEditor
                 Editor.MdiParent = parent;
                 Editor.Show();
             }
-        }
-
-        public void CloseEditor() {
-            Editor?.Close();
         }
 
         public void EditorClosed() {
