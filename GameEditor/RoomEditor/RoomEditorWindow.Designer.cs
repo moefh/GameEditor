@@ -142,7 +142,7 @@
             // 
             roomEditor.Dock = DockStyle.Fill;
             roomEditor.Location = new Point(0, 0);
-            roomEditor.MaxZoom = 16D;
+            roomEditor.MaxZoom = 4D;
             roomEditor.MinZoom = 0.125D;
             roomEditor.Name = "roomEditor";
             roomEditor.Room = null;
@@ -152,6 +152,7 @@
             roomEditor.Zoom = 1D;
             roomEditor.ZoomStep = 3;
             roomEditor.ZoomChanged += roomEditor_ZoomChanged;
+            roomEditor.MapsChanged += roomEditor_MapsChanged;
             // 
             // RoomEditorWindow
             // 

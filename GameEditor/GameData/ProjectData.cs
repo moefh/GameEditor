@@ -173,6 +173,7 @@ namespace GameEditor.GameData
                 foreach (ModData m in reader.ModList) AddAssetItem(new ModDataItem(m, this));
                 foreach (FontData f in reader.FontList) AddAssetItem(new FontDataItem(f, this));
                 foreach (PropFontData f in reader.PropFontList) AddAssetItem(new PropFontDataItem(f, this));
+                foreach (RoomData r in reader.RoomList) AddAssetItem(new RoomDataItem(r, this));
                 reader.ConsumeData();  // prevent read data from being disposed
                 SetDirty(false);
                 return true;

@@ -79,6 +79,17 @@ struct ${PREFIX}_PROP_FONT {
     uint16_t char_offset[96];
 };
 
+struct ${PREFIX}_ROOM_MAP_INFO {
+    uint16_t x;
+    uint16_t y;
+    struct ${PREFIX}_MAP *map;
+};
+
+struct ${PREFIX}_ROOM {
+    uint16_t num_maps;
+    struct ${PREFIX}_ROOM_MAP_INFO *maps[8];
+};
+
 extern const struct ${PREFIX}_FONT ${prefix}_fonts[];
 extern const struct ${PREFIX}_PROP_FONT ${prefix}_prop_fonts[];
 extern const struct ${PREFIX}_MOD_DATA ${prefix}_mods[];
@@ -87,5 +98,6 @@ extern const struct ${PREFIX}_IMAGE ${prefix}_tilesets[];
 extern const struct ${PREFIX}_IMAGE ${prefix}_sprites[];
 extern const struct ${PREFIX}_MAP ${prefix}_maps[];
 extern const struct ${PREFIX}_SPRITE_ANIMATION ${prefix}_sprite_animations[];
+extern const struct ${PREFIX}_ROOM ${prefix}_rooms[];
 
 #endif /* ${PREFIX}_DATA_H_FILE */

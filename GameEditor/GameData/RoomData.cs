@@ -31,7 +31,13 @@ namespace GameEditor.GameData
 
         public List<Map> Maps { get { return maps; } }
 
-        public int DataSize { get { return 0; } } // TODO
+        public int DataSize {
+            get {
+                // num_maps(2)
+                //   - each map: w(2) + h(2) + mapPointer(4)
+                return 2 + maps.Count * (2 + 2 + 4);
+            }
+        }
 
         public void Dispose() {
         }

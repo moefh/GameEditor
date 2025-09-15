@@ -14,6 +14,7 @@ using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.ProjectIO
 {
@@ -30,6 +31,7 @@ namespace GameEditor.ProjectIO
             "MAP",
             "FONT",
             "PROP_FONT",
+            "ROOM",
         ];
 
         // parsing stuff:
@@ -38,10 +40,12 @@ namespace GameEditor.ProjectIO
         private bool disposed;
         private int lastLine;
 
-        // read data:
+        // read global data:
         private uint vgaSyncBits;
         private string globalPrefixLower;
         private string globalPrefixUpper;
+
+        // read asset data:
         private readonly Dictionary<string,List<uint>> tilesetData = [];
         private readonly Dictionary<string,List<byte>> fontData = [];
         private readonly Dictionary<string,List<byte>> propFontData = [];
@@ -51,6 +55,9 @@ namespace GameEditor.ProjectIO
         private readonly Dictionary<string,List<sbyte>> sfxSamples = [];
         private readonly Dictionary<string,List<sbyte>> modSamples = [];
         private readonly Dictionary<string,List<ModCell>> modPattern = [];
+        private readonly Dictionary<string,List<RoomData.Map>> roomMaps = [];
+
+        // read asset lists:
         private readonly List<FontData> fontList = [];
         private readonly List<PropFontData> propFontList = [];
         private readonly List<Sprite> spriteList = [];
@@ -59,6 +66,7 @@ namespace GameEditor.ProjectIO
         private readonly List<SfxData> sfxList = [];
         private readonly List<ModData> modList = [];
         private readonly List<SpriteAnimation> spriteAnimationList = [];
+        private readonly List<RoomData> roomList = [];
 
         public GameDataReader(string filename) {
             f = new StreamReader(filename, Encoding.UTF8);
@@ -82,6 +90,7 @@ namespace GameEditor.ProjectIO
         public List<MapData> MapList { get { return mapList; } }
         public List<SfxData> SfxList { get { return sfxList; } }
         public List<ModData> ModList { get { return modList; } }
+        public List<RoomData> RoomList { get { return roomList; } }
 
         public uint VgaSyncBits { get { return vgaSyncBits; } }
         public string GlobalPrefixLower { get { return globalPrefixLower; } }
@@ -93,12 +102,14 @@ namespace GameEditor.ProjectIO
             foreach (Tileset t in tilesetList) t.Dispose();
             foreach (Sprite s in spriteList) s.Dispose();
             foreach (FontData f in fontList) f.Dispose();
+            foreach (PropFontData p in propFontList) p.Dispose();
             disposed = true;
         }
 
         public void ConsumeData() {
-            // Clear all lists so Dispose() doesn't dispose the
-            // data items that were successfully read.
+            // Clear all asset lists so Dispose() doesn't
+            // dispose the assets that were successfully read.
+            roomList.Clear();
             mapList.Clear();
             spriteAnimationList.Clear();
             spriteList.Clear();
@@ -106,6 +117,7 @@ namespace GameEditor.ProjectIO
             sfxList.Clear();
             modList.Clear();
             fontList.Clear();
+            propFontList.Clear();
         }
 
         // ======================================================================
@@ -1064,6 +1076,81 @@ namespace GameEditor.ProjectIO
         }
 
         // ======================================================================
+        // === ROOM
+        // ======================================================================
+
+        private void ReadRoomMaps(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<RoomData.Map> maps = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) {
+                    ExpectPunct(';');
+                    break;
+                }
+
+                Token posX = ExpectNumber();
+                ExpectPunct(',');
+                Token posY = ExpectNumber();
+                ExpectPunct(',');
+                ExpectPunct('&');
+                ExpectIdent($"{GlobalPrefixLower}_maps");
+                ExpectPunct('[');
+                Token mapIndex = ExpectNumber();
+                ExpectPunct(']');
+
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                if (mapIndex.Num >= mapList.Count) {
+                    throw new ParseError($"invalid room: reference to invalid map index {mapIndex.Num}", mapIndex.LineNum);
+                }
+
+                RoomData.Map mapInfo;
+                mapInfo.x = (int) posX.Num;
+                mapInfo.y = (int) posY.Num;
+                mapInfo.map = mapList[(int) mapIndex.Num];
+                maps.Add(mapInfo);
+            }
+
+            roomMaps[ident.Str] = maps;
+        }
+
+        private void ReadRoomList(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct('{')) throw new ParseError("expecting '{' or '}'", lastLine);
+
+                Token numMaps = ExpectNumber();
+                ExpectPunct(',');
+
+                Token mapListIdent = ExpectIdent();
+
+                ExpectPunct('}');
+                ExpectPunct(',');
+
+                if (! roomMaps.TryGetValue(mapListIdent.Str, out List<RoomData.Map>? maps)) {
+                    throw new ParseError($"room map list {mapListIdent.Str} doesn't exist", mapListIdent.LineNum);
+                }
+
+                string name = ExtractGlobalLowerName(mapListIdent.Str, "room_maps");
+                roomList.Add(new RoomData(name, maps));
+
+                Util.Log($"-> got room {name} with {maps.Count} maps");
+            }
+            ExpectPunct(';');
+        }
+
+        // ======================================================================
         // === DATA IDS
         // ======================================================================
 
@@ -1223,6 +1310,16 @@ namespace GameEditor.ProjectIO
                     continue;
                 }
 
+                // room stuff
+                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "room_maps")) {
+                    ReadRoomMaps(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "rooms")) {
+                    ReadRoomList(t.Value);
+                    continue;
+                }
+
                 // ids
                 bool foundIdToIgnore = false;
                 foreach (string ignoreDataIdEnumType in IGNORE_DATA_ID_ENUM_TYPES) {
@@ -1249,6 +1346,8 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "IMAGE")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MAP")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SPRITE_ANIMATION")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "ROOM_MAP_INFO")) continue;
+                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "ROOM")) continue;
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }

@@ -4,6 +4,7 @@ using GameEditor.MapEditor;
 using GameEditor.Misc;
 using GameEditor.ModEditor;
 using GameEditor.PropFontEditor;
+using GameEditor.RoomEditor;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
@@ -16,11 +17,13 @@ using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
+using System.Reflection.Metadata.Ecma335;
 using System.Security.Policy;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Xml.Linq;
+using static GameEditor.GameData.RoomData;
 
 namespace GameEditor.ProjectIO
 {
@@ -681,11 +684,6 @@ namespace GameEditor.ProjectIO
                 WriteSpriteAnimationFrames(si.Animation);
             }
 
-            Dictionary<IDataAsset, int>? sprIndices = [];
-            foreach (var (si, index) in Project.SpriteList.Zip(Enumerable.Range(0, Project.SpriteList.Count))) {
-                sprIndices[si.Asset] = index;
-            }
-
             f.WriteLine($"const struct {GetUpperGlobal("SPRITE_ANIMATION")} {GetLowerGlobal("sprite_animations")}[] = {{");
             foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
                 SpriteAnimation anim = ai.Animation;
@@ -705,6 +703,43 @@ namespace GameEditor.ProjectIO
                 }
                 f.WriteLine("    }");
                 f.WriteLine("  },");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        // =============================================================
+        // === ROOMS
+        // =============================================================
+
+        protected void WriteRoomMaps(RoomData room) {
+            string mapIdent = GetLowerGlobal("maps");
+            string ident = identifiers.Add(room, "room_maps", room.Name);
+            f.WriteLine($"static const {GetUpperGlobal("ROOM_MAP_INFO")} {ident}[] = {{");
+            for (int m = 0; m < room.Maps.Count; m++) {
+                int mapX = room.Maps[m].x;
+                int mapY = room.Maps[m].y;
+                int mapIndex = Project.GetAssetIndex(room.Maps[m].map);
+                f.WriteLine($"  {{ {mapX}, {mapY}, &{mapIdent}[{mapIndex}] }},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected void WriteRooms() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === ROOMS");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+
+            foreach (RoomDataItem ri in Project.RoomList) {
+                WriteRoomMaps(ri.Room);
+            }
+
+            f.WriteLine($"const struct {GetUpperGlobal("ROOM")} {GetLowerGlobal("rooms")}[] = {{");
+            foreach (RoomDataItem ri in Project.RoomList) {
+                string maps = identifiers.Get(ri.Room);
+                f.WriteLine($"  {{ {ri.Room.Maps.Count}, {maps} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -740,6 +775,7 @@ namespace GameEditor.ProjectIO
             WriteDataIdsForType(Project.SpriteList.GetAssetList(), "SPRITE");
             WriteDataIdsForType(Project.MapList.GetAssetList(), "MAP");
             WriteDataIdsForType(Project.SpriteAnimationList.GetAssetList(), "SPRITE_ANIMATION");
+            WriteDataIdsForType(Project.RoomList.GetAssetList(), "ROOM");
         }
 
         // =============================================================
@@ -758,6 +794,7 @@ namespace GameEditor.ProjectIO
             WriteSprites();
             WriteMaps();
             WriteSpriteAnimations();
+            WriteRooms();
             WriteDataEnd();
             WriteDataIds();
             WriteFooter();

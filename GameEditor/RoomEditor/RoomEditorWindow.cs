@@ -48,11 +48,14 @@ namespace GameEditor.RoomEditor
             dlg.AvailableMaps = Project.MapList;
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
+            bool changed = false;
+
             // add newly selected maps
             HashSet<MapData> oldMaps = [.. Room.Maps.Select(map => map.map)];
             foreach (MapData map in dlg.SelectedMaps) {
                 if (oldMaps.Contains(map)) continue;
                 Room.AddMap(map, 0, 0);
+                changed = true;
             }
 
             // remove unselected maps
@@ -60,15 +63,20 @@ namespace GameEditor.RoomEditor
             foreach (RoomData.Map map in Room.Maps) {
                 if (!dlg.SelectedMaps.Contains(map.map)) {
                     removedMaps.Add(map.map);
+                    changed = true;
                 }
             }
             foreach (MapData map in removedMaps) {
                 Room.RemoveMaps(removedMaps);
+                changed = true;
             }
 
             // refresh
-            contentTreeManager.RefreshMapList();
-            roomEditor.HandleMapsChanged();
+            if (changed) {
+                contentTreeManager.RefreshMapList();
+                roomEditor.HandleMapsChanged();
+                SetDirty();
+            }
         }
 
         // =========================================================================
@@ -86,6 +94,10 @@ namespace GameEditor.RoomEditor
 
         private void roomEditor_ZoomChanged(object sender, EventArgs e) {
             toolStripLabelZoom.Text = $"{roomEditor.Zoom:0.0}x";
+        }
+
+        private void roomEditor_MapsChanged(object sender, EventArgs e) {
+            SetDirty();
         }
     }
 }
