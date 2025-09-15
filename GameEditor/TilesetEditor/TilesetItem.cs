@@ -23,6 +23,8 @@ namespace GameEditor.TilesetEditor
         public TilesetEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Tileset.Name; } }
+        public bool DependsOnAsset(IDataAsset asset) { return false; }
+        public void DependencyChanged(IDataAsset asset) { }
 
         public void ShowEditor(Form parent) {
             if (Editor != null) {
@@ -42,31 +44,7 @@ namespace GameEditor.TilesetEditor
         }
 
         public bool CheckRemovalAllowed() {
-            // check that tileset is not open in an editor
-            if (Editor != null) {
-                MessageBox.Show(
-                    "This tileset is open for editing. Close the tileset and try again.",
-                    "Can't Remove Tileset",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-
-            // check that the tileset is not used in a map
-            List<string> maps = [];
-            foreach (MapDataItem map in Project.MapList) {
-                if (map.Map.Tileset == Tileset) {
-                    maps.Add(map.Map.Name);
-                }
-            }
-            if (maps.Count != 0) {
-                MessageBox.Show(
-                    "This tileset is used in the following maps:\n\n - " + string.Join("\n - ", maps),
-                    "Can't Remove Tileset",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-
-            return true;
+            return ((IDataAssetItem) this).CheckRemovalAllowedGivenEditorAndDependents();
         }
     }
 }

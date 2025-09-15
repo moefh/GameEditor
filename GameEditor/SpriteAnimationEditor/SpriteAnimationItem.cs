@@ -36,19 +36,22 @@ namespace GameEditor.SpriteAnimationEditor
             }
         }
 
+        public bool DependsOnAsset(IDataAsset asset) {
+            return asset == Animation.Sprite;
+        }
+
+        public void DependencyChanged(IDataAsset asset) {
+            if (asset is Sprite sprite) {
+                Editor?.RefreshSprite(sprite);
+            }
+        }
+
         public void EditorClosed() {
             Editor = null;
         }
 
         public bool CheckRemovalAllowed() {
-            if (Editor != null) {
-                MessageBox.Show(
-                    "This animation is open for editing. Close the animation and try again.",
-                    "Can't Remove Sprite Animation",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-            return true;
+            return ((IDataAssetItem) this).CheckRemovalAllowedGivenEditorAndDependents();
         }
     }
 }

@@ -1,30 +1,28 @@
 ﻿using GameEditor.GameData;
 using GameEditor.MainEditor;
-using GameEditor.MapEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace GameEditor.ModEditor
+namespace GameEditor.RoomEditor
 {
-    public class ModDataItem : IDataAssetItem
+    public class RoomDataItem : IDataAssetItem
     {
-        public ModDataItem(ModData modData, ProjectData proj) {
-            Mod = modData;
+        public RoomDataItem(RoomData roomData, ProjectData proj) {
+            Room = roomData;
             Project = proj;
         }
 
-        public IDataAsset Asset { get { return Mod; } }
+        public IDataAsset Asset { get { return Room; } }
         public ProjectData Project { get; }
-        public ModData Mod { get; }
-        public ModEditorWindow? Editor { get; private set; }
+        public RoomData Room { get; }
+        public RoomEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
-        public string Name { get { return Mod.Name; } }
-        public bool DependsOnAsset(IDataAsset asset) { return false; }
-        public void DependencyChanged(IDataAsset asset) {}
+        public string Name { get { return Room.Name; } }
 
         public void ShowEditor(Form parent) {
             if (Editor != null) {
@@ -33,14 +31,18 @@ namespace GameEditor.ModEditor
                 }
                 Editor.Activate();
             } else {
-                Editor = new ModEditorWindow(this);
+                Editor = new RoomEditorWindow(this);
                 Editor.MdiParent = parent;
                 Editor.Show();
             }
         }
 
-        public void CloseEditor() {
-            Editor?.Close();
+        public bool DependsOnAsset(IDataAsset asset) {
+            return Room.Maps.FindIndex(m => m.map == asset) >= 0;
+        }
+
+        public void DependencyChanged(IDataAsset asset) {
+            Editor?.RefreshDependencies(asset);
         }
 
         public void EditorClosed() {

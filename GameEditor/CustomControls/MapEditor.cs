@@ -68,8 +68,10 @@ namespace GameEditor.CustomControls
             MinZoom = 1.0;
             MaxZoom = 2.0;
             ZoomStep = 0.5;
+            ReadOnly = false;
         }
 
+        public bool ReadOnly { get; set; }
         public Tool SelectedTool { get; set; }
         public int LeftSelectedTile { get; set; }
         public int RightSelectedTile { get; set; }
@@ -226,7 +228,7 @@ namespace GameEditor.CustomControls
         // ====================================================================
 
         public void DeleteSelection() {
-            if (Map == null || activeSelection.Width <= 0 || activeSelection.Height <= 0) return;
+            if (Map == null || ReadOnly || activeSelection.Width <= 0 || activeSelection.Height <= 0) return;
             if (selectionTiles == null) {
                 switch (ActiveLayerType) {
                 case IMapTiles.LayerType.Foreground:
@@ -266,6 +268,7 @@ namespace GameEditor.CustomControls
         }
 
         public void PasteFromClipboard() {
+            if (ReadOnly) return;
             MapTilesSelection? copy = MapTilesSelection.FromClipboard();
             if (copy == null) return;
 
@@ -434,7 +437,7 @@ namespace GameEditor.CustomControls
         }
 
         private void ApplyToolSetTile(MouseEventArgs e, MouseAction action) {
-            if (Map == null) return;
+            if (Map == null || ReadOnly) return;
             if (e.Button != MouseButtons.Left && e.Button != MouseButtons.Right) return;
 
             Point t = GetTilePositionUnderMouse(e, Map);
@@ -531,6 +534,7 @@ namespace GameEditor.CustomControls
         }
 
         private void DropSelection() {
+            if (ReadOnly) return;
             if (Map == null || selectionTiles == null) {
                 activeSelection = Rectangle.Empty;
                 return;
@@ -585,7 +589,7 @@ namespace GameEditor.CustomControls
                 }
             }
 
-            if (! hasSelection) {
+            if (ReadOnly || ! hasSelection) {
                 return false;
             }
 
@@ -681,6 +685,7 @@ namespace GameEditor.CustomControls
             base.OnMouseWheel(e);
             double delta = double.Sign(e.Delta) * ZoomStep;
             Zoom = double.Clamp(Zoom + delta, MinZoom, MaxZoom);
+            ClampScroll();
             ZoomChanged?.Invoke(this, EventArgs.Empty);
         }
 

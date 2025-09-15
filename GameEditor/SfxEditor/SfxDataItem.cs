@@ -22,6 +22,8 @@ namespace GameEditor.SfxEditor
         public SfxEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Sfx.Name; } }
+        public bool DependsOnAsset(IDataAsset asset) { return false; }
+        public void DependencyChanged(IDataAsset asset) {}
 
         public void ShowEditor(Form parent) {
             if (Editor != null) {
@@ -41,14 +43,7 @@ namespace GameEditor.SfxEditor
         }
 
         public bool CheckRemovalAllowed() {
-            if (Editor != null) {
-                MessageBox.Show(
-                    "This sound effect is open for editing. Close the editor and try again.",
-                    "Can't Remove Sound Effect",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-            return true;
+            return ((IDataAssetItem) this).CheckRemovalAllowedGivenEditorAndDependents();
         }
     }
 }

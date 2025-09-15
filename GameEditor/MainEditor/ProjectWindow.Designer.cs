@@ -34,6 +34,7 @@
             TreeNode treeNode6 = new TreeNode("MODs", 5, 5);
             TreeNode treeNode7 = new TreeNode("Fonts", 6, 6);
             TreeNode treeNode8 = new TreeNode("Proportional Fonts", 7, 7);
+            TreeNode treeNode9 = new TreeNode("Rooms", 8, 8);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectWindow));
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -55,6 +56,7 @@
             addMODToolStripMenuItem = new ToolStripMenuItem();
             addNewFontToolStripMenuItem = new ToolStripMenuItem();
             addNewPropFontToolStripMenuItem = new ToolStripMenuItem();
+            addNewRoomRoolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator1 = new ToolStripSeparator();
             exportHeaderToolStripMenuItem = new ToolStripMenuItem();
             runCheckToolStripMenuItem = new ToolStripMenuItem();
@@ -166,7 +168,7 @@
             // 
             // projectToolStripMenuItem
             // 
-            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, addNewPropFontToolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
+            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, addNewPropFontToolStripMenuItem, addNewRoomRoolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             projectToolStripMenuItem.Size = new Size(63, 23);
             projectToolStripMenuItem.Text = "&Project";
@@ -235,6 +237,14 @@
             addNewPropFontToolStripMenuItem.Text = "Add Proportional Fon&t";
             addNewPropFontToolStripMenuItem.Click += addNewPropFontToolStripMenuItem_Click;
             // 
+            // addNewRoomRoolStripMenuItem
+            // 
+            addNewRoomRoolStripMenuItem.Image = Properties.Resources.RoomIcon;
+            addNewRoomRoolStripMenuItem.Name = "addNewRoomRoolStripMenuItem";
+            addNewRoomRoolStripMenuItem.Size = new Size(215, 24);
+            addNewRoomRoolStripMenuItem.Text = "Add &Room";
+            addNewRoomRoolStripMenuItem.Click += addNewRoomRoolStripMenuItem_Click;
+            // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
@@ -252,7 +262,7 @@
             runCheckToolStripMenuItem.Name = "runCheckToolStripMenuItem";
             runCheckToolStripMenuItem.ShortcutKeys = Keys.F5;
             runCheckToolStripMenuItem.Size = new Size(215, 24);
-            runCheckToolStripMenuItem.Text = "&Run Check";
+            runCheckToolStripMenuItem.Text = "Run &Check";
             runCheckToolStripMenuItem.Click += runCheckToolStripMenuItem_Click;
             // 
             // toolStripSeparator6
@@ -285,7 +295,7 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize, lblModified });
-            statusStrip.Location = new Point(0, 258);
+            statusStrip.Location = new Point(0, 279);
             statusStrip.Name = "statusStrip";
             statusStrip.Size = new Size(574, 24);
             statusStrip.TabIndex = 4;
@@ -400,8 +410,12 @@
             treeNode8.Name = "NodePropFont";
             treeNode8.SelectedImageIndex = 7;
             treeNode8.Text = "Proportional Fonts";
-            assetTree.Nodes.AddRange(new TreeNode[] { treeNode1, treeNode2, treeNode3, treeNode4, treeNode5, treeNode6, treeNode7, treeNode8 });
-            assetTree.Size = new Size(198, 179);
+            treeNode9.ImageIndex = 8;
+            treeNode9.Name = "NodeRooms";
+            treeNode9.SelectedImageIndex = 8;
+            treeNode9.Text = "Rooms";
+            assetTree.Nodes.AddRange(new TreeNode[] { treeNode1, treeNode2, treeNode3, treeNode4, treeNode5, treeNode6, treeNode7, treeNode8, treeNode9 });
+            assetTree.Size = new Size(198, 200);
             assetTree.TabIndex = 7;
             // 
             // panel1
@@ -412,7 +426,7 @@
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(0, 55);
             panel1.Name = "panel1";
-            panel1.Size = new Size(200, 203);
+            panel1.Size = new Size(200, 224);
             panel1.TabIndex = 15;
             // 
             // label1
@@ -428,7 +442,7 @@
             // 
             splitter1.Location = new Point(200, 55);
             splitter1.Name = "splitter1";
-            splitter1.Size = new Size(3, 203);
+            splitter1.Size = new Size(3, 224);
             splitter1.TabIndex = 17;
             splitter1.TabStop = false;
             // 
@@ -436,7 +450,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(574, 282);
+            ClientSize = new Size(574, 303);
             Controls.Add(splitter1);
             Controls.Add(panel1);
             Controls.Add(toolStrip);
@@ -502,5 +516,6 @@
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripMenuItem exportHeaderToolStripMenuItem;
         private ToolStripMenuItem addNewPropFontToolStripMenuItem;
+        private ToolStripMenuItem addNewRoomRoolStripMenuItem;
     }
 }

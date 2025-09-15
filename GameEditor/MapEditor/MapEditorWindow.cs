@@ -66,6 +66,11 @@ namespace GameEditor.MapEditor
             }
         }
 
+        protected override void OnNameChanged(EventArgs e) {
+            base.OnNameChanged(e);
+            Project.RefreshAssetUsers(Map);
+        }
+
         public void UpdateTilePickerTileset() {
             if (ActiveLayer == CustomControls.MapEditor.Layer.Collision) {
                 tilePicker.Tileset = ImageUtil.CollisionTileset;
@@ -132,6 +137,7 @@ namespace GameEditor.MapEditor
 
         private void mapEditor_MapChanged(object sender, EventArgs e) {
             SetDirty();
+            Project.RefreshAssetUsers(Map);
         }
 
         private void mapEditor_SelectedTilesChanged(object sender, EventArgs e) {
@@ -253,6 +259,7 @@ namespace GameEditor.MapEditor
                 FixFormTitle();
                 UpdateDataSize();
                 Project.UpdateAssetNames(Map.AssetType);
+                Project.RefreshAssetUsers(Map);
                 Project.UpdateDataSize();
             }
         }

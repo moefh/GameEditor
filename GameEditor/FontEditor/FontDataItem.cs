@@ -23,6 +23,8 @@ namespace GameEditor.FontEditor
         public FontEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Font.Name; } }
+        public bool DependsOnAsset(IDataAsset asset) { return false; }
+        public void DependencyChanged(IDataAsset asset) {}
 
         public void ShowEditor(Form parent) {
             if (Editor != null) {
@@ -42,14 +44,7 @@ namespace GameEditor.FontEditor
         }
 
         public bool CheckRemovalAllowed() {
-            if (Editor != null) {
-                MessageBox.Show(
-                    "This font is open for editing. Close the editor and try again.",
-                    "Can't Remove Font",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-            return true;
+            return ((IDataAssetItem) this).CheckRemovalAllowedGivenEditorAndDependents();
         }
     }
 }

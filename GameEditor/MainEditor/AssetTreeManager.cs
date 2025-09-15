@@ -41,6 +41,7 @@ namespace GameEditor.MainEditor
             nodeIndicesByType[DataAssetType.Mod] = 5;
             nodeIndicesByType[DataAssetType.Font] = 6;
             nodeIndicesByType[DataAssetType.PropFont] = 7;
+            nodeIndicesByType[DataAssetType.Room] = 8;
 
             foreach (var kv in nodeIndicesByType) {
                 rootNodesByType[kv.Key] = tree.Nodes[kv.Value];
@@ -75,6 +76,7 @@ namespace GameEditor.MainEditor
                 "NodeFonts" => DataAssetType.Font,
                 "NodeSpriteAnimations" => DataAssetType.SpriteAnimation,
                 "NodePropFont" => DataAssetType.PropFont,
+                "NodeRooms" => DataAssetType.Room,
                 _ => null,
             };
         }
@@ -204,6 +206,7 @@ namespace GameEditor.MainEditor
             imageList.Images.Add(Resources.MODIcon);
             imageList.Images.Add(Resources.FwFontIcon);
             imageList.Images.Add(Resources.FontIcon);
+            imageList.Images.Add(Resources.RoomIcon);
             tree.ImageList = imageList;
 
             contextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);

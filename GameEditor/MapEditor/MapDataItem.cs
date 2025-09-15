@@ -39,16 +39,18 @@ namespace GameEditor.MapEditor
         public void EditorClosed() {
             Editor = null;
         }
+        public bool DependsOnAsset(IDataAsset asset) {
+            return asset == Map.Tileset;
+        }
+
+        public void DependencyChanged(IDataAsset asset) {
+            if (asset is Tileset tileset) {
+                Editor?.RefreshTileset(tileset);
+            }
+        }
 
         public bool CheckRemovalAllowed() {
-            if (Editor != null) {
-                MessageBox.Show(
-                    "This map is open for editing. Close the map and try again.",
-                    "Can't Remove Map",
-                    MessageBoxButtons.OK, MessageBoxIcon.Stop);
-                return false;
-            }
-            return true;
+            return ((IDataAssetItem) this).CheckRemovalAllowedGivenEditorAndDependents();
         }
     }
 }

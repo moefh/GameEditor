@@ -304,6 +304,10 @@ namespace GameEditor.MainEditor
             project.CreateNewAsset(DataAssetType.PropFont)?.ShowEditor(this);
         }
 
+        private void addNewRoomRoolStripMenuItem_Click(object sender, EventArgs e) {
+            project.CreateNewAsset(DataAssetType.Room)?.ShowEditor(this);
+        }
+
         private void runCheckToolStripMenuItem_Click(object sender, EventArgs e) {
             checkerWindow.Show();
             //checkerWindow.Activate();

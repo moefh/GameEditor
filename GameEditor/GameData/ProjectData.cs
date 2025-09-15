@@ -1,9 +1,10 @@
 ﻿using GameEditor.FontEditor;
 using GameEditor.MapEditor;
-using GameEditor.ModEditor;
 using GameEditor.Misc;
+using GameEditor.ModEditor;
 using GameEditor.ProjectIO;
 using GameEditor.PropFontEditor;
+using GameEditor.RoomEditor;
 using GameEditor.SfxEditor;
 using GameEditor.SpriteAnimationEditor;
 using GameEditor.SpriteEditor;
@@ -13,11 +14,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Security.Policy;
+using static GameEditor.GameData.RoomData;
 
 namespace GameEditor.GameData
 {
@@ -41,6 +40,7 @@ namespace GameEditor.GameData
 
         private static readonly DataAssetType[] ASSET_TYPES_IN_DESTROY_ORDER = [
           DataAssetType.SpriteAnimation,
+          DataAssetType.Room,
           DataAssetType.Map,
           DataAssetType.Mod,
           DataAssetType.Sfx,
@@ -86,6 +86,7 @@ namespace GameEditor.GameData
         public AssetList<IDataAssetItem> ModList { get { return assets[DataAssetType.Mod]; } }
         public AssetList<IDataAssetItem> FontList { get { return assets[DataAssetType.Font]; } }
         public AssetList<IDataAssetItem> PropFontList { get { return assets[DataAssetType.PropFont]; } }
+        public AssetList<IDataAssetItem> RoomList { get { return assets[DataAssetType.Room]; } }
 
         public bool IsEmpty {
             get {
@@ -124,10 +125,6 @@ namespace GameEditor.GameData
                 IsDirty = dirty;
                 DirtyStatusChanged?.Invoke(this, EventArgs.Empty);
             }
-        }
-
-        public void AddAssetItem(IDataAssetItem item) {
-            assets[item.Asset.AssetType].Add(item);
         }
 
         public int GetAssetIndex(IDataAsset item) {
@@ -196,19 +193,13 @@ namespace GameEditor.GameData
         }
 
         public void RefreshAssetUsers(IDataAsset asset, IDataAssetItem? except = null) {
-            switch (asset.AssetType) {
-            case DataAssetType.Tileset:
-                foreach (MapDataItem map in MapList) {
-                    map.Editor?.RefreshTileset((Tileset) asset);
+            foreach (DataAssetType type in AssetTypes) {
+                ISet<DataAssetType>? watched = DataAssetTypeInfo.GetWatchedTypes(type);
+                if (watched == null || ! watched.Contains(asset.AssetType)) continue;
+                foreach (IDataAssetItem item in GetAssetList(type)) {
+                    if (item == except) continue;
+                    item.DependencyChanged(asset);
                 }
-                break;
-
-            case DataAssetType.Sprite:
-                foreach (SpriteAnimationItem ai in SpriteAnimationList) {
-                    if (ai == except) continue;
-                    ai.Editor?.RefreshSprite((Sprite) asset);
-                }
-                break;
             }
         }
 
@@ -224,20 +215,6 @@ namespace GameEditor.GameData
         // ASSET CREATION
         // =======================================================================
 
-        private string GetAssetTypeName(DataAssetType type) {
-            return type switch {
-            DataAssetType.Font => "font",
-            DataAssetType.PropFont => "prop_font",
-            DataAssetType.Map => "map",
-            DataAssetType.Mod => "mod",
-            DataAssetType.Sfx => "sfx",
-            DataAssetType.Sprite => "sprite",
-            DataAssetType.SpriteAnimation => "sprite_animation",
-            DataAssetType.Tileset => "tileset",
-            _ => "unknown",
-            };
-        }
-
         private string GetNewAssetName(DataAssetType type, string baseName) {
             string name = baseName;
             int next = 1;
@@ -251,8 +228,21 @@ namespace GameEditor.GameData
         }
 
         public IDataAssetItem? CreateNewAsset(DataAssetType type) {
-            string name = GetNewAssetName(type, GetAssetTypeName(type));
+            string name = GetNewAssetName(type, DataAssetTypeInfo.GetName(type, "unknown"));
 
+            // collect required parent assets (e.g. Map requires Tileset)
+            Dictionary<DataAssetType, IDataAsset> requirements = [];
+            ISet<DataAssetType>? required_types = DataAssetTypeInfo.GetParentTypes(type);
+            if (required_types != null) {
+                foreach (DataAssetType r in required_types) {
+                    AssetList<IDataAssetItem> assetsOfRequiredType = GetAssetList(r);
+                    if (assetsOfRequiredType.Count > 0) {
+                       requirements[r] = assetsOfRequiredType[0].Asset;
+                    }
+                }
+            }
+
+            // create asset item
             IDataAssetItem? item = null;
             switch (type) {
             case DataAssetType.Tileset: item = new TilesetItem(new Tileset(name), this); break;
@@ -261,27 +251,28 @@ namespace GameEditor.GameData
             case DataAssetType.Mod: item = new ModDataItem(new ModData(name), this); break;
             case DataAssetType.Font: item = new FontDataItem(new FontData(name), this); break;
             case DataAssetType.PropFont: item = new PropFontDataItem(new PropFontData(name), this); break;
+            case DataAssetType.Room: item = new RoomDataItem(new RoomData(name), this); break;
 
             case DataAssetType.Map:
-                if (TilesetList.Count == 0) {
+                Tileset? tileset = (Tileset?) requirements.GetValueOrDefault(DataAssetType.Tileset);
+                if (tileset == null) {
                     MessageBox.Show(
-                        "You need at least one tileset to create a map.",
-                        "No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } else {
-                    Tileset tileset = (Tileset)TilesetList[0].Asset;
-                    item = new MapDataItem(new MapData(name, 24, 16, tileset), this);
+                        $"You need at least one tileset to create a map.",
+                        $"No Tileset Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return null;
                 }
+                item = new MapDataItem(new MapData(name, 24, 16, tileset), this);
                 break;
 
             case DataAssetType.SpriteAnimation:
-                if (SpriteList.Count == 0) {
+                Sprite? sprite = (Sprite?) requirements.GetValueOrDefault(DataAssetType.Sprite);
+                if (sprite == null) {
                     MessageBox.Show(
                         "You need at least one sprite to create an animation.",
                         "No Sprite Found", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                } else {
-                    Sprite sprite = (Sprite)SpriteList[0].Asset;
-                    item = new SpriteAnimationItem(new SpriteAnimation(sprite, name), this);
+                    return null;
                 }
+                item = new SpriteAnimationItem(new SpriteAnimation(sprite, name), this);
                 break;
             };
 
@@ -294,11 +285,11 @@ namespace GameEditor.GameData
         }
 
         // =======================================================================
-        // ASSET REMOVAL
+        // ADDING/REMOVING ASSETS
         // =======================================================================
 
-        public void RemoveAssetAt(DataAssetType type, int index) {
-            assets[type].RemoveAt(index);
+        public void AddAssetItem(IDataAssetItem item) {
+            assets[item.Asset.AssetType].Add(item);
         }
 
         public void RemoveAsset(IDataAssetItem assetItem) {
