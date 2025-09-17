@@ -1,4 +1,5 @@
-﻿using GameEditor.GameData;
+﻿using GameEditor.CustomControls;
+using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.Misc;
 using GameEditor.SfxEditor;
@@ -14,10 +15,10 @@ using System.Dynamic;
 using System.Linq;
 using System.Media;
 using System.Reflection;
+using System.Security.Policy;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Windows.Forms.AxHost;
 
 namespace GameEditor.ModEditor
 {
@@ -39,68 +40,66 @@ namespace GameEditor.ModEditor
             }
         }
 
-        private class PatternRowDisplay
-        {
-            private readonly Dictionary<string, string> data = [];
+        private class PatternDataSource : TableEditor.ITableDataSource {
+            private readonly string[] header;
+            private readonly string[][] rows;
 
-            public string Period0 { get { return data["Period0"]; } }
-            public string Period1 { get { return data["Period1"]; } }
-            public string Period2 { get { return data["Period2"]; } }
-            public string Period3 { get { return data["Period3"]; } }
-            public string Period4 { get { return data["Period4"]; } }
-            public string Period5 { get { return data["Period5"]; } }
-            public string Period6 { get { return data["Period6"]; } }
-            public string Period7 { get { return data["Period7"]; } }
-            public string Sample0 { get { return data["Sample0"]; } }
-            public string Sample1 { get { return data["Sample1"]; } }
-            public string Sample2 { get { return data["Sample2"]; } }
-            public string Sample3 { get { return data["Sample3"]; } }
-            public string Sample4 { get { return data["Sample1"]; } }
-            public string Sample5 { get { return data["Sample2"]; } }
-            public string Sample6 { get { return data["Sample3"]; } }
-            public string Sample7 { get { return data["Sample4"]; } }
-            public string Effect0 { get { return data["Effect0"]; } }
-            public string Effect1 { get { return data["Effect1"]; } }
-            public string Effect2 { get { return data["Effect2"]; } }
-            public string Effect3 { get { return data["Effect3"]; } }
-            public string Effect4 { get { return data["Effect4"]; } }
-            public string Effect5 { get { return data["Effect5"]; } }
-            public string Effect6 { get { return data["Effect6"]; } }
-            public string Effect7 { get { return data["Effect7"]; } }
+            public PatternDataSource(ModFile mod) {
+                List<string> hdr = [ "   " ];
+                for (int i = 0; i < mod.NumChannels; i++) {
+                    hdr.AddRange([ "note", "spl", "fx " ]);
+                }
+                header = hdr.ToArray();
 
-            public PatternRowDisplay(ModFile mod) {
-                ClearRow(mod.NumChannels);
-            }
-
-            private void ClearRow(int numChannels) {
-                for (int c = 0; c < numChannels; c++) {
-                    data[$"Period{c}"] = "";
-                    data[$"Sample{c}"] = "";
-                    data[$"Effect{c}"] = "";
+                rows = new string[64][];
+                for (int row = 0; row < 64; row++) {
+                    rows[row] = new string[1 + 3*mod.NumChannels];
+                    ClearRow(row, mod.NumChannels);
                 }
             }
 
-            public void LoadSongPosition(ModFile mod, int songPosition, int row) {
+            private void ClearRow(int row, int numChannels) {
+                for (int col = 0; col < numChannels+1; col++) {
+                    rows[row][col] = "";
+                }
+            }
+
+            public void LoadSongPositions(ModFile mod, int songPosition) {
                 if (songPosition < 0) {
-                    ClearRow(mod.NumChannels);
+                    for (int row = 0; row < 64; row++) {
+                        ClearRow(row, mod.NumChannels);
+                    }
                     return;
                 }
 
-                int patt = mod.NumChannels * (songPosition * 64 + row);
-                for (int c = 0; c < mod.NumChannels; c++) {
-                    int period = mod.Pattern[patt + c].Period;
-                    int sample = mod.Pattern[patt + c].Sample;
-                    int effect = mod.Pattern[patt + c].Effect;
-                    data[$"Period{c}"] = (period == 0) ? "---" : ModUtil.GetPeriodNoteName(period);
-                    data[$"Sample{c}"] = (period == 0 || sample == 0) ? "--" : $"{sample,2}";
-                    data[$"Effect{c}"] = (effect == 0) ? "---" : $"{effect:X03}";
+                int cell = mod.NumChannels * songPosition * 64;
+                for (int row = 0; row < 64; row++) {
+                    int col = 0;
+                    rows[row][col++] = $"{row}";
+                    for (int c = 0; c < mod.NumChannels; c++) {
+                        int period = mod.Pattern[cell].Period;
+                        int sample = mod.Pattern[cell].Sample;
+                        int effect = mod.Pattern[cell].Effect;
+                        cell++;
+                        rows[row][col++] = (period == 0) ? "---" : ModUtil.GetPeriodNoteName(period);
+                        rows[row][col++] = (period == 0 || sample == 0) ? "--" : $"{sample,2}";
+                        rows[row][col++] = (effect == 0) ? "---" : $"{effect:X03}";
+                    }
                 }
+            }
+
+            public string[] GetHeader() {
+                return header;
+            }
+
+            public string[] GetRow(int i) {
+                return rows[i];
             }
         }
 
         private readonly ModDataItem modItem;
         private readonly SamplePlayer player = new SamplePlayer();
-        private readonly PatternRowDisplay[] patternDisplay = new PatternRowDisplay[64];
+        private PatternDataSource? patternDataSource;
 
         public ModEditorWindow(ModDataItem modItem) : base(modItem, "ModEditor") {
             this.modItem = modItem;
@@ -385,46 +384,13 @@ namespace GameEditor.ModEditor
         // ============================================================
 
         private void SetupPatternGridDisplay() {
-            Font gridCellFont = new Font(FontFamily.GenericMonospace, 12);
-            patternGrid.Font = gridCellFont;
-            patternGrid.DefaultCellStyle.Font = gridCellFont;
-            patternGrid.ColumnHeadersDefaultCellStyle.Font = new Font(gridCellFont, FontStyle.Bold);
+            Font normalFont = new Font(FontFamily.GenericMonospace, 12);
+            Font boldFont = new Font(normalFont, FontStyle.Bold);
 
-            patternGrid.ReadOnly = true;
-            patternGrid.AllowUserToAddRows = false;
-            patternGrid.AllowUserToDeleteRows = false;
-            patternGrid.AllowUserToResizeRows = false;
-            patternGrid.AutoGenerateColumns = false;
-
-            for (int row = 0; row < 64; row++) {
-                patternDisplay[row] = new PatternRowDisplay(ModFile);
-            }
-            patternGrid.DataSource = patternDisplay;
-
-            int periodWidth = 2 + TextRenderer.MeasureText("F#4 ", gridCellFont).Width;
-            int sampleWidth = 2 + TextRenderer.MeasureText("000", gridCellFont).Width;
-            int effectWidth = 2 + TextRenderer.MeasureText("F00", gridCellFont).Width;
-
-            patternGrid.Columns.Clear();
-            for (int c = 0; c < ModFile.NumChannels; c++) {
-                DataGridViewColumn periodCol = new DataGridViewTextBoxColumn();
-                periodCol.Width = periodWidth;
-                periodCol.Name = "note";
-                periodCol.DataPropertyName = $"Period{c}";
-                patternGrid.Columns.Add(periodCol);
-
-                DataGridViewColumn sampleCol = new DataGridViewTextBoxColumn();
-                sampleCol.Width = sampleWidth;
-                sampleCol.Name = "spl";
-                sampleCol.DataPropertyName = $"Sample{c}";
-                patternGrid.Columns.Add(sampleCol);
-
-                DataGridViewColumn effectCol = new DataGridViewTextBoxColumn();
-                effectCol.Width = effectWidth;
-                effectCol.Name = "fx";
-                effectCol.DataPropertyName = $"Effect{c}";
-                patternGrid.Columns.Add(effectCol);
-            }
+            patternEditor.Font = normalFont;
+            patternEditor.HeaderFont = boldFont;
+            patternEditor.NumRows = 64;
+            patternEditor.TableDataSource = patternDataSource = new PatternDataSource(ModFile);
         }
 
         private void UpdateModPattern() {
@@ -442,19 +408,15 @@ namespace GameEditor.ModEditor
             if (orderIndex >= 0 && orderIndex < ModFile.NumSongPositions) {
                 songPosition = ModFile.SongPositions[orderIndex];
             }
-            for (int row = 0; row < patternDisplay.Length; row++) {
-                patternDisplay[row].LoadSongPosition(ModFile, songPosition, row);
-            }
-            patternGrid.FirstDisplayedScrollingRowIndex = 0;
-            patternGrid.CurrentCell = patternGrid.Rows[0].Cells[patternGrid.CurrentCell.ColumnIndex];
-            patternGrid.Invalidate();
+            patternDataSource?.LoadSongPositions(ModFile, songPosition);
+            patternEditor.Invalidate();
         }
 
-        private void patternGrid_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e) {
+        private void patternGrid_CellDoubleClick(object sender, TableEditor.CellEventArgs e) {
             int orderIndex = toolStripComboPatternOrder.SelectedIndex;
             if (orderIndex < 0 || orderIndex >= ModFile.NumSongPositions) return;
             int songPosition = ModFile.SongPositions[orderIndex];
-            int cell = e.RowIndex * ModFile.NumChannels + e.ColumnIndex / 3;
+            int cell = e.RowIndex * ModFile.NumChannels + (e.ColumnIndex-1) / 3;
             if (cell >= 64 * ModFile.NumChannels) return;
             cell += songPosition * 64 * ModFile.NumChannels;
 
