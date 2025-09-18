@@ -41,12 +41,19 @@ namespace GameEditor.ModEditor
 
         private class PatternDataSource : GridTable.ITableDataSource
         {
-            private readonly string[] header;
-            private readonly string[][] rows;
+            private bool[] fatCols = [];
+            private string[] header = [];
+            private string[][] rows = [];
 
             public PatternDataSource(ModFile mod) {
-                List<string> hdr = ["   "];
-                for (int i = 0; i < mod.NumChannels; i++) {
+                LoadMod(mod);
+            }
+
+            public void LoadMod(ModFile mod) {
+                fatCols = new bool[1 + 3*mod.NumChannels];
+                List<string> hdr = ["row"];
+                for (int chan = 0; chan < mod.NumChannels; chan++) {
+                    fatCols[1 + 3*chan] = true;
                     hdr.AddRange(["note", "spl", "fx "]);
                 }
                 header = hdr.ToArray();
@@ -81,11 +88,18 @@ namespace GameEditor.ModEditor
                         int sample = mod.Pattern[cell].Sample;
                         int effect = mod.Pattern[cell].Effect;
                         cell++;
-                        rows[row][col++] = (period == 0) ? "---" : ModUtil.GetPeriodNoteName(period);
-                        rows[row][col++] = (period == 0 || sample == 0) ? "--" : $"{sample,2}";
-                        rows[row][col++] = (effect == 0) ? "---" : $"{effect:X03}";
+                        //rows[row][col++] = (period == 0) ? "---" : ModUtil.GetPeriodNoteName(period);
+                        //rows[row][col++] = (period == 0 || sample == 0) ? "--" : $"{sample,2}";
+                        //rows[row][col++] = (effect == 0) ? "---" : $"{effect:X03}";
+                        rows[row][col++] = (period == 0) ? "" : ModUtil.GetPeriodNoteName(period);
+                        rows[row][col++] = (period == 0 || sample == 0) ? "" : $"{sample,2}";
+                        rows[row][col++] = (effect == 0) ? "" : $"{effect:X03}";
                     }
                 }
+            }
+
+            public bool[] GetFatColumns() {
+                return fatCols;
             }
 
             public string[] GetHeader() {
@@ -128,8 +142,8 @@ namespace GameEditor.ModEditor
         private void RefreshMod() {
             UpdateSampleListDisplay();
             sampleList.SelectedIndex = 0;
-            UpdateDataSize();
             UpdateModPattern();
+            UpdateDataSize();
             Project.UpdateDataSize();
         }
 
@@ -386,16 +400,19 @@ namespace GameEditor.ModEditor
         private void SetupPatternGridDisplay() {
             Font normalFont = new Font(FontFamily.GenericMonospace, 12);
             Font boldFont = new Font(normalFont, FontStyle.Bold);
-            patternDataSource = new PatternDataSource(ModFile);
 
             patternGrid.ContentFont = normalFont;
             patternGrid.HeaderFont = boldFont;
             patternGrid.NumRows = 64;
-            patternGrid.TableDataSource = patternDataSource;
         }
 
         private void UpdateModPattern() {
-            // song order:
+            // pattern
+            patternDataSource = new PatternDataSource(ModFile);
+            patternGrid.TableDataSource = patternDataSource;
+            patternGrid.Invalidate();
+
+            // song order
             toolStripComboPatternOrder.Items.Clear();
             for (int pos = 0; pos < ModFile.NumSongPositions; pos++) {
                 toolStripComboPatternOrder.Items.Add(ModFile.SongPositions[pos]);
@@ -443,7 +460,7 @@ namespace GameEditor.ModEditor
                 songPosition = ModFile.SongPositions[orderIndex];
             }
             patternDataSource?.LoadSongPositions(ModFile, songPosition);
-            patternGrid.Invalidate();
+            patternGrid.Invalidate(true);
         }
 
         private void patternGrid_CellDoubleClick(object sender, GridTable.CellEventArgs e) {

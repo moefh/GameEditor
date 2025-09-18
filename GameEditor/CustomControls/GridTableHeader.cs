@@ -74,29 +74,33 @@ namespace GameEditor.CustomControls
             using SolidBrush textBrush = new(ForeColor);
             using SolidBrush backBrush = new(BackColor);
 
-            string[] header = TableDataSource.GetHeader();
-
             pe.Graphics.Clear(InactiveBackColor);
             pe.Graphics.TranslateTransform(-HorizontalPosition, 0);
             pe.Graphics.FillRectangle(backBrush, 0, 0, sizeInfo.Width, sizeInfo.Height);
 
             // header
-            for (int i = 0; i < sizeInfo.ColumnPositions.Count; i++) {
-                if (i < header.Length) {
+            string[] header = TableDataSource.GetHeader();
+            bool[] fatCols = TableDataSource.GetFatColumns();
+            for (int c = 0; c < sizeInfo.ColumnPositions.Count; c++) {
+                int x = sizeInfo.ColumnPositions[c];
+                if (c < header.Length) {
+                    int x2 = sizeInfo.ColumnPositions[c+1];
                     Rectangle textBox = new Rectangle(
-                        sizeInfo.ColumnPositions[i] + 2*CELL_PADX,
-                        1 + 4*CELL_PADY,
-                        sizeInfo.ColumnPositions[i+1] - sizeInfo.ColumnPositions[i] - 2*CELL_PADX,
-                        sizeInfo.RowHeight - 4*CELL_PADY - 2
+                        x + 2*CELL_PADX, 1 + 4*CELL_PADY,
+                        x2 - x - 2*CELL_PADX, sizeInfo.RowHeight - 4*CELL_PADY - 2
                     );
-                    pe.Graphics.DrawString(header[i], Font, textBrush, textBox, sizeInfo.DrawStringFormat);
+                    pe.Graphics.DrawString(header[c], Font, textBrush, textBox, sizeInfo.DrawStringFormat);
                 }
-                pe.Graphics.DrawLine(forePen, sizeInfo.ColumnPositions[i], 0, sizeInfo.ColumnPositions[i], sizeInfo.Height - 1);
+                pe.Graphics.DrawLine(forePen, x, 0, x, sizeInfo.Height - 1);
+                if (c < fatCols.Length && fatCols[c]) {
+                    pe.Graphics.DrawLine(forePen, x+1, 0, x+1, ClientSize.Height - 1);
+                }
                 //pe.Graphics.DrawRectangle(debugPen, textBox);
             }
 
             // horizontal lines
             pe.Graphics.DrawLine(forePen, 0, 0, sizeInfo.Width-1, 0);
+            pe.Graphics.DrawLine(forePen, 0, sizeInfo.Height-2, sizeInfo.Width-1, sizeInfo.Height-2);
             pe.Graphics.DrawLine(forePen, 0, sizeInfo.Height-1, sizeInfo.Width-1, sizeInfo.Height-1);
             pe.Graphics.TranslateTransform(HorizontalPosition, 0);
         }

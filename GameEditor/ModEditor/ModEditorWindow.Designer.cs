@@ -533,10 +533,10 @@
             patternGrid.HeaderBackColor = Color.Transparent;
             patternGrid.HeaderFont = new Font("Segoe UI", 10.5F);
             patternGrid.InactiveBackColor = SystemColors.Control;
-            patternGrid.Location = new Point(3, 30);
+            patternGrid.Location = new Point(3, 36);
             patternGrid.Name = "patternGrid";
             patternGrid.NumRows = 0;
-            patternGrid.Size = new Size(803, 267);
+            patternGrid.Size = new Size(803, 261);
             patternGrid.TabIndex = 2;
             patternGrid.TableDataSource = null;
             patternGrid.CellDoubleClick += patternGrid_CellDoubleClick;
@@ -547,13 +547,13 @@
             patternToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripComboPatternOrder });
             patternToolStrip.Location = new Point(3, 3);
             patternToolStrip.Name = "patternToolStrip";
-            patternToolStrip.Size = new Size(803, 27);
+            patternToolStrip.Size = new Size(803, 33);
             patternToolStrip.TabIndex = 1;
             // 
             // toolStripLabel2
             // 
             toolStripLabel2.Name = "toolStripLabel2";
-            toolStripLabel2.Size = new Size(57, 24);
+            toolStripLabel2.Size = new Size(57, 30);
             toolStripLabel2.Text = "Pattern:";
             // 
             // toolStripComboPatternOrder
@@ -562,7 +562,7 @@
             toolStripComboPatternOrder.DropDownStyle = ComboBoxStyle.DropDownList;
             toolStripComboPatternOrder.IntegralHeight = false;
             toolStripComboPatternOrder.Name = "toolStripComboPatternOrder";
-            toolStripComboPatternOrder.Size = new Size(80, 27);
+            toolStripComboPatternOrder.Size = new Size(80, 33);
             toolStripComboPatternOrder.SelectedIndexChanged += toolStripComboPatternOrder_SelectedIndexChanged;
             // 
             // ModEditorWindow

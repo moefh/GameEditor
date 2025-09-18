@@ -82,8 +82,13 @@ namespace GameEditor.CustomControls
             using SolidBrush textBrush = new(ForeColor);
 
             // column lines
-            for (int i = 0; i < sizeInfo.ColumnPositions.Count; i++) {
-                pe.Graphics.DrawLine(forePen, sizeInfo.ColumnPositions[i], 0, sizeInfo.ColumnPositions[i], ClientSize.Height - 1);
+            bool[] fatCols = TableDataSource.GetFatColumns();
+            for (int col = 0; col < sizeInfo.ColumnPositions.Count; col++) {
+                int x = sizeInfo.ColumnPositions[col];
+                pe.Graphics.DrawLine(forePen, x, 0, x, ClientSize.Height - 1);
+                if (col < fatCols.Length && fatCols[col]) {
+                    pe.Graphics.DrawLine(forePen, x+1, 0, x+1, ClientSize.Height - 1);
+                }
             }
 
             // rows

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using GameEditor.Misc;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -37,15 +38,17 @@ namespace GameEditor.CustomControls
             }
 
             public void Calculate(Graphics g, Font font, ITableDataSource data, int numRows) {
-                int w = 0;
-                string[] header = data.GetHeader();
 
-                // header
+                // columns
+                string[] header = data.GetHeader();
+                bool[] fatCols = data.GetFatColumns();
+                int w = 0;
                 ColumnPositions.Clear();
                 ColumnPositions.Add(w);
-                foreach (string s in header) {
-                    SizeF hSize = g.MeasureString(s, font, 1000, DrawStringFormat);
+                for (int c = 0; c < header.Length; c++) {
+                    SizeF hSize = g.MeasureString(header[c], font, 1000, DrawStringFormat);
                     w += 1 + 2 * CELL_PADX + (int)Math.Ceiling(hSize.Width);
+                    if (c < fatCols.Length && fatCols[c]) w++;
                     ColumnPositions.Add(w);
                 }
 
@@ -55,7 +58,7 @@ namespace GameEditor.CustomControls
                 int h = numRows * RowHeight;
 
                 Width = w + 1;
-                Height = h + 1;
+                Height = h;
                 SizeCalculated = true;
             }
         }
@@ -73,6 +76,7 @@ namespace GameEditor.CustomControls
 
         public interface ITableDataSource
         {
+            public bool[] GetFatColumns();
             public string[] GetHeader();
             public string[] GetRow(int row);
         }
@@ -143,6 +147,10 @@ namespace GameEditor.CustomControls
                 gridTableHeader.HorizontalPosition = e.NewValue;
                 gridTableHeader.Invalidate();
             }
+        }
+
+        internal void ForceRefresh() {
+            gridTableContent.Invalidate();
         }
     }
 }
