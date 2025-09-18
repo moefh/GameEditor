@@ -28,6 +28,7 @@ namespace GameEditor.CustomControls
 
     public abstract class AbstractPaintedControl : Control
     {
+
         private class SelfDisposer(Action disposeAction) : IComponent
         {
             public ISite? Site { get; set; }

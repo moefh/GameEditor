@@ -194,6 +194,7 @@ namespace GameEditor.MainEditor
                 ReplaceCurrentProject(newProject);
             } else {
                 CreateProjectWindow(newProject);
+                UpdateDataSize();  // clear "Reading project file..."
             }
             Util.Log("== loaded project");
         }

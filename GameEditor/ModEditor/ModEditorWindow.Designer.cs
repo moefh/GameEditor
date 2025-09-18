@@ -67,8 +67,7 @@
             label2 = new Label();
             numSampleVolume = new NumericUpDown();
             tabPattern = new TabPage();
-            panel1 = new Panel();
-            patternEditor = new GameEditor.CustomControls.TableEditor();
+            patternGrid = new GameEditor.CustomControls.GridTable();
             patternToolStrip = new ToolStrip();
             toolStripLabel2 = new ToolStripLabel();
             toolStripComboPatternOrder = new ToolStripComboBox();
@@ -92,7 +91,6 @@
             ((System.ComponentModel.ISupportInitialize)numSampleLoopLen).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSampleVolume).BeginInit();
             tabPattern.SuspendLayout();
-            panel1.SuspendLayout();
             patternToolStrip.SuspendLayout();
             SuspendLayout();
             // 
@@ -517,7 +515,7 @@
             // 
             // tabPattern
             // 
-            tabPattern.Controls.Add(panel1);
+            tabPattern.Controls.Add(patternGrid);
             tabPattern.Controls.Add(patternToolStrip);
             tabPattern.Location = new Point(4, 28);
             tabPattern.Name = "tabPattern";
@@ -527,28 +525,21 @@
             tabPattern.Text = "Pattern";
             tabPattern.UseVisualStyleBackColor = true;
             // 
-            // panel1
+            // patternGrid
             // 
-            panel1.AutoScroll = true;
-            panel1.Controls.Add(patternEditor);
-            panel1.Dock = DockStyle.Fill;
-            panel1.Location = new Point(3, 30);
-            panel1.Name = "panel1";
-            panel1.Size = new Size(803, 267);
-            panel1.TabIndex = 2;
-            // 
-            // patternEditor
-            // 
-            patternEditor.BackColor = Color.White;
-            patternEditor.HeaderFont = null;
-            patternEditor.Location = new Point(3, 3);
-            patternEditor.Name = "patternEditor";
-            patternEditor.NumRows = 0;
-            patternEditor.Size = new Size(526, 196);
-            patternEditor.TabIndex = 3;
-            patternEditor.TableDataSource = null;
-            patternEditor.Text = "tableEditor1";
-            patternEditor.CellDoubleClick += patternGrid_CellDoubleClick;
+            patternGrid.ContentBackColor = Color.White;
+            patternGrid.ContentFont = new Font("Segoe UI", 10.5F);
+            patternGrid.Dock = DockStyle.Fill;
+            patternGrid.HeaderBackColor = Color.Transparent;
+            patternGrid.HeaderFont = new Font("Segoe UI", 10.5F);
+            patternGrid.InactiveBackColor = SystemColors.Control;
+            patternGrid.Location = new Point(3, 30);
+            patternGrid.Name = "patternGrid";
+            patternGrid.NumRows = 0;
+            patternGrid.Size = new Size(803, 267);
+            patternGrid.TabIndex = 2;
+            patternGrid.TableDataSource = null;
+            patternGrid.CellDoubleClick += patternGrid_CellDoubleClick;
             // 
             // patternToolStrip
             // 
@@ -611,7 +602,6 @@
             ((System.ComponentModel.ISupportInitialize)numSampleLoopLen).EndInit();
             ((System.ComponentModel.ISupportInitialize)numSampleVolume).EndInit();
             tabPattern.ResumeLayout(false);
-            panel1.ResumeLayout(false);
             patternToolStrip.ResumeLayout(false);
             patternToolStrip.PerformLayout();
             ResumeLayout(false);
@@ -664,7 +654,6 @@
         private Label label2;
         private NumericUpDown numSampleVolume;
         private GroupBox groupSamplePlayback;
-        private Panel panel1;
-        private CustomControls.TableEditor patternEditor;
+        private CustomControls.GridTable patternGrid;
     }
 }

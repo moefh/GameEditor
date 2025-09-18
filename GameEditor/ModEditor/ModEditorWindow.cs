@@ -9,7 +9,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Data;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing;
 using System.Dynamic;
 using System.Linq;
@@ -40,26 +39,27 @@ namespace GameEditor.ModEditor
             }
         }
 
-        private class PatternDataSource : TableEditor.ITableDataSource {
+        private class PatternDataSource : GridTable.ITableDataSource
+        {
             private readonly string[] header;
             private readonly string[][] rows;
 
             public PatternDataSource(ModFile mod) {
-                List<string> hdr = [ "   " ];
+                List<string> hdr = ["   "];
                 for (int i = 0; i < mod.NumChannels; i++) {
-                    hdr.AddRange([ "note", "spl", "fx " ]);
+                    hdr.AddRange(["note", "spl", "fx "]);
                 }
                 header = hdr.ToArray();
 
                 rows = new string[64][];
                 for (int row = 0; row < 64; row++) {
-                    rows[row] = new string[1 + 3*mod.NumChannels];
+                    rows[row] = new string[1 + 3 * mod.NumChannels];
                     ClearRow(row, mod.NumChannels);
                 }
             }
 
             private void ClearRow(int row, int numChannels) {
-                for (int col = 0; col < numChannels+1; col++) {
+                for (int col = 0; col < numChannels + 1; col++) {
                     rows[row][col] = "";
                 }
             }
@@ -386,11 +386,12 @@ namespace GameEditor.ModEditor
         private void SetupPatternGridDisplay() {
             Font normalFont = new Font(FontFamily.GenericMonospace, 12);
             Font boldFont = new Font(normalFont, FontStyle.Bold);
+            patternDataSource = new PatternDataSource(ModFile);
 
-            patternEditor.Font = normalFont;
-            patternEditor.HeaderFont = boldFont;
-            patternEditor.NumRows = 64;
-            patternEditor.TableDataSource = patternDataSource = new PatternDataSource(ModFile);
+            patternGrid.ContentFont = normalFont;
+            patternGrid.HeaderFont = boldFont;
+            patternGrid.NumRows = 64;
+            patternGrid.TableDataSource = patternDataSource;
         }
 
         private void UpdateModPattern() {
@@ -402,24 +403,13 @@ namespace GameEditor.ModEditor
             toolStripComboPatternOrder.SelectedIndex = 0;
         }
 
-        private void toolStripComboPatternOrder_SelectedIndexChanged(object sender, EventArgs e) {
-            int songPosition = -1;
-            int orderIndex = toolStripComboPatternOrder.SelectedIndex;
-            if (orderIndex >= 0 && orderIndex < ModFile.NumSongPositions) {
-                songPosition = ModFile.SongPositions[orderIndex];
-            }
-            patternDataSource?.LoadSongPositions(ModFile, songPosition);
-            patternEditor.Invalidate();
-        }
-
-        private void patternGrid_CellDoubleClick(object sender, TableEditor.CellEventArgs e) {
+        private void PlayPatternNote(int row, int chan) {
+            if (row < 0 || row >= 64 || chan < 0 || chan >= ModFile.NumChannels) return;
             int orderIndex = toolStripComboPatternOrder.SelectedIndex;
             if (orderIndex < 0 || orderIndex >= ModFile.NumSongPositions) return;
-            int songPosition = ModFile.SongPositions[orderIndex];
-            int cell = e.RowIndex * ModFile.NumChannels + (e.ColumnIndex-1) / 3;
-            if (cell >= 64 * ModFile.NumChannels) return;
-            cell += songPosition * 64 * ModFile.NumChannels;
 
+            int songPosition = ModFile.SongPositions[orderIndex];
+            int cell = (songPosition * 64 + row) * ModFile.NumChannels + chan;
             int period = ModFile.Pattern[cell].Period;
             if (period == 0) return;
 
@@ -444,6 +434,20 @@ namespace GameEditor.ModEditor
                     comboPlaySampleOctave.SelectedIndex = 1 + octave;
                 }
             }
+        }
+
+        private void toolStripComboPatternOrder_SelectedIndexChanged(object sender, EventArgs e) {
+            int songPosition = -1;
+            int orderIndex = toolStripComboPatternOrder.SelectedIndex;
+            if (orderIndex >= 0 && orderIndex < ModFile.NumSongPositions) {
+                songPosition = ModFile.SongPositions[orderIndex];
+            }
+            patternDataSource?.LoadSongPositions(ModFile, songPosition);
+            patternGrid.Invalidate();
+        }
+
+        private void patternGrid_CellDoubleClick(object sender, GridTable.CellEventArgs e) {
+            PlayPatternNote(e.RowIndex, (e.ColumnIndex - 1) / 3);
         }
 
         // ============================================================
@@ -488,5 +492,6 @@ namespace GameEditor.ModEditor
                 return;
             }
         }
+
     }
 }
