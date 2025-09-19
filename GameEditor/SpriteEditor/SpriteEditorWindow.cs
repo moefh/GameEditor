@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Design;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -65,6 +66,15 @@ namespace GameEditor.SpriteEditor
             Project.RefreshAssetUsers(Sprite);
         }
 
+        private void SelectTool(PaintTool tool) {
+            if (spriteEditor.SelectedTool != tool) {
+                spriteEditor.SelectedTool = tool;
+            }
+            toolStripBtnToolPen.Checked = tool == PaintTool.Pen;
+            toolStripBtnToolSelect.Checked = tool == PaintTool.RectSelect;
+            toolStripBtnToolFill.Checked = tool == PaintTool.FloodFill;
+        }
+
         private void UpdateInfoLabel() {
             string point = (spritePointHovered.X < 0 || spritePointHovered.Y < 0) ? "" : $"({spritePointHovered.X}, {spritePointHovered.Y})";
             string sel = (spriteSelection.Width <= 0 || spriteSelection.Height <= 0) ? "" : $"selection: {spriteSelection.Width}x{spriteSelection.Height}";
@@ -113,13 +123,6 @@ namespace GameEditor.SpriteEditor
             FixRenderFlags();
         }
 
-        private void SelectTool(PaintTool tool) {
-            spriteEditor.SelectedTool = tool;
-            toolStripBtnToolPen.Checked = tool == PaintTool.Pen;
-            toolStripBtnToolSelect.Checked = tool == PaintTool.RectSelect;
-            toolStripBtnToolFill.Checked = tool == PaintTool.FloodFill;
-        }
-
         private void toolStripBtnToolPen_Click(object sender, EventArgs e) {
             SelectTool(PaintTool.Pen);
         }
@@ -143,6 +146,12 @@ namespace GameEditor.SpriteEditor
         // ====================================================================
         // === MENU
         // ====================================================================
+
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
+            spriteEditor.PerformUndo();
+            SetDirty();
+            spriteFramePicker.Invalidate();
+        }
 
         private void importToolStripMenuItem_Click(object sender, EventArgs e) {
             SpriteImportDialog dlg = new SpriteImportDialog();
@@ -225,5 +234,22 @@ namespace GameEditor.SpriteEditor
         private void deleteSelectionToolStripMenuItem_Click(object sender, EventArgs e) {
             spriteEditor.DeleteSelection();
         }
+
+        // ====================================================================
+        // === SHORTCUTS
+        // ====================================================================
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+            bool ret = base.ProcessCmdKey(ref msg, keyData);
+            if (ret) return ret;
+
+            switch (keyData) {
+            case Keys.Space: SelectTool(PaintTool.Pen); return true;
+            case Keys.S: SelectTool(PaintTool.RectSelect); return true;
+            case Keys.F: SelectTool(PaintTool.FloodFill); return true;
+            default: return false;
+            }
+        }
+
     }
 }

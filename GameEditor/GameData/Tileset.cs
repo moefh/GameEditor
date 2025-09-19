@@ -131,6 +131,10 @@ namespace GameEditor.GameData
             return images.CopyFromImage(index, r.X, r.Y, r.Width, r.Height);
         }
 
+        public void CopyFromTile(int index, int x, int y, Image dest) {
+            images.CopyFromImage(index, x, y, dest);
+        }
+
         public void PasteIntoTile(Image source, int index, int x, int y, bool transparent) {
             images.PasteIntoImage(source, index, x, y, transparent);
         }

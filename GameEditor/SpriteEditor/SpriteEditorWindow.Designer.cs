@@ -57,6 +57,8 @@
             spriteLoopSplitter = new SplitContainer();
             spriteEditor = new GameEditor.CustomControls.SpriteEditor();
             colorPicker = new GameEditor.CustomControls.ColorPicker();
+            undoToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator3 = new ToolStripSeparator();
             statusStrip1.SuspendLayout();
             menuToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -146,7 +148,7 @@
             // editToolStripDropDownButton
             // 
             editToolStripDropDownButton.AutoToolTip = false;
-            editToolStripDropDownButton.DropDownItems.AddRange(new ToolStripItem[] { copyFrameToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, deleteSelectionToolStripMenuItem });
+            editToolStripDropDownButton.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, toolStripSeparator3, copyFrameToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, deleteSelectionToolStripMenuItem });
             editToolStripDropDownButton.ImageTransparentColor = Color.Magenta;
             editToolStripDropDownButton.Name = "editToolStripDropDownButton";
             editToolStripDropDownButton.Size = new Size(45, 24);
@@ -207,7 +209,7 @@
             toolStripBtnToolPen.Name = "toolStripBtnToolPen";
             toolStripBtnToolPen.Size = new Size(23, 24);
             toolStripBtnToolPen.Text = "Pen";
-            toolStripBtnToolPen.ToolTipText = "Pencil";
+            toolStripBtnToolPen.ToolTipText = "Pencil (SPACE)";
             toolStripBtnToolPen.Click += toolStripBtnToolPen_Click;
             // 
             // toolStripBtnToolFill
@@ -218,7 +220,7 @@
             toolStripBtnToolFill.Name = "toolStripBtnToolFill";
             toolStripBtnToolFill.Size = new Size(23, 24);
             toolStripBtnToolFill.Text = "Fill";
-            toolStripBtnToolFill.ToolTipText = "Fill";
+            toolStripBtnToolFill.ToolTipText = "Fill (F)";
             toolStripBtnToolFill.Click += toolStripBtnToolFill_Click;
             // 
             // toolStripBtnToolSelect
@@ -229,7 +231,7 @@
             toolStripBtnToolSelect.Name = "toolStripBtnToolSelect";
             toolStripBtnToolSelect.Size = new Size(23, 24);
             toolStripBtnToolSelect.Text = "Select";
-            toolStripBtnToolSelect.ToolTipText = "Select";
+            toolStripBtnToolSelect.ToolTipText = "Select (S)";
             toolStripBtnToolSelect.Click += toolStripBtnToolSelect_Click;
             // 
             // toolStripBtnToolVFlip
@@ -393,6 +395,19 @@
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
             // 
+            // undoToolStripMenuItem
+            // 
+            undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
+            undoToolStripMenuItem.Size = new Size(204, 24);
+            undoToolStripMenuItem.Text = "Undo";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator3
+            // 
+            toolStripSeparator3.Name = "toolStripSeparator3";
+            toolStripSeparator3.Size = new Size(201, 6);
+            // 
             // SpriteEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -458,5 +473,7 @@
         private ToolStripMenuItem deleteSelectionToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator2;
         private ToolStripStatusLabel lblSpriteSelectionInfo;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator3;
     }
 }

@@ -36,12 +36,12 @@ namespace GameEditor.CustomControls
         
         public Sprite? Sprite {
             get { return sprite; }
-            set { DropSelection(); sprite = value; selFrame = 0; Invalidate(); }
+            set { DropSelection(); sprite = value; selFrame = 0; SetUndoPoint(); Invalidate(); }
         }
 
         public int SelectedFrame {
             get { return selFrame; }
-            set { DropSelection(); selFrame = value; Invalidate(); }
+            set { DropSelection(); selFrame = value; SetUndoPoint(); Invalidate(); }
         }
 
         protected override void SelfDispose() {
@@ -165,6 +165,15 @@ namespace GameEditor.CustomControls
             bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
             Sprite.PasteIntoFrame(selectionBmp, SelectedFrame, selectedRect.X, selectedRect.Y, transparent);
         }
+
+        protected override void CopyImageIntoBitmap(Bitmap bmp) {
+            Sprite?.CopyFromFrame(SelectedFrame, 0, 0, bmp);
+        }
+
+        protected override void CopyImageFromBitmap(Bitmap bmp) {
+            Sprite?.PasteIntoFrame(bmp, SelectedFrame, 0, 0, false);
+        }
+
     }
 }
 

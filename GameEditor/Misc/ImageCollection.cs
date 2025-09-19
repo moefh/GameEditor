@@ -67,6 +67,15 @@ namespace GameEditor.Misc
         // COPY/PASTE
         // ===============================================================
 
+        public void CopyFromImage(int image, int x, int y, Image dest) {
+            int w = int.Min(Width - x,  dest.Width);
+            int h = int.Min(Height - y, dest.Height);
+            if (w <= 0 || h <= 0) return;
+
+            using Graphics g = Graphics.FromImage(dest);
+            g.DrawImage(bitmap, new Rectangle(0, 0, w, h), x, y+image*Height, w, h, GraphicsUnit.Pixel);
+        }
+
         public Bitmap CopyFromImage(int image, int x, int y, int w, int h) {
             if (x < 0) x = 0;
             if (x + w > Width) w = Width - x;

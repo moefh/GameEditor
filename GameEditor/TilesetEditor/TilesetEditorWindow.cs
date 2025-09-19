@@ -184,6 +184,11 @@ namespace GameEditor.TilesetEditor
         // === EDIT MENU
         // ====================================================================
 
+        private void undoToolStripMenuItem_Click(object sender, EventArgs e) {
+            tileEditor.PerformUndo();
+            tilePicker.Invalidate();
+        }
+
         private void copyToolStripMenuItem_Click(object sender, EventArgs e) {
             using Bitmap? tile = tileEditor.GetSelectionCopy();
             if (tile == null) return;

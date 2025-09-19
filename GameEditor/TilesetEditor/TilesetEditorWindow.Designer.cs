@@ -30,11 +30,11 @@
             statusStrip1 = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
             mainSplit = new SplitContainer();
-            tilePicker = new CustomControls.TilePicker();
+            tilePicker = new GameEditor.CustomControls.TilePicker();
             tilePickerScroll = new VScrollBar();
             tileSplit = new SplitContainer();
-            tileEditor = new CustomControls.TileEditor();
-            colorPicker = new CustomControls.ColorPicker();
+            tileEditor = new GameEditor.CustomControls.TileEditor();
+            colorPicker = new GameEditor.CustomControls.ColorPicker();
             toolsToolStrip = new ToolStrip();
             toolStripLabel2 = new ToolStripLabel();
             toolStripBtnToolPen = new ToolStripButton();
@@ -64,6 +64,8 @@
             appendTilesFromFileToolStripMenuItem = new ToolStripMenuItem();
             toolStripSeparator6 = new ToolStripSeparator();
             deleteTileToolStripMenuItem = new ToolStripMenuItem();
+            undoToolStripMenuItem = new ToolStripMenuItem();
+            toolStripSeparator2 = new ToolStripSeparator();
             statusStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)mainSplit).BeginInit();
             mainSplit.Panel1.SuspendLayout();
@@ -321,7 +323,7 @@
             // 
             importToolStripMenuItem.Image = Properties.Resources.ImportIcon;
             importToolStripMenuItem.Name = "importToolStripMenuItem";
-            importToolStripMenuItem.Size = new Size(140, 24);
+            importToolStripMenuItem.Size = new Size(180, 24);
             importToolStripMenuItem.Text = "Import";
             importToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
@@ -329,27 +331,27 @@
             // 
             exportToolStripMenuItem.Image = Properties.Resources.ExportIcon;
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(140, 24);
+            exportToolStripMenuItem.Size = new Size(180, 24);
             exportToolStripMenuItem.Text = "Export";
             exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
             // 
             // toolStripSeparator5
             // 
             toolStripSeparator5.Name = "toolStripSeparator5";
-            toolStripSeparator5.Size = new Size(137, 6);
+            toolStripSeparator5.Size = new Size(177, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
             propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            propertiesToolStripMenuItem.Size = new Size(140, 24);
+            propertiesToolStripMenuItem.Size = new Size(180, 24);
             propertiesToolStripMenuItem.Text = "Properties";
             propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
             // toolStripDropDownEdit
             // 
             toolStripDropDownEdit.AutoToolTip = false;
-            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { copyToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, deleteSelectionToolStripMenuItem, toolStripSeparator1, insertTileToolStripMenuItem, appendTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem, toolStripSeparator6, deleteTileToolStripMenuItem });
+            toolStripDropDownEdit.DropDownItems.AddRange(new ToolStripItem[] { undoToolStripMenuItem, toolStripSeparator2, copyToolStripMenuItem, pasteToolStripMenuItem, toolStripSeparator4, deleteSelectionToolStripMenuItem, toolStripSeparator1, insertTileToolStripMenuItem, appendTileToolStripMenuItem, toolStripSeparator3, insertTilesFromFileToolStripMenuItem, appendTilesFromFileToolStripMenuItem, toolStripSeparator6, deleteTileToolStripMenuItem });
             toolStripDropDownEdit.ImageTransparentColor = Color.Magenta;
             toolStripDropDownEdit.Name = "toolStripDropDownEdit";
             toolStripDropDownEdit.Size = new Size(45, 23);
@@ -434,6 +436,19 @@
             deleteTileToolStripMenuItem.Text = "Delete Tile";
             deleteTileToolStripMenuItem.Click += deleteTileToolStripMenuItem_Click;
             // 
+            // undoToolStripMenuItem
+            // 
+            undoToolStripMenuItem.Name = "undoToolStripMenuItem";
+            undoToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Z;
+            undoToolStripMenuItem.Size = new Size(225, 24);
+            undoToolStripMenuItem.Text = "Undo";
+            undoToolStripMenuItem.Click += undoToolStripMenuItem_Click;
+            // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(222, 6);
+            // 
             // TilesetEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
@@ -503,5 +518,7 @@
         private ToolStripMenuItem appendTilesFromFileToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator6;
         private ToolStripMenuItem deleteTileToolStripMenuItem;
+        private ToolStripMenuItem undoToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
     }
 }

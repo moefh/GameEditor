@@ -29,12 +29,12 @@ namespace GameEditor.CustomControls
 
         public Tileset? Tileset {
             get { return tileset; }
-            set { DropSelection(); tileset = value; Invalidate(); }
+            set { DropSelection(); tileset = value; SetUndoPoint(); Invalidate(); }
         }
 
         public int SelectedTile {
             get { return selectedTile; }
-            set { DropSelection(); selectedTile = value; Invalidate(); }
+            set { DropSelection(); selectedTile = value; SetUndoPoint(); Invalidate(); }
         }
 
         protected override int EditImageWidth { get { return TILE_SIZE; } }
@@ -166,5 +166,12 @@ namespace GameEditor.CustomControls
             PaintSelectionRectangle(pe.Graphics, tileRect, zoom);
         }
 
+        protected override void CopyImageIntoBitmap(Bitmap bmp) {
+            Tileset?.CopyFromTile(SelectedTile, 0, 0, bmp);
+        }
+
+        protected override void CopyImageFromBitmap(Bitmap bmp) {
+            Tileset?.PasteIntoTile(bmp, SelectedTile, 0, 0, false);
+        }
     }
 }

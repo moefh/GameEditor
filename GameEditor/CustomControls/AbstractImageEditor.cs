@@ -33,6 +33,7 @@ namespace GameEditor.CustomControls
 
         // internal stuff
         private Bitmap? selectionBmp;
+        private Bitmap? undoBitmap;
         private Point selectionOrigin;
         private Point selectionMoveOrigin;
         private Rectangle moveSelectedRectStart;
@@ -56,6 +57,7 @@ namespace GameEditor.CustomControls
                 tool = value;
                 Cursor = GetCursorForSelectedTool();
                 DropSelection();
+                SetUndoPoint();
                 Invalidate();
             }
         }
@@ -64,6 +66,8 @@ namespace GameEditor.CustomControls
             DropSelection();
             selectionBmp?.Dispose();
             selectionBmp = null;
+            undoBitmap?.Dispose();
+            undoBitmap = null;
         }
 
         private void SelectionAnimationTimer_Tick(object? sender, EventArgs e) {
@@ -85,6 +89,29 @@ namespace GameEditor.CustomControls
         // ==============================================================================
         // EXTERNAL COMMANDS
         // ==============================================================================
+
+        public bool CanUndo() {
+            return (undoBitmap != null && undoBitmap.Width == EditImageWidth && undoBitmap.Height == EditImageHeight);
+        }
+
+        public void SetUndoPoint() {
+            if (EditImageWidth == 0 || EditImageHeight == 0) return;
+
+            if (undoBitmap == null || undoBitmap.Width != EditImageWidth || undoBitmap.Height != EditImageHeight) {
+                undoBitmap?.Dispose();
+                undoBitmap = new Bitmap(EditImageWidth, EditImageHeight);
+            }
+            CopyImageIntoBitmap(undoBitmap);
+        }
+
+        public bool PerformUndo() {
+            if (undoBitmap != null) {
+                CopyImageFromBitmap(undoBitmap);
+                Invalidate();
+                return true;
+            }
+            return false;
+        }
 
         public Bitmap? GetSelectionCopy() {
             if (selectionBmp != null) {
@@ -483,6 +510,8 @@ namespace GameEditor.CustomControls
         protected abstract Bitmap? CopyFromImage(int x, int y, int w, int h);
         protected abstract void VFlipImage();
         protected abstract void HFlipImage();
+        protected abstract void CopyImageIntoBitmap(Bitmap bmp);
+        protected abstract void CopyImageFromBitmap(Bitmap bmp);
 
     }
 }
