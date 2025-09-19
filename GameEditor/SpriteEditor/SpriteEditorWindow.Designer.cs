@@ -28,6 +28,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SpriteEditorWindow));
             statusStrip1 = new StatusStrip();
             lblDataSize = new ToolStripStatusLabel();
+            lblSpriteSelectionInfo = new ToolStripStatusLabel();
             menuToolStrip = new ToolStrip();
             toolStripDropDownSprite = new ToolStripDropDownButton();
             importToolStripMenuItem = new ToolStripMenuItem();
@@ -49,12 +50,13 @@
             toolStripBtnTransparent = new ToolStripButton();
             toolStripBtnGrid = new ToolStripButton();
             toolStripLabel1 = new ToolStripLabel();
+            toolStripSeparator2 = new ToolStripSeparator();
             mainSplit = new SplitContainer();
-            spriteFramePicker = new CustomControls.SpriteFramePicker();
+            spriteFramePicker = new GameEditor.CustomControls.SpriteFramePicker();
             framePickerScroll = new VScrollBar();
             spriteLoopSplitter = new SplitContainer();
-            spriteEditor = new CustomControls.SpriteEditor();
-            colorPicker = new CustomControls.ColorPicker();
+            spriteEditor = new GameEditor.CustomControls.SpriteEditor();
+            colorPicker = new GameEditor.CustomControls.ColorPicker();
             statusStrip1.SuspendLayout();
             menuToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -70,7 +72,7 @@
             // 
             // statusStrip1
             // 
-            statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
+            statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize, lblSpriteSelectionInfo });
             statusStrip1.Location = new Point(0, 240);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(557, 24);
@@ -82,6 +84,14 @@
             lblDataSize.Name = "lblDataSize";
             lblDataSize.Size = new Size(54, 19);
             lblDataSize.Text = "X bytes";
+            // 
+            // lblSpriteSelectionInfo
+            // 
+            lblSpriteSelectionInfo.Name = "lblSpriteSelectionInfo";
+            lblSpriteSelectionInfo.Size = new Size(488, 19);
+            lblSpriteSelectionInfo.Spring = true;
+            lblSpriteSelectionInfo.Text = "(X, Y)";
+            lblSpriteSelectionInfo.TextAlign = ContentAlignment.MiddleRight;
             // 
             // menuToolStrip
             // 
@@ -108,7 +118,7 @@
             // 
             importToolStripMenuItem.Image = Properties.Resources.ImportIcon;
             importToolStripMenuItem.Name = "importToolStripMenuItem";
-            importToolStripMenuItem.Size = new Size(180, 24);
+            importToolStripMenuItem.Size = new Size(140, 24);
             importToolStripMenuItem.Text = "Import";
             importToolStripMenuItem.Click += importToolStripMenuItem_Click;
             // 
@@ -116,20 +126,20 @@
             // 
             exportToolStripMenuItem.Image = Properties.Resources.ExportIcon;
             exportToolStripMenuItem.Name = "exportToolStripMenuItem";
-            exportToolStripMenuItem.Size = new Size(180, 24);
+            exportToolStripMenuItem.Size = new Size(140, 24);
             exportToolStripMenuItem.Text = "Export";
             exportToolStripMenuItem.Click += exportToolStripMenuItem_Click;
             // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Name = "toolStripSeparator1";
-            toolStripSeparator1.Size = new Size(177, 6);
+            toolStripSeparator1.Size = new Size(137, 6);
             // 
             // propertiesToolStripMenuItem
             // 
             propertiesToolStripMenuItem.Image = Properties.Resources.PropertiesIcon;
             propertiesToolStripMenuItem.Name = "propertiesToolStripMenuItem";
-            propertiesToolStripMenuItem.Size = new Size(180, 24);
+            propertiesToolStripMenuItem.Size = new Size(140, 24);
             propertiesToolStripMenuItem.Text = "Properties";
             propertiesToolStripMenuItem.Click += propertiesToolStripMenuItem_Click;
             // 
@@ -176,7 +186,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip, toolStripBtnTransparent, toolStripBtnGrid, toolStripLabel1 });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripLabel2, toolStripBtnToolPen, toolStripBtnToolFill, toolStripBtnToolSelect, toolStripBtnToolVFlip, toolStripBtnToolHFlip, toolStripBtnTransparent, toolStripBtnGrid, toolStripLabel1, toolStripSeparator2 });
             toolsToolStrip.Location = new Point(0, 27);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(557, 27);
@@ -281,6 +291,12 @@
             toolStripLabel1.Size = new Size(56, 24);
             toolStripLabel1.Text = "Display:";
             // 
+            // toolStripSeparator2
+            // 
+            toolStripSeparator2.Alignment = ToolStripItemAlignment.Right;
+            toolStripSeparator2.Name = "toolStripSeparator2";
+            toolStripSeparator2.Size = new Size(6, 27);
+            // 
             // mainSplit
             // 
             mainSplit.Dock = DockStyle.Fill;
@@ -360,6 +376,8 @@
             spriteEditor.Text = "spriteEditor";
             spriteEditor.ImageChanged += spriteEditor_ImageChanged;
             spriteEditor.SelectedColorsChanged += spriteEditor_SelectedColorsChanged;
+            spriteEditor.PointHovered += spriteEditor_PointHovered;
+            spriteEditor.SelectionRectangleChanged += spriteEditor_SelectionRectangleChanged;
             // 
             // colorPicker
             // 
@@ -438,5 +456,7 @@
         private ToolStripMenuItem pasteToolStripMenuItem;
         private ToolStripSeparator toolStripSeparator4;
         private ToolStripMenuItem deleteSelectionToolStripMenuItem;
+        private ToolStripSeparator toolStripSeparator2;
+        private ToolStripStatusLabel lblSpriteSelectionInfo;
     }
 }

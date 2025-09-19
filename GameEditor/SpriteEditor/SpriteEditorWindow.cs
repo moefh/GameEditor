@@ -12,13 +12,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.SpriteEditor
 {
     public partial class SpriteEditorWindow : ProjectAssetEditorForm
     {
         private readonly SpriteItem spriteItem;
+        private Rectangle spriteSelection;
+        private Point spritePointHovered;
 
         public SpriteEditorWindow(SpriteItem spriteItem) : base(spriteItem, "SpriteEditor") {
             this.spriteItem = spriteItem;
@@ -64,9 +65,19 @@ namespace GameEditor.SpriteEditor
             Project.RefreshAssetUsers(Sprite);
         }
 
+        private void UpdateInfoLabel() {
+            string point = (spritePointHovered.X < 0 || spritePointHovered.Y < 0) ? "" : $"({spritePointHovered.X}, {spritePointHovered.Y})";
+            string sel = (spriteSelection.Width <= 0 || spriteSelection.Height <= 0) ? "" : $"selection: {spriteSelection.Width}x{spriteSelection.Height}";
+            lblSpriteSelectionInfo.Text = (sel == "") ? point : (point == "") ? sel : $"{point} {sel}";
+        }
+
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
             spriteEditor.ForePen = colorPicker.SelectedForeColor;
             spriteEditor.BackPen = colorPicker.SelectedBackColor;
+        }
+
+        private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
+            spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
         }
 
         private void spriteEditor_SelectedColorsChanged(object sender, EventArgs e) {
@@ -80,8 +91,14 @@ namespace GameEditor.SpriteEditor
             Project.RefreshAssetUsers(Sprite);
         }
 
-        private void spriteFramePicker_SelectedFrameChanged(object sender, EventArgs e) {
-            spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
+        private void spriteEditor_PointHovered(object sender, AbstractImageEditor.PointEventArgs e) {
+            spritePointHovered = e.Point;
+            UpdateInfoLabel();
+        }
+
+        private void spriteEditor_SelectionRectangleChanged(object sender, AbstractImageEditor.SelectionEventArgs e) {
+            spriteSelection = e.Selection;
+            UpdateInfoLabel();
         }
 
         // =====================================================================

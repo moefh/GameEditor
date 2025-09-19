@@ -88,9 +88,6 @@ namespace GameEditor.ModEditor
                         int sample = mod.Pattern[cell].Sample;
                         int effect = mod.Pattern[cell].Effect;
                         cell++;
-                        //rows[row][col++] = (period == 0) ? "---" : ModUtil.GetPeriodNoteName(period);
-                        //rows[row][col++] = (period == 0 || sample == 0) ? "--" : $"{sample,2}";
-                        //rows[row][col++] = (effect == 0) ? "---" : $"{effect:X03}";
                         rows[row][col++] = (period == 0) ? "" : ModUtil.GetPeriodNoteName(period);
                         rows[row][col++] = (period == 0 || sample == 0) ? "" : $"{sample,2}";
                         rows[row][col++] = (effect == 0) ? "" : $"{effect:X03}";
@@ -407,17 +404,18 @@ namespace GameEditor.ModEditor
         }
 
         private void UpdateModPattern() {
-            // pattern
-            patternDataSource = new PatternDataSource(ModFile);
-            patternGrid.TableDataSource = patternDataSource;
-            patternGrid.Invalidate();
-
             // song order
             toolStripComboPatternOrder.Items.Clear();
             for (int pos = 0; pos < ModFile.NumSongPositions; pos++) {
                 toolStripComboPatternOrder.Items.Add(ModFile.SongPositions[pos]);
             }
             toolStripComboPatternOrder.SelectedIndex = 0;
+
+            // pattern
+            patternDataSource = new PatternDataSource(ModFile);
+            patternDataSource.LoadSongPositions(ModFile, ModFile.SongPositions[0]);
+            patternGrid.TableDataSource = patternDataSource;
+            patternGrid.Invalidate();
         }
 
         private void PlayPatternNote(int row, int chan) {

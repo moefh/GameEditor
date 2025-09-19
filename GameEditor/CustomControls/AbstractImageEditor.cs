@@ -18,6 +18,16 @@ namespace GameEditor.CustomControls
             Up,
         }
 
+        public class PointEventArgs : EventArgs {
+            public PointEventArgs(int x, int y) { Point = new Point(x, y); }
+            public Point Point { get; }
+        }
+
+        public class SelectionEventArgs : EventArgs {
+            public SelectionEventArgs(Rectangle rect) { Selection = rect; }
+            public Rectangle Selection { get; }
+        }
+
         // properties
         private PaintTool tool;
 
@@ -34,6 +44,8 @@ namespace GameEditor.CustomControls
 
         public event EventHandler? ImageChanged;
         public event EventHandler? SelectedColorsChanged;
+        public event EventHandler<PointEventArgs>? PointHovered;
+        public event EventHandler<SelectionEventArgs>? SelectionRectangleChanged;
 
         public Color ForePen { get; set; }
         public Color BackPen { get; set; }
@@ -97,6 +109,7 @@ namespace GameEditor.CustomControls
             using Graphics g = Graphics.FromImage(selectionBmp);
             g.DrawImage(img, new Point(0,0));
 
+            InvokeSelectionEvent(selectedRect);
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -152,6 +165,7 @@ namespace GameEditor.CustomControls
             if (selectionBmp == null) {
                 DeleteSelectionFromImage(selectedRect);
                 selectedRect = Rectangle.Empty;
+                InvokeSelectionEvent(selectedRect);
                 Invalidate();
                 ImageChanged?.Invoke(this, EventArgs.Empty);
                 return;
@@ -159,6 +173,7 @@ namespace GameEditor.CustomControls
             selectionBmp.Dispose();
             selectionBmp = null;
             selectedRect = Rectangle.Empty;
+            InvokeSelectionEvent(selectedRect);
             Invalidate();
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
@@ -166,12 +181,14 @@ namespace GameEditor.CustomControls
         protected void DropSelection() {
             if (selectionBmp == null) {
                 selectedRect = Rectangle.Empty;
+                InvokeSelectionEvent(selectedRect);
                 return;
             }
             DropSelectionBitmap(selectedRect, selectionBmp);
             selectionBmp.Dispose();
             selectionBmp = null;
             selectedRect = Rectangle.Empty;
+            InvokeSelectionEvent(selectedRect);
             ImageChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -283,6 +300,7 @@ namespace GameEditor.CustomControls
                 DropSelection();
                 movingSelection = false;
                 selectionOrigin = new Point(sx, sy);
+                InvokeSelectionEvent(sx, sy, 0, 0);
                 Invalidate();
                 return;
             }
@@ -297,6 +315,7 @@ namespace GameEditor.CustomControls
                 selectedRect.Y = oy;
                 selectedRect.Width = sx - ox;
                 selectedRect.Height = sy - oy;
+                InvokeSelectionEvent(selectedRect);
                 Invalidate();
                 return;
             }
@@ -305,6 +324,25 @@ namespace GameEditor.CustomControls
         // ==============================================================================
         // EVENT HANDLERS
         // ==============================================================================
+
+        private void InvokeSelectionEvent(int x, int y, int w, int h) {
+            InvokeSelectionEvent(new Rectangle(x, y, w, h));
+        }
+
+        private void InvokeSelectionEvent(Rectangle rect) {
+            SelectionRectangleChanged?.Invoke(this, new SelectionEventArgs(rect));
+        }
+
+        private void InvokePointHoveredEvent(MouseEventArgs e) {
+            if (! GetImageRenderRect(out int zoom, out Rectangle imageRect)) return;
+            if (! imageRect.Contains(e.Location)) {
+                PointHovered?.Invoke(this, new PointEventArgs(-1, -1));
+            } else {
+                int tx = (e.X - imageRect.X) / zoom;
+                int ty = (e.Y - imageRect.Y) / zoom;
+                PointHovered?.Invoke(this, new PointEventArgs(tx, ty));
+            }
+        }
 
         private bool HandleSelectionMovement(MouseEventArgs e, MouseAction action) {
             // In this method we return true to indicate that the mouse event was consumed
@@ -373,6 +411,7 @@ namespace GameEditor.CustomControls
 
                 // just cancel the selection with no bitmap (no harm, no foul)
                 selectedRect = Rectangle.Empty;
+                InvokeSelectionEvent(selectedRect);
                 movingSelection = false;
                 Invalidate();
                 return false;
@@ -384,6 +423,7 @@ namespace GameEditor.CustomControls
                 int dy = (e.Y - selectionMoveOrigin.Y) / zoom;
                 selectedRect.X = moveSelectedRectStart.X + dx;
                 selectedRect.Y = moveSelectedRectStart.Y + dy;
+                InvokeSelectionEvent(selectedRect);
                 Invalidate();
                 return true;
             }
@@ -395,6 +435,7 @@ namespace GameEditor.CustomControls
         protected void RunMouseEvent(MouseEventArgs e, MouseAction action) {
             if (Util.DesignMode) return;
 
+            InvokePointHoveredEvent(e);
             if (HandleSelectionMovement(e, action)) {
                 return;
             }
