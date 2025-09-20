@@ -48,7 +48,7 @@ namespace GameEditor.MapEditor
             mainSplit = new SplitContainer();
             tilePicker = new TilePicker();
             tilePickerScroll = new VScrollBar();
-            mapEditor = new CustomControls.MapEditor();
+            mapEditor = new GameEditor.CustomControls.MapEditor();
             menuToolStrip = new ToolStrip();
             toolStripDropDownMap = new ToolStripDropDownButton();
             importToolStripMenuItem = new ToolStripMenuItem();
@@ -300,6 +300,7 @@ namespace GameEditor.MapEditor
             mapEditor.MinZoom = 0D;
             mapEditor.Name = "mapEditor";
             mapEditor.Padding = new Padding(3, 3, 2, 2);
+            mapEditor.ReadOnly = false;
             mapEditor.RightSelectedCollisionTile = 0;
             mapEditor.RightSelectedEffectsTile = 0;
             mapEditor.RightSelectedTile = 0;
@@ -497,6 +498,7 @@ namespace GameEditor.MapEditor
             toolStripButtonToolTiles.Name = "toolStripButtonToolTiles";
             toolStripButtonToolTiles.Size = new Size(23, 25);
             toolStripButtonToolTiles.Text = "Tiles";
+            toolStripButtonToolTiles.ToolTipText = "Tiles (Space)";
             toolStripButtonToolTiles.Click += toolStripButtonToolTiles_Click;
             // 
             // toolStripButtonToolSelect
@@ -507,6 +509,7 @@ namespace GameEditor.MapEditor
             toolStripButtonToolSelect.Name = "toolStripButtonToolSelect";
             toolStripButtonToolSelect.Size = new Size(23, 25);
             toolStripButtonToolSelect.Text = "Select";
+            toolStripButtonToolSelect.ToolTipText = "Select (S)";
             toolStripButtonToolSelect.Click += toolStripButtonToolSelect_Click;
             // 
             // MapEditorWindow

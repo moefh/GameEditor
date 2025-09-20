@@ -85,7 +85,9 @@ namespace GameEditor.MapEditor
         }
 
         public void SetSelectedTool(CustomControls.MapEditor.Tool tool) {
-            mapEditor.SelectedTool = tool;
+            if (mapEditor.SelectedTool != tool) {
+                mapEditor.SelectedTool = tool;
+            }
             toolStripButtonToolTiles.Checked = tool == CustomControls.MapEditor.Tool.Tile;
             toolStripButtonToolSelect.Checked = tool == CustomControls.MapEditor.Tool.RectSelect;
         }
@@ -344,6 +346,32 @@ namespace GameEditor.MapEditor
 
         private void toolStripButtonToolSelect_Click(object sender, EventArgs e) {
             SetSelectedTool(CustomControls.MapEditor.Tool.RectSelect);
+        }
+
+        // ====================================================================
+        // === SHORTCUTS
+        // ====================================================================
+
+        private void ToggleEditLayer() {
+            if (ActiveLayer == CustomControls.MapEditor.Layer.Foreground) {
+                ActiveLayer = CustomControls.MapEditor.Layer.Background;
+                toolStripButtonShowBG.Checked = true;
+            } else {
+                ActiveLayer = CustomControls.MapEditor.Layer.Foreground;
+                toolStripButtonShowFG.Checked = true;
+            }
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+            bool ret = base.ProcessCmdKey(ref msg, keyData);
+            if (ret) return ret;
+
+            switch (keyData) {
+            case Keys.Space: SetSelectedTool(CustomControls.MapEditor.Tool.Tile); return true;
+            case Keys.S:     SetSelectedTool(CustomControls.MapEditor.Tool.RectSelect); return true;
+            case Keys.X:     ToggleEditLayer(); return true;
+            default: return false;
+            }
         }
     }
 }
