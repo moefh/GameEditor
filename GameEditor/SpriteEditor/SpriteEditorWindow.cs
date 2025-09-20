@@ -239,14 +239,25 @@ namespace GameEditor.SpriteEditor
         // === SHORTCUTS
         // ====================================================================
 
+        private void AdvanceFrame(int delta) {
+            int frame = (spriteEditor.SelectedFrame + delta + Sprite.NumFrames) % Sprite.NumFrames;
+            spriteFramePicker.SelectedFrame = frame;
+            spriteEditor.SelectedFrame = frame;
+        }
+
         protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
             bool ret = base.ProcessCmdKey(ref msg, keyData);
             if (ret) return ret;
 
             switch (keyData) {
             case Keys.Space: SelectTool(PaintTool.Pen); return true;
-            case Keys.S: SelectTool(PaintTool.RectSelect); return true;
-            case Keys.F: SelectTool(PaintTool.FloodFill); return true;
+            case Keys.S:     SelectTool(PaintTool.RectSelect); return true;
+            case Keys.F:     SelectTool(PaintTool.FloodFill); return true;
+
+            case Keys.Left:  AdvanceFrame(-1); return true;
+            case Keys.Right: AdvanceFrame(1); return true;
+            case Keys.Q:     AdvanceFrame(-1); return true;
+            case Keys.E:     AdvanceFrame(1); return true;
             default: return false;
             }
         }

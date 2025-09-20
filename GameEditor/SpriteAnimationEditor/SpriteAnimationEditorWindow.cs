@@ -116,21 +116,6 @@ namespace GameEditor.SpriteAnimationEditor
             animLoopView.Focus(); // remove focus from list box so arrow keys can be used again
         }
 
-        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
-
-            bool ret = base.ProcessCmdKey(ref msg, keyData);
-            if (!ret && (keyData == Keys.Left || keyData == Keys.Right)) {
-                if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Animation.Loops.Length) return ret;
-                SpriteAnimationLoop loop = Animation.Loops[loopsListBox.SelectedIndex];
-                if (loop == null) return ret;
-                int index = animLoopView.SelectedIndex + ((keyData == Keys.Left) ? -1 : 1);
-                index = (index + loop.NumFrames) % loop.NumFrames;
-                animLoopView.SelectedIndex = index;
-                animEditor.SelectedIndex = index;
-            }
-            return ret;
-        }
-
         private void toolStripBtnGrid_CheckedChanged(object sender, EventArgs e) {
             FixRenderFlags();
         }
@@ -261,6 +246,30 @@ namespace GameEditor.SpriteAnimationEditor
             Animation.Name = dlg.SpriteAnimationName;
             FixFormTitle();
             Project.UpdateAssetNames(Animation.AssetType);
+        }
+
+        // =========================================================================
+        // SHORTCUTS
+        // =========================================================================
+
+        private void AdvanceFrameIndex(int delta) {
+            SpriteAnimationLoop loop = Animation.Loops[loopsListBox.SelectedIndex];
+            if (loop == null) return;
+            int index = (animLoopView.SelectedIndex + delta + loop.NumFrames) % loop.NumFrames;
+            animLoopView.SelectedIndex = index;
+            animEditor.SelectedIndex = index;
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+            bool ret = base.ProcessCmdKey(ref msg, keyData);
+            if (ret) return true;
+            switch (keyData) {
+            case Keys.Left:  AdvanceFrameIndex(-1); return true;
+            case Keys.Right: AdvanceFrameIndex(1);  return true;
+            case Keys.Q:     AdvanceFrameIndex(-1); return true;
+            case Keys.E:     AdvanceFrameIndex(1);  return true;
+            }
+            return false;
         }
 
     }

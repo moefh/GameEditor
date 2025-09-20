@@ -73,8 +73,17 @@ namespace GameEditor.MainEditor
             base.OnFormClosing(e);
         }
 
-        protected override void OnClosed(EventArgs e) {
+        protected void DestroyProject() {
+            foreach (DataAssetType type in project.AssetTypes) {
+                foreach (IDataAssetItem it in project.GetAssetList(type)) {
+                    it.EditorForm?.Close();
+                }
+            }
             project.Dispose();
+        }
+
+        protected override void OnClosed(EventArgs e) {
+            DestroyProject();
             Util.ProjectWindowClosed(this);
             base.OnClosed(e);
         }
@@ -120,7 +129,7 @@ namespace GameEditor.MainEditor
 
         private void ReplaceCurrentProject(ProjectData proj) {
             checkerWindow.ClearResults();
-            project.Dispose();
+            DestroyProject();
             project = proj;
             assetManager.Project = project;
             checkerWindow.Project = project;

@@ -39,18 +39,18 @@
             toolStripSeparator1 = new ToolStripSeparator();
             toolStripBtnTransparent = new ToolStripButton();
             toolStripLabel2 = new ToolStripLabel();
+            toolStripBtnDecFootOverlap = new ToolStripButton();
             toolStripTxtFootOverlap = new ToolStripTextBox();
             toolStripBtnGrid = new ToolStripButton();
             toolStripLabel3 = new ToolStripLabel();
+            toolStripBtnIncFootOverlap = new ToolStripButton();
             mainSplit = new SplitContainer();
             loopsListBox = new ListBox();
             spriteLoopSplitter = new SplitContainer();
             spriteSplit = new SplitContainer();
-            animEditor = new CustomControls.SpriteAnimationEditor();
-            animLoopView = new CustomControls.SpriteFrameListView();
-            colorPicker = new CustomControls.ColorPicker();
-            toolStripBtnDecFootOverlap = new ToolStripButton();
-            toolStripBtnIncFootOverlap = new ToolStripButton();
+            animEditor = new GameEditor.CustomControls.SpriteAnimationEditor();
+            animLoopView = new GameEditor.CustomControls.SpriteFrameListView();
+            colorPicker = new GameEditor.CustomControls.ColorPicker();
             statusStrip.SuspendLayout();
             infoToolStrip.SuspendLayout();
             toolsToolStrip.SuspendLayout();
@@ -188,6 +188,17 @@
             toolStripLabel2.Size = new Size(89, 24);
             toolStripLabel2.Text = "Foot overlap:";
             // 
+            // toolStripBtnDecFootOverlap
+            // 
+            toolStripBtnDecFootOverlap.AutoToolTip = false;
+            toolStripBtnDecFootOverlap.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripBtnDecFootOverlap.Image = (Image)resources.GetObject("toolStripBtnDecFootOverlap.Image");
+            toolStripBtnDecFootOverlap.ImageTransparentColor = Color.Magenta;
+            toolStripBtnDecFootOverlap.Name = "toolStripBtnDecFootOverlap";
+            toolStripBtnDecFootOverlap.Size = new Size(23, 24);
+            toolStripBtnDecFootOverlap.Text = "-";
+            toolStripBtnDecFootOverlap.Click += toolStripBtnDecFootOverlap_Click;
+            // 
             // toolStripTxtFootOverlap
             // 
             toolStripTxtFootOverlap.Name = "toolStripTxtFootOverlap";
@@ -198,9 +209,7 @@
             // toolStripBtnGrid
             // 
             toolStripBtnGrid.Alignment = ToolStripItemAlignment.Right;
-            toolStripBtnGrid.Checked = true;
             toolStripBtnGrid.CheckOnClick = true;
-            toolStripBtnGrid.CheckState = CheckState.Checked;
             toolStripBtnGrid.DisplayStyle = ToolStripItemDisplayStyle.Image;
             toolStripBtnGrid.Image = Properties.Resources.GridIcon;
             toolStripBtnGrid.ImageTransparentColor = Color.Magenta;
@@ -216,6 +225,17 @@
             toolStripLabel3.Name = "toolStripLabel3";
             toolStripLabel3.Size = new Size(56, 24);
             toolStripLabel3.Text = "Display:";
+            // 
+            // toolStripBtnIncFootOverlap
+            // 
+            toolStripBtnIncFootOverlap.AutoToolTip = false;
+            toolStripBtnIncFootOverlap.DisplayStyle = ToolStripItemDisplayStyle.Text;
+            toolStripBtnIncFootOverlap.Image = (Image)resources.GetObject("toolStripBtnIncFootOverlap.Image");
+            toolStripBtnIncFootOverlap.ImageTransparentColor = Color.Magenta;
+            toolStripBtnIncFootOverlap.Name = "toolStripBtnIncFootOverlap";
+            toolStripBtnIncFootOverlap.Size = new Size(23, 24);
+            toolStripBtnIncFootOverlap.Text = "+";
+            toolStripBtnIncFootOverlap.Click += toolStripBtnIncFootOverlap_Click;
             // 
             // mainSplit
             // 
@@ -342,28 +362,6 @@
             colorPicker.TabIndex = 0;
             colorPicker.Text = "colorPicker";
             colorPicker.SelectedColorChanged += colorPicker_SelectedColorChanged;
-            // 
-            // toolStripBtnDecFootOverlap
-            // 
-            toolStripBtnDecFootOverlap.AutoToolTip = false;
-            toolStripBtnDecFootOverlap.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripBtnDecFootOverlap.Image = (Image)resources.GetObject("toolStripBtnDecFootOverlap.Image");
-            toolStripBtnDecFootOverlap.ImageTransparentColor = Color.Magenta;
-            toolStripBtnDecFootOverlap.Name = "toolStripBtnDecFootOverlap";
-            toolStripBtnDecFootOverlap.Size = new Size(23, 24);
-            toolStripBtnDecFootOverlap.Text = "-";
-            toolStripBtnDecFootOverlap.Click += toolStripBtnDecFootOverlap_Click;
-            // 
-            // toolStripBtnIncFootOverlap
-            // 
-            toolStripBtnIncFootOverlap.AutoToolTip = false;
-            toolStripBtnIncFootOverlap.DisplayStyle = ToolStripItemDisplayStyle.Text;
-            toolStripBtnIncFootOverlap.Image = (Image)resources.GetObject("toolStripBtnIncFootOverlap.Image");
-            toolStripBtnIncFootOverlap.ImageTransparentColor = Color.Magenta;
-            toolStripBtnIncFootOverlap.Name = "toolStripBtnIncFootOverlap";
-            toolStripBtnIncFootOverlap.Size = new Size(23, 24);
-            toolStripBtnIncFootOverlap.Text = "+";
-            toolStripBtnIncFootOverlap.Click += toolStripBtnIncFootOverlap_Click;
             // 
             // SpriteAnimationEditorWindow
             // 

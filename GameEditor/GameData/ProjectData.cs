@@ -109,11 +109,18 @@ namespace GameEditor.GameData
         }
 
         public void Dispose() {
-            // order is important here
-            foreach (DataAssetType type in ASSET_TYPES_IN_DESTROY_ORDER) {
+            // close all asset editors
+            foreach (DataAssetType type in AssetTypes) {
                 AssetList<IDataAssetItem> list = GetAssetList(type);
                 foreach (IDataAssetItem asset in list) {
                     asset.EditorForm?.Close();
+                }
+            }
+
+            // destroy assets: order is important here!
+            foreach (DataAssetType type in ASSET_TYPES_IN_DESTROY_ORDER) {
+                AssetList<IDataAssetItem> list = GetAssetList(type);
+                foreach (IDataAssetItem asset in list) {
                     asset.Asset.Dispose();
                 }
                 list.Clear();
