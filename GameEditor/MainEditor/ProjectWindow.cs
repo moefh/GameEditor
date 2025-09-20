@@ -172,6 +172,7 @@ namespace GameEditor.MainEditor
 
         private void SaveProject(string filename) {
             if (project.SaveProject(filename)) {
+                UpdateWindowTitle();
                 Util.Log("== saved project");
             } else {
                 MessageBox.Show($"Error saving project.\n\nConsult the log window for more information.",
