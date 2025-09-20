@@ -4,6 +4,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#ifndef ${PREFIX}_SKIP_STRUCTS_MOD
+
 struct ${PREFIX}_MOD_SAMPLE {
     uint32_t       len;
     uint32_t       loop_start;
@@ -30,12 +32,20 @@ struct ${PREFIX}_MOD_DATA {
     const struct ${PREFIX}_MOD_CELL *pattern;
 };
 
+#endif /* ${PREFIX}_SKIP_STRUCTS_MOD */
+
+#ifndef ${PREFIX}_SKIP_STRUCTS_SFX
+
 struct ${PREFIX}_SFX {
     int32_t len;
     int32_t loop_start;
     int32_t loop_len;
     const int8_t *samples;
 };
+
+#endif /* ${PREFIX}_SKIP_STRUCTS_SFX */
+
+#ifndef ${PREFIX}_SKIP_STRUCTS_IMAGE
 
 struct ${PREFIX}_IMAGE {
     int32_t width;
@@ -44,7 +54,11 @@ struct ${PREFIX}_IMAGE {
     int32_t num_frames;
     const uint32_t *data;
 };
-   
+
+#endif /* ${PREFIX}_SKIP_STRUCTS_IMAGE */
+
+#ifndef ${PREFIX}_SKIP_STRUCTS_MAP
+
 struct ${PREFIX}_MAP {
     int16_t w;
     int16_t h;
@@ -53,6 +67,10 @@ struct ${PREFIX}_MAP {
     const struct ${PREFIX}_IMAGE *tileset;
     const uint8_t *tiles;
 };
+
+#endif /* #ifndef ${PREFIX}_SKIP_STRUCTS_MAP */
+
+#ifndef ${PREFIX}_SKIP_STRUCT_SPRITE_ANIMATION
 
 struct ${PREFIX}_SPRITE_ANIMATION_LOOP {
     uint16_t offset;   // offset into animation frame_indices
@@ -66,11 +84,19 @@ struct ${PREFIX}_SPRITE_ANIMATION {
     struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[20];
 };
 
+#endif /* #ifndef ${PREFIX}_SKIP_STRUCTS_SPRITE_ANIMATION */
+
+#ifndef ${PREFIX}_SKIP_STRUCTS_FONT
+
 struct ${PREFIX}_FONT {
     uint8_t width;
     uint8_t height;
     const uint8_t *data;
 };
+
+#endif /* #ifndef ${PREFIX}_SKIP_STRUCTS_FONT */
+
+#ifndef ${PREFIX}_SKIP_STRUCTS_PROP_FONT
 
 struct ${PREFIX}_PROP_FONT {
     uint8_t height;
@@ -79,16 +105,22 @@ struct ${PREFIX}_PROP_FONT {
     uint16_t char_offset[96];
 };
 
+#endif /* #ifndef ${PREFIX}_SKIP_STRUCTS_PROP_FONT */
+
+#ifndef ${PREFIX}_SKIP_STRUCTS_ROOM
+
 struct ${PREFIX}_ROOM_MAP_INFO {
     uint16_t x;
     uint16_t y;
-    struct ${PREFIX}_MAP *map;
+    const struct ${PREFIX}_MAP *map;
 };
 
 struct ${PREFIX}_ROOM {
     uint16_t num_maps;
-    struct ${PREFIX}_ROOM_MAP_INFO *maps[8];
+    const struct ${PREFIX}_ROOM_MAP_INFO *maps;
 };
+
+#endif /* #ifndef ${PREFIX}_SKIP_STRUCTS_ROOM */
 
 extern const struct ${PREFIX}_FONT ${prefix}_fonts[];
 extern const struct ${PREFIX}_PROP_FONT ${prefix}_prop_fonts[];

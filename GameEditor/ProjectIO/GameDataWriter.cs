@@ -715,7 +715,7 @@ namespace GameEditor.ProjectIO
         protected void WriteRoomMaps(RoomData room) {
             string mapIdent = GetLowerGlobal("maps");
             string ident = identifiers.Add(room, "room_maps", room.Name);
-            f.WriteLine($"static const {GetUpperGlobal("ROOM_MAP_INFO")} {ident}[] = {{");
+            f.WriteLine($"static const struct {GetUpperGlobal("ROOM_MAP_INFO")} {ident}[] = {{");
             for (int m = 0; m < room.Maps.Count; m++) {
                 int mapX = room.Maps[m].x;
                 int mapY = room.Maps[m].y;
