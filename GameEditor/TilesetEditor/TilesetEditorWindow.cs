@@ -313,7 +313,9 @@ namespace GameEditor.TilesetEditor
         // ====================================================================
 
         private void SelectTool(PaintTool tool) {
-            tileEditor.SelectedTool = tool;
+            if (tileEditor.SelectedTool != tool) {
+                tileEditor.SelectedTool = tool;
+            }
             toolStripBtnToolPen.Checked = tool == PaintTool.Pen;
             toolStripBtnToolSelect.Checked = tool == PaintTool.RectSelect;
             toolStripBtnToolFill.Checked = tool == PaintTool.FloodFill;
@@ -337,6 +339,33 @@ namespace GameEditor.TilesetEditor
 
         private void toolStripBtnToolHFlip_Click(object sender, EventArgs e) {
             tileEditor.HFlipSelection();
+        }
+
+        // ====================================================================
+        // === SHORTCUTS
+        // ====================================================================
+
+        private void AdvanceTile(int delta) {
+            int tile = (tileEditor.SelectedTile + delta + Tileset.NumTiles) % Tileset.NumTiles;
+            tilePicker.LeftSelectedTile = tile;
+            tileEditor.SelectedTile = tile;
+        }
+
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData) {
+            bool ret = base.ProcessCmdKey(ref msg, keyData);
+            if (ret) return ret;
+
+            switch (keyData) {
+            case Keys.Space: SelectTool(PaintTool.Pen); return true;
+            case Keys.S:     SelectTool(PaintTool.RectSelect); return true;
+            case Keys.F:     SelectTool(PaintTool.FloodFill); return true;
+
+            case Keys.Left:  AdvanceTile(-1); return true;
+            case Keys.Right: AdvanceTile(1); return true;
+            case Keys.Q:     AdvanceTile(-1); return true;
+            case Keys.E:     AdvanceTile(1); return true;
+            default: return false;
+            }
         }
 
     }

@@ -173,7 +173,7 @@ namespace GameEditor.CustomControls
                 int y = (mapY + ty) * zoomedTileSize + MARGIN - (int) origin.Y;
                 for (int tx = 0; tx < map.FgTiles.Width; tx++) {
                     int x = (mapX + tx) * zoomedTileSize + MARGIN - (int) origin.X;
-                    map.Tileset.DrawTileAt(g, map.FgTiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, false);
+                    map.Tileset.DrawTileAt(g, map.FgTiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true);
                 }
             }
         }
