@@ -3,6 +3,8 @@
 This is an editor (running on Windows) for the data used in a videogame I'm
 writing for the Raspberry Pi Pico 2.
 
+![Main Window](doc/game-editor.png)
+
 The editor compiles different types of assets (sprites, animations, tilesets,
 maps, sound effects, music and fonts) directly into a single C header file
 for easy inclusion in the game.
