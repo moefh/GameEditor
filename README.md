@@ -24,7 +24,7 @@ The sprite editor has basic functionality to create and edit sprites, including
 copying and pasting images so it's easy to use external editors for more advanced
 editing.
 
-![doc/sprite-editor.png]
+![Sprite Editor](doc/sprite-editor.png)
 
 
 ### Animations
@@ -32,7 +32,7 @@ editing.
 Animations organize images from a sprite into loops of frames to be animated by
 the game (for example, a character running animation).
 
-![doc/animation-editor.png]
+![Animation Editor](doc/animation-editor.png)
 
 
 ### Tilesets
@@ -41,7 +41,7 @@ Tilesets are lists of 16x16-pixel images that are used as tiles of a map. This
 editor has similar functionality of the sprite editor (except tiles always have 16x16
 pixels).
 
-![doc/tileset-editor.png]
+![Tileset Editor](doc/tileset-editor.png)
 
 
 ### Maps
@@ -49,7 +49,7 @@ pixels).
 Maps are fragments of the game world. Each map is a grid of background and foreground
 tiles from a single tileset. The editor can be used to create and edit maps.
 
-![doc/map-editor.png]
+![Map Editor](doc/map-editor.png)
 
 
 ### Sound Effects
@@ -58,7 +58,7 @@ Sound effects are stored as mono 22050Hz waveforms.  No editing is supported oth
 than selecting the start and end loop points, but sounds can be imported and exported
 to `.wav` files.
 
-![doc/sfx-editor.png]
+![SFX Editor](doc/sfx-editor.png)
 
 
 ### MOD files (music)
@@ -66,9 +66,9 @@ to `.wav` files.
 Music is supported in the form of [MOD files](https://en.wikipedia.org/wiki/Module_file).
 No editing is supported but files can be imported and exported to `.mod` files.
 
-![doc/mod-editor-samples.png]
+![MOD Editor (samples)](doc/mod-editor-samples.png)
 
-![doc/mod-editor-pattern.png]
+![MOD Editor (pattern)](doc/mod-editor-pattern.png)
 
 
 ### Fonts
@@ -76,7 +76,7 @@ No editing is supported but files can be imported and exported to `.mod` files.
 Fonts are fixed-size images containing 96 characters (the full ASCII table except
 the first 32 control characters). The images are stored with 1 bit per pixel.
 
-![doc/font-editor.png]
+![Font Editor](doc/font-editor.png)
 
 
 ### Proportional Fonts
@@ -84,4 +84,4 @@ the first 32 control characters). The images are stored with 1 bit per pixel.
 Proportional fonts work like fonts, but each character can have a different width
 (the height is still fixed for all characters of the font).
 
-![doc/propfont-editor.png]
+![Proportional Font Editor](doc/propfont-editor.png)
