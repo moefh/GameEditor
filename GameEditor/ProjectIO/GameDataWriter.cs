@@ -18,6 +18,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Net;
 using System.Reflection.Metadata.Ecma335;
+using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
 
@@ -32,6 +33,11 @@ namespace GameEditor.ProjectIO
         protected StreamWriter f;
         protected string globalPrefixLower;
         protected string globalPrefixUpper;
+
+        protected struct ModSampleData {
+            public short[] samples;
+            public int bitsPerSample;
+        }
 
         public GameDataWriter(ProjectData proj, string filename, string globalPrefix) {
             Project = proj;
@@ -251,7 +257,7 @@ namespace GameEditor.ProjectIO
             return (byte) (12*octave + note);
         }
 
-        private void MergeModSamples(out Dictionary<ModData, List<string>> modSampleIds, out Dictionary<string, short[]> modSamplesById) {
+        private void MergeModSamples(out Dictionary<ModData, List<string>> modSampleIds, out Dictionary<string, ModSampleData> modSamplesById) {
             modSampleIds = [];
             modSamplesById = [];
 
@@ -260,12 +266,15 @@ namespace GameEditor.ProjectIO
                 ModFile file = mod.ModFile;
                 List<string> sampleIdentifiers = [];
                 for (int spl = 0; spl < file.NumSamples; spl++) {
-                    short[]? sampleData = file.Sample[spl].Data;
-                    if (sampleData == null) {
+                    short[]? data = file.Sample[spl].Data;
+                    if (data == null) {
                         sampleIdentifiers.Add("NULL");
                     } else {
                         string sampleIdent = identifiers.Add(file.Sample[spl], "mod_samples", mod.Name, $"sample{spl+1:D02}");
                         sampleIdentifiers.Add(sampleIdent);
+                        ModSampleData sampleData;
+                        sampleData.samples = data;
+                        sampleData.bitsPerSample = file.Sample[spl].BitsPerSample;
                         modSamplesById[sampleIdent] = sampleData;
                     }
                 }
@@ -276,6 +285,7 @@ namespace GameEditor.ProjectIO
                 ModData mod1 = (ModData) Project.ModList[m1].Asset;
                 ModFile file1 = mod1.ModFile;
                 for (int spl1 = 0; spl1 < file1.NumSamples; spl1++) {
+                    int bitsPerSample1 = file1.Sample[spl1].BitsPerSample;
                     short[]? data1 = file1.Sample[spl1].Data;
                     if (data1 == null) continue;
                     for (int m2 = m1+1; m2 < Project.ModList.Count; m2++) {
@@ -284,6 +294,7 @@ namespace GameEditor.ProjectIO
                         for (int spl2 = 0; spl2 < file2.NumSamples; spl2++) {
                             short[]? data2 = file2.Sample[spl2].Data;
                             if (data2 == null) continue;
+                            if (bitsPerSample1 != file2.Sample[spl2].BitsPerSample) continue;
                             if (! AreModSamplesEqual(data1, data2)) continue;
                             modSamplesById.Remove(modSampleIds[mod2][spl2]);
                             modSampleIds[mod2][spl2] = modSampleIds[mod1][spl1];
@@ -294,15 +305,16 @@ namespace GameEditor.ProjectIO
             }
         }
 
-        protected void WriteModSamples(Dictionary<string, short[]> samplesById) {
+        protected void WriteModSamples(Dictionary<string, ModSampleData> samplesById) {
             List<string> ids = [.. samplesById.Keys];
             ids.Sort();
             foreach (string sampleIdent in ids) {
-                short[] sampleData = samplesById[sampleIdent];
-                f.Write($"static const int8_t {sampleIdent}[] = {{");
-                for (int i = 0; i < sampleData.Length; i++) {
+                ModSampleData sampleData = samplesById[sampleIdent];
+                f.Write($"static const int{sampleData.bitsPerSample}_t {sampleIdent}[] = {{");
+                for (int i = 0; i < sampleData.samples.Length; i++) {
                     if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                    int sample = sampleData[i] >> 8;  // TODO: no shift if it's a 16-bit sample
+                    int sample = sampleData.samples[i];
+                    if (sampleData.bitsPerSample == 8) sample >>= 8;
                     f.Write($"{sample},");
                 }
                 f.WriteLine();
@@ -349,11 +361,13 @@ namespace GameEditor.ProjectIO
             f.WriteLine("    {");
             for (int spl = 0; spl < file.NumSamples; spl++) {
                 string splIdent = sampleIdents[spl];
+                string splIdentName = (file.Sample[spl].Data == null) ? "data" : $"data{file.Sample[spl].BitsPerSample}";
                 int splFinetune = file.Sample[spl].Finetune;
                 if (splFinetune < 0) splFinetune += 16;
                 f.Write("      {");
                 f.Write($" {file.Sample[spl].Len,5}, {file.Sample[spl].LoopStart,5}, {file.Sample[spl].LoopLen,5},");
-                f.Write($" 0x{splFinetune:x02}, {file.Sample[spl].Volume,2}, {splIdent}, ");
+                f.Write($" 0x{splFinetune:x02}, {file.Sample[spl].Volume,2}, {file.Sample[spl].BitsPerSample,2},");
+                f.Write($" {{ .{splIdentName} = {splIdent} }}, ");
                 f.WriteLine("},");
             }
             f.WriteLine("    },");
@@ -388,7 +402,7 @@ namespace GameEditor.ProjectIO
 
             // merge identical samples
             MergeModSamples(out Dictionary<ModData, List<string>> modSampleIds,
-                            out Dictionary<string, short[]> modSamplesById);
+                            out Dictionary<string, ModSampleData> modSamplesById);
 
             // write samples
             WriteModSamples(modSamplesById);
@@ -413,10 +427,11 @@ namespace GameEditor.ProjectIO
 
         protected void WriteSfxData(SfxData sfx) {
             string ident = identifiers.Add(sfx, "sfx_samples", sfx.Name);
-            f.Write($"static const int8_t {ident}[] = {{");
+            f.Write($"static const int{sfx.BitsPerSample}_t {ident}[] = {{");
             for (int i = 0; i < sfx.Length; i++) {
                 if (i % 16 == 0) { f.WriteLine(); f.Write("  "); }
-                int sample = sfx.Samples[i] >> 8;  // TODO: no shift if it's a 16-bit sample
+                int sample = sfx.Samples[i];
+                if (sfx.BitsPerSample == 8) sample >>= 8;
                 f.Write($"{sample},");
             }
             f.WriteLine();
@@ -439,7 +454,8 @@ namespace GameEditor.ProjectIO
                 int len = si.Sfx.Length;
                 int loopStart = si.Sfx.LoopStart;
                 int loopLen = si.Sfx.LoopLength;
-                f.WriteLine($"  {{ {len}, {loopStart}, {loopLen}, {name} }},");
+                int bitsPerSample = si.Sfx.BitsPerSample;
+                f.WriteLine($"  {{ {len}, {loopStart}, {loopLen}, {bitsPerSample}, {{ .spl{bitsPerSample} = {name} }} }},");
             }
             f.WriteLine("};");
             f.WriteLine();

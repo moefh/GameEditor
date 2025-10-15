@@ -7,12 +7,17 @@
 #ifndef ${PREFIX}_SKIP_STRUCTS_MOD
 
 struct ${PREFIX}_MOD_SAMPLE {
-    uint32_t       len;
-    uint32_t       loop_start;
-    uint32_t       loop_len;
-    uint8_t        finetune;
-    uint8_t        volume;
-    const int8_t  *data;
+    uint32_t len;
+    uint32_t loop_start;
+    uint32_t loop_len;
+    uint8_t  finetune;
+    uint8_t  volume;
+    uint16_t bits_per_sample;
+    union {
+        const void *data;
+        const int8_t *data8;
+        const int16_t *data16;
+    };
 };
 
 struct ${PREFIX}_MOD_CELL {
@@ -40,7 +45,12 @@ struct ${PREFIX}_SFX {
     int32_t len;
     int32_t loop_start;
     int32_t loop_len;
-    const int8_t *samples;
+    int32_t bits_per_sample;
+    union {
+        const void *samples;
+        const int8_t *spl8;
+        const int16_t *spl16;
+    };
 };
 
 #endif /* ${PREFIX}_SKIP_STRUCTS_SFX */

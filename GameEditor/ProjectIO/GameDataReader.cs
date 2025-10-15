@@ -20,6 +20,29 @@ namespace GameEditor.ProjectIO
     {
         const bool REMOVE_SPRITE_MIRRORS = true;
 
+        private enum NumDataType {
+            None,
+            S8,  U8,
+            S16, U16,
+            S32, U32,
+        }
+
+        private struct SampleData {
+            public NumDataType type;
+            public List<short> data;
+
+            public int bitsPerSample {
+                get {
+                    return type switch {
+                        NumDataType.U8  => 8,  NumDataType.S8  => 8,
+                        NumDataType.U16 => 16, NumDataType.S16 => 16,
+                        NumDataType.U32 => 32, NumDataType.S32 => 32,
+                        _ => 0,
+                    };
+                }
+            }
+        }
+
         private readonly string[] IGNORE_DATA_ID_ENUM_TYPES = [
             "MOD",
             "SFX",
@@ -35,6 +58,7 @@ namespace GameEditor.ProjectIO
         // parsing stuff:
         private readonly StreamReader f;
         private readonly Tokenizer tokenizer;
+        private NumDataType curDataType;
         private bool disposed;
         private int lastLine;
 
@@ -50,8 +74,8 @@ namespace GameEditor.ProjectIO
         private readonly Dictionary<string,List<uint>> spriteData = [];
         private readonly Dictionary<string,List<byte>> mapTiles = [];
         private readonly Dictionary<string,List<byte>> spriteAnimationFrames = [];
-        private readonly Dictionary<string,List<short>> sfxSamples = [];
-        private readonly Dictionary<string,List<short>> modSamples = [];
+        private readonly Dictionary<string,SampleData> sfxSamples = [];
+        private readonly Dictionary<string,SampleData> modSamples = [];
         private readonly Dictionary<string,List<ModCell>> modPattern = [];
         private readonly Dictionary<string,List<RoomData.Map>> roomMaps = [];
 
@@ -69,6 +93,7 @@ namespace GameEditor.ProjectIO
         public GameDataReader(string filename) {
             f = new StreamReader(filename, Encoding.UTF8);
             tokenizer = new Tokenizer(f);
+            curDataType = NumDataType.None;
             globalPrefixLower = "";
             globalPrefixUpper = "";
         }
@@ -76,6 +101,7 @@ namespace GameEditor.ProjectIO
         public GameDataReader(string filename, string prefix) {
             f = new StreamReader(filename, Encoding.UTF8);
             tokenizer = new Tokenizer(f);
+            curDataType = NumDataType.None;
             globalPrefixLower = prefix.ToLowerInvariant();
             globalPrefixUpper = prefix.ToUpperInvariant();
         }
@@ -852,12 +878,16 @@ namespace GameEditor.ProjectIO
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 long sample = ReadSignedNumber(next);
-                data.Add((short) (sample << 8));  // TODO: no shift if it's a 16-bit sample
+                if (curDataType == NumDataType.S8) sample <<= 8;
+                data.Add((short) sample);
                 ExpectPunct(',');
             }
             ExpectPunct(';');
 
-            sfxSamples[ident.Str] = data;
+            SampleData sampleData;
+            sampleData.data = data;
+            sampleData.type = curDataType;
+            sfxSamples[ident.Str] = sampleData;
             Util.Log($"-> got sfx samples {ident.Str}");
         }
 
@@ -876,22 +906,32 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token loopLength = ExpectNumber();
                 ExpectPunct(',');
+                Token bitsPerSample = ExpectNumber();
+                ExpectPunct(',');
+                ExpectPunct('{');
+                ExpectPunct('.');
+                Token dataNameIdent = ExpectIdent();
+                ExpectPunct('=');
                 Token dataIdent = ExpectIdent();
+                ExpectPunct('}');
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! sfxSamples.TryGetValue(dataIdent.Str, out List<short>? data)) {
+                if (! sfxSamples.TryGetValue(dataIdent.Str, out SampleData sampleData)) {
                     throw new ParseError($"invalid sfx: samples {dataIdent.Str} not found", dataIdent.LineNum);
                 }
-                if (length.Num != data.Count) {
-                    throw new ParseError($"invalid sfx: expected {length.Num} samples, got {data.Count}", dataIdent.LineNum);
+                if (dataNameIdent.Str != $"spl{sampleData.bitsPerSample}") {
+                    throw new ParseError($"invalid mod: expected 'spl{sampleData.bitsPerSample}' for data, got '{dataNameIdent.Str}'", dataNameIdent.LineNum);
+                }
+                if (length.Num != sampleData.data.Count) {
+                    throw new ParseError($"invalid sfx: expected {length.Num} samples, got {sampleData.data.Count}", dataIdent.LineNum);
                 }
                 if (loopStart.Num < 0 || loopStart.Num > length.Num || loopLength.Num < 0 || loopStart.Num + loopLength.Num > length.Num) {
                     throw new ParseError($"invalid sfx: loop out of bounds", dataIdent.LineNum);
                 }
 
                 string name = ExtractGlobalLowerName(dataIdent.Str, "sfx_samples");
-                sfxList.Add(new SfxData(name, (int)loopStart.Num, (int)loopLength.Num, 8, data));
+                sfxList.Add(new SfxData(name, (int)loopStart.Num, (int)loopLength.Num, sampleData.bitsPerSample, sampleData.data));
 
                 Util.Log($"-> got sfx for {dataIdent.Str} with {length.Num} samples");
             }
@@ -913,12 +953,16 @@ namespace GameEditor.ProjectIO
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 long sample = ReadSignedNumber(next);
-                data.Add((short) (sample << 8));  // TODO: no shift if it's a 16-bit sample
+                if (curDataType == NumDataType.S8) sample <<= 8;
+                data.Add((short) sample);
                 ExpectPunct(',');
             }
             ExpectPunct(';');
 
-            modSamples[ident.Str] = data;
+            SampleData sampleData;
+            sampleData.data = data;
+            sampleData.type = curDataType;
+            modSamples[ident.Str] = sampleData;
             Util.Log($"-> got MOD sample {ident.Str}");
         }
 
@@ -977,14 +1021,20 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
                 Token volume = ExpectNumber();
                 ExpectPunct(',');
+                Token bitsPerSample = ExpectNumber();
+                ExpectPunct(',');
+                ExpectPunct('{');
+                ExpectPunct('.');
+                Token dataNameIdent = ExpectIdent();
+                ExpectPunct('=');
                 Token dataIdent = ExpectToken();
+                ExpectPunct('}');
                 ExpectPunct(',');
 
                 ExpectPunct('}');
                 ExpectPunct(',');
 
                 ModSample sample;
-                sample.BitsPerSample = 8;
                 sample.Len = length.Num;
                 sample.LoopStart = loopStart.Num;
                 sample.LoopLen = loopLength.Num;
@@ -993,18 +1043,23 @@ namespace GameEditor.ProjectIO
                 sample.Title = dataIdent.Str;
 
                 if (dataIdent.Str != "NULL") {
-                    if (! modSamples.TryGetValue(dataIdent.Str, out List<short>? data)) {
+                    if (! modSamples.TryGetValue(dataIdent.Str, out SampleData sampleData)) {
                         throw new ParseError($"invalid mod: samples {dataIdent.Str} not found", dataIdent.LineNum);
                     }
-                    if (length.Num != data.Count) {
-                        throw new ParseError($"invalid mod: expected {length.Num} samples, got {data.Count}", dataIdent.LineNum);
+                    if (dataNameIdent.Str != $"data{sampleData.bitsPerSample}") {
+                        throw new ParseError($"invalid mod: expected 'data{sampleData.bitsPerSample}' for data, got '{dataNameIdent.Str}'", dataNameIdent.LineNum);
                     }
-                    sample.Data = data.ToArray();
+                    if (length.Num != sampleData.data.Count) {
+                        throw new ParseError($"invalid mod: expected {length.Num} samples, got {sampleData.data.Count}", dataIdent.LineNum);
+                    }
+                    sample.Data = sampleData.data.ToArray();
+                    sample.BitsPerSample = sampleData.bitsPerSample;
                 } else {
                     if (length.Num != 0) {
                         throw new ParseError($"invalid mod: NULL sample data with non-zero length", dataIdent.LineNum);
                     }
                     sample.Data = null;
+                    sample.BitsPerSample = 0;
                 }
 
                 samples.Add(sample);
@@ -1332,11 +1387,14 @@ namespace GameEditor.ProjectIO
 
                 if (t.Value.IsIdent("static")) continue;
                 if (t.Value.IsIdent("const")) continue;
-                if (t.Value.IsIdent("int8_t")) continue;
-                if (t.Value.IsIdent("uint8_t")) continue;
-                if (t.Value.IsIdent("uint32_t")) continue;
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent("enum")) continue;
+                if (t.Value.IsIdent("int8_t"))   { curDataType = NumDataType.S8;  continue; }
+                if (t.Value.IsIdent("uint8_t"))  { curDataType = NumDataType.U8;  continue; }
+                if (t.Value.IsIdent("int16_t"))  { curDataType = NumDataType.S16; continue; }
+                if (t.Value.IsIdent("uint16_t")) { curDataType = NumDataType.U16; continue; }
+                if (t.Value.IsIdent("int32_t"))  { curDataType = NumDataType.S32; continue; }
+                if (t.Value.IsIdent("uint32_t")) { curDataType = NumDataType.U32; continue; }
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "FONT")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "PROP_FONT")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SFX")) continue;
