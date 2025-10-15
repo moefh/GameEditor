@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace GameEditor.Misc
 {
@@ -40,22 +39,22 @@ namespace GameEditor.Misc
             return (int) (((long)targetNumSamples * SampleRate) / newSampleRate);
         }
 
-        private static sbyte ConvertSample(int sample, double volume) {
-            return (sbyte) ((int)Math.Clamp(sample * volume, short.MinValue, short.MaxValue) >> 8);
+        private static short ConvertSample(int sample, double volume) {
+            return (short) Math.Clamp(sample * volume, short.MinValue, short.MaxValue);
         }
 
-        private sbyte MixSampleChannels(uint channelBits, int samplePos, double volume) {
+        private short MixSampleChannels(uint channelBits, int samplePos, double volume) {
             return channelBits switch {
                 0b01 => ConvertSample(channels[0][samplePos], volume),
-                0b10 => ((channels.Count > 1) ? ConvertSample(channels[1][samplePos], volume) : (sbyte)0),
+                0b10 => ((channels.Count > 1) ? ConvertSample(channels[1][samplePos], volume) : (short) 0),
                 0b11 => ((channels.Count > 1) ? ConvertSample((channels[0][samplePos]+channels[1][samplePos])/2, volume) : ConvertSample(channels[0][samplePos], volume)),
                 _ => 0,
             };
         }
 
-        public sbyte[] GetSamples(uint channelBits, int newSampleRate, double newVolume) {
+        public short[] GetSamples(uint channelBits, int newSampleRate, double newVolume) {
             int newNumSamples = GetNumSamplesAfterResampling(newSampleRate);
-            sbyte[] newSamples = new sbyte[newNumSamples];
+            short[] newSamples = new short[newNumSamples];
 
             // srcAdv and srcPos are fixed point 20.12
             long srcAdv = ((long)SampleRate << 12) / newSampleRate;

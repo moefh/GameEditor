@@ -16,9 +16,10 @@ namespace GameEditor.Misc
         public uint LoopLen;
         public sbyte Finetune;
         public byte Volume;
-        public sbyte[]? Data;
+        public int BitsPerSample;
+        public short[]? Data;
 
-        public static ModSample Create(int len) {
+        public static ModSample Create(int bitsPerSample, int len) {
             ModSample sample;
             sample.Title = "";
             sample.Len = (uint) len;
@@ -26,22 +27,24 @@ namespace GameEditor.Misc
             sample.LoopLen = 0;
             sample.Volume = 64;
             sample.Finetune = 0;
-            sample.Data = (sample.Len == 0) ? null : new sbyte[sample.Len];
+            sample.BitsPerSample = (sample.Len == 0) ? 0 : bitsPerSample;
+            sample.Data = (sample.Len == 0) ? null : new short[sample.Len];
             return sample;
         }
 
         public readonly void Export(string filename, int sampleRate, double volume) {
             if (Data != null) {
-                WavFileWriter.Write(filename, Data, sampleRate, volume);
+                WavFileWriter.Write(filename, BitsPerSample, Data, sampleRate, volume);
             }
         }
 
         public void Import(WaveFileReader wav, uint channelBits, int newSampleRate, double volume) {
             if (newSampleRate <= 0) newSampleRate = wav.SampleRate;
-            sbyte[] samples = wav.GetSamples(channelBits, newSampleRate, volume);
+            short[] samples = wav.GetSamples(channelBits, newSampleRate, volume);
             if (samples.Length > ModData.MAX_SAMPLE_LENGTH) throw new Exception("sample is too large");
             Data = samples;
             Len = (uint) samples.Length;
+            BitsPerSample = (wav.BitsPerSample == 8) ? 8 : 16;
         }
     }
 
@@ -82,8 +85,8 @@ namespace GameEditor.Misc
             sample = new ModSample[31];
             for (int i = 0; i < sample.Length; i++) {
                 int sampleLen = (i == 0) ? 11025 : 0;
-                sample[i] = ModSample.Create(sampleLen);
-                sbyte[]? sampleData = sample[i].Data;
+                sample[i] = ModSample.Create(8, sampleLen);
+                short[]? sampleData = sample[i].Data;
                 if (sampleData != null) {
                     SoundUtil.MakeNote(sampleData, 0, sampleLen, sampleLen, sampleLen/64);
                 }
@@ -206,8 +209,10 @@ namespace GameEditor.Misc
             // read sample data
             for (int i = 0; i < NumSamples; i++) {
                 if (Sample[i].Len == 0) { Sample[i].Data = null; continue; }
-                sbyte[] sampleData = new sbyte[Sample[i].Len];
-                r.ReadSBytes(sampleData, 0, (int) Sample[i].Len);
+                short[] sampleData = new short[Sample[i].Len];
+                for (int si = 0; si < sampleData.Length; si++) {
+                    sampleData[si] = r.ReadU8();
+                }
                 Sample[i].Data = sampleData;
             }
         }
@@ -266,10 +271,11 @@ namespace GameEditor.Misc
 
             // sample data
             for (int s = 0; s < NumSamples; s++) {
-                sbyte[]? sampleData = Sample[s].Data;
+                short[]? sampleData = Sample[s].Data;
                 if (sampleData == null) continue;
                 for (int i = 0; i < 2*sampleLength[s]; i++) {
-                    fs.WriteByte((byte) sampleData[i]);
+                    byte sample = (byte) Math.Clamp(sampleData[i]>>8, -128, 127);
+                    fs.WriteByte(sample);
                 }
             }
 

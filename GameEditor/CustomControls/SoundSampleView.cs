@@ -17,7 +17,7 @@ namespace GameEditor.CustomControls
         private int MARGIN_WIDTH = 5;
         private int MARGIN_HEIGHT = 5;
 
-        private sbyte[]? samples;
+        private short[]? samples;
         private int selectedMarker;
         private int[] markers = [];
         private Color[] markerColors = [];
@@ -29,7 +29,7 @@ namespace GameEditor.CustomControls
             SetDoubleBuffered();
         }
 
-        public sbyte[]? Samples {
+        public short[]? Samples {
             get { return samples; }
             set { samples = value; Invalidate(); }
         }
@@ -80,8 +80,8 @@ namespace GameEditor.CustomControls
                 int iStart = (int) ((x * step) >> 16);
                 int iNextStart = (int) (((x+1) * step) >> 16) - 1;
                 if (iNextStart == iStart) iNextStart = iStart + 1;
-                sbyte sample = SoundUtil.GetMaxSampleInRange(Samples, iStart, iNextStart-iStart);
-                int y = sample * yMax / 128;
+                short sample = SoundUtil.GetMaxSampleInRange(Samples, iStart, iNextStart-iStart);
+                int y = sample * yMax / 32768;
                 if (y == 0) y = 1;
                 for (int m = 0; m < markers.Length; m++) {
                     if (markerX[m] != x) continue;

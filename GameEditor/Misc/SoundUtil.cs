@@ -16,7 +16,7 @@ namespace GameEditor.Misc
             public readonly double Mag = mag;
         }
 
-        private static void PlayOscillators(sbyte[] samples, int start, int count, int sampleRate, Oscillator[] osc, double volume) {
+        private static void PlayOscillators(short[] samples, int start, int count, int sampleRate, Oscillator[] osc, double volume) {
             for (int i = 0; i < count; i++) {
                 double hz = (2 * Math.PI * i) / sampleRate;
                 double sample = 0;
@@ -25,11 +25,11 @@ namespace GameEditor.Misc
                 }
                 double envelope = volume * Math.Exp(-2.0*i/count);
                 sample *= envelope / osc.Length;
-                samples[i + start] = (sbyte) Math.Clamp(127 * sample, -128, 127);
+                samples[i + start] = (short) Math.Clamp(short.MaxValue * sample, short.MinValue, short.MaxValue);
             }
         }
 
-        public static void MakeNote(sbyte[] samples, int start, int count, int sampleRate, int noteFreq) {
+        public static void MakeNote(short[] samples, int start, int count, int sampleRate, int noteFreq) {
             Oscillator[] note = [
                 new Oscillator(noteFreq*1, 1.0),
                 new Oscillator(noteFreq*2, 0.8),
@@ -42,7 +42,7 @@ namespace GameEditor.Misc
          * Make a crappy triad.
          * Each note has the fundamental and 2 overtones.
          */
-        public static void MakeChord(sbyte[] samples, int start, int count, int sampleRate, double root, bool major = true, int inversion = 0) {
+        public static void MakeChord(short[] samples, int start, int count, int sampleRate, double root, bool major = true, int inversion = 0) {
             double third = root * Math.Pow(2, (major?4:3) / 12.0) * ((inversion >= 2) ? 2 : 1);
             double fifth = root * Math.Pow(2, 7.0 / 12);
             if (inversion >= 1) root *= 2;
@@ -65,7 +65,7 @@ namespace GameEditor.Misc
             PlayOscillators(samples, start, count, sampleRate, triad, 1.5);
         }
 
-        public static void Make251Cadence(sbyte[] samples, int start, int len, int sampleRate, double one) {
+        public static void Make251Cadence(short[] samples, int start, int len, int sampleRate, double one) {
             double two = one * Math.Pow(2, 2/12.0);
             double five = one * Math.Pow(2, 7/12.0) / 2;
             int chordLen = len/3;
@@ -74,17 +74,17 @@ namespace GameEditor.Misc
             MakeChord(samples, start + 2*chordLen, len-2*chordLen, sampleRate, one, true, 1);
         }
 
-        public static sbyte GetMaxSampleInRange(sbyte[] data, int start, int num) {
+        public static short GetMaxSampleInRange(short[] data, int start, int num) {
             if (start >= data.Length) return 0;
             if (start < 0) { num += start; start = 0; }
             if (start + num >= data.Length) num = data.Length - start - 1;
             if (num < 0) return 0;
-            sbyte max = 0;
-            sbyte min = 0;
+            short max = 0;
+            short min = 0;
             for (int i = 0; i < num; i++) {
-                sbyte val = data[start+i];
-                max = sbyte.Max(val, max);
-                min = sbyte.Min(val, min);
+                short val = data[start+i];
+                max = short.Max(val, max);
+                min = short.Min(val, min);
             }
             return (int.Abs(max) > int.Abs(min)) ? max : min;
         }

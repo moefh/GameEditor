@@ -13,8 +13,6 @@ using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.ProjectIO
 {
@@ -52,8 +50,8 @@ namespace GameEditor.ProjectIO
         private readonly Dictionary<string,List<uint>> spriteData = [];
         private readonly Dictionary<string,List<byte>> mapTiles = [];
         private readonly Dictionary<string,List<byte>> spriteAnimationFrames = [];
-        private readonly Dictionary<string,List<sbyte>> sfxSamples = [];
-        private readonly Dictionary<string,List<sbyte>> modSamples = [];
+        private readonly Dictionary<string,List<short>> sfxSamples = [];
+        private readonly Dictionary<string,List<short>> modSamples = [];
         private readonly Dictionary<string,List<ModCell>> modPattern = [];
         private readonly Dictionary<string,List<RoomData.Map>> roomMaps = [];
 
@@ -849,12 +847,12 @@ namespace GameEditor.ProjectIO
             ExpectPunct(']');
             ExpectPunct('=');
             ExpectPunct('{');
-            List<sbyte> data = [];
+            List<short> data = [];
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 long sample = ReadSignedNumber(next);
-                data.Add((sbyte) sample);
+                data.Add((short) (sample << 8));  // TODO: no shift if it's a 16-bit sample
                 ExpectPunct(',');
             }
             ExpectPunct(';');
@@ -882,7 +880,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! sfxSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
+                if (! sfxSamples.TryGetValue(dataIdent.Str, out List<short>? data)) {
                     throw new ParseError($"invalid sfx: samples {dataIdent.Str} not found", dataIdent.LineNum);
                 }
                 if (length.Num != data.Count) {
@@ -893,7 +891,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 string name = ExtractGlobalLowerName(dataIdent.Str, "sfx_samples");
-                sfxList.Add(new SfxData(name, (int)loopStart.Num, (int)loopLength.Num, data));
+                sfxList.Add(new SfxData(name, (int)loopStart.Num, (int)loopLength.Num, 8, data));
 
                 Util.Log($"-> got sfx for {dataIdent.Str} with {length.Num} samples");
             }
@@ -910,12 +908,12 @@ namespace GameEditor.ProjectIO
             ExpectPunct(']');
             ExpectPunct('=');
             ExpectPunct('{');
-            List<sbyte> data = [];
+            List<short> data = [];
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 long sample = ReadSignedNumber(next);
-                data.Add((sbyte) sample);
+                data.Add((short) (sample << 8));  // TODO: no shift if it's a 16-bit sample
                 ExpectPunct(',');
             }
             ExpectPunct(';');
@@ -986,6 +984,7 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
 
                 ModSample sample;
+                sample.BitsPerSample = 8;
                 sample.Len = length.Num;
                 sample.LoopStart = loopStart.Num;
                 sample.LoopLen = loopLength.Num;
@@ -994,7 +993,7 @@ namespace GameEditor.ProjectIO
                 sample.Title = dataIdent.Str;
 
                 if (dataIdent.Str != "NULL") {
-                    if (! modSamples.TryGetValue(dataIdent.Str, out List<sbyte>? data)) {
+                    if (! modSamples.TryGetValue(dataIdent.Str, out List<short>? data)) {
                         throw new ParseError($"invalid mod: samples {dataIdent.Str} not found", dataIdent.LineNum);
                     }
                     if (length.Num != data.Count) {

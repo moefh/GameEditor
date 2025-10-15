@@ -12,13 +12,6 @@ namespace GameEditor.Misc
         public const int SAMPLE_RATE_OFFSET = 24;
         public const int BYTES_PER_SEC_OFFSET = 28;
 
-        public static void SetSampleRate(byte[] header, int sampleRate) {
-            for (int i = 0; i < 4; i++) {
-                header[SAMPLE_RATE_OFFSET + 0] = (byte) ((sampleRate >> (8*i)) & 0xff);
-                header[BYTES_PER_SEC_OFFSET + 0] = (byte) ((sampleRate >> (8*i)) & 0xff);
-            }
-        }
-
         public static byte[] CreateHeader(int numChannels, int bitsPerSample, int sampleRate, int numSamples, bool includeSamples = false) {
             ushort bytesPerBlock = (ushort) (numChannels * bitsPerSample/8);
             uint bytesPerSecond = (uint) ((uint)bytesPerBlock * sampleRate);
@@ -52,12 +45,18 @@ namespace GameEditor.Misc
             return wav;
         }
 
-        public static void Write(string filename, sbyte[] samples, int sampleRate, double volume = 1.0) {
-            byte[] header = CreateHeader(1, 8, sampleRate, samples.Length);
+        public static void Write(string filename, int bitsPerSample, short[] samples, int sampleRate, double volume = 1.0) {
+            byte[] header = CreateHeader(1, bitsPerSample, sampleRate, samples.Length);
             using FileStream f = new FileStream(filename, FileMode.Create, FileAccess.Write);
             f.Write(header);
-            foreach (sbyte spl in samples) {
-                f.WriteByte((byte) (Math.Clamp(spl*volume, -128, 127) + 128));
+            foreach (short spl in samples) {
+                if (bitsPerSample == 8) {
+                    f.WriteByte((byte) (Math.Clamp(((int)(spl*volume))>>8, -128, 127) + 128));
+                } else {
+                    short val = (short) Math.Clamp(spl*volume, -32768, 32767);
+                    f.WriteByte((byte) (val & 0xff));
+                    f.WriteByte((byte) (val >> 8));
+                }
             }
             f.Close();
         }

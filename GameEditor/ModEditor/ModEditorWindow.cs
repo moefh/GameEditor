@@ -177,7 +177,7 @@ namespace GameEditor.ModEditor
 
         private void UpdateSampleDisplay() {
             int spl = sampleList.SelectedIndex;
-            sbyte[]? sampleData = (spl >= 0 && spl < ModFile.Sample.Length) ? ModFile.Sample[spl].Data : null;
+            short[]? sampleData = (spl >= 0 && spl < ModFile.Sample.Length) ? ModFile.Sample[spl].Data : null;
             bool enable = (sampleData != null && sampleData.Length > 0);
             sampleView.Samples = sampleData;
             sampleView.Enabled = enable;
@@ -265,7 +265,7 @@ namespace GameEditor.ModEditor
         private void btnPlaySample_Click(object sender, EventArgs e) {
             int index = sampleList.SelectedIndex;
             if (index < 0 || index > ModFile.Sample.Length) return;
-            sbyte[]? sampleData = ModFile.Sample[index].Data;
+            short[]? sampleData = ModFile.Sample[index].Data;
             if (sampleData != null) {
                 player.Play(sampleData, volPlaySample.Value, (int)numPlaySampleRate.Value);
             }
@@ -440,7 +440,7 @@ namespace GameEditor.ModEditor
             }
             if (sampleNum == 0) return;
 
-            sbyte[]? sampleData = ModFile.Sample[sampleNum - 1].Data;
+            short[]? sampleData = ModFile.Sample[sampleNum - 1].Data;
             if (sampleData != null) {
                 player.Play(sampleData, volPlaySample.Value, ModUtil.GetPeriodSampleRate(period));
                 sampleList.SelectedIndex = sampleNum - 1;
