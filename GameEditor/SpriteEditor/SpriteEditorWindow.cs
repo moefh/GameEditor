@@ -163,7 +163,6 @@ namespace GameEditor.SpriteEditor
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
-                Project.UpdateDataSize();
                 spriteEditor.Invalidate();
                 spriteFramePicker.ResetSize();
             } catch (Exception ex) {
@@ -193,7 +192,6 @@ namespace GameEditor.SpriteEditor
             Sprite.Name = dlg.SpriteName;
             if (dlg.SpriteWidth != Sprite.Width || dlg.SpriteHeight != Sprite.Height || dlg.SpriteFrames != Sprite.NumFrames) {
                 Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
-                Project.UpdateDataSize();
                 UpdateDataSize();
                 spriteFramePicker.ResetSize();
                 spriteEditor.SelectedFrame = 0;

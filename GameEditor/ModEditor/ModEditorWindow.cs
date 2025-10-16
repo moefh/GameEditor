@@ -141,7 +141,6 @@ namespace GameEditor.ModEditor
             sampleList.SelectedIndex = 0;
             UpdateModPattern();
             UpdateDataSize();
-            Project.UpdateDataSize();
         }
 
         protected override void OnFormClosed(FormClosedEventArgs e) {
@@ -198,6 +197,7 @@ namespace GameEditor.ModEditor
                 numSampleLoopLen.Value = uint.Clamp(loopLen, 0, sampleLen - loopStart);
                 numSampleVolume.Value = int.Clamp(ModFile.Sample[spl].Volume, 0, 64);
                 comboSampleFinetune.SelectedIndex = int.Clamp(ModFile.Sample[spl].Finetune, -8, 7) + 8;
+                comboSampleBitsPerSample.SelectedIndex = (ModFile.Sample[spl].BitsPerSample == 8) ? 0 : 1;
                 groupSampleParameters.Enabled = true;
             } else {
                 lblSampleLength.Text = "(no sample)";
@@ -205,6 +205,7 @@ namespace GameEditor.ModEditor
                 numSampleLoopLen.Value = 0;
                 numSampleVolume.Value = 0;
                 comboSampleFinetune.SelectedIndex = 8;
+                comboSampleBitsPerSample.SelectedIndex = -1;
             }
         }
 
@@ -233,6 +234,7 @@ namespace GameEditor.ModEditor
                 numSampleLoopStart.Value = start;
                 numSampleLoopLen.Value = int.Clamp(end - start, 0, sampleLen - start);
             } else if (groupSampleParameters.Enabled) {
+                ModFile.Sample[spl].BitsPerSample = (comboSampleBitsPerSample.SelectedIndex == 0) ? 8 : 16;
                 ModFile.Sample[spl].LoopStart = (uint)numSampleLoopStart.Value;
                 ModFile.Sample[spl].LoopLen = uint.Clamp((uint)numSampleLoopLen.Value, 0, ModFile.Sample[spl].Len - ModFile.Sample[spl].LoopStart);
                 ModFile.Sample[spl].Volume = (byte)numSampleVolume.Value;
@@ -241,6 +243,7 @@ namespace GameEditor.ModEditor
                 sampleView.Marker[1] = (int)(ModFile.Sample[spl].LoopStart + ModFile.Sample[spl].LoopLen);
                 sampleView.Invalidate();
                 SetDirty();
+                UpdateDataSize();
             }
         }
 

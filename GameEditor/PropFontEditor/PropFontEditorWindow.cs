@@ -118,7 +118,6 @@ namespace GameEditor.PropFontEditor
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
-                Project.UpdateDataSize();
                 Util.Log($"== Imported font image from {dlg.ImportFileName}");
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Proportional Font");
@@ -150,7 +149,6 @@ namespace GameEditor.PropFontEditor
                 propFontDisplay.Invalidate();
                 propFontEditor.Invalidate();
                 UpdateDataSize();
-                Project.UpdateDataSize();
             }
             SetDirty();
             FixFormTitle();

@@ -80,7 +80,6 @@ namespace GameEditor.TilesetEditor
             SetDirty();
             FixFormTitle();
             UpdateDataSize();
-            Project.UpdateDataSize();
             tilePicker.ResetSize();
             if (tilePicker.LeftSelectedTile >= Tileset.NumTiles) {
                 tilePicker.LeftSelectedTile = Tileset.NumTiles - 1;
@@ -109,7 +108,6 @@ namespace GameEditor.TilesetEditor
             SetDirty();
             FixFormTitle();
             UpdateDataSize();
-            Project.UpdateDataSize();
 
             tilePicker.ScrollToTile(0);
             tilePicker.LeftSelectedTile = 0;

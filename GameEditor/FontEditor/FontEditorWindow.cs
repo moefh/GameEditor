@@ -115,7 +115,6 @@ namespace GameEditor.FontEditor
                 SetDirty();
                 FixFormTitle();
                 UpdateDataSize();
-                Project.UpdateDataSize();
                 Util.Log($"== Imported font image from {dlg.ImportFileName}");
             } catch (Exception ex) {
                 Util.ShowError(ex, $"ERROR loading bitmap from {dlg.ImportFileName}", "Error Importing Font");
@@ -148,7 +147,6 @@ namespace GameEditor.FontEditor
                 fontDisplay.Invalidate();
                 fontEditor.Invalidate();
                 UpdateDataSize();
-                Project.UpdateDataSize();
             }
             SetDirty();
             FixFormTitle();

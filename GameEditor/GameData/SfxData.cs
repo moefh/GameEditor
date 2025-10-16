@@ -43,7 +43,7 @@ namespace GameEditor.GameData
         public int LoopLength { get; set; }
         public int BitsPerSample { get; set; }
 
-        public int DataSize { get { return 4+4+4 + Length; } }
+        public int DataSize { get { return 4+4+4+4 + Length * BitsPerSample / 8; } }
 
         public void Dispose() {
         }
@@ -61,8 +61,8 @@ namespace GameEditor.GameData
             return samples;
         }
 
-        public void Export(string filename, int sampleRate, double volume) {
-            WavFileWriter.Write(filename, BitsPerSample, data, sampleRate, volume);
+        public void Export(string filename, int bitsPerSample, int sampleRate, double volume) {
+            WavFileWriter.Write(filename, bitsPerSample, data, sampleRate, volume);
         }
 
         public void Import(string filename, uint channelBits, int newSampleRate, double volume) {

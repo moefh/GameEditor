@@ -23,6 +23,8 @@ namespace GameEditor.SfxEditor
 
         public SfxImportDialog() {
             InitializeComponent();
+            comboBitsPerSample.Items.AddRange(["From file", "8", "16"]);
+            comboBitsPerSample.SelectedIndex = 0;
             comboChannel.Items.AddRange(["Both (Mix)", "Left", "Right"]);
             comboChannel.SelectedIndex = 0;
             comboConvertSampleRate.Items.AddRange(["Resample", "No conversion"]);
@@ -47,6 +49,17 @@ namespace GameEditor.SfxEditor
         public double Volume {
             get { return (double)numVolume.Value; }
             set { numVolume.Value = (decimal)value; }
+        }
+
+        public int BitsPerSample {
+            get {
+                return comboBitsPerSample.SelectedIndex switch {
+                    0 => 0,
+                    1 => 8,
+                    2 => 16,
+                    _ => 0,
+                };
+            }
         }
 
         public Channel UseChannel {

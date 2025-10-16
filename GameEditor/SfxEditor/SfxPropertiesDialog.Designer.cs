@@ -29,12 +29,14 @@
             btnOK = new Button();
             txtName = new TextBox();
             label1 = new Label();
+            comboBitsPerSample = new ComboBox();
+            label2 = new Label();
             SuspendLayout();
             // 
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(111, 75);
+            btnCancel.Location = new Point(160, 102);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(90, 34);
             btnCancel.TabIndex = 6;
@@ -44,7 +46,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(207, 75);
+            btnOK.Location = new Point(256, 102);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(90, 34);
             btnOK.TabIndex = 5;
@@ -54,19 +56,38 @@
             // 
             // txtName
             // 
-            txtName.Location = new Point(80, 20);
+            txtName.Location = new Point(136, 20);
             txtName.Name = "txtName";
             txtName.Size = new Size(184, 26);
             txtName.TabIndex = 3;
             // 
             // label1
             // 
-            label1.Location = new Point(12, 23);
+            label1.Location = new Point(68, 23);
             label1.Name = "label1";
             label1.Size = new Size(65, 19);
             label1.TabIndex = 4;
             label1.Text = "Name:";
             label1.TextAlign = ContentAlignment.TopRight;
+            // 
+            // comboBitsPerSample
+            // 
+            comboBitsPerSample.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBitsPerSample.FormattingEnabled = true;
+            comboBitsPerSample.Location = new Point(136, 52);
+            comboBitsPerSample.Name = "comboBitsPerSample";
+            comboBitsPerSample.Size = new Size(77, 27);
+            comboBitsPerSample.TabIndex = 26;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label2.Location = new Point(9, 55);
+            label2.Name = "label2";
+            label2.Size = new Size(124, 19);
+            label2.TabIndex = 27;
+            label2.Text = "Bits per sample";
+            label2.TextAlign = ContentAlignment.TopRight;
             // 
             // SfxPropertiesDialog
             // 
@@ -74,7 +95,9 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(309, 129);
+            ClientSize = new Size(358, 156);
+            Controls.Add(comboBitsPerSample);
+            Controls.Add(label2);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(txtName);
@@ -95,5 +118,7 @@
         private Button btnOK;
         private TextBox txtName;
         private Label label1;
+        private ComboBox comboBitsPerSample;
+        private Label label2;
     }
 }

@@ -14,6 +14,7 @@ namespace GameEditor.SfxEditor
     {
         public SfxPropertiesDialog() {
             InitializeComponent();
+            comboBitsPerSample.Items.AddRange(["8", "16"]);
         }
 
         public string SfxName {
@@ -21,6 +22,10 @@ namespace GameEditor.SfxEditor
             set { txtName.Text = value; }
         }
 
+        public int BitsPerSample {
+            get { return (comboBitsPerSample.SelectedIndex == 0) ? 8 : 16; }
+            set { comboBitsPerSample.SelectedIndex = (value == 8) ? 0 : 1; }
+        }
 
         private void btnOK_Click(object sender, EventArgs e) {
             if (SfxName == "") {

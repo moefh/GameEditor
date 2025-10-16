@@ -224,7 +224,6 @@ namespace GameEditor.MapEditor
             SetDirty();
             FixFormTitle();
             UpdateDataSize();
-            Project.UpdateDataSize();
         }
 
         private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
@@ -262,7 +261,6 @@ namespace GameEditor.MapEditor
                 UpdateDataSize();
                 Project.UpdateAssetNames(Map.AssetType);
                 Project.RefreshAssetUsers(Map);
-                Project.UpdateDataSize();
             }
         }
 

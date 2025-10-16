@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Schema;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace GameEditor.Misc
 {
@@ -45,6 +46,8 @@ namespace GameEditor.Misc
             Data = samples;
             Len = (uint) samples.Length;
             BitsPerSample = (wav.BitsPerSample == 8) ? 8 : 16;
+            LoopStart = uint.Clamp(LoopStart, 0, (uint)samples.Length);
+            LoopLen = uint.Clamp(LoopLen, 0, (uint)(samples.Length - LoopStart));
         }
     }
 

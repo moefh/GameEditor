@@ -54,6 +54,8 @@
             btnImportSample = new Button();
             btnExportSample = new Button();
             groupSampleParameters = new GroupBox();
+            comboSampleBitsPerSample = new ComboBox();
+            label9 = new Label();
             lblSampleLoopLengthColor = new Label();
             lblSampleLoopStartColor = new Label();
             lblSampleLength = new Label();
@@ -97,7 +99,7 @@
             // statusStrip1
             // 
             statusStrip1.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip1.Location = new Point(0, 357);
+            statusStrip1.Location = new Point(0, 383);
             statusStrip1.Name = "statusStrip1";
             statusStrip1.Size = new Size(817, 24);
             statusStrip1.TabIndex = 0;
@@ -166,7 +168,7 @@
             mainTabControl.Location = new Point(0, 25);
             mainTabControl.Name = "mainTabControl";
             mainTabControl.SelectedIndex = 0;
-            mainTabControl.Size = new Size(817, 332);
+            mainTabControl.Size = new Size(817, 358);
             mainTabControl.TabIndex = 2;
             // 
             // tabSamples
@@ -175,7 +177,7 @@
             tabSamples.Location = new Point(4, 28);
             tabSamples.Name = "tabSamples";
             tabSamples.Padding = new Padding(3);
-            tabSamples.Size = new Size(809, 300);
+            tabSamples.Size = new Size(809, 326);
             tabSamples.TabIndex = 0;
             tabSamples.Text = "Samples";
             tabSamples.UseVisualStyleBackColor = true;
@@ -194,7 +196,7 @@
             // splitSampleList.Panel2
             // 
             splitSampleList.Panel2.Controls.Add(splitSample);
-            splitSampleList.Size = new Size(803, 294);
+            splitSampleList.Size = new Size(803, 320);
             splitSampleList.SplitterDistance = 171;
             splitSampleList.TabIndex = 0;
             // 
@@ -205,7 +207,7 @@
             sampleList.IntegralHeight = false;
             sampleList.Location = new Point(0, 0);
             sampleList.Name = "sampleList";
-            sampleList.Size = new Size(171, 294);
+            sampleList.Size = new Size(171, 320);
             sampleList.TabIndex = 0;
             sampleList.SelectedIndexChanged += sampleList_SelectedIndexChanged;
             // 
@@ -227,7 +229,7 @@
             splitSample.Panel2.Controls.Add(btnImportSample);
             splitSample.Panel2.Controls.Add(btnExportSample);
             splitSample.Panel2.Controls.Add(groupSampleParameters);
-            splitSample.Size = new Size(628, 294);
+            splitSample.Size = new Size(628, 320);
             splitSample.SplitterDistance = 84;
             splitSample.TabIndex = 0;
             // 
@@ -257,7 +259,7 @@
             groupSamplePlayback.Controls.Add(comboPlaySampleOctave);
             groupSamplePlayback.Location = new Point(281, 3);
             groupSamplePlayback.Name = "groupSamplePlayback";
-            groupSamplePlayback.Size = new Size(255, 198);
+            groupSamplePlayback.Size = new Size(255, 217);
             groupSamplePlayback.TabIndex = 27;
             groupSamplePlayback.TabStop = false;
             groupSamplePlayback.Text = "Test";
@@ -381,6 +383,8 @@
             // 
             // groupSampleParameters
             // 
+            groupSampleParameters.Controls.Add(comboSampleBitsPerSample);
+            groupSampleParameters.Controls.Add(label9);
             groupSampleParameters.Controls.Add(lblSampleLoopLengthColor);
             groupSampleParameters.Controls.Add(lblSampleLoopStartColor);
             groupSampleParameters.Controls.Add(lblSampleLength);
@@ -395,16 +399,36 @@
             groupSampleParameters.Controls.Add(numSampleVolume);
             groupSampleParameters.Location = new Point(3, 3);
             groupSampleParameters.Name = "groupSampleParameters";
-            groupSampleParameters.Size = new Size(272, 198);
+            groupSampleParameters.Size = new Size(272, 217);
             groupSampleParameters.TabIndex = 15;
             groupSampleParameters.TabStop = false;
             groupSampleParameters.Text = "Parameters";
+            // 
+            // comboSampleBitsPerSample
+            // 
+            comboSampleBitsPerSample.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboSampleBitsPerSample.FormattingEnabled = true;
+            comboSampleBitsPerSample.Items.AddRange(new object[] { "8", "16" });
+            comboSampleBitsPerSample.Location = new Point(147, 23);
+            comboSampleBitsPerSample.Name = "comboSampleBitsPerSample";
+            comboSampleBitsPerSample.Size = new Size(77, 27);
+            comboSampleBitsPerSample.TabIndex = 25;
+            comboSampleBitsPerSample.SelectedIndexChanged += SampleParametersChanged;
+            // 
+            // label9
+            // 
+            label9.Location = new Point(11, 26);
+            label9.Name = "label9";
+            label9.Size = new Size(130, 19);
+            label9.TabIndex = 26;
+            label9.Text = "Bits per sample:";
+            label9.TextAlign = ContentAlignment.TopRight;
             // 
             // lblSampleLoopLengthColor
             // 
             lblSampleLoopLengthColor.BackColor = Color.FromArgb(255, 192, 160);
             lblSampleLoopLengthColor.Cursor = Cursors.Hand;
-            lblSampleLoopLengthColor.Location = new Point(207, 87);
+            lblSampleLoopLengthColor.Location = new Point(230, 114);
             lblSampleLoopLengthColor.Name = "lblSampleLoopLengthColor";
             lblSampleLoopLengthColor.Size = new Size(24, 23);
             lblSampleLoopLengthColor.TabIndex = 24;
@@ -415,7 +439,7 @@
             lblSampleLoopStartColor.BackColor = Color.FromArgb(128, 192, 255);
             lblSampleLoopStartColor.BorderStyle = BorderStyle.FixedSingle;
             lblSampleLoopStartColor.Cursor = Cursors.Hand;
-            lblSampleLoopStartColor.Location = new Point(207, 55);
+            lblSampleLoopStartColor.Location = new Point(230, 82);
             lblSampleLoopStartColor.Name = "lblSampleLoopStartColor";
             lblSampleLoopStartColor.Size = new Size(24, 23);
             lblSampleLoopStartColor.TabIndex = 23;
@@ -424,7 +448,7 @@
             // lblSampleLength
             // 
             lblSampleLength.AutoSize = true;
-            lblSampleLength.Location = new Point(124, 26);
+            lblSampleLength.Location = new Point(147, 53);
             lblSampleLength.Name = "lblSampleLength";
             lblSampleLength.Size = new Size(80, 19);
             lblSampleLength.TabIndex = 13;
@@ -432,25 +456,25 @@
             // 
             // label8
             // 
-            label8.Location = new Point(6, 26);
+            label8.Location = new Point(11, 53);
             label8.Name = "label8";
-            label8.Size = new Size(112, 19);
+            label8.Size = new Size(130, 19);
             label8.TabIndex = 12;
             label8.Text = "Length:";
             label8.TextAlign = ContentAlignment.TopRight;
             // 
             // label3
             // 
-            label3.Location = new Point(6, 56);
+            label3.Location = new Point(11, 83);
             label3.Name = "label3";
-            label3.Size = new Size(112, 19);
+            label3.Size = new Size(130, 19);
             label3.TabIndex = 5;
             label3.Text = "Loop start:";
             label3.TextAlign = ContentAlignment.TopRight;
             // 
             // numSampleLoopStart
             // 
-            numSampleLoopStart.Location = new Point(124, 54);
+            numSampleLoopStart.Location = new Point(147, 81);
             numSampleLoopStart.Name = "numSampleLoopStart";
             numSampleLoopStart.Size = new Size(77, 26);
             numSampleLoopStart.TabIndex = 0;
@@ -462,7 +486,7 @@
             comboSampleFinetune.DropDownStyle = ComboBoxStyle.DropDownList;
             comboSampleFinetune.FormattingEnabled = true;
             comboSampleFinetune.Items.AddRange(new object[] { "-8", "-7", "-6", "-5", "-4", "-3", "-2", "-1", "0", "+1", "+2", "+3", "+4", "+5", "+6", "+7" });
-            comboSampleFinetune.Location = new Point(124, 150);
+            comboSampleFinetune.Location = new Point(147, 177);
             comboSampleFinetune.Name = "comboSampleFinetune";
             comboSampleFinetune.Size = new Size(77, 27);
             comboSampleFinetune.TabIndex = 3;
@@ -470,7 +494,7 @@
             // 
             // numSampleLoopLen
             // 
-            numSampleLoopLen.Location = new Point(124, 86);
+            numSampleLoopLen.Location = new Point(147, 113);
             numSampleLoopLen.Name = "numSampleLoopLen";
             numSampleLoopLen.Size = new Size(77, 26);
             numSampleLoopLen.TabIndex = 1;
@@ -479,34 +503,34 @@
             // 
             // label5
             // 
-            label5.Location = new Point(6, 153);
+            label5.Location = new Point(11, 180);
             label5.Name = "label5";
-            label5.Size = new Size(112, 19);
+            label5.Size = new Size(130, 19);
             label5.TabIndex = 11;
             label5.Text = "Finetune:";
             label5.TextAlign = ContentAlignment.TopRight;
             // 
             // label4
             // 
-            label4.Location = new Point(6, 88);
+            label4.Location = new Point(11, 115);
             label4.Name = "label4";
-            label4.Size = new Size(112, 19);
+            label4.Size = new Size(130, 19);
             label4.TabIndex = 6;
             label4.Text = "Loop length:";
             label4.TextAlign = ContentAlignment.TopRight;
             // 
             // label2
             // 
-            label2.Location = new Point(6, 121);
+            label2.Location = new Point(11, 148);
             label2.Name = "label2";
-            label2.Size = new Size(112, 19);
+            label2.Size = new Size(130, 19);
             label2.TabIndex = 9;
             label2.Text = "Volume:";
             label2.TextAlign = ContentAlignment.TopRight;
             // 
             // numSampleVolume
             // 
-            numSampleVolume.Location = new Point(124, 118);
+            numSampleVolume.Location = new Point(147, 145);
             numSampleVolume.Maximum = new decimal(new int[] { 64, 0, 0, 0 });
             numSampleVolume.Name = "numSampleVolume";
             numSampleVolume.Size = new Size(77, 26);
@@ -520,7 +544,7 @@
             tabPattern.Location = new Point(4, 28);
             tabPattern.Name = "tabPattern";
             tabPattern.Padding = new Padding(3);
-            tabPattern.Size = new Size(809, 300);
+            tabPattern.Size = new Size(809, 326);
             tabPattern.TabIndex = 1;
             tabPattern.Text = "Pattern";
             tabPattern.UseVisualStyleBackColor = true;
@@ -536,7 +560,7 @@
             patternGrid.Location = new Point(3, 36);
             patternGrid.Name = "patternGrid";
             patternGrid.NumRows = 0;
-            patternGrid.Size = new Size(803, 261);
+            patternGrid.Size = new Size(803, 287);
             patternGrid.TabIndex = 2;
             patternGrid.TableDataSource = null;
             patternGrid.CellDoubleClick += patternGrid_CellDoubleClick;
@@ -569,7 +593,7 @@
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(817, 381);
+            ClientSize = new Size(817, 407);
             Controls.Add(mainTabControl);
             Controls.Add(toolStrip);
             Controls.Add(statusStrip1);
@@ -655,5 +679,7 @@
         private NumericUpDown numSampleVolume;
         private GroupBox groupSamplePlayback;
         private CustomControls.GridTable patternGrid;
+        private ComboBox comboSampleBitsPerSample;
+        private Label label9;
     }
 }

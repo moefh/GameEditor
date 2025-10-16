@@ -35,6 +35,8 @@
             numSampleRate = new NumericUpDown();
             btnOK = new Button();
             btnCancel = new Button();
+            comboBitsPerSample = new ComboBox();
+            label2 = new Label();
             ((System.ComponentModel.ISupportInitialize)numVolume).BeginInit();
             ((System.ComponentModel.ISupportInitialize)numSampleRate).BeginInit();
             SuspendLayout();
@@ -42,7 +44,7 @@
             // label5
             // 
             label5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label5.Location = new Point(29, 32);
+            label5.Location = new Point(29, 47);
             label5.Name = "label5";
             label5.Size = new Size(124, 19);
             label5.TabIndex = 23;
@@ -53,7 +55,7 @@
             // 
             numVolume.DecimalPlaces = 2;
             numVolume.Increment = new decimal(new int[] { 1, 0, 0, 131072 });
-            numVolume.Location = new Point(159, 62);
+            numVolume.Location = new Point(159, 77);
             numVolume.Name = "numVolume";
             numVolume.Size = new Size(91, 26);
             numVolume.TabIndex = 1;
@@ -63,7 +65,7 @@
             // label4
             // 
             label4.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label4.Location = new Point(29, 64);
+            label4.Location = new Point(29, 79);
             label4.Name = "label4";
             label4.Size = new Size(124, 19);
             label4.TabIndex = 21;
@@ -72,7 +74,7 @@
             // 
             // btnSelectFile
             // 
-            btnSelectFile.Location = new Point(323, 93);
+            btnSelectFile.Location = new Point(323, 108);
             btnSelectFile.Name = "btnSelectFile";
             btnSelectFile.Size = new Size(36, 23);
             btnSelectFile.TabIndex = 3;
@@ -82,7 +84,7 @@
             // 
             // txtFileName
             // 
-            txtFileName.Location = new Point(159, 94);
+            txtFileName.Location = new Point(159, 109);
             txtFileName.Name = "txtFileName";
             txtFileName.ReadOnly = true;
             txtFileName.Size = new Size(158, 26);
@@ -91,7 +93,7 @@
             // label3
             // 
             label3.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label3.Location = new Point(29, 97);
+            label3.Location = new Point(29, 112);
             label3.Name = "label3";
             label3.Size = new Size(124, 19);
             label3.TabIndex = 18;
@@ -101,7 +103,7 @@
             // lblConvertHz
             // 
             lblConvertHz.AutoSize = true;
-            lblConvertHz.Location = new Point(256, 32);
+            lblConvertHz.Location = new Point(256, 47);
             lblConvertHz.Name = "lblConvertHz";
             lblConvertHz.Size = new Size(25, 19);
             lblConvertHz.TabIndex = 17;
@@ -109,7 +111,7 @@
             // 
             // numSampleRate
             // 
-            numSampleRate.Location = new Point(159, 30);
+            numSampleRate.Location = new Point(159, 45);
             numSampleRate.Maximum = new decimal(new int[] { 48000, 0, 0, 0 });
             numSampleRate.Minimum = new decimal(new int[] { 8000, 0, 0, 0 });
             numSampleRate.Name = "numSampleRate";
@@ -121,7 +123,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(296, 155);
+            btnOK.Location = new Point(296, 166);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(97, 33);
             btnOK.TabIndex = 4;
@@ -132,12 +134,31 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(193, 155);
+            btnCancel.Location = new Point(193, 166);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(97, 33);
             btnCancel.TabIndex = 5;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // comboBitsPerSample
+            // 
+            comboBitsPerSample.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBitsPerSample.FormattingEnabled = true;
+            comboBitsPerSample.Location = new Point(159, 12);
+            comboBitsPerSample.Name = "comboBitsPerSample";
+            comboBitsPerSample.Size = new Size(91, 27);
+            comboBitsPerSample.TabIndex = 24;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label2.Location = new Point(29, 15);
+            label2.Name = "label2";
+            label2.Size = new Size(124, 19);
+            label2.TabIndex = 25;
+            label2.Text = "Bits per sample";
+            label2.TextAlign = ContentAlignment.TopRight;
             // 
             // SfxExportDialog
             // 
@@ -145,7 +166,9 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(405, 200);
+            ClientSize = new Size(405, 211);
+            Controls.Add(comboBitsPerSample);
+            Controls.Add(label2);
             Controls.Add(btnOK);
             Controls.Add(btnCancel);
             Controls.Add(label5);
@@ -180,5 +203,7 @@
         private NumericUpDown numSampleRate;
         private Button btnOK;
         private Button btnCancel;
+        private ComboBox comboBitsPerSample;
+        private Label label2;
     }
 }

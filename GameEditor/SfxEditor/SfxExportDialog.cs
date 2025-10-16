@@ -14,6 +14,12 @@ namespace GameEditor.SfxEditor
     {
         public SfxExportDialog() {
             InitializeComponent();
+            comboBitsPerSample.Items.AddRange(["8", "16"]);
+       }
+
+        public int BitsPerSample {
+            get { return (comboBitsPerSample.SelectedIndex == 0) ? 8 : 16; }
+            set { comboBitsPerSample.SelectedIndex = (value == 8) ? 0 : 1; }
         }
 
         public int SampleRate {

@@ -50,7 +50,7 @@ namespace GameEditor.SfxEditor
         public SfxData Sfx { get { return sfxItem.Sfx; } }
 
         protected override void FixFormTitle() {
-            Text = $"{Sfx.Name} [length {Sfx.Length}] - Sound Effect";
+            Text = $"{Sfx.Name} [{Sfx.BitsPerSample} bits, {Sfx.Length} samples] - Sound Effect";
         }
 
         private void RefreshSfx() {
@@ -138,9 +138,12 @@ namespace GameEditor.SfxEditor
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
             SfxPropertiesDialog dlg = new SfxPropertiesDialog();
             dlg.SfxName = Sfx.Name;
+            dlg.BitsPerSample = Sfx.BitsPerSample;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             Sfx.Name = dlg.SfxName;
+            Sfx.BitsPerSample = dlg.BitsPerSample;
             FixFormTitle();
+            UpdateDataSize();
             Project.UpdateAssetNames(Sfx.AssetType);
         }
 
@@ -155,6 +158,9 @@ namespace GameEditor.SfxEditor
             try {
                 int sampleRate = dlg.Resample ? dlg.SampleRate : 0;
                 Sfx.Import(dlg.SfxFileName, dlg.UseChannelBits, sampleRate, dlg.Volume);
+                if (dlg.BitsPerSample != 0) {
+                    Sfx.BitsPerSample = dlg.BitsPerSample;
+                }
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error reading WAV: {ex.Message}", "Error Importing SFX");
                 return;
@@ -166,9 +172,10 @@ namespace GameEditor.SfxEditor
         private void exportToolStripMenuItem_Click(object sender, EventArgs e) {
             SfxExportDialog dlg = new SfxExportDialog();
             dlg.SampleRate = (int)numSampleRate.Value;
+            dlg.BitsPerSample = Sfx.BitsPerSample;
             if (dlg.ShowDialog() == DialogResult.OK) {
                 try {
-                    Sfx.Export(dlg.SfxFileName, dlg.SampleRate, dlg.Volume);
+                    Sfx.Export(dlg.SfxFileName, dlg.BitsPerSample, dlg.SampleRate, dlg.Volume);
                 } catch (Exception ex) {
                     Util.ShowError(ex, $"Error saving WAV: {ex.Message}", "Error Exporting SFX");
                     return;
