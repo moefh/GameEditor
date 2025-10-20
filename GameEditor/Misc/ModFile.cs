@@ -176,6 +176,7 @@ namespace GameEditor.Misc
                 Sample[i].Volume = r.ReadU8();
                 Sample[i].LoopStart = (uint) (r.ReadU16() * 2);
                 Sample[i].LoopLen = (uint) (r.ReadU16() * 2);
+                Sample[i].BitsPerSample = 8;
 
                 if (Sample[i].Finetune > 7) Sample[i].Finetune -= 16;
             }
@@ -214,7 +215,7 @@ namespace GameEditor.Misc
                 if (Sample[i].Len == 0) { Sample[i].Data = null; continue; }
                 short[] sampleData = new short[Sample[i].Len];
                 for (int si = 0; si < sampleData.Length; si++) {
-                    sampleData[si] = r.ReadU8();
+                    sampleData[si] = (short) (r.ReadU8() << 8);
                 }
                 Sample[i].Data = sampleData;
             }
