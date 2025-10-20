@@ -94,7 +94,9 @@ namespace GameEditor.CustomControls
             // rows
             for (int i = 0; i < numRows; i++) {
                 int y =  i * sizeInfo.RowHeight;
+                bool fatRow = false;
                 if (TableDataSource != null) {
+                    fatRow = TableDataSource.IsRowFat(i);
                     string[] data = TableDataSource.GetRow(i);
                     for (int c = 0; c < sizeInfo.ColumnPositions.Count-1; c++) {
                         Rectangle textBox = new Rectangle(
@@ -108,6 +110,9 @@ namespace GameEditor.CustomControls
                     }
                 }
                 pe.Graphics.DrawLine(forePen, 0, y+sizeInfo.RowHeight-1, ClientSize.Width-1, y+sizeInfo.RowHeight-1);
+                if (fatRow) {
+                    pe.Graphics.DrawLine(forePen, 0, y+sizeInfo.RowHeight, ClientSize.Width-1, y+sizeInfo.RowHeight);
+                }
             }
         }
         protected override void OnMouseDoubleClick(MouseEventArgs e) {

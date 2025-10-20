@@ -78,6 +78,7 @@ namespace GameEditor.CustomControls
         {
             public bool[] GetFatColumns();
             public string[] GetHeader();
+            public bool IsRowFat(int row);
             public string[] GetRow(int row);
         }
 

@@ -103,6 +103,10 @@ namespace GameEditor.ModEditor
                 return header;
             }
 
+            public bool IsRowFat(int i) {
+                return i%4 == 3;
+            }
+
             public string[] GetRow(int i) {
                 return rows[i];
             }
