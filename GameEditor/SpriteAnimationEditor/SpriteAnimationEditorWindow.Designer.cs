@@ -36,7 +36,9 @@
             toolsToolStrip = new ToolStrip();
             toolStripBtnPenHead = new ToolStripButton();
             toolStripBtnPenFoot = new ToolStripButton();
+            toolStripBtnPenCollision = new ToolStripButton();
             toolStripSeparator1 = new ToolStripSeparator();
+            toolStripBtnCollision = new ToolStripButton();
             toolStripBtnTransparent = new ToolStripButton();
             toolStripLabel2 = new ToolStripLabel();
             toolStripBtnDecFootOverlap = new ToolStripButton();
@@ -130,7 +132,7 @@
             // toolsToolStrip
             // 
             toolsToolStrip.AutoSize = false;
-            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnPenHead, toolStripBtnPenFoot, toolStripSeparator1, toolStripBtnTransparent, toolStripLabel2, toolStripBtnDecFootOverlap, toolStripTxtFootOverlap, toolStripBtnGrid, toolStripLabel3, toolStripBtnIncFootOverlap });
+            toolsToolStrip.Items.AddRange(new ToolStripItem[] { toolStripBtnPenHead, toolStripBtnPenFoot, toolStripBtnPenCollision, toolStripSeparator1, toolStripBtnCollision, toolStripBtnTransparent, toolStripLabel2, toolStripBtnDecFootOverlap, toolStripTxtFootOverlap, toolStripBtnGrid, toolStripLabel3, toolStripBtnIncFootOverlap });
             toolsToolStrip.Location = new Point(0, 29);
             toolsToolStrip.Name = "toolsToolStrip";
             toolsToolStrip.Size = new Size(632, 27);
@@ -139,8 +141,6 @@
             // 
             // toolStripBtnPenHead
             // 
-            toolStripBtnPenHead.Checked = true;
-            toolStripBtnPenHead.CheckState = CheckState.Checked;
             toolStripBtnPenHead.Image = Properties.Resources.PenIcon;
             toolStripBtnPenHead.ImageTransparentColor = Color.Magenta;
             toolStripBtnPenHead.Margin = new Padding(1, 1, 1, 2);
@@ -161,11 +161,37 @@
             toolStripBtnPenFoot.ToolTipText = "Draw on foot image";
             toolStripBtnPenFoot.Click += toolStripBtnPenFoot_Click;
             // 
+            // toolStripBtnPenCollision
+            // 
+            toolStripBtnPenCollision.Checked = true;
+            toolStripBtnPenCollision.CheckState = CheckState.Checked;
+            toolStripBtnPenCollision.Image = Properties.Resources.CollisionIcon;
+            toolStripBtnPenCollision.ImageTransparentColor = Color.Magenta;
+            toolStripBtnPenCollision.Name = "toolStripBtnPenCollision";
+            toolStripBtnPenCollision.Size = new Size(80, 24);
+            toolStripBtnPenCollision.Text = "Collision";
+            toolStripBtnPenCollision.ToolTipText = "Select collision rectangle";
+            toolStripBtnPenCollision.Click += toolStripBtnPenCollision_Click;
+            // 
             // toolStripSeparator1
             // 
             toolStripSeparator1.Margin = new Padding(5, 0, 5, 0);
             toolStripSeparator1.Name = "toolStripSeparator1";
             toolStripSeparator1.Size = new Size(6, 27);
+            // 
+            // toolStripBtnCollision
+            // 
+            toolStripBtnCollision.Alignment = ToolStripItemAlignment.Right;
+            toolStripBtnCollision.Checked = true;
+            toolStripBtnCollision.CheckOnClick = true;
+            toolStripBtnCollision.CheckState = CheckState.Checked;
+            toolStripBtnCollision.DisplayStyle = ToolStripItemDisplayStyle.Image;
+            toolStripBtnCollision.Image = Properties.Resources.CollisionIcon;
+            toolStripBtnCollision.ImageTransparentColor = Color.Magenta;
+            toolStripBtnCollision.Name = "toolStripBtnCollision";
+            toolStripBtnCollision.Size = new Size(23, 24);
+            toolStripBtnCollision.Text = "Collision";
+            toolStripBtnCollision.CheckedChanged += toolStripBtnCollision_CheckedChanged;
             // 
             // toolStripBtnTransparent
             // 
@@ -313,6 +339,8 @@
             // animEditor
             // 
             animEditor.BackPen = Color.Empty;
+            animEditor.Collision = new Rectangle(0, 0, 0, 0);
+            animEditor.CollisionColor = Color.DarkRed;
             animEditor.DisplayFoot = false;
             animEditor.Dock = DockStyle.Fill;
             animEditor.EditLayer = CustomControls.SpriteAnimationEditor.Layer.Head;
@@ -330,6 +358,7 @@
             animEditor.TabIndex = 0;
             animEditor.ImageChanged += animEditor_ImageChanged;
             animEditor.SelectedColorsChanged += animEditor_SelectedColorsChanged;
+            animEditor.CollisionChanged += animEditor_CollisionChanged;
             // 
             // animLoopView
             // 
@@ -426,5 +455,7 @@
         private ToolStripLabel toolStripLabel3;
         private ToolStripButton toolStripBtnDecFootOverlap;
         private ToolStripButton toolStripBtnIncFootOverlap;
+        private ToolStripButton toolStripBtnCollision;
+        private ToolStripButton toolStripBtnPenCollision;
     }
 }

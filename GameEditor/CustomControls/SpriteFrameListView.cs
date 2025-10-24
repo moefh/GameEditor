@@ -93,12 +93,19 @@ namespace GameEditor.CustomControls
 
         public List<Frame>? Frames {
             get { return frames; }
-            set { frames = value; ClipScrollOffset(); Invalidate(); }
+            set {
+                frames = value;
+                if (frames != null && SelectedIndex >= frames.Count) {
+                    SelectedIndex = frames.Count - 1;
+                }
+                ClipScrollOffset();
+                Invalidate();
+            }
         }
 
         public int SelectedIndex {
             get { return selIndex; }
-            set { selIndex = value; Invalidate(); }
+            set { selIndex = value; ClipScrollOffset(); Invalidate(); }
         }
 
         public bool DisplayFoot {
@@ -197,37 +204,43 @@ namespace GameEditor.CustomControls
             return index;
         }
 
-        private void ClipScrollOffset() {
-            if (Frames == null || Frames.Count == 0) return;
+        int count = 0;
+
+        private bool ClipScrollOffset() {
+            if (Frames == null || Frames.Count == 0) return false;
             RenderInfo r = GetRenderInfo();
-            if (r.MaxDisplayFrames == 0 || r.WindowWidth == 0) return;
+            if (r.MaxDisplayFrames == 0 || r.WindowWidth == 0) return false;
 
             int offset = ScrollOffset;
+            Util.Log($"[{count++}] clip scroll offset: {offset}");
             int totalFramesWidth = Frames.Count * r.FrameStride;
             if (RepeatFrames) {
                 // wrap offset around
                 offset = (offset + r.FrameStride*totalFramesWidth) % totalFramesWidth;
             } else {
                 // keep offset within bounds
-                if (totalFramesWidth - offset < r.WindowWidth) {
-                    offset = totalFramesWidth - r.WindowWidth - 1;
+                if (offset > totalFramesWidth - r.WindowWidth) {
+                    offset = totalFramesWidth - r.WindowWidth;
                 }
                 if (offset < 0) offset = 0;
+                Util.Log($"-> check: {SelectedIndex*r.FrameStride} >= {offset} >= {(SelectedIndex+1)*r.FrameStride - r.WindowWidth}");
                 if (SelectionEnabled) {
                     // move selection into view
-                    if (SelectedIndex*r.FrameStride + r.FrameWidth - 1 - offset > r.WindowWidth) {
-                        SelectedIndex = (r.WindowWidth - (r.FrameWidth - 1 - offset)) / r.FrameStride;
-                        SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+                    if (offset < (SelectedIndex+1)*r.FrameStride - r.WindowWidth && (SelectedIndex+1)*r.FrameStride - r.WindowWidth >= 0) {
+                        offset = (SelectedIndex+1)*r.FrameStride - r.WindowWidth;
+                        Util.Log($"moving offset to {offset}");
                     }
-                    if (SelectedIndex*r.FrameStride < offset) {
-                        SelectedIndex = (offset + r.FrameStride - 1) / r.FrameStride;
-                        SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
+                    if (offset > SelectedIndex*r.FrameStride) {
+                        offset = SelectedIndex*r.FrameStride;
+                        Util.Log($"moving offset to {offset}");
                     }
                 }
             }
             if (offset != ScrollOffset) {
                 scrollOffset = offset;
+                return true;
             }
+            return false;
         }
 
         protected override void OnResize(EventArgs e) {
@@ -251,6 +264,7 @@ namespace GameEditor.CustomControls
             int index = GetSpriteFrameIndexAt(e.Location);
             if (SelectedIndex != index) {
                 SelectedIndex = index;
+                ClipScrollOffset();
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
             }
 

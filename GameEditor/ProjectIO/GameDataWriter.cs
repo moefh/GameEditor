@@ -707,6 +707,7 @@ namespace GameEditor.ProjectIO
                 f.WriteLine("  {");
                 f.WriteLine($"    {ident},");
                 f.WriteLine($"    &{spritesIdent}[{spriteIndex}],");
+                f.WriteLine($"    {{ {anim.Collision.x}, {anim.Collision.y}, {anim.Collision.w}, {anim.Collision.h} }},");
                 f.WriteLine($"    {anim.FootOverlap},");
                 f.WriteLine("    {");
                 int offset = 0;

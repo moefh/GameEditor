@@ -19,6 +19,7 @@ namespace GameEditor.CustomControls
         public enum Layer {
             Head,
             Foot,
+            Collision,
         }
 
         private struct RenderInfo {
@@ -61,10 +62,12 @@ namespace GameEditor.CustomControls
 
         public event EventHandler? ImageChanged;
         public event EventHandler? SelectedColorsChanged;
+        public event EventHandler? CollisionChanged;
 
         private Sprite? sprite = null;
         private List<SpriteFrameListView.Frame>? frames = null;
         private Color gridColor = Color.Black;
+        private Color collisionColor = Color.DarkRed;
         private Layer editLayer = Layer.Head;
         private RenderFlags renderFlags = 0;
         private int selectedIndex = 0;
@@ -79,6 +82,7 @@ namespace GameEditor.CustomControls
         public bool ReadOnly { get; set; }
         public Color ForePen { get; set; }
         public Color BackPen { get; set; }
+        public Rectangle Collision { get; set; }
 
         public Sprite? Sprite {
             get { return sprite; }
@@ -89,11 +93,15 @@ namespace GameEditor.CustomControls
             get { return frames; }
             set { frames = value; Invalidate(); }
         }
-
         
         public Color GridColor {
             get { return gridColor; }
             set { gridColor = value; Invalidate(); }
+        }
+
+        public Color CollisionColor {
+            get { return collisionColor; }
+            set { collisionColor = value; Invalidate(); }
         }
 
         public Layer EditLayer {
@@ -185,6 +193,16 @@ namespace GameEditor.CustomControls
                 }
                 pe.Graphics.DrawRectangle(Pens.Blue, ri.X, ri.HeadY, ri.Width, ri.Height);
             }
+
+            // collision
+            if ((RenderFlags & RenderFlags.Collision) != 0 && Collision.Width > 0 && Collision.Height > 0) {
+                using Pen colPen = new Pen(CollisionColor);
+                int x = ri.X + ri.Zoom*Collision.X;
+                int y = ri.HeadY + ri.Zoom*Collision.Y;
+                int w = ri.Zoom*Collision.Width;
+                int h = ri.Zoom*Collision.Height;
+                pe.Graphics.DrawRectangle(colPen, x, y, w, h);
+            }
         }
 
         // ==========================================================================
@@ -205,24 +223,48 @@ namespace GameEditor.CustomControls
 
         private void SetPixel(int x, int y, bool foreground) {
             if (Sprite == null || Frames == null || SelectedIndex < 0 || SelectedIndex >= Frames.Count) return;
-            int frame = (EditLayer == Layer.Head) ? Frames[SelectedIndex].HeadIndex : Frames[SelectedIndex].FootIndex;
-            if (foreground) {
-                Sprite.SetFramePixel(frame, x, y, ForePen);
-            } else {
-                Sprite.SetFramePixel(frame, x, y, BackPen);
+            switch (EditLayer) {
+            case Layer.Head:
+                Sprite.SetFramePixel(Frames[SelectedIndex].HeadIndex, x, y, (foreground) ? ForePen : BackPen);
+                ImageChanged?.Invoke(this, EventArgs.Empty);
+                break;
+
+            case Layer.Foot:
+                Sprite.SetFramePixel(Frames[SelectedIndex].FootIndex, x, y, (foreground) ? ForePen : BackPen);
+                ImageChanged?.Invoke(this, EventArgs.Empty);
+                break;
+
+            case Layer.Collision:
+                Rectangle c = Collision;
+                if (foreground) {
+                    c.Width = int.Max(0, c.Width + c.X - x);
+                    c.Height = int.Max(0, c.Height + c.Y - y);
+                    c.X = x;
+                    c.Y = y;
+                } else {
+                    c.Width = x - c.X;
+                    c.Height = y - c.Y;
+                }
+                Collision = c;
+                CollisionChanged?.Invoke(this, EventArgs.Empty);
+                break;
             }
-            ImageChanged?.Invoke(this, EventArgs.Empty);
             Invalidate();
         }
 
         private Point GetFrameCoordsAtPoint(int x, int y, RenderInfo ri) {
             Point ret = new Point(-1,-1);
             if (Sprite == null) return ret;
-            int fx = (x - ri.X) / ri.Zoom;
-            int fy = (y - ((EditLayer == Layer.Head) ? ri.HeadY : ri.FootY)) / ri.Zoom;
-            if (fx < 0 || fy < 0 || fx >= Sprite.Width || fy >= Sprite.Height) return ret;
-            ret.X = fx;
-            ret.Y = fy;
+            if (EditLayer == Layer.Collision) {
+                ret.X = (x - ri.X) / ri.Zoom;
+                ret.Y = (y - ri.HeadY) / ri.Zoom;
+            } else {
+                int fx = (x - ri.X) / ri.Zoom;
+                int fy = (y - ((EditLayer == Layer.Head) ? ri.HeadY : ri.FootY)) / ri.Zoom;
+                if (fx < 0 || fy < 0 || fx >= Sprite.Width || fy >= Sprite.Height) return ret;
+                ret.X = fx;
+                ret.Y = fy;
+            }
             return ret;
         }
 

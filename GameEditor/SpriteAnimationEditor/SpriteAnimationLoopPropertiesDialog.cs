@@ -73,7 +73,7 @@ namespace GameEditor.SpriteAnimationEditor
 
         private void AdjustListBoxScroll(ListBox listBox) {
             int numVisibleItems = listBox.ClientSize.Height / listBox.ItemHeight;
-            listBox.TopIndex = int.Max(0, listBox.SelectedIndex - numVisibleItems/2);
+            listBox.TopIndex = int.Max(0, listBox.SelectedIndex - numVisibleItems / 2);
         }
 
         private void UpdateSelectedFrames() {
@@ -109,6 +109,24 @@ namespace GameEditor.SpriteAnimationEditor
 
         private void numSelectedFrames_ValueChanged(object sender, EventArgs e) {
             UpdateSelectedFrames();
+        }
+
+        private void listBoxHeadFrames_SelectedIndexChanged(object sender, EventArgs e) {
+            int listIndex = listBoxHeadFrames.SelectedIndex;
+            if (listIndex < 0 || listIndex >= headFrames.Count) return;
+            int index = headFrames[listIndex].Index;
+            if (index >= 0) {
+                allFramesListView.SelectedIndex = index;
+            }
+        }
+
+        private void listBoxFootFrames_SelectedIndexChanged(object sender, EventArgs e) {
+            int listIndex = listBoxFootFrames.SelectedIndex;
+            if (listIndex < 0 || listIndex >= footFrames.Count) return;
+            int index = footFrames[listIndex].Index;
+            if (index >= 0) {
+                allFramesListView.SelectedIndex = index;
+            }
         }
 
         private void checkEnableFoot_CheckedChanged(object sender, EventArgs e) {
@@ -175,6 +193,5 @@ namespace GameEditor.SpriteAnimationEditor
             }
             UpdateSelectedFrames();
         }
-
     }
 }

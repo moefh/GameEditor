@@ -19,7 +19,6 @@ namespace GameEditor.SpriteAnimationEditor
     public partial class SpriteAnimationEditorWindow : ProjectAssetEditorForm
     {
         private readonly SpriteAnimationItem animationItem;
-        private CustomControls.SpriteAnimationEditor.Layer editLayer;
 
         public SpriteAnimationEditorWindow(SpriteAnimationItem animationItem) : base(animationItem, "SpriteAnimationEditor") {
             this.animationItem = animationItem;
@@ -40,16 +39,20 @@ namespace GameEditor.SpriteAnimationEditor
             animEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
             animEditor.ForePen = colorPicker.SelectedForeColor;
             animEditor.BackPen = colorPicker.SelectedBackColor;
+            animEditor.CollisionColor = Color.Red;
+            animEditor.Collision = new Rectangle(Animation.Collision.x, Animation.Collision.y,
+                                                 Animation.Collision.w, Animation.Collision.h);
 
             toolStripTxtFootOverlap.Text = Animation.FootOverlap.ToString();
+            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Collision);
             FixRenderFlags();
         }
 
         private void SetEditLayer(CustomControls.SpriteAnimationEditor.Layer value) {
             toolStripBtnPenHead.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Head;
             toolStripBtnPenFoot.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Foot;
+            toolStripBtnPenCollision.Checked = value == CustomControls.SpriteAnimationEditor.Layer.Collision;
             animEditor.EditLayer = value;
-            editLayer = value;
         }
 
         public void RefreshSpriteList() {
@@ -88,7 +91,8 @@ namespace GameEditor.SpriteAnimationEditor
         private void FixRenderFlags() {
             RenderFlags renderGrid = toolStripBtnGrid.Checked ? RenderFlags.Grid : 0;
             RenderFlags renderTransparent = toolStripBtnTransparent.Checked ? RenderFlags.Transparent : 0;
-            animEditor.RenderFlags = renderGrid | renderTransparent;
+            RenderFlags renderCollision = toolStripBtnCollision.Checked ? RenderFlags.Collision : 0;
+            animEditor.RenderFlags = renderGrid | renderTransparent | renderCollision;
         }
 
         public void RefreshSprite(Sprite sprite) {
@@ -124,6 +128,10 @@ namespace GameEditor.SpriteAnimationEditor
             FixRenderFlags();
         }
 
+        private void toolStripBtnCollision_CheckedChanged(object sender, EventArgs e) {
+            FixRenderFlags();
+        }
+
         private void spriteListView_SelectedLoopIndexChanged(object sender, EventArgs e) {
             RefreshSelectedLoop();
         }
@@ -152,6 +160,13 @@ namespace GameEditor.SpriteAnimationEditor
             colorPicker.SelectedForeColor = animEditor.ForePen;
             colorPicker.SelectedBackColor = animEditor.BackPen;
             colorPicker.Invalidate();
+        }
+
+        private void animEditor_CollisionChanged(object sender, EventArgs e) {
+            Animation.Collision = new SpriteAnimationCollision(
+                animEditor.Collision.X, animEditor.Collision.Y,
+                animEditor.Collision.Width, animEditor.Collision.Height
+            );
         }
 
         private void animEditor_ImageChanged(object sender, EventArgs e) {
@@ -183,6 +198,10 @@ namespace GameEditor.SpriteAnimationEditor
 
         private void toolStripBtnPenFoot_Click(object sender, EventArgs e) {
             SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Foot);
+        }
+
+        private void toolStripBtnPenCollision_Click(object sender, EventArgs e) {
+            SetEditLayer(CustomControls.SpriteAnimationEditor.Layer.Collision);
         }
 
         // =========================================================================

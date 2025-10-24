@@ -36,10 +36,10 @@
             eraseFootFrameToolStripMenuItem = new ToolStripMenuItem();
             label2 = new Label();
             label3 = new Label();
-            allFramesListView = new CustomControls.SpriteFrameListView();
+            allFramesListView = new GameEditor.CustomControls.SpriteFrameListView();
             label1 = new Label();
             label4 = new Label();
-            selFramesListView = new CustomControls.SpriteFrameListView();
+            selFramesListView = new GameEditor.CustomControls.SpriteFrameListView();
             checkEnableFoot = new CheckBox();
             label5 = new Label();
             numSelectedFrames = new NumericUpDown();
@@ -57,6 +57,7 @@
             listBoxHeadFrames.Name = "listBoxHeadFrames";
             listBoxHeadFrames.Size = new Size(252, 137);
             listBoxHeadFrames.TabIndex = 1;
+            listBoxHeadFrames.SelectedIndexChanged += listBoxHeadFrames_SelectedIndexChanged;
             listBoxHeadFrames.DragDrop += listBox_DragDrop;
             listBoxHeadFrames.DragEnter += listBox_DragEnter;
             listBoxHeadFrames.DragOver += listBox_DragOver;
@@ -105,6 +106,7 @@
             listBoxFootFrames.Name = "listBoxFootFrames";
             listBoxFootFrames.Size = new Size(252, 137);
             listBoxFootFrames.TabIndex = 5;
+            listBoxFootFrames.SelectedIndexChanged += listBoxFootFrames_SelectedIndexChanged;
             listBoxFootFrames.DragDrop += listBox_DragDrop;
             listBoxFootFrames.DragEnter += listBox_DragEnter;
             listBoxFootFrames.DragOver += listBox_DragOver;

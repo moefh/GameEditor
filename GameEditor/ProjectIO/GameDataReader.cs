@@ -254,6 +254,22 @@ namespace GameEditor.ProjectIO
             throw new Exception($"can't extract name from global {ident} with type {type}");
         }
 
+        private List<ushort> ReadUShortList() {
+            List<ushort> list = [];
+            Token next = ExpectToken();
+            while (true) {
+                if (next.IsPunct('}')) break;
+                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
+                list.Add((ushort) next.Num);
+
+                next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsPunct(',')) throw new ParseError("expecting '}' or ','", lastLine);
+                next = ExpectToken();
+            }
+            return list;
+        }
+
         // ======================================================================
         // === PRE-PROCESSOR
         // ======================================================================
@@ -535,18 +551,6 @@ namespace GameEditor.ProjectIO
             return charWidth;
         }
 
-        private List<ushort> ReadPropFontCharOffsets() {
-            List<ushort> charOffset = [];
-            while (true) {
-                Token next = ExpectToken();
-                if (next.IsPunct('}')) break;
-                if (! next.IsNumber()) throw new ParseError("expecting '}' or number", lastLine);
-                charOffset.Add((ushort) next.Num);
-                ExpectPunct(',');
-            }
-            return charOffset;
-        }
-
         private void ReadPropFontList(Token start) {
             ExpectPunct('[');
             ExpectPunct(']');
@@ -564,7 +568,7 @@ namespace GameEditor.ProjectIO
                 List<byte> charWidth = ReadPropFontCharWidths();
                 ExpectPunct(',');
                 Token charOffsetsStart = ExpectPunct('{');
-                List<ushort> charOffset = ReadPropFontCharOffsets();
+                List<ushort> charOffset = ReadUShortList();
                 ExpectPunct('}');
                 ExpectPunct(',');
 
@@ -830,6 +834,9 @@ namespace GameEditor.ProjectIO
                 Token spriteIndex = ExpectNumber();
                 ExpectPunct(']');
                 ExpectPunct(',');
+                Token collisionBrace = ExpectPunct('{');
+                List<ushort> collision = ReadUShortList();
+                ExpectPunct(',');
                 long footOverlap = ReadSignedNumber(ExpectToken());
                 ExpectPunct(',');
                 List<(int,int)> loopOffsetAndLengths = ReadSpriteAnimationLoops();
@@ -842,9 +849,13 @@ namespace GameEditor.ProjectIO
                 if (spriteIndex.Num >= spriteList.Count) {
                     throw new ParseError($"sprite {spriteIndex.Num} doesn't exist", spriteIndex.LineNum);
                 }
+                if (collision.Count != 4) {
+                    throw new ParseError($"collision for sprite animation must have 4 numbers", collisionBrace.LineNum);
+                }
                 string name = ExtractGlobalLowerName(spriteAnimationIdent.Str, "sprite_animation_frames");
                 Sprite sprite = spriteList[(int) spriteIndex.Num];
                 SpriteAnimation anim = new SpriteAnimation(sprite, name);
+                anim.Collision = new SpriteAnimationCollision(collision[0], collision[1], collision[2], collision[3]);
                 anim.FootOverlap = (int) footOverlap;
                 for (int loop = 0; loop < loopOffsetAndLengths.Count; loop++) {
                     if (loop >= anim.Loops.Length) throw new Exception($"too many loops in animation {spriteAnimationIdent.Str}");

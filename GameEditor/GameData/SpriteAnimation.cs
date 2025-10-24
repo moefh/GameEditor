@@ -11,9 +11,16 @@ using System.Xml.Linq;
 namespace GameEditor.GameData
 {
 
+    public struct SpriteAnimationCollision(int x, int y, int w, int h) {
+        public int x = x;
+        public int y = y;
+        public int w = w;
+        public int h = h;
+    }
+
     public sealed class SpriteAnimationLoop {
         public struct Frame(int headIndex, int footIndex) {
-            public static readonly Frame Empty = new Frame();
+            public static readonly Frame Empty = new Frame(0, -1);
             public int HeadIndex = headIndex;
             public int FootIndex = footIndex;
         }
@@ -71,6 +78,7 @@ namespace GameEditor.GameData
             spr = sprite;
             spr.NumFramesChanged += HandleNumFramesChanged;
             Name = name;
+            Collision = new SpriteAnimationCollision(0, 0, 0, 0);
             Loops = [
                 new SpriteAnimationLoop(this, "stand"),
                 new SpriteAnimationLoop(this, "stand_shoot_n"),
@@ -108,6 +116,7 @@ namespace GameEditor.GameData
 
         public int FootOverlap { get; set; }
         public SpriteAnimationLoop[] Loops { get; }
+        public SpriteAnimationCollision Collision { get; set; }
 
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.SpriteAnimation; } }
@@ -119,8 +128,8 @@ namespace GameEditor.GameData
                 foreach (SpriteAnimationLoop loop in Loops) {
                     size += 2 + 2 + 2*loop.Indices.Count;
                 }
-                // framesData(4) + spriteImage(4) + footOverlap(1) + padding(3) + loop sizes
-                return 4 + 4 + 1 + 3 + size;
+                // framesData(4) + spriteImage(4) + collision(4*2) + footOverlap(1) + padding(3) + loop sizes
+                return 4 + 4 + 4*2 + 1 + 3 + size;
             }
         }
 

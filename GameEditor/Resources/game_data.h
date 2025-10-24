@@ -87,9 +87,17 @@ struct ${PREFIX}_SPRITE_ANIMATION_LOOP {
     uint16_t length;   // loop data length
 };
 
+struct ${PREFIX}_SPRITE_ANIMATION_COLLISION {
+   uint16_t x;
+   uint16_t y;
+   uint16_t w;
+   uint16_t h;
+};
+
 struct ${PREFIX}_SPRITE_ANIMATION {
     const uint8_t *frame_indices;
     const struct ${PREFIX}_IMAGE *sprite;
+    struct ${PREFIX}_SPRITE_ANIMATION_COLLISION collision;
     int8_t foot_overlap;
     struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[20];
 };
