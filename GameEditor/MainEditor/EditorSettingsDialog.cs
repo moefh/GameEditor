@@ -22,6 +22,7 @@ namespace GameEditor.MainEditor
             lblMapEditorGridColor.BackColor = ConfigUtil.MapEditorGridColor;
             lblTileEditorGridColor.BackColor = ConfigUtil.TileEditorGridColor;
             lblSpriteEditorGridColor.BackColor = ConfigUtil.SpriteEditorGridColor;
+            lblSpriteEditorCollisionColor.BackColor = ConfigUtil.SpriteEditorCollisionColor;
         }
 
         private void btnOK_Click(object sender, EventArgs e) {
@@ -33,6 +34,7 @@ namespace GameEditor.MainEditor
             ConfigUtil.MapEditorGridColor = lblMapEditorGridColor.BackColor;
             ConfigUtil.TileEditorGridColor = lblTileEditorGridColor.BackColor;
             ConfigUtil.SpriteEditorGridColor = lblSpriteEditorGridColor.BackColor;
+            ConfigUtil.SpriteEditorCollisionColor = lblSpriteEditorCollisionColor.BackColor;
             Util.Log("== Log settings updated");
             DialogResult = DialogResult.OK;
             Close();
@@ -80,6 +82,12 @@ namespace GameEditor.MainEditor
         private void lblSpriteEditorGridColor_Click(object sender, EventArgs e) {
             if (ShowColorDialog(lblSpriteEditorGridColor.BackColor, out Color selected)) {
                 lblSpriteEditorGridColor.BackColor = selected;
+            }
+        }
+
+        private void lblSpriteEditorCollisionColor_Click(object sender, EventArgs e) {
+            if (ShowColorDialog(lblSpriteEditorCollisionColor.BackColor, out Color selected)) {
+                lblSpriteEditorCollisionColor.BackColor = selected;
             }
         }
     }

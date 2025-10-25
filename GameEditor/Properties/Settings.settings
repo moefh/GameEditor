@@ -134,5 +134,8 @@
     <Setting Name="RoomEditorSaved" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
+    <Setting Name="SpriteEditorCollisionColor" Type="System.Drawing.Color" Scope="User">
+      <Value Profile="(Default)">Red</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

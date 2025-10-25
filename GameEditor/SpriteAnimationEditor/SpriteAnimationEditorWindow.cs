@@ -36,10 +36,10 @@ namespace GameEditor.SpriteAnimationEditor
             animEditor.Sprite = animLoopView.Sprite;
             animEditor.SelectedIndex = animLoopView.SelectedIndex;
             animEditor.FootOverlap = animLoopView.FootOverlap;
-            animEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
             animEditor.ForePen = colorPicker.SelectedForeColor;
             animEditor.BackPen = colorPicker.SelectedBackColor;
-            animEditor.CollisionColor = Color.Red;
+            animEditor.GridColor = ConfigUtil.SpriteEditorGridColor;
+            animEditor.CollisionColor = ConfigUtil.SpriteEditorCollisionColor;
             animEditor.Collision = new Rectangle(Animation.Collision.x, Animation.Collision.y,
                                                  Animation.Collision.w, Animation.Collision.h);
 

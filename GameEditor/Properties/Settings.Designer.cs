@@ -550,5 +550,17 @@ namespace GameEditor.Properties {
                 this["RoomEditorSaved"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("Red")]
+        public global::System.Drawing.Color SpriteEditorCollisionColor {
+            get {
+                return ((global::System.Drawing.Color)(this["SpriteEditorCollisionColor"]));
+            }
+            set {
+                this["SpriteEditorCollisionColor"] = value;
+            }
+        }
     }
 }

@@ -34,6 +34,11 @@ namespace GameEditor.Misc
             set { SetColor("SpriteEditorGridColor", value); }
         }
 
+        public static Color SpriteEditorCollisionColor {
+            get { return GetColor("SpriteEditorCollisionColor"); }
+            set { SetColor("SpriteEditorCollisionColor", value); }
+        }
+
         public static Color GetColor(string name) {
             try {
                 Color? color = (Color?)Properties.Settings.Default[name];

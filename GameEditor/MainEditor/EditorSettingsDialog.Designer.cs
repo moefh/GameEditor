@@ -40,6 +40,8 @@
             label4 = new Label();
             lblTilePickerLeftColor = new Label();
             lblTilePickerRightColor = new Label();
+            lblSpriteEditorCollisionColor = new Label();
+            label5 = new Label();
             groupBoxLogOutput.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -59,7 +61,7 @@
             groupBoxLogOutput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBoxLogOutput.Controls.Add(checkBoxLogDotNet);
             groupBoxLogOutput.Controls.Add(checkBoxLogWindow);
-            groupBoxLogOutput.Location = new Point(12, 185);
+            groupBoxLogOutput.Location = new Point(12, 217);
             groupBoxLogOutput.Name = "groupBoxLogOutput";
             groupBoxLogOutput.Size = new Size(306, 93);
             groupBoxLogOutput.TabIndex = 2;
@@ -79,7 +81,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(116, 296);
+            btnCancel.Location = new Point(116, 321);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(98, 37);
             btnCancel.TabIndex = 3;
@@ -89,7 +91,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(220, 296);
+            btnOK.Location = new Point(220, 321);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(98, 37);
             btnOK.TabIndex = 2;
@@ -130,6 +132,8 @@
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(lblSpriteEditorCollisionColor);
+            groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(lblSpriteEditorGridColor);
             groupBox1.Controls.Add(label6);
             groupBox1.Controls.Add(lblTileEditorGridColor);
@@ -141,7 +145,7 @@
             groupBox1.Controls.Add(label2);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(306, 167);
+            groupBox1.Size = new Size(306, 199);
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "Colors";
@@ -212,13 +216,34 @@
             lblTilePickerRightColor.TabIndex = 7;
             lblTilePickerRightColor.Click += lblTilePickerRightColor_Click;
             // 
+            // lblSpriteEditorCollisionColor
+            // 
+            lblSpriteEditorCollisionColor.BackColor = Color.Red;
+            lblSpriteEditorCollisionColor.BorderStyle = BorderStyle.FixedSingle;
+            lblSpriteEditorCollisionColor.Cursor = Cursors.Hand;
+            lblSpriteEditorCollisionColor.ForeColor = Color.Black;
+            lblSpriteEditorCollisionColor.Location = new Point(170, 158);
+            lblSpriteEditorCollisionColor.Name = "lblSpriteEditorCollisionColor";
+            lblSpriteEditorCollisionColor.Size = new Size(40, 23);
+            lblSpriteEditorCollisionColor.TabIndex = 13;
+            lblSpriteEditorCollisionColor.Click += lblSpriteEditorCollisionColor_Click;
+            // 
+            // label5
+            // 
+            label5.Location = new Point(6, 158);
+            label5.Name = "label5";
+            label5.Size = new Size(158, 23);
+            label5.TabIndex = 14;
+            label5.Text = "Sprite editor grid:";
+            label5.TextAlign = ContentAlignment.TopRight;
+            // 
             // EditorSettingsDialog
             // 
             AcceptButton = btnOK;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(330, 345);
+            ClientSize = new Size(330, 370);
             Controls.Add(groupBox1);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
@@ -252,5 +277,7 @@
         private Label label4;
         private Label lblSpriteEditorGridColor;
         private Label label6;
+        private Label lblSpriteEditorCollisionColor;
+        private Label label5;
     }
 }
