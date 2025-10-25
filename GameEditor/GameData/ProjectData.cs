@@ -71,6 +71,7 @@ namespace GameEditor.GameData
         public event EventHandler? DirtyStatusChanged;
         public event EventHandler? AssetNamesChanged;
 
+        public Form? Window { get; set; }
         public string? FileName { get; set; }
         public string IdentifierPrefix { get; set; }
         public byte VgaSyncBits { get; set; }
@@ -141,6 +142,16 @@ namespace GameEditor.GameData
                 }
             }
             return -1;
+        }
+
+        public IDataAssetItem? GetAssetItem(IDataAsset item) {
+            AssetList<IDataAssetItem> list = assets[item.AssetType];
+            for (int i = 0; i < list.Count; i++) {
+                if (list[i].Asset == item) {
+                    return list[i];
+                }
+            }
+            return null;
         }
 
         public int GetDataSize() {

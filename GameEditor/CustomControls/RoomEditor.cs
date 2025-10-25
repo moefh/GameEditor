@@ -31,6 +31,7 @@ namespace GameEditor.CustomControls
         private int movingMapIndex;
 
         public event EventHandler? ZoomChanged;
+        public event EventHandler? MapClicked;
         public event EventHandler? MapsChanged;
 
         public RoomEditor() {
@@ -60,6 +61,10 @@ namespace GameEditor.CustomControls
         public double Zoom {
             get { return zoom; }
             set { zoom = value; ClampZoom(); }
+        }
+
+        public int SelectedMapIndex {
+            get { return movingMapIndex; }
         }
 
         private void ClampZoom() {
@@ -220,6 +225,7 @@ namespace GameEditor.CustomControls
                 if (movingMapIndex >= 0) {
                     mapMoveOrigin = e.Location;
                     mapMoveStartingPosition = new Point(Room.Maps[movingMapIndex].x, Room.Maps[movingMapIndex].y);
+                    MapClicked?.Invoke(this, EventArgs.Empty);
                 }
                 return;
             }

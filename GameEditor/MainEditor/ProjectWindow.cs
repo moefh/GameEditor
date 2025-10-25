@@ -138,6 +138,7 @@ namespace GameEditor.MainEditor
         }
 
         private void SetupCurrentProject() {
+            project.Window = this;
             project.DirtyStatusChanged += Project_DirtyStatusChanged;
             project.DataSizeChanged += Project_DataSizeChanged;
             project.AssetNamesChanged += Project_AssetNamesChanged;

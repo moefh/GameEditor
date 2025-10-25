@@ -26,7 +26,6 @@
         /// </summary>
         private void InitializeComponent() {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(RoomEditorWindow));
-            TreeNode treeNode1 = new TreeNode("Maps", 0, 0);
             infoToolStrip = new ToolStrip();
             toolStripDropDownRoom = new ToolStripDropDownButton();
             propertiesToolStripMenuItem = new ToolStripMenuItem();
@@ -35,7 +34,9 @@
             displayToolStrip = new ToolStrip();
             toolStripLabelZoom = new ToolStripLabel();
             mainSplit = new SplitContainer();
+            itemsSplitContainer = new SplitContainer();
             contentTree = new TreeView();
+            itemPropertyGrid = new PropertyGrid();
             roomEditor = new GameEditor.CustomControls.RoomEditor();
             infoToolStrip.SuspendLayout();
             statusStrip.SuspendLayout();
@@ -44,6 +45,10 @@
             mainSplit.Panel1.SuspendLayout();
             mainSplit.Panel2.SuspendLayout();
             mainSplit.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)itemsSplitContainer).BeginInit();
+            itemsSplitContainer.Panel1.SuspendLayout();
+            itemsSplitContainer.Panel2.SuspendLayout();
+            itemsSplitContainer.SuspendLayout();
             SuspendLayout();
             // 
             // infoToolStrip
@@ -60,7 +65,6 @@
             toolStripDropDownRoom.AutoToolTip = false;
             toolStripDropDownRoom.DisplayStyle = ToolStripItemDisplayStyle.Text;
             toolStripDropDownRoom.DropDownItems.AddRange(new ToolStripItem[] { propertiesToolStripMenuItem });
-            toolStripDropDownRoom.Image = (Image)resources.GetObject("toolStripDropDownRoom.Image");
             toolStripDropDownRoom.ImageTransparentColor = Color.Magenta;
             toolStripDropDownRoom.Name = "toolStripDropDownRoom";
             toolStripDropDownRoom.Size = new Size(58, 23);
@@ -116,27 +120,51 @@
             // 
             // mainSplit.Panel1
             // 
-            mainSplit.Panel1.Controls.Add(contentTree);
+            mainSplit.Panel1.Controls.Add(itemsSplitContainer);
             // 
             // mainSplit.Panel2
             // 
             mainSplit.Panel2.Controls.Add(roomEditor);
             mainSplit.Size = new Size(506, 200);
-            mainSplit.SplitterDistance = 168;
+            mainSplit.SplitterDistance = 191;
             mainSplit.TabIndex = 3;
+            // 
+            // itemsSplitContainer
+            // 
+            itemsSplitContainer.Dock = DockStyle.Fill;
+            itemsSplitContainer.Location = new Point(0, 0);
+            itemsSplitContainer.Name = "itemsSplitContainer";
+            itemsSplitContainer.Orientation = Orientation.Horizontal;
+            // 
+            // itemsSplitContainer.Panel1
+            // 
+            itemsSplitContainer.Panel1.Controls.Add(contentTree);
+            // 
+            // itemsSplitContainer.Panel2
+            // 
+            itemsSplitContainer.Panel2.Controls.Add(itemPropertyGrid);
+            itemsSplitContainer.Size = new Size(191, 200);
+            itemsSplitContainer.SplitterDistance = 107;
+            itemsSplitContainer.TabIndex = 1;
             // 
             // contentTree
             // 
             contentTree.Dock = DockStyle.Fill;
+            contentTree.HideSelection = false;
             contentTree.Location = new Point(0, 0);
             contentTree.Name = "contentTree";
-            treeNode1.ImageIndex = 0;
-            treeNode1.Name = "NodeMaps";
-            treeNode1.SelectedImageIndex = 0;
-            treeNode1.Text = "Maps";
-            contentTree.Nodes.AddRange(new TreeNode[] { treeNode1 });
-            contentTree.Size = new Size(168, 200);
+            contentTree.Size = new Size(191, 107);
             contentTree.TabIndex = 0;
+            // 
+            // itemPropertyGrid
+            // 
+            itemPropertyGrid.Dock = DockStyle.Fill;
+            itemPropertyGrid.HelpVisible = false;
+            itemPropertyGrid.Location = new Point(0, 0);
+            itemPropertyGrid.Name = "itemPropertyGrid";
+            itemPropertyGrid.Size = new Size(191, 89);
+            itemPropertyGrid.TabIndex = 0;
+            itemPropertyGrid.ToolbarVisible = false;
             // 
             // roomEditor
             // 
@@ -146,12 +174,13 @@
             roomEditor.MinZoom = 0.125D;
             roomEditor.Name = "roomEditor";
             roomEditor.Room = null;
-            roomEditor.Size = new Size(334, 200);
+            roomEditor.Size = new Size(311, 200);
             roomEditor.TabIndex = 0;
             roomEditor.Text = "roomEditor";
             roomEditor.Zoom = 1D;
             roomEditor.ZoomStep = 3;
             roomEditor.ZoomChanged += roomEditor_ZoomChanged;
+            roomEditor.MapClicked += roomEditor_MapClicked;
             roomEditor.MapsChanged += roomEditor_MapsChanged;
             // 
             // RoomEditorWindow
@@ -178,6 +207,10 @@
             mainSplit.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)mainSplit).EndInit();
             mainSplit.ResumeLayout(false);
+            itemsSplitContainer.Panel1.ResumeLayout(false);
+            itemsSplitContainer.Panel2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)itemsSplitContainer).EndInit();
+            itemsSplitContainer.ResumeLayout(false);
             ResumeLayout(false);
             PerformLayout();
         }
@@ -194,5 +227,7 @@
         private SplitContainer mainSplit;
         private TreeView contentTree;
         private CustomControls.RoomEditor roomEditor;
+        private SplitContainer itemsSplitContainer;
+        private PropertyGrid itemPropertyGrid;
     }
 }

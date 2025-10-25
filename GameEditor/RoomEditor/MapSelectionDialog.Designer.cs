@@ -94,7 +94,6 @@
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
             ClientSize = new Size(610, 326);
-            ControlBox = false;
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
             Controls.Add(mapView);
@@ -102,6 +101,7 @@
             MinimizeBox = false;
             MinimumSize = new Size(400, 250);
             Name = "MapSelectionDialog";
+            ShowIcon = false;
             StartPosition = FormStartPosition.CenterParent;
             Text = "Select Maps";
             Shown += MapSelectionDialog_Shown;

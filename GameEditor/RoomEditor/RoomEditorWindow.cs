@@ -25,8 +25,10 @@ namespace GameEditor.RoomEditor
             InitializeComponent();
             SetupAssetControls(lblDataSize);
 
-            contentTreeManager = new ContentTreeManager(contentTree, roomItem, components);
+            contentTreeManager = new ContentTreeManager(contentTree, itemPropertyGrid, roomItem, components);
             contentTreeManager.ManageMapsRequested += ContentTreeManager_ManageMapsRequested;
+            contentTreeManager.ItemPropertiesChanged += ContentTreeManager_ItemChanged;
+            contentTreeManager.ItemDoubleClicked += ContentTreeManager_ItemDoubleClicked;
 
             roomEditor.Room = Room;
         }
@@ -79,6 +81,19 @@ namespace GameEditor.RoomEditor
             }
         }
 
+        private void ContentTreeManager_ItemDoubleClicked(object? sender, ContentTreeManager.RoomItemEventArgs e) {
+            Util.Log($"double clock {e.Item}");
+            Util.Log($"{assetItem}, {assetItem?.Project}, {assetItem?.Project.Window}");
+            if (assetItem == null || assetItem.Project.Window == null) return;
+            if (e.Item is MapRoomItem map) {
+                assetItem.Project.GetAssetItem(map.Map)?.ShowEditor(assetItem.Project.Window);
+            }
+        }
+
+        private void ContentTreeManager_ItemChanged(object? sender, EventArgs e) {
+            roomEditor.Invalidate();
+        }
+
         // =========================================================================
         // MENU
         // =========================================================================
@@ -97,7 +112,15 @@ namespace GameEditor.RoomEditor
         }
 
         private void roomEditor_MapsChanged(object sender, EventArgs e) {
+            contentTreeManager.RefreshItemProperties();
             SetDirty();
+        }
+
+        private void roomEditor_MapClicked(object sender, EventArgs e) {
+            int index = roomEditor.SelectedMapIndex;
+            if (index >= 0 && index < Room.Maps.Count) {
+                contentTreeManager.SelectMap(Room.Maps[index]);
+            }
         }
     }
 }
