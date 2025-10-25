@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -15,10 +16,32 @@ namespace GameEditor.MainEditor
 {
     public class AssetTreeManager
     {
+        public class NodeDef(string rootTitle, string itemTitle, string nodeId, DataAssetType type, Image icon)
+        {
+           public DataAssetType DataAssetType { get; set; } = type;
+           public Image Icon { get; set; } = icon;
+           public string RootTitle { get; set; } = rootTitle;
+           public string ItemTitle { get; set; } = itemTitle;
+           public string NodeId { get; set; } = nodeId;
+        }
+
+        private readonly List<NodeDef> NodeDefs = [
+            new NodeDef("Tilesets",           "Tileset",           "NodeTilesets",         DataAssetType.Tileset,         Resources.TilesetIcon),
+            new NodeDef("Maps",               "Map",               "NodeMaps",             DataAssetType.Map,             Resources.MapIcon),
+            new NodeDef("Rooms",              "Room",              "NodeRooms",            DataAssetType.Room,            Resources.RoomIcon),
+            new NodeDef("Sprites",            "Sprite",            "NodeSprites",          DataAssetType.Sprite,          Resources.SpriteIcon),
+            new NodeDef("Animations",         "Sprite Animation",  "NodeSpriteAnimations", DataAssetType.SpriteAnimation, Resources.AnimationIcon),
+            new NodeDef("Sound Effects",      "Sound Effect",      "NodeSfxs",             DataAssetType.Sfx,             Resources.SfxIcon),
+            new NodeDef("MODs",               "MOD",               "NodeMods",             DataAssetType.Mod,             Resources.MODIcon),
+            new NodeDef("Fonts",              "Font",              "NodeFonts",            DataAssetType.Font,            Resources.FwFontIcon),
+            new NodeDef("Proportional Fonts", "Proportional Font", "NodePropFont",         DataAssetType.PropFont,        Resources.FontIcon),
+        ];
+
         private readonly ProjectWindow mainWindow;
         private readonly TreeView tree;
         private readonly Dictionary<DataAssetType,int> nodeIndicesByType = [];
         private readonly Dictionary<DataAssetType,TreeNode> rootNodesByType = [];
+        private readonly Dictionary<DataAssetType,string> assetTypeNamesByType = [];
         private ImageList? imageList;
         private ContextMenuStrip? contextMenuStrip;
 
@@ -33,18 +56,12 @@ namespace GameEditor.MainEditor
             this.tree = tree;
             this.project = project;
 
-            nodeIndicesByType[DataAssetType.Tileset] = 0;
-            nodeIndicesByType[DataAssetType.Sprite] = 1;
-            nodeIndicesByType[DataAssetType.Map] = 2;
-            nodeIndicesByType[DataAssetType.SpriteAnimation] = 3;
-            nodeIndicesByType[DataAssetType.Sfx] = 4;
-            nodeIndicesByType[DataAssetType.Mod] = 5;
-            nodeIndicesByType[DataAssetType.Font] = 6;
-            nodeIndicesByType[DataAssetType.PropFont] = 7;
-            nodeIndicesByType[DataAssetType.Room] = 8;
-
-            foreach (var kv in nodeIndicesByType) {
-                rootNodesByType[kv.Key] = tree.Nodes[kv.Value];
+            tree.Nodes.Clear();
+            for (int i = 0; i < NodeDefs.Count; i++) {
+                TreeNode node = tree.Nodes.Add(NodeDefs[i].NodeId, NodeDefs[i].RootTitle, i, i);
+                nodeIndicesByType[NodeDefs[i].DataAssetType] = i;
+                rootNodesByType[NodeDefs[i].DataAssetType] = node;
+                assetTypeNamesByType[NodeDefs[i].DataAssetType] = NodeDefs[i].ItemTitle;
             }
 
             SetupUI(container);
@@ -66,19 +83,12 @@ namespace GameEditor.MainEditor
 
         public DataAssetType? GetSelectedRootType() {
             string? selectedId = tree.SelectedNode?.Name;
-            if (selectedId == null) return null;
-            return selectedId switch {
-                "NodeTilesets" => DataAssetType.Tileset,
-                "NodeMaps" => DataAssetType.Map,
-                "NodeSprites" => DataAssetType.Sprite,
-                "NodeSfxs" => DataAssetType.Sfx,
-                "NodeMods" => DataAssetType.Mod,
-                "NodeFonts" => DataAssetType.Font,
-                "NodeSpriteAnimations" => DataAssetType.SpriteAnimation,
-                "NodePropFont" => DataAssetType.PropFont,
-                "NodeRooms" => DataAssetType.Room,
-                _ => null,
-            };
+            for (int i = 0; i < NodeDefs.Count; i++) {
+                if (selectedId == NodeDefs[i].NodeId) {
+                    return NodeDefs[i].DataAssetType;
+                }
+            }
+            return null;
         }
 
         private string GenId() {
@@ -198,15 +208,9 @@ namespace GameEditor.MainEditor
 
         private void SetupUI(IContainer? container) {
             imageList = (container == null) ? new ImageList() : new ImageList(container);
-            imageList.Images.Add(Resources.TilesetIcon);
-            imageList.Images.Add(Resources.SpriteIcon);
-            imageList.Images.Add(Resources.MapIcon);
-            imageList.Images.Add(Resources.AnimationIcon);
-            imageList.Images.Add(Resources.SfxIcon);
-            imageList.Images.Add(Resources.MODIcon);
-            imageList.Images.Add(Resources.FwFontIcon);
-            imageList.Images.Add(Resources.FontIcon);
-            imageList.Images.Add(Resources.RoomIcon);
+            for (int i = 0; i < NodeDefs.Count; i++) {
+                imageList.Images.Add(NodeDefs[i].Icon);
+            }
             tree.ImageList = imageList;
 
             contextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
@@ -222,20 +226,6 @@ namespace GameEditor.MainEditor
             tree.NodeMouseClick += TreeView_NodeMouseClick;
             tree.BeforeLabelEdit += Tree_BeforeLabelEdit;
             tree.AfterLabelEdit += Tree_AfterLabelEdit;
-        }
-
-        private static string? GetDataAssetTypeName(DataAssetType type) {
-            return type switch {
-                DataAssetType.Tileset => "Tileset",
-                DataAssetType.Map => "Map",
-                DataAssetType.Sprite => "Sprite",
-                DataAssetType.SpriteAnimation => "Sprite Animation",
-                DataAssetType.Sfx => "Sound Effect",
-                DataAssetType.Mod => "MOD",
-                DataAssetType.Font => "Font",
-                DataAssetType.PropFont => "Proportional Font",
-                _ => null,
-            };
         }
 
         private void Tree_AfterLabelEdit(object? sender, NodeLabelEditEventArgs e) {
@@ -317,8 +307,7 @@ namespace GameEditor.MainEditor
             if (contextMenuStrip == null) return;
             DataAssetType? type = GetSelectedRootType();
             if (type != null) {
-                string? name = GetDataAssetTypeName(type.Value);
-                contextMenuStrip.Items[0].Text = $"Add {name}";
+                contextMenuStrip.Items[0].Text = $"Add {assetTypeNamesByType[type.Value]}";
                 contextMenuStrip.Items[0].ImageIndex = nodeIndicesByType[type.Value];
                 contextMenuStrip.Items[1].Visible = false;
                 contextMenuStrip.Items[2].Visible = false;
@@ -328,7 +317,7 @@ namespace GameEditor.MainEditor
 
             IDataAssetItem? asset = GetSelectedItem();
             if (asset != null) {
-                string? name = GetDataAssetTypeName(asset.Asset.AssetType);
+                string name = assetTypeNamesByType[asset.Asset.AssetType];
                 contextMenuStrip.Items[0].Text = $"Add {name}";
                 contextMenuStrip.Items[0].ImageIndex = nodeIndicesByType[asset.Asset.AssetType];
                 contextMenuStrip.Items[1].Visible = true;

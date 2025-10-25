@@ -26,15 +26,6 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
-            TreeNode treeNode1 = new TreeNode("Tilesets", 0, 0);
-            TreeNode treeNode2 = new TreeNode("Sprites", 1, 1);
-            TreeNode treeNode3 = new TreeNode("Maps", 2, 2);
-            TreeNode treeNode4 = new TreeNode("Animations", 3, 3);
-            TreeNode treeNode5 = new TreeNode("Sound Effects", 4, 4);
-            TreeNode treeNode6 = new TreeNode("MODs", 5, 5);
-            TreeNode treeNode7 = new TreeNode("Fonts", 6, 6);
-            TreeNode treeNode8 = new TreeNode("Proportional Fonts", 7, 7);
-            TreeNode treeNode9 = new TreeNode("Rooms", 8, 8);
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ProjectWindow));
             menuStrip = new MenuStrip();
             fileToolStripMenuItem = new ToolStripMenuItem();
@@ -168,7 +159,7 @@
             // 
             // projectToolStripMenuItem
             // 
-            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addSpriteToolStripMenuItem, addMapToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, addNewPropFontToolStripMenuItem, addNewRoomRoolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
+            projectToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { addTilesetToolStripMenuItem, addMapToolStripMenuItem, addNewRoomRoolStripMenuItem, addSpriteToolStripMenuItem, addSpriteAnimationToolStripMenuItem, addSoundEffectToolStripMenuItem, addMODToolStripMenuItem, addNewFontToolStripMenuItem, addNewPropFontToolStripMenuItem, toolStripSeparator1, exportHeaderToolStripMenuItem, runCheckToolStripMenuItem, toolStripSeparator6, propertiesToolStripMenuItem });
             projectToolStripMenuItem.Name = "projectToolStripMenuItem";
             projectToolStripMenuItem.Size = new Size(63, 23);
             projectToolStripMenuItem.Text = "&Project";
@@ -378,43 +369,6 @@
             assetTree.Dock = DockStyle.Fill;
             assetTree.Location = new Point(0, 22);
             assetTree.Name = "assetTree";
-            treeNode1.ImageIndex = 0;
-            treeNode1.Name = "NodeTilesets";
-            treeNode1.SelectedImageIndex = 0;
-            treeNode1.Text = "Tilesets";
-            treeNode2.ImageIndex = 1;
-            treeNode2.Name = "NodeSprites";
-            treeNode2.SelectedImageIndex = 1;
-            treeNode2.Text = "Sprites";
-            treeNode3.ImageIndex = 2;
-            treeNode3.Name = "NodeMaps";
-            treeNode3.SelectedImageIndex = 2;
-            treeNode3.Text = "Maps";
-            treeNode4.ImageIndex = 3;
-            treeNode4.Name = "NodeSpriteAnimations";
-            treeNode4.SelectedImageIndex = 3;
-            treeNode4.Text = "Animations";
-            treeNode5.ImageIndex = 4;
-            treeNode5.Name = "NodeSfxs";
-            treeNode5.SelectedImageIndex = 4;
-            treeNode5.Text = "Sound Effects";
-            treeNode6.ImageIndex = 5;
-            treeNode6.Name = "NodeMods";
-            treeNode6.SelectedImageIndex = 5;
-            treeNode6.Text = "MODs";
-            treeNode7.ImageIndex = 6;
-            treeNode7.Name = "NodeFonts";
-            treeNode7.SelectedImageIndex = 6;
-            treeNode7.Text = "Fonts";
-            treeNode8.ImageIndex = 7;
-            treeNode8.Name = "NodePropFont";
-            treeNode8.SelectedImageIndex = 7;
-            treeNode8.Text = "Proportional Fonts";
-            treeNode9.ImageIndex = 8;
-            treeNode9.Name = "NodeRooms";
-            treeNode9.SelectedImageIndex = 8;
-            treeNode9.Text = "Rooms";
-            assetTree.Nodes.AddRange(new TreeNode[] { treeNode1, treeNode2, treeNode3, treeNode4, treeNode5, treeNode6, treeNode7, treeNode8, treeNode9 });
             assetTree.Size = new Size(198, 200);
             assetTree.TabIndex = 7;
             // 
