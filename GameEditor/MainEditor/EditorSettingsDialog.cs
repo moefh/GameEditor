@@ -40,6 +40,18 @@ namespace GameEditor.MainEditor
             Close();
         }
 
+        private int[] GetColorPickerCustomColors() {
+           Color[] colors = [
+                lblTilePickerLeftColor.BackColor,
+                lblTilePickerRightColor.BackColor,
+                lblMapEditorGridColor.BackColor,
+                lblTileEditorGridColor.BackColor,
+                lblSpriteEditorGridColor.BackColor,
+                lblSpriteEditorCollisionColor.BackColor,
+            ];
+            return Array.ConvertAll(colors, c => (c.B << 16) | (c.G << 8) | (c.R << 0));
+        }
+
         private bool ShowColorDialog(Color color, out Color selected) {
             ColorDialog dlg = new ColorDialog();
             dlg.Color = color;
@@ -47,6 +59,7 @@ namespace GameEditor.MainEditor
             dlg.AllowFullOpen = true;
             dlg.FullOpen = true;
             dlg.SolidColorOnly = true;
+            dlg.CustomColors = GetColorPickerCustomColors();
             if (dlg.ShowDialog() == DialogResult.OK) {
                 selected = dlg.Color;
                 return true;
