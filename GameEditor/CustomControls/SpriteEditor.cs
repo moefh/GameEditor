@@ -23,8 +23,10 @@ namespace GameEditor.CustomControls
             InitializeComponent();
             SetupComponents(components);
             SetDoubleBuffered();
+            ReadOnly = false;
         }
 
+        public bool ReadOnly { get; set; }
         protected override int EditImageWidth { get { return (Sprite != null) ? Sprite.Width : 0; } }
         protected override int EditImageHeight { get { return (Sprite != null) ? Sprite.Height : 0; } }
         public Color GridColor { get; set; }
@@ -109,7 +111,8 @@ namespace GameEditor.CustomControls
         }
 
         protected override void SetImagePixel(int x, int y, Color color) {
-            Sprite?.SetFramePixel(SelectedFrame, x, y, color);
+            if (Sprite == null || ReadOnly) return;
+            Sprite.SetFramePixel(SelectedFrame, x, y, color);
         }
 
         protected override Color GetImagePixel(int x, int y) {
@@ -118,11 +121,12 @@ namespace GameEditor.CustomControls
         }
 
         protected override void FloodFillImage(int x, int y, Color color) {
-            Sprite?.FloodFill(SelectedFrame, x, y, color);
+            if (Sprite == null || ReadOnly) return;
+            Sprite.FloodFill(SelectedFrame, x, y, color);
         }
 
         protected override void VFlipImage() {
-            if (Sprite == null) return;
+            if (Sprite == null || ReadOnly) return;
             Sprite.VFlipFrame(SelectedFrame, 0, 0, Sprite.Width, Sprite.Height);
         }
 
@@ -136,7 +140,7 @@ namespace GameEditor.CustomControls
         }
 
         protected override void DeleteSelectionFromImage(Rectangle rect) {
-            if (Sprite == null) return;
+            if (Sprite == null || ReadOnly) return;
             byte[] pixels = new byte[4*Sprite.Width*Sprite.Height];
             Sprite.ReadFramePixels(SelectedFrame, pixels);
             for (int y = 0; y < rect.Height; y++) {
@@ -152,7 +156,7 @@ namespace GameEditor.CustomControls
         }
 
         protected override Bitmap? LiftSelectionBitmap(Rectangle rect) {
-            if (Sprite == null) return null;
+            if (Sprite == null || ReadOnly) return null;
 
             Bitmap selection = Sprite.CopyFromFrame(SelectedFrame, rect);
             DeleteSelectionFromImage(rect);
@@ -160,7 +164,7 @@ namespace GameEditor.CustomControls
         }
 
         protected override void DropSelectionBitmap(Rectangle selectedRect, Bitmap selectionBmp) {
-            if (Sprite == null) return;
+            if (Sprite == null || ReadOnly) return;
 
             bool transparent = (RenderFlags & RenderFlags.Transparent) != 0;
             Sprite.PasteIntoFrame(selectionBmp, SelectedFrame, selectedRect.X, selectedRect.Y, transparent);
@@ -171,7 +175,8 @@ namespace GameEditor.CustomControls
         }
 
         protected override void CopyImageFromBitmap(Bitmap bmp) {
-            Sprite?.PasteIntoFrame(bmp, SelectedFrame, 0, 0, false);
+            if (Sprite == null || ReadOnly) return;
+            Sprite.PasteIntoFrame(bmp, SelectedFrame, 0, 0, false);
         }
 
     }

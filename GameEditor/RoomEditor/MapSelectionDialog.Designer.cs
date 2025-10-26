@@ -26,9 +26,9 @@
         /// </summary>
         private void InitializeComponent() {
             mapsCheckedListBox = new CheckedListBox();
-            mapView = new GameEditor.CustomControls.MapEditor();
             btnCancel = new Button();
             btnOK = new Button();
+            mapView = new GameEditor.CustomControls.MapEditor();
             SuspendLayout();
             // 
             // mapsCheckedListBox
@@ -41,6 +41,27 @@
             mapsCheckedListBox.Size = new Size(161, 264);
             mapsCheckedListBox.TabIndex = 0;
             mapsCheckedListBox.SelectedIndexChanged += mapsCheckedListBox_SelectedIndexChanged;
+            // 
+            // btnCancel
+            // 
+            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnCancel.Location = new Point(412, 282);
+            btnCancel.Name = "btnCancel";
+            btnCancel.Size = new Size(90, 34);
+            btnCancel.TabIndex = 12;
+            btnCancel.Text = "Cancel";
+            btnCancel.UseVisualStyleBackColor = true;
+            // 
+            // btnOK
+            // 
+            btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnOK.Location = new Point(508, 282);
+            btnOK.Name = "btnOK";
+            btnOK.Size = new Size(90, 34);
+            btnOK.TabIndex = 11;
+            btnOK.Text = "OK";
+            btnOK.UseVisualStyleBackColor = true;
+            btnOK.Click += btnOK_Click;
             // 
             // mapView
             // 
@@ -66,27 +87,6 @@
             mapView.Zoom = 1D;
             mapView.ZoomStep = 0.5D;
             // 
-            // btnCancel
-            // 
-            btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(412, 282);
-            btnCancel.Name = "btnCancel";
-            btnCancel.Size = new Size(90, 34);
-            btnCancel.TabIndex = 12;
-            btnCancel.Text = "Cancel";
-            btnCancel.UseVisualStyleBackColor = true;
-            // 
-            // btnOK
-            // 
-            btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(508, 282);
-            btnOK.Name = "btnOK";
-            btnOK.Size = new Size(90, 34);
-            btnOK.TabIndex = 11;
-            btnOK.Text = "OK";
-            btnOK.UseVisualStyleBackColor = true;
-            btnOK.Click += btnOK_Click;
-            // 
             // MapSelectionDialog
             // 
             AcceptButton = btnOK;
@@ -111,8 +111,8 @@
         #endregion
 
         private CheckedListBox mapsCheckedListBox;
-        private CustomControls.MapEditor mapView;
         private Button btnCancel;
         private Button btnOK;
+        private CustomControls.MapEditor mapView;
     }
 }

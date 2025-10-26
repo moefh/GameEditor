@@ -23,6 +23,7 @@ namespace GameEditor.MainEditor
             lblTileEditorGridColor.BackColor = ConfigUtil.TileEditorGridColor;
             lblSpriteEditorGridColor.BackColor = ConfigUtil.SpriteEditorGridColor;
             lblSpriteEditorCollisionColor.BackColor = ConfigUtil.SpriteEditorCollisionColor;
+            lblRoomEditorSelectionColor.BackColor = ConfigUtil.RoomEditorSelectionColor;
         }
 
         private void btnOK_Click(object sender, EventArgs e) {
@@ -35,19 +36,21 @@ namespace GameEditor.MainEditor
             ConfigUtil.TileEditorGridColor = lblTileEditorGridColor.BackColor;
             ConfigUtil.SpriteEditorGridColor = lblSpriteEditorGridColor.BackColor;
             ConfigUtil.SpriteEditorCollisionColor = lblSpriteEditorCollisionColor.BackColor;
+            ConfigUtil.RoomEditorSelectionColor = lblRoomEditorSelectionColor.BackColor;
             Util.Log("== Log settings updated");
             DialogResult = DialogResult.OK;
             Close();
         }
 
         private int[] GetColorPickerCustomColors() {
-           Color[] colors = [
-                lblTilePickerLeftColor.BackColor,
+            Color[] colors = [
+                 lblTilePickerLeftColor.BackColor,
                 lblTilePickerRightColor.BackColor,
                 lblMapEditorGridColor.BackColor,
                 lblTileEditorGridColor.BackColor,
                 lblSpriteEditorGridColor.BackColor,
                 lblSpriteEditorCollisionColor.BackColor,
+                lblRoomEditorSelectionColor.BackColor,
             ];
             return Array.ConvertAll(colors, c => (c.B << 16) | (c.G << 8) | (c.R << 0));
         }
@@ -101,6 +104,12 @@ namespace GameEditor.MainEditor
         private void lblSpriteEditorCollisionColor_Click(object sender, EventArgs e) {
             if (ShowColorDialog(lblSpriteEditorCollisionColor.BackColor, out Color selected)) {
                 lblSpriteEditorCollisionColor.BackColor = selected;
+            }
+        }
+
+        private void lblRoomEditorSelectionColor_Click(object sender, EventArgs e) {
+            if (ShowColorDialog(lblRoomEditorSelectionColor.BackColor, out Color selected)) {
+                lblRoomEditorSelectionColor.BackColor = selected;
             }
         }
     }

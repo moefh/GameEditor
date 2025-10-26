@@ -38,7 +38,11 @@ namespace GameEditor.RoomEditor
         }
 
         public bool DependsOnAsset(IDataAsset asset) {
-            return Room.Maps.FindIndex(m => m.map == asset) >= 0;
+            return (
+                (asset is MapData && Room.Maps.FindIndex(m => m.MapData == asset) >= 0) ||
+                (asset is Sprite && Room.Entities.FindIndex(e => e.SpriteAnim.Sprite == asset) >= 0) ||
+                (asset is SpriteAnimation && Room.Entities.FindIndex(e => e.SpriteAnim == asset) >= 0)
+            );
         }
 
         public void DependencyChanged(IDataAsset asset) {

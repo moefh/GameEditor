@@ -732,9 +732,9 @@ namespace GameEditor.ProjectIO
             string ident = identifiers.Add(room, "room_maps", room.Name);
             f.WriteLine($"static const struct {GetUpperGlobal("ROOM_MAP_INFO")} {ident}[] = {{");
             for (int m = 0; m < room.Maps.Count; m++) {
-                int mapX = room.Maps[m].x;
-                int mapY = room.Maps[m].y;
-                int mapIndex = Project.GetAssetIndex(room.Maps[m].map);
+                int mapX = room.Maps[m].X;
+                int mapY = room.Maps[m].Y;
+                int mapIndex = Project.GetAssetIndex(room.Maps[m].MapData);
                 f.WriteLine($"  {{ {mapX}, {mapY}, &{mapIdent}[{mapIndex}] }},");
             }
             f.WriteLine("};");

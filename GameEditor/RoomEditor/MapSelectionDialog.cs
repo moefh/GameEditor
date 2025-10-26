@@ -31,7 +31,7 @@ namespace GameEditor.RoomEditor
 
             selectedMaps.Clear();
             foreach (RoomData.Map map in Room.Maps) {
-                selectedMaps.Add(map.map);
+                selectedMaps.Add(map.MapData);
             }
 
             int numMaps = 0;

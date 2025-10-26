@@ -38,15 +38,15 @@ namespace GameEditor.GameData
         public const int SCREEN_HEIGHT = 240;
 
         private static readonly DataAssetType[] ASSET_TYPES_IN_DESTROY_ORDER = [
-          DataAssetType.SpriteAnimation,
           DataAssetType.Room,
+          DataAssetType.SpriteAnimation,
           DataAssetType.Map,
-          DataAssetType.Mod,
-          DataAssetType.Sfx,
           DataAssetType.Sprite,
           DataAssetType.Tileset,
           DataAssetType.Font,
           DataAssetType.PropFont,
+          DataAssetType.Mod,
+          DataAssetType.Sfx,
         ];
         private readonly Dictionary<DataAssetType, AssetList<IDataAssetItem>> assets = [];
 

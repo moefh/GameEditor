@@ -1175,9 +1175,9 @@ namespace GameEditor.ProjectIO
                 }
 
                 RoomData.Map mapInfo;
-                mapInfo.x = (int) posX.Num;
-                mapInfo.y = (int) posY.Num;
-                mapInfo.map = mapList[(int) mapIndex.Num];
+                mapInfo.X = (int) posX.Num;
+                mapInfo.Y = (int) posY.Num;
+                mapInfo.MapData = mapList[(int) mapIndex.Num];
                 maps.Add(mapInfo);
             }
 
@@ -1208,7 +1208,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 string name = ExtractGlobalLowerName(mapListIdent.Str, "room_maps");
-                roomList.Add(new RoomData(name, maps));
+                roomList.Add(new RoomData(name, maps, []));
 
                 Util.Log($"-> got room {name} with {maps.Count} maps");
             }

@@ -25,6 +25,7 @@
         /// the contents of this method with the code editor.
         /// </summary>
         private void InitializeComponent() {
+            components = new System.ComponentModel.Container();
             checkBoxLogWindow = new CheckBox();
             groupBoxLogOutput = new GroupBox();
             checkBoxLogDotNet = new CheckBox();
@@ -34,12 +35,15 @@
             label2 = new Label();
             label3 = new Label();
             groupBox1 = new GroupBox();
+            lblRoomEditorSelectionColor = new Label();
+            label4 = new Label();
             lblSpriteEditorCollisionColor = new Label();
             label5 = new Label();
             lblSpriteEditorGridColor = new Label();
             lblTileEditorGridColor = new Label();
             lblTilePickerLeftColor = new Label();
             lblTilePickerRightColor = new Label();
+            colorToolTip = new ToolTip(components);
             groupBoxLogOutput.SuspendLayout();
             groupBox1.SuspendLayout();
             SuspendLayout();
@@ -59,7 +63,7 @@
             groupBoxLogOutput.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             groupBoxLogOutput.Controls.Add(checkBoxLogDotNet);
             groupBoxLogOutput.Controls.Add(checkBoxLogWindow);
-            groupBoxLogOutput.Location = new Point(12, 156);
+            groupBoxLogOutput.Location = new Point(12, 190);
             groupBoxLogOutput.Name = "groupBoxLogOutput";
             groupBoxLogOutput.Size = new Size(342, 97);
             groupBoxLogOutput.TabIndex = 2;
@@ -79,7 +83,7 @@
             // btnCancel
             // 
             btnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnCancel.Location = new Point(152, 268);
+            btnCancel.Location = new Point(152, 302);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(98, 37);
             btnCancel.TabIndex = 3;
@@ -89,7 +93,7 @@
             // btnOK
             // 
             btnOK.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            btnOK.Location = new Point(256, 268);
+            btnOK.Location = new Point(256, 302);
             btnOK.Name = "btnOK";
             btnOK.Size = new Size(98, 37);
             btnOK.TabIndex = 2;
@@ -107,11 +111,12 @@
             lblMapEditorGridColor.Name = "lblMapEditorGridColor";
             lblMapEditorGridColor.Size = new Size(40, 23);
             lblMapEditorGridColor.TabIndex = 4;
+            colorToolTip.SetToolTip(lblMapEditorGridColor, "Map grid");
             lblMapEditorGridColor.Click += lblMapEditorGridColor_Click;
             // 
             // label2
             // 
-            label2.Location = new Point(17, 63);
+            label2.Location = new Point(17, 64);
             label2.Name = "label2";
             label2.Size = new Size(155, 23);
             label2.TabIndex = 5;
@@ -124,12 +129,14 @@
             label3.Name = "label3";
             label3.Size = new Size(155, 23);
             label3.TabIndex = 6;
-            label3.Text = "Tile selection:";
+            label3.Text = "Map tile selection:";
             label3.TextAlign = ContentAlignment.TopRight;
             // 
             // groupBox1
             // 
             groupBox1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            groupBox1.Controls.Add(lblRoomEditorSelectionColor);
+            groupBox1.Controls.Add(label4);
             groupBox1.Controls.Add(lblSpriteEditorCollisionColor);
             groupBox1.Controls.Add(label5);
             groupBox1.Controls.Add(lblSpriteEditorGridColor);
@@ -141,10 +148,32 @@
             groupBox1.Controls.Add(label2);
             groupBox1.Location = new Point(12, 12);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(342, 138);
+            groupBox1.Size = new Size(342, 171);
             groupBox1.TabIndex = 7;
             groupBox1.TabStop = false;
             groupBox1.Text = "Colors";
+            // 
+            // lblRoomEditorSelectionColor
+            // 
+            lblRoomEditorSelectionColor.BackColor = Color.Red;
+            lblRoomEditorSelectionColor.BorderStyle = BorderStyle.FixedSingle;
+            lblRoomEditorSelectionColor.Cursor = Cursors.Hand;
+            lblRoomEditorSelectionColor.ForeColor = Color.Black;
+            lblRoomEditorSelectionColor.Location = new Point(178, 127);
+            lblRoomEditorSelectionColor.Name = "lblRoomEditorSelectionColor";
+            lblRoomEditorSelectionColor.Size = new Size(40, 23);
+            lblRoomEditorSelectionColor.TabIndex = 15;
+            colorToolTip.SetToolTip(lblRoomEditorSelectionColor, "Room item selection");
+            lblRoomEditorSelectionColor.Click += lblRoomEditorSelectionColor_Click;
+            // 
+            // label4
+            // 
+            label4.Location = new Point(17, 128);
+            label4.Name = "label4";
+            label4.Size = new Size(155, 23);
+            label4.TabIndex = 16;
+            label4.Text = "Room item selection:";
+            label4.TextAlign = ContentAlignment.TopRight;
             // 
             // lblSpriteEditorCollisionColor
             // 
@@ -152,15 +181,16 @@
             lblSpriteEditorCollisionColor.BorderStyle = BorderStyle.FixedSingle;
             lblSpriteEditorCollisionColor.Cursor = Cursors.Hand;
             lblSpriteEditorCollisionColor.ForeColor = Color.Black;
-            lblSpriteEditorCollisionColor.Location = new Point(178, 94);
+            lblSpriteEditorCollisionColor.Location = new Point(178, 95);
             lblSpriteEditorCollisionColor.Name = "lblSpriteEditorCollisionColor";
             lblSpriteEditorCollisionColor.Size = new Size(40, 23);
             lblSpriteEditorCollisionColor.TabIndex = 13;
+            colorToolTip.SetToolTip(lblSpriteEditorCollisionColor, "Sprite collision");
             lblSpriteEditorCollisionColor.Click += lblSpriteEditorCollisionColor_Click;
             // 
             // label5
             // 
-            label5.Location = new Point(17, 94);
+            label5.Location = new Point(17, 96);
             label5.Name = "label5";
             label5.Size = new Size(155, 23);
             label5.TabIndex = 14;
@@ -177,6 +207,7 @@
             lblSpriteEditorGridColor.Name = "lblSpriteEditorGridColor";
             lblSpriteEditorGridColor.Size = new Size(40, 23);
             lblSpriteEditorGridColor.TabIndex = 11;
+            colorToolTip.SetToolTip(lblSpriteEditorGridColor, "Sprite grid");
             lblSpriteEditorGridColor.Click += lblSpriteEditorGridColor_Click;
             // 
             // lblTileEditorGridColor
@@ -189,6 +220,7 @@
             lblTileEditorGridColor.Name = "lblTileEditorGridColor";
             lblTileEditorGridColor.Size = new Size(40, 23);
             lblTileEditorGridColor.TabIndex = 9;
+            colorToolTip.SetToolTip(lblTileEditorGridColor, "Tile grid");
             lblTileEditorGridColor.Click += lblTileEditorGridColor_Click;
             // 
             // lblTilePickerLeftColor
@@ -201,6 +233,7 @@
             lblTilePickerLeftColor.Name = "lblTilePickerLeftColor";
             lblTilePickerLeftColor.Size = new Size(40, 23);
             lblTilePickerLeftColor.TabIndex = 8;
+            colorToolTip.SetToolTip(lblTilePickerLeftColor, "Foreground tile");
             lblTilePickerLeftColor.Click += lblTilePickerLeftColor_Click;
             // 
             // lblTilePickerRightColor
@@ -213,6 +246,7 @@
             lblTilePickerRightColor.Name = "lblTilePickerRightColor";
             lblTilePickerRightColor.Size = new Size(40, 23);
             lblTilePickerRightColor.TabIndex = 7;
+            colorToolTip.SetToolTip(lblTilePickerRightColor, "Background tile");
             lblTilePickerRightColor.Click += lblTilePickerRightColor_Click;
             // 
             // EditorSettingsDialog
@@ -221,7 +255,7 @@
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = btnCancel;
-            ClientSize = new Size(366, 317);
+            ClientSize = new Size(366, 351);
             Controls.Add(groupBox1);
             Controls.Add(btnCancel);
             Controls.Add(btnOK);
@@ -255,5 +289,8 @@
         private Label lblSpriteEditorGridColor;
         private Label lblSpriteEditorCollisionColor;
         private Label label5;
+        private ToolTip colorToolTip;
+        private Label lblRoomEditorSelectionColor;
+        private Label label4;
     }
 }

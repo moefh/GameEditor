@@ -47,7 +47,7 @@ namespace GameEditor.GameData
         private static readonly Dictionary<DataAssetType, SortedSet<DataAssetType>> WatchedTypes = new () {
             { DataAssetType.Map, [ DataAssetType.Tileset ] },
             { DataAssetType.SpriteAnimation, [ DataAssetType.Sprite ] },
-            { DataAssetType.Room, [ DataAssetType.Map ] },
+            { DataAssetType.Room, [ DataAssetType.Map, DataAssetType.Sprite, DataAssetType.SpriteAnimation ] },
         };
 
         public static string GetName(DataAssetType type, string unknown = "?") {

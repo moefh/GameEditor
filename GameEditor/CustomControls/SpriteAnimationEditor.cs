@@ -222,7 +222,7 @@ namespace GameEditor.CustomControls
         }
 
         private void SetPixel(int x, int y, bool foreground) {
-            if (Sprite == null || Frames == null || SelectedIndex < 0 || SelectedIndex >= Frames.Count) return;
+            if (Sprite == null || Frames == null || ReadOnly || SelectedIndex < 0 || SelectedIndex >= Frames.Count) return;
             switch (EditLayer) {
             case Layer.Head:
                 Sprite.SetFramePixel(Frames[SelectedIndex].HeadIndex, x, y, (foreground) ? ForePen : BackPen);
@@ -269,7 +269,7 @@ namespace GameEditor.CustomControls
         }
 
         private void RunMouseDown(MouseEventArgs e) {
-            if (Sprite == null || Frames == null || SelectedIndex < 0 || SelectedIndex >= Frames.Count) return;
+            if (Sprite == null || Frames == null || ReadOnly || SelectedIndex < 0 || SelectedIndex >= Frames.Count) return;
             RenderInfo ri = GetRenderInfo();
             if (ri.Zoom == 0) return;
 

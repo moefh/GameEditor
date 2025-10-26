@@ -55,6 +55,9 @@ namespace GameEditor.MainEditor
             Project.UpdateDataSize();
         }
 
+        public virtual void Redraw() {
+        }
+
         public virtual void RefreshAsset() {
             FixFormTitle();
         }
