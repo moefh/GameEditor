@@ -30,6 +30,7 @@ namespace GameEditor.RoomEditor
             contentTreeManager = new ContentTreeManager(Project, contentTree, itemPropertyGrid, roomItem, components);
             contentTreeManager.ManageMapsRequested += ContentTreeManager_ManageMapsRequested;
             contentTreeManager.AddEntityRequested += ContentTreeManager_AddEntityRequested;
+            contentTreeManager.AddTriggerRequested += ContentTreeManager_AddTriggerRequested;
             contentTreeManager.ItemPropertiesChanged += ContentTreeManager_ItemPropertyChanged;
             contentTreeManager.ItemActivated += ContentTreeManager_ItemActivated;
             contentTreeManager.ItemSelectionChanged += ContentTreeManager_ItemSelectionChanged;
@@ -60,18 +61,22 @@ namespace GameEditor.RoomEditor
             roomEditor.Invalidate();
         }
 
-        private string GenerateEntityName(string baseName) {
+        private string GenerateEntityName() {
             int n = 0;
             while (true) {
-                string name = $"{baseName.ToUpperInvariant()}_{n}";
-                bool used = false;
-                for (int i = 0; i < Room.Entities.Count; i++) {
-                    if (Room.Entities[i].Name == name) {
-                        used = true;
-                        break;
-                    }
+                string name = $"ENTITY_{n}";
+                if (Room.Entities.Find(e => e.Name == name) == null) {
+                    return name;
                 }
-                if (! used) {
+                n++;
+            }
+        }
+
+        private string GenerateTriggerName() {
+            int n = 0;
+            while (true) {
+                string name = $"TRIGGER_{n}";
+                if (Room.Triggers.Find(t => t.Name == name) == null) {
                     return name;
                 }
                 n++;
@@ -109,12 +114,21 @@ namespace GameEditor.RoomEditor
             SetDirty();
         }
 
+        private void roomEditor_TriggersChanged(object sender, EventArgs e) {
+            contentTreeManager.RefreshItemProperties();
+            SetDirty();
+        }
+
         private void roomEditor_MapSelectionChanged(object sender, EventArgs e) {
-            contentTreeManager.SelectMapIndex(roomEditor.SelectedMapIndex);
+            contentTreeManager.SelectMapId(roomEditor.SelectedMapId);
         }
 
         private void roomEditor_EntitySelectionChanged(object sender, EventArgs e) {
-            contentTreeManager.SelectEntityIndex(roomEditor.SelectedEntityIndex);
+            contentTreeManager.SelectEntityId(roomEditor.SelectedEntityId);
+        }
+
+        private void roomEditor_TriggerSelectionChanged(object sender, EventArgs e) {
+            contentTreeManager.SelectTriggerId(roomEditor.SelectedTriggerId);
         }
 
         // =========================================================================
@@ -154,12 +168,12 @@ namespace GameEditor.RoomEditor
             if (changed) {
                 contentTreeManager.RefreshMapList();
                 roomEditor.UpdateMapList();
+                UpdateDataSize();
                 SetDirty();
             }
         }
 
         private void ContentTreeManager_AddEntityRequested(object? sender, EventArgs e) {
-            Util.Log($"sprite animation count: {Project.SpriteAnimationList.Count}");
             if (Project.SpriteAnimationList.Count == 0) {
                 MessageBox.Show(
                     $"You need at least one sprite animation to create an entity.",
@@ -167,23 +181,36 @@ namespace GameEditor.RoomEditor
                 return;
             }
             if (Project.SpriteAnimationList[0] is SpriteAnimationItem sa) {
-                int x = roomEditor.ViewCenter.X - (sa.Animation.Collision.x + sa.Animation.Collision.w)/2;
-                int y = roomEditor.ViewCenter.Y - (sa.Animation.Collision.y + sa.Animation.Collision.h)/2;
-                Room.AddEntity(sa.Animation, GenerateEntityName("entity"), x, y);
+                int x = roomEditor.ViewCenter.X - (sa.Animation.Collision.x + sa.Animation.Collision.w) / 2;
+                int y = roomEditor.ViewCenter.Y - (sa.Animation.Collision.y + sa.Animation.Collision.h) / 2;
+                RoomData.Entity ent = Room.AddEntity(GenerateEntityName(), sa.Animation, x, y);
                 contentTreeManager.RefreshEntityList();
                 roomEditor.UpdateEntityList();
-                contentTreeManager.SelectEntityIndex(Room.Entities.Count - 1);
-                //roomEditor.SelectedEntityIndex = ;
+                contentTreeManager.SelectEntityId(ent.Id);
+                UpdateDataSize();
                 SetDirty();
             }
         }
 
+        private void ContentTreeManager_AddTriggerRequested(object? sender, EventArgs e) {
+            int w = 4 * Tileset.TILE_SIZE;
+            int h = 4 * Tileset.TILE_SIZE;
+            int x = roomEditor.ViewCenter.X - w / 2;
+            int y = roomEditor.ViewCenter.Y - h / 2;
+            RoomData.Trigger trg = Room.AddTrigger(GenerateTriggerName(), x, y, w, h);
+            contentTreeManager.RefreshTriggerList();
+            roomEditor.UpdateTriggerList();
+            contentTreeManager.SelectTriggerId(trg.Id);
+            UpdateDataSize();
+            SetDirty();
+        }
+
         private void ContentTreeManager_ItemActivated(object? sender, ContentTreeManager.RoomItemEventArgs e) {
             if (assetItem == null || assetItem.Project.Window == null) return;
-            if (e.Item is MapRoomItem map) {
+            if (e.Item is MapRoomItem map && map.Map != null) {
                 assetItem.Project.GetAssetItem(map.Map)?.ShowEditor(assetItem.Project.Window);
             }
-            if (e.Item is EntityRoomItem ent) {
+            if (e.Item is EntityRoomItem ent && ent.SpriteAnim != null) {
                 assetItem.Project.GetAssetItem(ent.SpriteAnim)?.ShowEditor(assetItem.Project.Window);
             }
         }
@@ -191,29 +218,23 @@ namespace GameEditor.RoomEditor
         private void ContentTreeManager_ItemPropertyChanged(object? sender, EventArgs e) {
             roomEditor.UpdateRoomSize();
             roomEditor.Invalidate();
+            SetDirty();
         }
 
         private void ContentTreeManager_ItemSelectionChanged(object? sender, ContentTreeManager.RoomItemEventArgs e) {
             if (e.Item is MapRoomItem map) {
-                for (int i = 0; i < Room.Maps.Count; i++) {
-                    if (Room.Maps[i].MapData == map.Map) {
-                        roomEditor.SelectedMapIndex = i;
-                        return;
-                    }
-                }
-                roomEditor.SelectedMapIndex = -1;
+                roomEditor.SelectedMapId = map.RoomMapId;
                 return;
             }
             if (e.Item is EntityRoomItem ent) {
-                for (int i = 0; i < Room.Entities.Count; i++) {
-                    if (Room.Entities[i].SpriteAnim == ent.SpriteAnim) {
-                        roomEditor.SelectedEntityIndex = i;
-                        return;
-                    }
-                }
-                roomEditor.SelectedEntityIndex = -1;
+                roomEditor.SelectedEntityId = ent.RoomEntityId;
                 return;
             }
+            if (e.Item is TriggerRoomItem trg) {
+                roomEditor.SelectedTriggerId = trg.RoomTriggerId;
+                return;
+            }
+            roomEditor.SelectedMapId = -1;  // this will de-select everything
         }
 
     }

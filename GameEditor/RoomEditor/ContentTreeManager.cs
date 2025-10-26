@@ -36,7 +36,7 @@ namespace GameEditor.RoomEditor
 
         private readonly int TREE_MAP_NODE_INDEX = 0;
         private readonly int TREE_ENTITY_NODE_INDEX = 1;
-        //private readonly int TREE_TRIGGER_NODE_INDEX = 2;
+        private readonly int TREE_TRIGGER_NODE_INDEX = 2;
 
         private readonly ProjectData project;
         private readonly RoomDataItem room;
@@ -50,6 +50,7 @@ namespace GameEditor.RoomEditor
 
         public event EventHandler? ManageMapsRequested;
         public event EventHandler? AddEntityRequested;
+        public event EventHandler? AddTriggerRequested;
         public event EventHandler? ItemPropertiesChanged;
         public event EventHandler<RoomItemEventArgs>? ItemActivated;
         public event EventHandler<RoomItemEventArgs>? ItemSelectionChanged;
@@ -71,6 +72,21 @@ namespace GameEditor.RoomEditor
 
         private string GenId() {
             return $"node{nextId++}";
+        }
+
+        private MapRoomItem? GetMapById(string id) {
+            AbstractRoomItem? item = itemsById.GetValueOrDefault(id);
+            return item as MapRoomItem;
+        }
+
+        private EntityRoomItem? GetEntityById(string id) {
+            AbstractRoomItem? item = itemsById.GetValueOrDefault(id);
+            return item as EntityRoomItem;
+        }
+
+        private TriggerRoomItem? GetTriggerById(string id) {
+            AbstractRoomItem? item = itemsById.GetValueOrDefault(id);
+            return item as TriggerRoomItem;
         }
 
         // ==========================================================================
@@ -97,35 +113,53 @@ namespace GameEditor.RoomEditor
             return null;
         }
 
-        public void SelectMapIndex(int mapIndex) {
-            if (mapIndex < 0 || mapIndex >= room.Room.Maps.Count) {
-                tree.SelectedNode = null;
-                propEditor.SelectedObject = null;
-                return;
+        private TriggerRoomItem? GetSelectedTrigger() {
+            TreeNode? sel = tree.SelectedNode;
+            if (sel == null) return null;
+            AbstractRoomItem? item = itemsById.GetValueOrDefault(sel.Name);
+            if (item is TriggerRoomItem trg) {
+                return trg;
             }
+            return null;
+        }
+
+        public void SelectMapId(int mapId) {
             TreeNode mapRoot = tree.Nodes[TREE_MAP_NODE_INDEX];
             foreach (TreeNode node in mapRoot.Nodes) {
                 AbstractRoomItem? item = itemsById.GetValueOrDefault(node.Name);
-                if (item is MapRoomItem mapItem && mapItem.RoomMapIndex == mapIndex) {
+                if (item is MapRoomItem mapItem && mapItem.RoomMapId == mapId) {
                     tree.SelectedNode = node;
                     return;
                 }
             }
+            tree.SelectedNode = null;
+            propEditor.SelectedObject = null;
         }
 
-        public void SelectEntityIndex(int entIndex) {
-            if (entIndex < 0 || entIndex >= room.Room.Entities.Count) {
-                tree.SelectedNode = null;
-                propEditor.SelectedObject = null;
-                return;
-            }
+        public void SelectEntityId(int entId) {
             TreeNode entRoot = tree.Nodes[TREE_ENTITY_NODE_INDEX];
             foreach (TreeNode node in entRoot.Nodes) {
                 AbstractRoomItem? item = itemsById.GetValueOrDefault(node.Name);
-                if (item is EntityRoomItem entItem && entItem.RoomEntityIndex == entIndex) {
+                if (item is EntityRoomItem entItem && entItem.RoomEntityId == entId) {
                     tree.SelectedNode = node;
+                    return;
                 }
             }
+            tree.SelectedNode = null;
+            propEditor.SelectedObject = null;
+        }
+
+        public void SelectTriggerId(int trgId) {
+            TreeNode trgRoot = tree.Nodes[TREE_TRIGGER_NODE_INDEX];
+            foreach (TreeNode node in trgRoot.Nodes) {
+                AbstractRoomItem? item = itemsById.GetValueOrDefault(node.Name);
+                if (item is TriggerRoomItem trgItem && trgItem.RoomTriggerId == trgId) {
+                    tree.SelectedNode = node;
+                    return;
+                }
+            }
+            tree.SelectedNode = null;
+            propEditor.SelectedObject = null;
         }
 
         // ==========================================================================
@@ -145,7 +179,10 @@ namespace GameEditor.RoomEditor
             }
 
             for (int i = 0; i < mapRoot.Nodes.Count; i++) {
-                if (room.Room.Maps[i].MapData.Name != mapRoot.Nodes[i].Text) {
+                TreeNode node = mapRoot.Nodes[i];
+                MapRoomItem? map = GetMapById(node.Name);
+                Util.Log($"{map?.MapName} vs {node.Text}");
+                if (map == null || map.RoomMapId != room.Room.Maps[i].Id || map.MapName != node.Text) {
                     propEditor.SelectedObject = null;
                     PopulateTreeMaps();
                     return;
@@ -162,7 +199,9 @@ namespace GameEditor.RoomEditor
             }
 
             for (int i = 0; i < entRoot.Nodes.Count; i++) {
-                if (room.Room.Entities[i].SpriteAnim.Name != entRoot.Nodes[i].Text) {
+                TreeNode node = entRoot.Nodes[i];
+                EntityRoomItem? ent = GetEntityById(node.Name);
+                if (ent == null || ent.RoomEntityId != room.Room.Entities[i].Id || ent.Name != node.Text) {
                     propEditor.SelectedObject = null;
                     PopulateTreeEntities();
                     return;
@@ -170,8 +209,27 @@ namespace GameEditor.RoomEditor
             }
         }
 
+        public void RefreshTriggerList() {
+            TreeNode trgRoot = tree.Nodes[TREE_TRIGGER_NODE_INDEX];
+            if (trgRoot.Nodes.Count != room.Room.Triggers.Count) {
+                propEditor.SelectedObject = null;
+                PopulateTreeTriggers();
+                return;
+            }
+
+            for (int i = 0; i < trgRoot.Nodes.Count; i++) {
+                TreeNode node = trgRoot.Nodes[i];
+                TriggerRoomItem? trg = GetTriggerById(node.Name);
+                if (trg == null || trg.RoomTriggerId != room.Room.Triggers[i].Id || trg.Name != node.Text) {
+                    propEditor.SelectedObject = null;
+                    PopulateTreeTriggers();
+                    return;
+                }
+            }
+        }
+
         protected void PopulateTreeMaps() {
-            int sel = GetSelectedMap()?.RoomMapIndex ?? 0;
+            int sel = GetSelectedMap()?.RoomMapId ?? -1;
 
             // remove all maps
             List<string> removeIds = [];
@@ -185,20 +243,20 @@ namespace GameEditor.RoomEditor
             // add all maps
             TreeNode mapRoot = tree.Nodes[TREE_MAP_NODE_INDEX];
             mapRoot.Nodes.Clear();
-            for (int i = 0; i < room.Room.Maps.Count; i++) {
+            foreach (RoomData.Map map in room.Room.Maps) {
                 string id = GenId();
-                itemsById[id] = new MapRoomItem(room, mapRoot.Name, i);
-                mapRoot.Nodes.Add(id, room.Room.Maps[i].MapData.Name, TREE_MAP_NODE_INDEX, TREE_MAP_NODE_INDEX);
+                itemsById[id] = new MapRoomItem(room, mapRoot.Name, map.Id);
+                mapRoot.Nodes.Add(id, map.MapData.Name, TREE_MAP_NODE_INDEX, TREE_MAP_NODE_INDEX);
             }
             mapRoot.Expand();
 
             if (sel >= 0) {
-                SelectMapIndex(sel);
+                SelectMapId(sel);
             }
         }
 
         protected void PopulateTreeEntities() {
-            int sel = GetSelectedEntity()?.RoomEntityIndex ?? 0;
+            int sel = GetSelectedEntity()?.RoomEntityId ?? -1;
 
             // remove all entities
             List<string> removeIds = [];
@@ -212,15 +270,42 @@ namespace GameEditor.RoomEditor
             // add all entities
             TreeNode entRoot = tree.Nodes[TREE_ENTITY_NODE_INDEX];
             entRoot.Nodes.Clear();
-            for (int i = 0; i < room.Room.Entities.Count; i++) {
+            foreach (RoomData.Entity ent in room.Room.Entities) {
                 string id = GenId();
-                itemsById[id] = new EntityRoomItem(room, entRoot.Name, i);
-                entRoot.Nodes.Add(id, room.Room.Entities[i].Name, TREE_ENTITY_NODE_INDEX, TREE_ENTITY_NODE_INDEX);
+                itemsById[id] = new EntityRoomItem(room, entRoot.Name, ent.Id);
+                entRoot.Nodes.Add(id, ent.Name, TREE_ENTITY_NODE_INDEX, TREE_ENTITY_NODE_INDEX);
             }
             entRoot.Expand();
 
             if (sel >= 0) {
-                SelectEntityIndex(sel);
+                SelectEntityId(sel);
+            }
+        }
+
+        protected void PopulateTreeTriggers() {
+            int sel = GetSelectedTrigger()?.RoomTriggerId ?? -1;
+
+            // remove all triggers
+            List<string> removeIds = [];
+            foreach (var (id, item) in itemsById) {
+                if (item is TriggerRoomItem) removeIds.Add(id);
+            }
+            foreach (string id in removeIds) {
+                itemsById.Remove(id);
+            }
+
+            // add all triggers
+            TreeNode trgRoot = tree.Nodes[TREE_TRIGGER_NODE_INDEX];
+            trgRoot.Nodes.Clear();
+            foreach (RoomData.Trigger trg in room.Room.Triggers) {
+                string id = GenId();
+                itemsById[id] = new TriggerRoomItem(room, trgRoot.Name, trg.Id);
+                trgRoot.Nodes.Add(id, trg.Name, TREE_TRIGGER_NODE_INDEX, TREE_TRIGGER_NODE_INDEX);
+            }
+            trgRoot.Expand();
+
+            if (sel >= 0) {
+                SelectTriggerId(sel);
             }
         }
 
@@ -228,6 +313,7 @@ namespace GameEditor.RoomEditor
             itemsById.Clear();
             PopulateTreeMaps();
             PopulateTreeEntities();
+            PopulateTreeTriggers();
         }
 
         protected void SetupUI(IContainer? container) {
@@ -238,9 +324,10 @@ namespace GameEditor.RoomEditor
             tree.ImageList = imageList;
 
             contextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
+            contextMenuStrip.Items.Add("Activate Item", null, ActivatetemToolStripMenuItem_Click);
             contextMenuStrip.Items.Add("Manage Maps", null, ManageMapsToolStripMenuItem_Click);
             contextMenuStrip.Items.Add("Add Entity", null, AddEntityToolStripMenuItem_Click);
-            contextMenuStrip.Items.Add("Activate Item", null, ActivatetemToolStripMenuItem_Click);
+            contextMenuStrip.Items.Add("Add Trigger", null, AddTriggerToolStripMenuItem_Click);
             contextMenuStrip.ImageList = imageList;
             contextMenuStrip.Opening += ContextMenuStrip_Opening;
 
@@ -258,34 +345,46 @@ namespace GameEditor.RoomEditor
             if (selectedId == null) return;
 
             if (selectedId == "NodeMaps") {
-                contextMenuStrip.Items[0].Visible = true;   // show "Manage Maps"
-                contextMenuStrip.Items[1].Visible = false;  // hide "Add Entity"
-                contextMenuStrip.Items[2].Visible = false;  // hide "Edit Map"
+                contextMenuStrip.Items[0].Visible = false;  // Activate Item
+                contextMenuStrip.Items[1].Visible = true;   // Manage Maps
+                contextMenuStrip.Items[2].Visible = false;  // Add Entity
+                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
                 return;
             }
 
             if (selectedId == "NodeEntities") {
-                contextMenuStrip.Items[0].Visible = false;  // hide "Manage Maps"
-                contextMenuStrip.Items[1].Visible = true;   // show "Add Entity"
-                contextMenuStrip.Items[2].Visible = false;  // hide "Edit Map"
+                contextMenuStrip.Items[0].Visible = false;  // Activate Item
+                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
+                contextMenuStrip.Items[2].Visible = true;   // Add Entity
+                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
+                return;
+            }
+
+            if (selectedId == "NodeTriggers") {
+                contextMenuStrip.Items[0].Visible = false;  // Activate Item
+                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
+                contextMenuStrip.Items[2].Visible = false;  // Add Entity
+                contextMenuStrip.Items[3].Visible = true;   // Add Trigger
                 return;
             }
 
             MapRoomItem? map = GetSelectedMap();
             if (map != null) {
-                contextMenuStrip.Items[2].Text = "Edit Map";
-                contextMenuStrip.Items[0].Visible = false;  // hide "Manage Maps"
-                contextMenuStrip.Items[1].Visible = false;  // hide "Add Entity"
-                contextMenuStrip.Items[2].Visible = true;   // show "Edit Map"
+                contextMenuStrip.Items[0].Text = "Edit Map";
+                contextMenuStrip.Items[0].Visible = true;   // Edit Map
+                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
+                contextMenuStrip.Items[2].Visible = false;  // Add Entity
+                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
                 return;
             }
 
             EntityRoomItem? entity = GetSelectedEntity();
             if (entity != null) {
-                contextMenuStrip.Items[2].Text = "Edit Sprite Animation";
-                contextMenuStrip.Items[0].Visible = false;  // hide "Manage Maps"
-                contextMenuStrip.Items[1].Visible = false;  // hide "Add Entity"
-                contextMenuStrip.Items[2].Visible = true;   // show "Edit Sprite Animation"
+                contextMenuStrip.Items[0].Text = "Edit Sprite Animation";
+                contextMenuStrip.Items[0].Visible = true;   // Edit Sprite Animation
+                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
+                contextMenuStrip.Items[2].Visible = false;  // Add Entity
+                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
                 return;
             }
 
@@ -302,6 +401,10 @@ namespace GameEditor.RoomEditor
 
         private void AddEntityToolStripMenuItem_Click(object? sender, EventArgs e) {
             AddEntityRequested?.Invoke(this, EventArgs.Empty);
+        }
+
+        private void AddTriggerToolStripMenuItem_Click(object? sender, EventArgs e) {
+            AddTriggerRequested?.Invoke(this, EventArgs.Empty);
         }
 
         private void ActivatetemToolStripMenuItem_Click(object? sender, EventArgs e) {
@@ -343,11 +446,7 @@ namespace GameEditor.RoomEditor
         private void PropEditor_PropertyValueChanged(object? s, PropertyValueChangedEventArgs e) {
             if (e.ChangedItem == null || e.ChangedItem.Label == null) return;
             if (propEditor.SelectedObject is AbstractRoomItem item) {
-                if (item.Validate(e.ChangedItem.Label, e.OldValue)) {
-                    ItemPropertiesChanged?.Invoke(propEditor, EventArgs.Empty);
-                } else {
-                    propEditor.Refresh();
-                }
+                ItemPropertiesChanged?.Invoke(propEditor, EventArgs.Empty);
             }
         }
 

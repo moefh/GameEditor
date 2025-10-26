@@ -81,7 +81,7 @@
             // statusStrip
             // 
             statusStrip.Items.AddRange(new ToolStripItem[] { lblDataSize });
-            statusStrip.Location = new Point(0, 322);
+            statusStrip.Location = new Point(0, 398);
             statusStrip.Name = "statusStrip";
             statusStrip.Size = new Size(574, 24);
             statusStrip.TabIndex = 1;
@@ -125,8 +125,8 @@
             // mainSplit.Panel2
             // 
             mainSplit.Panel2.Controls.Add(roomEditor);
-            mainSplit.Size = new Size(574, 271);
-            mainSplit.SplitterDistance = 221;
+            mainSplit.Size = new Size(574, 347);
+            mainSplit.SplitterDistance = 243;
             mainSplit.TabIndex = 3;
             // 
             // itemsSplitContainer
@@ -144,8 +144,8 @@
             // itemsSplitContainer.Panel2
             // 
             itemsSplitContainer.Panel2.Controls.Add(itemPropertyGrid);
-            itemsSplitContainer.Size = new Size(221, 271);
-            itemsSplitContainer.SplitterDistance = 99;
+            itemsSplitContainer.Size = new Size(243, 347);
+            itemsSplitContainer.SplitterDistance = 144;
             itemsSplitContainer.TabIndex = 1;
             // 
             // contentTree
@@ -154,7 +154,7 @@
             contentTree.HideSelection = false;
             contentTree.Location = new Point(0, 0);
             contentTree.Name = "contentTree";
-            contentTree.Size = new Size(221, 99);
+            contentTree.Size = new Size(243, 144);
             contentTree.TabIndex = 0;
             // 
             // itemPropertyGrid
@@ -163,7 +163,7 @@
             itemPropertyGrid.HelpVisible = false;
             itemPropertyGrid.Location = new Point(0, 0);
             itemPropertyGrid.Name = "itemPropertyGrid";
-            itemPropertyGrid.Size = new Size(221, 168);
+            itemPropertyGrid.Size = new Size(243, 199);
             itemPropertyGrid.TabIndex = 0;
             itemPropertyGrid.ToolbarVisible = false;
             // 
@@ -173,23 +173,26 @@
             roomEditor.Location = new Point(0, 0);
             roomEditor.Name = "roomEditor";
             roomEditor.Room = null;
-            roomEditor.SelectedEntityIndex = -1;
-            roomEditor.SelectedMapIndex = -1;
-            roomEditor.Size = new Size(349, 271);
+            roomEditor.SelectedEntityId = -1;
+            roomEditor.SelectedMapId = -1;
+            roomEditor.SelectedTriggerId = -1;
+            roomEditor.Size = new Size(327, 347);
             roomEditor.TabIndex = 0;
             roomEditor.Text = "roomEditor";
             roomEditor.Zoom = 1D;
             roomEditor.ZoomChanged += roomEditor_ZoomChanged;
             roomEditor.MapSelectionChanged += roomEditor_MapSelectionChanged;
             roomEditor.EntitySelectionChanged += roomEditor_EntitySelectionChanged;
+            roomEditor.TriggerSelectionChanged += roomEditor_TriggerSelectionChanged;
             roomEditor.MapsChanged += roomEditor_MapsChanged;
             roomEditor.EntitiesChanged += roomEditor_EntitiesChanged;
+            roomEditor.TriggersChanged += roomEditor_TriggersChanged;
             // 
             // RoomEditorWindow
             // 
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(574, 346);
+            ClientSize = new Size(574, 422);
             Controls.Add(mainSplit);
             Controls.Add(displayToolStrip);
             Controls.Add(statusStrip);

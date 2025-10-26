@@ -8,6 +8,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -26,16 +27,20 @@ namespace GameEditor.CustomControls
         private Point scrollMouseDown;
         private Point itemMoveMouseDown;
         private Point itemMoveStartingPosition;
-        private int movingMapIndex;
-        private int movingEntityIndex;
-        private int selectedMapIndex = -1;
-        private int selectedEntityIndex = -1;
+        private int movingMapId;
+        private int movingEntityId;
+        private int movingTriggerId;
+        private int selectedMapId = -1;
+        private int selectedEntityId = -1;
+        private int selectedTriggerId = -1;
 
         public event EventHandler? ZoomChanged;
         public event EventHandler? MapSelectionChanged;
         public event EventHandler? EntitySelectionChanged;
+        public event EventHandler? TriggerSelectionChanged;
         public event EventHandler? MapsChanged;
         public event EventHandler? EntitiesChanged;
+        public event EventHandler? TriggersChanged;
 
         public RoomEditor() {
             InitializeComponent();
@@ -64,14 +69,19 @@ namespace GameEditor.CustomControls
             }
         }
 
-        public int SelectedMapIndex {
-            get { return selectedMapIndex; }
+        public int SelectedMapId {
+            get { return selectedMapId; }
             set { SelectMap(value, false); Invalidate(); }
         }
 
-        public int SelectedEntityIndex {
-            get { return selectedEntityIndex; }
+        public int SelectedEntityId {
+            get { return selectedEntityId; }
             set { SelectEntity(value, false); Invalidate(); }
+        }
+
+        public int SelectedTriggerId {
+            get { return selectedTriggerId; }
+            set { SelectTrigger(value, false); Invalidate(); }
         }
 
         private bool ClampZoom() {
@@ -105,14 +115,19 @@ namespace GameEditor.CustomControls
         }
 
         public void UpdateMapList() {
-            movingMapIndex = -1;
-            selectedMapIndex = -1;
+            movingMapId = -1;
+            selectedMapId = -1;
             UpdateRoomSize();
         }
 
         public void UpdateEntityList() {
-            selectedEntityIndex = -1;
-            UpdateRoomSize();
+            movingEntityId = -1;
+            selectedEntityId = -1;
+        }
+
+        public void UpdateTriggerList() {
+            movingTriggerId = -1;
+            selectedTriggerId = -1;
         }
 
         private void ClampScroll() {
@@ -145,35 +160,55 @@ namespace GameEditor.CustomControls
             Invalidate();
         }
 
-        private int GetEntityIndexAt(Point p) {
+        private int GetMapIdAt(Point p) {
             if (Room == null) return -1;
-            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
 
-            for (int index = Room.Entities.Count-1; index >= 0; index--) {
-                Sprite spr = Room.Entities[index].SpriteAnim.Sprite;
-                int entX = (int) double.Round(Room.Entities[index].X * zoom) + MARGIN - (int) origin.X;
-                int entY = (int) double.Round(Room.Entities[index].Y * zoom) + MARGIN - (int) origin.Y;
-                int entW = (int) double.Round(spr.Width * zoom);
-                int entH = (int) double.Round(spr.Height * zoom);
-                Rectangle entRect = new Rectangle(entX, entY, entW, entH);
-                if (entRect.Contains(p)) {
-                    return index;
+            for (int index = Room.Maps.Count-1; index >= 0; index--) {
+                RoomData.Map map = Room.Maps[index];
+                int mapX = map.X * zoomedTileSize + MARGIN - (int) origin.X;
+                int mapY = map.Y * zoomedTileSize + MARGIN - (int) origin.Y;
+                int mapW = int.Max(map.MapData.FgWidth,  map.MapData.BgWidth) * zoomedTileSize;
+                int mapH = int.Max(map.MapData.FgHeight, map.MapData.BgHeight) * zoomedTileSize;
+                Rectangle mapRect = new Rectangle(mapX, mapY, mapW, mapH);
+                if (mapRect.Contains(p)) {
+                    return map.Id;
                 }
             }
             return -1;
         }
-        private int GetMapIndexAt(Point p) {
-            if (Room == null) return -1;
 
-            for (int index = Room.Maps.Count-1; index >= 0; index--) {
-                MapData map = Room.Maps[index].MapData;
-                int mapX = Room.Maps[index].X * zoomedTileSize + MARGIN - (int) origin.X;
-                int mapY = Room.Maps[index].Y * zoomedTileSize + MARGIN - (int) origin.Y;
-                int mapW = int.Max(map.FgWidth,  map.BgWidth) * zoomedTileSize;
-                int mapH = int.Max(map.FgHeight, map.BgHeight) * zoomedTileSize;
-                Rectangle mapRect = new Rectangle(mapX, mapY, mapW, mapH);
-                if (mapRect.Contains(p)) {
-                    return index;
+        private int GetEntityIdAt(Point p) {
+            if (Room == null) return -1;
+            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
+
+            for (int index = Room.Entities.Count-1; index >= 0; index--) {
+                RoomData.Entity ent = Room.Entities[index];
+                Sprite spr = ent.SpriteAnim.Sprite;
+                int entX = (int) double.Round(ent.X * zoom) + MARGIN - (int) origin.X;
+                int entY = (int) double.Round(ent.Y * zoom) + MARGIN - (int) origin.Y;
+                int entW = (int) double.Round(spr.Width * zoom);
+                int entH = (int) double.Round(spr.Height * zoom);
+                Rectangle entRect = new Rectangle(entX, entY, entW, entH);
+                if (entRect.Contains(p)) {
+                    return ent.Id;
+                }
+            }
+            return -1;
+        }
+
+        private int GetTriggerIdAt(Point p) {
+            if (Room == null) return -1;
+            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
+
+            for (int index = Room.Triggers.Count-1; index >= 0; index--) {
+                RoomData.Trigger trg = Room.Triggers[index];
+                int trgX = (int) double.Round(trg.X * zoom) + MARGIN - (int) origin.X;
+                int trgY = (int) double.Round(trg.Y * zoom) + MARGIN - (int) origin.Y;
+                int trgW = (int) double.Round(trg.Width * zoom);
+                int trgH = (int) double.Round(trg.Height * zoom);
+                Rectangle trgRect = new Rectangle(trgX, trgY, trgW, trgH);
+                if (trgRect.Contains(p)) {
+                    return trg.Id;
                 }
             }
             return -1;
@@ -182,27 +217,29 @@ namespace GameEditor.CustomControls
         private void MoveSelection(Point amount) {
             if (Room == null) return;
 
-            if (movingMapIndex >= 0 && movingMapIndex < Room.Maps.Count) {
+            RoomData.Map? map = Room.GetMap(movingMapId);
+            if (map != null) {
                 int deltaX = amount.X / zoomedTileSize;
                 int deltaY = amount.Y / zoomedTileSize;
                 int newX = int.Max(0, itemMoveStartingPosition.X + deltaX);
                 int newY = int.Max(0, itemMoveStartingPosition.Y + deltaY);
-                if (newX != Room.Maps[movingMapIndex].X || newY != Room.Maps[movingMapIndex].Y) {
-                    Room.SetMapPosition(movingMapIndex, newX, newY);
+                if (newX != map.X || newY != map.Y) {
+                    map.SetPosition(newX, newY);
                     UpdateRoomSize();
                     MapsChanged?.Invoke(this, EventArgs.Empty);
                 }
                 return;
             }
 
-            if (movingEntityIndex >= 0 && movingEntityIndex < Room.Entities.Count) {
+            RoomData.Entity? ent = Room.GetEntity(movingEntityId);
+            if (ent != null) {
                 int deltaX = amount.X * Tileset.TILE_SIZE / zoomedTileSize;
                 int deltaY = amount.Y * Tileset.TILE_SIZE / zoomedTileSize;
                 int newX = itemMoveStartingPosition.X + deltaX;
                 int newY = itemMoveStartingPosition.Y + deltaY;
                 if ((ModifierKeys & Keys.Control) != 0) {
                     if ((ModifierKeys & Keys.Shift) != 0) {
-                        SpriteAnimation anim = Room.Entities[movingEntityIndex].SpriteAnim;
+                        SpriteAnimation anim = ent.SpriteAnim;
                         int yEnd = newY + anim.Collision.y + anim.Collision.h;
                         yEnd -= yEnd % Tileset.TILE_SIZE;
                         newX -= newX % Tileset.TILE_SIZE;
@@ -212,43 +249,60 @@ namespace GameEditor.CustomControls
                         newY -= newY % Tileset.TILE_SIZE;
                     }
                 }
-                if (newX != Room.Entities[movingEntityIndex].X || newY != Room.Entities[movingEntityIndex].Y) {
-                    Room.SetEntityPosition(movingEntityIndex, newX, newY);
+                if (newX != ent.X || newY != ent.Y) {
+                    ent.SetPosition(newX, newY);
                     UpdateRoomSize();
                     EntitiesChanged?.Invoke(this, EventArgs.Empty);
                 }
                 return;
             }
+
+            RoomData.Trigger? trg = Room.GetTrigger(movingTriggerId);
+            if (trg != null) {
+                int deltaX = amount.X * Tileset.TILE_SIZE / zoomedTileSize;
+                int deltaY = amount.Y * Tileset.TILE_SIZE / zoomedTileSize;
+                int newX = itemMoveStartingPosition.X + deltaX;
+                int newY = itemMoveStartingPosition.Y + deltaY;
+                if (newX != trg.X || newY != trg.Y) {
+                    trg.SetPosition(newX, newY);
+                    UpdateRoomSize();
+                    TriggersChanged?.Invoke(this, EventArgs.Empty);
+                }
+                return;
+            }
         }
 
-        private void SelectEntity(int index, bool generateEvent = true) {
-            if (selectedMapIndex >= 0) {
-                selectedMapIndex = -1;
+        private void SelectItem(int mapId, int entId, int trgId, bool generateEvent = true) {
+            if (selectedMapId != mapId) {
+                selectedMapId = mapId;
                 if (generateEvent) {
                     MapSelectionChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
-            if (selectedEntityIndex != index) {
-                selectedEntityIndex = index;
+            if (selectedEntityId != entId) {
+                selectedEntityId = entId;
                 if (generateEvent) {
                     EntitySelectionChanged?.Invoke(this, EventArgs.Empty);
+                }
+            }
+            if (selectedTriggerId != trgId) {
+                selectedTriggerId = trgId;
+                if (generateEvent) {
+                    TriggerSelectionChanged?.Invoke(this, EventArgs.Empty);
                 }
             }
         }
 
-        private void SelectMap(int index, bool generateEvent = true) {
-            if (selectedEntityIndex >= 0) {
-                selectedEntityIndex = -1;
-                if (generateEvent) {
-                    EntitySelectionChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
-            if (selectedMapIndex != index) {
-                selectedMapIndex = index;
-                if (generateEvent) {
-                    MapSelectionChanged?.Invoke(this, EventArgs.Empty);
-                }
-            }
+        private void SelectMap(int mapId, bool generateEvent = true) {
+            SelectItem(mapId, -1, -1, generateEvent);
+        }
+
+        private void SelectEntity(int entId, bool generateEvent = true) {
+            SelectItem(-1, entId, -1, generateEvent);
+        }
+
+        private void SelectTrigger(int trgId, bool generateEvent = true) {
+            SelectItem(-1, -1, trgId, generateEvent);
         }
 
         // ====================================================================
@@ -272,6 +326,17 @@ namespace GameEditor.CustomControls
                     int x = (mapX + tx) * zoomedTileSize + MARGIN - (int) origin.X;
                     map.Tileset.DrawTileAt(g, map.FgTiles.fg[tx, ty], x, y, zoomedTileSize, zoomedTileSize, true);
                 }
+            }
+        }
+
+        private void DrawOutline(Graphics g, int size, Pen pen, int x, int y, int w, int h) {
+            int sx = x * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.X;
+            int sy = y * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.Y;
+            int sw = w * zoomedTileSize / Tileset.TILE_SIZE;
+            int sh = h * zoomedTileSize / Tileset.TILE_SIZE;
+
+            for (int i = 1; i <= 2+size; i++) {
+                g.DrawRectangle((i==1||i==2+size) ? Pens.Black : pen, sx-i, sy-i, sw+2*i, sh+2*i);
             }
         }
 
@@ -301,15 +366,16 @@ namespace GameEditor.CustomControls
             }
         }
 
-        private void DrawEntitySelection(Graphics g, Pen pen, int mapX, int mapY, SpriteAnimation anim) {
-            int x = mapX * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.X;
-            int y = mapY * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.Y;
-            int w = anim.Sprite.Width * zoomedTileSize / Tileset.TILE_SIZE;
-            int h = anim.Sprite.Height * zoomedTileSize / Tileset.TILE_SIZE;
+        private void DrawEntitySelection(Graphics g, Pen pen, int entX, int entY, SpriteAnimation anim) {
+            int h = anim.Sprite.Height;
             if (anim.Loops[0].Indices[0].FootIndex >= 0) {
-                h = h*2 - anim.FootOverlap * zoomedTileSize / Tileset.TILE_SIZE;
+                h = h*2 - anim.FootOverlap;
             }
-            g.DrawRectangle(pen, x-1, y-1, w+2, h+2);
+            DrawOutline(g, 1, pen, entX, entY, anim.Sprite.Width, h);
+        }
+
+        private void DrawTrigger(Graphics g, Pen pen, int trgX, int trgY, int trgW, int trgH) {
+            DrawOutline(g, 1, pen, trgX, trgY, trgW, trgH);
         }
 
         protected override void OnPaint(PaintEventArgs pe) {
@@ -331,9 +397,15 @@ namespace GameEditor.CustomControls
                 pe.Graphics.Clear(Color.Black);
             }
 
-            // draw background of all maps
+            // draw maps
             foreach (RoomData.Map map in Room.Maps) {
                 DrawBgTiles(pe.Graphics, map.X, map.Y, map.MapData);
+                DrawFgTiles(pe.Graphics, map.X, map.Y, map.MapData);
+            }
+
+            // draw triggers
+            foreach (RoomData.Trigger trg in Room.Triggers) {
+                DrawTrigger(pe.Graphics, Pens.White, trg.X, trg.Y, trg.Width, trg.Height);
             }
 
             // draw entities
@@ -341,23 +413,22 @@ namespace GameEditor.CustomControls
                 DrawEntity(pe.Graphics, ent.X, ent.Y, ent.SpriteAnim);
             }
 
-            // draw foreground of all maps
-            foreach (RoomData.Map map in Room.Maps) {
-                DrawFgTiles(pe.Graphics, map.X, map.Y, map.MapData);
-            }
-
             // draw selected map rectangle
-            if (SelectedMapIndex >= 0) {
+            if (SelectedMapId >= 0) {
                 using Pen selPen = new Pen(ConfigUtil.RoomEditorSelectionColor);
-                RoomData.Map map = Room.Maps[SelectedMapIndex];
-                DrawMapSelection(pe.Graphics, selPen, map.X, map.Y, map.MapData);
+                RoomData.Map? map = Room.GetMap(SelectedMapId);
+                if (map != null) {
+                    DrawMapSelection(pe.Graphics, selPen, map.X, map.Y, map.MapData);
+                }
             }
 
             // draw selected entity rectangle
-            if (SelectedEntityIndex >= 0) {
+            if (SelectedEntityId >= 0) {
                 using Pen selPen = new Pen(ConfigUtil.RoomEditorSelectionColor);
-                RoomData.Entity ent = Room.Entities[SelectedEntityIndex];
-                DrawEntitySelection(pe.Graphics, selPen, ent.X, ent.Y, ent.SpriteAnim);
+                RoomData.Entity? ent = Room.GetEntity(SelectedEntityId);
+                if (ent != null) {
+                    DrawEntitySelection(pe.Graphics, selPen, ent.X, ent.Y, ent.SpriteAnim);
+                }
             }
         }
 
@@ -369,36 +440,54 @@ namespace GameEditor.CustomControls
             base.OnMouseDown(e);
             if (Room == null) return;
 
-            movingEntityIndex = -1;
-            movingMapIndex = -1;
+            movingEntityId = -1;
+            movingMapId = -1;
+            movingTriggerId = -1;
 
             if (e.Button == MouseButtons.Left) {
-                movingEntityIndex = GetEntityIndexAt(e.Location);
-                if (movingEntityIndex >= 0) {
-                    itemMoveMouseDown = e.Location;
-                    itemMoveStartingPosition = new Point(Room.Entities[movingEntityIndex].X, Room.Entities[movingEntityIndex].Y);
-                    SelectEntity(movingEntityIndex);
-                    Invalidate();
+                itemMoveMouseDown = e.Location;
+
+                movingEntityId = GetEntityIdAt(e.Location);
+                if (movingEntityId >= 0) {
+                    RoomData.Entity? ent = Room.GetEntity(movingEntityId);
+                    if (ent != null) {
+                        itemMoveStartingPosition = new Point(ent.X, ent.Y);
+                        SelectEntity(movingEntityId);
+                        Invalidate();
+                    }
                     return;
                 }
 
-                movingMapIndex = GetMapIndexAt(e.Location);
-                if (movingMapIndex >= 0) {
-                    itemMoveMouseDown = e.Location;
-                    itemMoveStartingPosition = new Point(Room.Maps[movingMapIndex].X, Room.Maps[movingMapIndex].Y);
-                    SelectMap(movingMapIndex);
-                    Invalidate();
+                movingTriggerId = GetTriggerIdAt(e.Location);
+                if (movingTriggerId >= 0) {
+                    RoomData.Trigger? trg = Room.GetTrigger(movingTriggerId);
+                    if (trg != null) {
+                        itemMoveStartingPosition = new Point(trg.X, trg.Y);
+                        SelectTrigger(movingTriggerId);
+                        Invalidate();
+                    }
                     return;
                 }
 
-                SelectMap(-1); // this takes care of de-selecting everthing
+                movingMapId = GetMapIdAt(e.Location);
+                if (movingMapId >= 0) {
+                    RoomData.Map? map = Room.GetMap(movingMapId);
+                    if (map != null) {
+                        itemMoveStartingPosition = new Point(map.X, map.Y);
+                        SelectMap(movingMapId);
+                        Invalidate();
+                    }
+                    return;
+                }
+
+                SelectItem(-1, -1, -1);
                 Invalidate();
                 return;
             }
 
             if (e.Button == MouseButtons.Middle) {
-                movingEntityIndex = -1;
-                movingMapIndex = -1;
+                movingEntityId = -1;
+                movingMapId = -1;
                 scrollMouseDown = e.Location;
                 return;
             }

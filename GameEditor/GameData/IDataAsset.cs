@@ -26,15 +26,15 @@ namespace GameEditor.GameData
         }
 
         private static readonly Dictionary<DataAssetType, NameInfo> Names = new () {
-            { DataAssetType.Font,            new NameInfo("font",             "Font") },
-            { DataAssetType.PropFont,        new NameInfo("prop_font",        "Proportional Font") },
-            { DataAssetType.Sfx,             new NameInfo("sfx",              "Sfx") },
-            { DataAssetType.Mod,             new NameInfo("mod",              "Mod") },
-            { DataAssetType.Tileset,         new NameInfo("tileset",          "Tileset") },
-            { DataAssetType.Sprite,          new NameInfo("sprite",           "Sprite") },
-            { DataAssetType.SpriteAnimation, new NameInfo("sprite_animation", "Sprite Animation") },
-            { DataAssetType.Map,             new NameInfo("map",              "Map") },
-            { DataAssetType.Room,            new NameInfo("room",             "Room") },
+            { DataAssetType.Font,            new NameInfo("font",      "Font") },
+            { DataAssetType.PropFont,        new NameInfo("prop_font", "Proportional Font") },
+            { DataAssetType.Sfx,             new NameInfo("sfx",       "Sfx") },
+            { DataAssetType.Mod,             new NameInfo("mod",       "Mod") },
+            { DataAssetType.Tileset,         new NameInfo("tileset",   "Tileset") },
+            { DataAssetType.Sprite,          new NameInfo("sprite",    "Sprite") },
+            { DataAssetType.SpriteAnimation, new NameInfo("animation", "Sprite Animation") },
+            { DataAssetType.Map,             new NameInfo("map",       "Map") },
+            { DataAssetType.Room,            new NameInfo("room",      "Room") },
         };
 
         // the list of asset types an asset needs to exist

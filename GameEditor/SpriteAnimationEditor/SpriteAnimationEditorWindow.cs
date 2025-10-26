@@ -190,6 +190,7 @@ namespace GameEditor.SpriteAnimationEditor
             animLoopView.Invalidate();
             animEditor.Invalidate();
             FixFormTitle();
+            Project.RefreshAssetUsers(Animation);
         }
 
         private void toolStripBtnPenHead_Click(object sender, EventArgs e) {

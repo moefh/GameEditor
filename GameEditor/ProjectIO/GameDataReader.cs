@@ -1174,11 +1174,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid room: reference to invalid map index {mapIndex.Num}", mapIndex.LineNum);
                 }
 
-                RoomData.Map mapInfo;
-                mapInfo.X = (int) posX.Num;
-                mapInfo.Y = (int) posY.Num;
-                mapInfo.MapData = mapList[(int) mapIndex.Num];
-                maps.Add(mapInfo);
+                maps.Add(new RoomData.Map(-1, mapList[(int) mapIndex.Num], (int) posX.Num, (int) posY.Num));
             }
 
             roomMaps[ident.Str] = maps;
@@ -1208,7 +1204,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 string name = ExtractGlobalLowerName(mapListIdent.Str, "room_maps");
-                roomList.Add(new RoomData(name, maps, []));
+                roomList.Add(new RoomData(name, maps, [], []));
 
                 Util.Log($"-> got room {name} with {maps.Count} maps");
             }

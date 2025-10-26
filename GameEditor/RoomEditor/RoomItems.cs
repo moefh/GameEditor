@@ -30,10 +30,6 @@ namespace GameEditor.RoomEditor
             RoomItem = room;
             RootNodeId = rootNodeId;
         }
-
-        public virtual bool Validate(string property, object? oldValue) {
-            return true;
-        }
     }
 
     public class MapRoomItem : AbstractRoomItem {
@@ -41,53 +37,32 @@ namespace GameEditor.RoomEditor
         public override string Type { get { return "Map"; } }
 
         [Browsable(false)]
-        public int RoomMapIndex { get; }
+        public int RoomMapId { get; }
 
         [Browsable(false)]
-        public MapData Map { get { return Room.Maps[RoomMapIndex].MapData; } }
+        public MapData? Map { get { return Room.GetMap(RoomMapId)?.MapData; } }
 
         [Category(".Information")]
         [DisplayName("Map")]
-        public string MapName { get { return Room.Maps[RoomMapIndex].MapData.Name; } }
+        public string MapName { get { return Map?.Name ?? "(invalid)"; } }
 
         [Category("Map")]
+        [DisplayName("Position.X")]
         public int X {
-            get { return Room.Maps[RoomMapIndex].X; }
-            set { Room.SetMapX(RoomMapIndex, value); }
+            get { return Room.GetMap(RoomMapId)?.X ?? 0; }
+            set { Room.GetMap(RoomMapId)?.SetX(value); }
         }
 
         [Category("Map")]
+        [DisplayName("Position.X")]
         public int Y {
-            get { return Room.Maps[RoomMapIndex].Y; }
-            set { Room.SetMapY(RoomMapIndex, value); }
+            get { return Room.GetMap(RoomMapId)?.Y ?? 0; }
+            set { Room.GetMap(RoomMapId)?.SetY(value); }
         }
 
-        public MapRoomItem(RoomDataItem room, string rootNodeId, int roomMapIndex)
+        public MapRoomItem(RoomDataItem room, string rootNodeId, int roomMapId)
                 : base(room, rootNodeId) {
-            RoomMapIndex = roomMapIndex;
-        }
-
-        public override bool Validate(string property, object? oldValue) {
-            switch (property) {
-            case "X":
-                if (Room.Maps[RoomMapIndex].X < 0) {
-                    MessageBox.Show("Error: value must not be negative", $"Invalid valie for {property}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    if (oldValue is int oldX) X = oldX;
-                    return false;
-                }
-                return true;
-
-            case "Y":
-                if (Room.Maps[RoomMapIndex].Y < 0) {
-                    MessageBox.Show("Error: value must not be negative", $"Invalid valie for {property}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    if (oldValue is int oldY) Y = oldY;
-                    return false;
-                }
-                return true;
-
-            default:
-                return true;
-            }
+            RoomMapId = roomMapId;
         }
     }
 
@@ -96,70 +71,59 @@ namespace GameEditor.RoomEditor
         public override string Type { get { return "Entity"; } }
 
         [Browsable(false)]
-        public int RoomEntityIndex { get; }
+        public int RoomEntityId { get; }
 
         [Browsable(false)]
-        public SpriteAnimation SpriteAnim {
-            get { return Room.Entities[RoomEntityIndex].SpriteAnim; }
+        public SpriteAnimation? SpriteAnim {
+            get { return Room.GetEntity(RoomEntityId)?.SpriteAnim ?? null; }
         }
 
         [Category("Entity")]
-        [DisplayName("Anim")]
+        [DisplayName("SpriteAnim")]
         public SpriteAnimProperty SpriteAnimProp { get; set; }
 
         [Category("Entity")]
         public string Name {
-            get { return Room.Entities[RoomEntityIndex].Name; }
-            set { Room.SetEntityName(RoomEntityIndex, value); }
+            get { return Room.GetEntity(RoomEntityId)?.Name ?? ""; }
+            set { Room.GetEntity(RoomEntityId)?.SetName(value); }
         }
 
         [Category("Entity")]
+        [DisplayName("Position.X")]
         public int X {
-            get { return Room.Entities[RoomEntityIndex].X; }
-            set { Room.SetEntityX(RoomEntityIndex, value); }
+            get { return Room.GetEntity(RoomEntityId)?.X ?? 0; }
+            set { Room.GetEntity(RoomEntityId)?.SetX(value); }
         }
 
         [Category("Entity")]
+        [DisplayName("Position.Y")]
         public int Y {
-            get { return Room.Entities[RoomEntityIndex].Y; }
-            set { Room.SetEntityY(RoomEntityIndex, value); }
+            get { return Room.GetEntity(RoomEntityId)?.Y ?? 0; }
+            set { Room.GetEntity(RoomEntityId)?.SetY(value); }
         }
 
-        public EntityRoomItem(RoomDataItem room, string rootNodeId, int roomEntityIndex)
+        public EntityRoomItem(RoomDataItem room, string rootNodeId, int roomEntityId)
                 : base(room, rootNodeId) {
-            RoomEntityIndex = roomEntityIndex;
-            SpriteAnimProp = new SpriteAnimProperty(room, roomEntityIndex);
-        }
-
-        public override bool Validate(string property, object? oldValue) {
-            switch (property) {
-            case "Name":
-                if (Room.Entities[RoomEntityIndex].Name == "") {
-                    MessageBox.Show("Error: value must not be empty", $"Invalid valie for {property}", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                    if (oldValue is string oldName) Name = oldName;
-                    return false;
-                }
-                RoomItem.Editor?.RefreshAsset();
-                return true;
-
-            default:
-                return true;
-            }
+            RoomEntityId = roomEntityId;
+            SpriteAnimProp = new SpriteAnimProperty(room, roomEntityId);
         }
 
         [Editor(typeof(SpriteAnimPropertyEditor), typeof(UITypeEditor))]
-        public class SpriteAnimProperty(RoomDataItem room, int roomEntityIndex) {
+        public class SpriteAnimProperty(RoomDataItem room, int entityId) {
             private readonly RoomDataItem room = room;
-            private readonly int roomEntityIndex = roomEntityIndex;
+            private readonly int entityId = entityId;
             public ProjectData Project { get { return room.Project; } }
-            public SpriteAnimation SprAnim {
-                get { return room.Room.Entities[roomEntityIndex].SpriteAnim; }
+            public SpriteAnimation? SprAnim {
+                get { return room.Room.GetEntity(entityId)?.SpriteAnim; }
                 set {
-                    room.Room.SetEntitySpriteAnim(roomEntityIndex, value);
+                    if (value == null) return;
+                    room.Room.GetEntity(entityId)?.SetSpriteAnim(value);
                     room.Editor?.Redraw();
                 }
             }
-            public override string ToString() { return SprAnim.Name; }
+            public override string ToString() {
+                return SprAnim?.Name ?? "(invalid)";
+            }
         }
 
         public class SpriteAnimPropertyEditor : UITypeEditor {
@@ -182,6 +146,53 @@ namespace GameEditor.RoomEditor
             }
         }
 
+    }
+
+    public class TriggerRoomItem : AbstractRoomItem {
+
+        public override string Type { get { return "Trigger"; } }
+
+        [Browsable(false)]
+        public int RoomTriggerId { get; }
+
+        [Category("Trigger")]
+        public string Name {
+            get { return Room.GetTrigger(RoomTriggerId)?.Name ?? ""; }
+            set { Room.GetEntity(RoomTriggerId)?.SetName(value); }
+        }
+
+        [Category("Trigger")]
+        [DisplayName("Position.X")]
+        public int X {
+            get { return Room.GetTrigger(RoomTriggerId)?.X ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetX(value); }
+        }
+
+        [Category("Trigger")]
+        [DisplayName("Position.Y")]
+        public int Y {
+            get { return Room.GetTrigger(RoomTriggerId)?.Y ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetY(value); }
+        }
+
+        [Category("Trigger")]
+        [DisplayName("Size.Width")]
+        public int Width {
+            get { return Room.GetTrigger(RoomTriggerId)?.Width ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetWidth(value); }
+        }
+
+        [Category("Trigger")]
+        [DisplayName("Size.Height")]
+        public int Height {
+            get { return Room.GetTrigger(RoomTriggerId)?.Height ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetHeight(value); }
+        }
+
+        public TriggerRoomItem(RoomDataItem room, string rootNodeId, int roomTriggerId)
+                : base(room, rootNodeId) {
+            RoomTriggerId = roomTriggerId;
+        }
     }
 
 }
