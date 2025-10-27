@@ -88,10 +88,10 @@ struct ${PREFIX}_SPRITE_ANIMATION_LOOP {
 };
 
 struct ${PREFIX}_SPRITE_ANIMATION_COLLISION {
-   uint16_t x;
-   uint16_t y;
-   uint16_t w;
-   uint16_t h;
+    uint16_t x;
+    uint16_t y;
+    uint16_t w;
+    uint16_t h;
 };
 
 struct ${PREFIX}_SPRITE_ANIMATION {
@@ -133,9 +133,34 @@ struct ${PREFIX}_ROOM_MAP_INFO {
     const struct ${PREFIX}_MAP *map;
 };
 
+struct ${PREFIX}_ROOM_ENTITY_INFO {
+    int16_t x;
+    int16_t y;
+    const struct ${PREFIX}_SPRITE_ANIMATION *anim;
+    uint16_t type;
+    uint16_t data0;
+    uint16_t data1;
+    uint16_t data3;
+};
+
+struct ${PREFIX}_ROOM_TRIGGER_INFO {
+    int16_t x;
+    int16_t y;
+    uint16_t w;
+    uint16_t h;
+    uint16_t data0;
+    uint16_t data1;
+    uint16_t data2;
+    uint16_t data3;
+};
+
 struct ${PREFIX}_ROOM {
-    uint16_t num_maps;
+    uint8_t num_maps;
+    uint8_t num_entities;
+    uint8_t num_triggers;
     const struct ${PREFIX}_ROOM_MAP_INFO *maps;
+    const struct ${PREFIX}_ROOM_ENTITY_INFO *entities;
+    const struct ${PREFIX}_ROOM_TRIGGER_INFO *triggers;
 };
 
 #endif /* #ifndef ${PREFIX}_SKIP_STRUCTS_ROOM */

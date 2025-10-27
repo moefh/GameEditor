@@ -31,41 +31,54 @@ namespace GameEditor.GameData
         }
 
         public class Entity {
-            public Entity(int id, string name, SpriteAnimation anim, int x, int y) {
+            public const int DATA_SIZE = 4;
+
+            public Entity(int id, string name, SpriteAnimation anim, int x, int y, int[] data) {
                 Id = id;
                 Name = name;
                 SpriteAnim = anim;
                 X = x;
                 Y = y;
+                Data = new int[DATA_SIZE];
+                for (int i = 0; i < DATA_SIZE; i++) {
+                    Data[i] = (i < data.Length) ? data[i] : 0;
+                }
             }
 
-            public Entity(int id, Entity e) : this(id, e.Name, e.SpriteAnim, e.X, e.Y) {}
+            public Entity(int id, Entity e) : this(id, e.Name, e.SpriteAnim, e.X, e.Y, e.Data) {}
 
             public int Id { get; }
             public string Name { get; private set; }
             public SpriteAnimation SpriteAnim { get; private set; }
             public int X { get; set; }
             public int Y { get; set; }
+            public int[] Data { get; set; }
 
             public void SetName(string name) { Name = name; }
             public void SetSpriteAnim(SpriteAnimation anim) { SpriteAnim = anim; }
             public void SetPosition(int x, int y) { X = x; Y = y; }
             public void SetX(int x) { X = x; }
             public void SetY(int y) { Y = y; }
+            public void SetData(int index, int value) { Data[index] = value; }
         }
 
         public class Trigger {
+            public const int DATA_SIZE = 4;
 
-            public Trigger(int id, string name, int x, int y, int w, int h) {
+            public Trigger(int id, string name, int x, int y, int w, int h, int[] data) {
                 Id = id;
                 Name = name;
                 X = x;
                 Y = y;
                 Width = w;
                 Height = h;
+                Data = new int[DATA_SIZE];
+                for (int i = 0; i < DATA_SIZE; i++) {
+                    Data[i] = (i < data.Length) ? data[i] : 0;
+                }
             }
 
-            public Trigger(int id, Trigger t) : this(id, t.Name, t.X, t.Y, t.Width, t.Height) {}
+            public Trigger(int id, Trigger t) : this(id, t.Name, t.X, t.Y, t.Width, t.Height, t.Data) {}
 
             public int Id { get; }
             public string Name { get; private set; }
@@ -73,6 +86,7 @@ namespace GameEditor.GameData
             public int Y { get; set; }
             public int Width { get; set; }
             public int Height { get; set; }
+            public int[] Data { get; set; }
 
             public void SetName(string name) { Name = name; }
             public void SetPosition(int x, int y) { X = x; Y = y; }
@@ -81,6 +95,7 @@ namespace GameEditor.GameData
             public void SetSize(int w, int h) { Width = w; Height = h; }
             public void SetWidth(int w) { Width = w; }
             public void SetHeight(int h) { Height = h; }
+            public void SetData(int index, int value) { Data[index] = value; }
         }
 
         private int nextId = 0;
@@ -108,19 +123,19 @@ namespace GameEditor.GameData
 
         public int DataSize {
             get {
-                // num_maps(2)
-                //   - each map: x(2) + y(2) + mapPointer(4)
-                int mapsSize = 2 + maps.Count * (2 + 2 + 4);
+                // num_maps(1) + num_entities(1) + num_triggers(!) + pad(1)
+                int headerSize = 4;
 
-                // num_entities(2)
-                //   - each entity: x(2) + y(2) + animPointer(4)
-                int entsSize = 2 + entities.Count * (2 + 2 + 4);
+                // - each map: x(2) + y(2) + mapPointer(4)
+                int mapsSize = maps.Count * (2 + 2 + 4);
 
-                // num_triggers(2)
-                //   - each trigger: x(2) + y(2) + w(2) + h(2)
-                int trgsSize = 2 + triggers.Count * (2 + 2 + 2 + 2);
+                // - each entity: x(2) + y(2) + animPointer(4) + DATA_SIZE*data(2)
+                int entsSize = entities.Count * (2 + 2 + 4 + 2 + Entity.DATA_SIZE*2);
 
-                return mapsSize + entsSize + trgsSize;
+                // - each trigger: x(2) + y(2) + w(2) + h(2) + type(2) + DATA_SIZE*data(2)
+                int trgsSize = triggers.Count * (2 + 2 + 2 + 2 + 2 + Trigger.DATA_SIZE*2);
+
+                return headerSize + mapsSize + entsSize + trgsSize;
             }
         }
 
@@ -145,8 +160,8 @@ namespace GameEditor.GameData
             maps.RemoveAll(m => remove.Contains(m.MapData));
         }
 
-        public Entity AddEntity(string name, SpriteAnimation anim, int x, int y) {
-            Entity ent = new Entity(GenId(), name, anim, x, y);
+        public Entity AddEntity(string name, SpriteAnimation anim, int x, int y, int[] data) {
+            Entity ent = new Entity(GenId(), name, anim, x, y, data);
             entities.Add(ent);
             return ent;
         }
@@ -155,8 +170,8 @@ namespace GameEditor.GameData
             return entities.Find(e => e.Id == entId);
         }
 
-        public Trigger AddTrigger(string name, int x, int y, int w, int h) {
-            Trigger trg = new Trigger(GenId(), name, x, y, w, h);
+        public Trigger AddTrigger(string name, int x, int y, int w, int h, int[] data) {
+            Trigger trg = new Trigger(GenId(), name, x, y, w, h, data);
             triggers.Add(trg);
             return trg;
         }

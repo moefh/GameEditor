@@ -245,7 +245,7 @@ namespace GameEditor.RoomEditor
             mapRoot.Nodes.Clear();
             foreach (RoomData.Map map in room.Room.Maps) {
                 string id = GenId();
-                itemsById[id] = new MapRoomItem(room, mapRoot.Name, map.Id);
+                itemsById[id] = new MapRoomItem(room, map.Id);
                 mapRoot.Nodes.Add(id, map.MapData.Name, TREE_MAP_NODE_INDEX, TREE_MAP_NODE_INDEX);
             }
             mapRoot.Expand();
@@ -272,7 +272,7 @@ namespace GameEditor.RoomEditor
             entRoot.Nodes.Clear();
             foreach (RoomData.Entity ent in room.Room.Entities) {
                 string id = GenId();
-                itemsById[id] = new EntityRoomItem(room, entRoot.Name, ent.Id);
+                itemsById[id] = new EntityRoomItem(room, ent.Id);
                 entRoot.Nodes.Add(id, ent.Name, TREE_ENTITY_NODE_INDEX, TREE_ENTITY_NODE_INDEX);
             }
             entRoot.Expand();
@@ -299,7 +299,7 @@ namespace GameEditor.RoomEditor
             trgRoot.Nodes.Clear();
             foreach (RoomData.Trigger trg in room.Room.Triggers) {
                 string id = GenId();
-                itemsById[id] = new TriggerRoomItem(room, trgRoot.Name, trg.Id);
+                itemsById[id] = new TriggerRoomItem(room, trg.Id);
                 trgRoot.Nodes.Add(id, trg.Name, TREE_TRIGGER_NODE_INDEX, TREE_TRIGGER_NODE_INDEX);
             }
             trgRoot.Expand();
@@ -325,7 +325,7 @@ namespace GameEditor.RoomEditor
 
             contextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
             contextMenuStrip.Items.Add("Activate Item", null, ActivatetemToolStripMenuItem_Click);
-            contextMenuStrip.Items.Add("Manage Maps", null, ManageMapsToolStripMenuItem_Click);
+            contextMenuStrip.Items.Add("Select Maps", null, ManageMapsToolStripMenuItem_Click);
             contextMenuStrip.Items.Add("Add Entity", null, AddEntityToolStripMenuItem_Click);
             contextMenuStrip.Items.Add("Add Trigger", null, AddTriggerToolStripMenuItem_Click);
             contextMenuStrip.ImageList = imageList;

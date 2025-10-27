@@ -183,7 +183,7 @@ namespace GameEditor.RoomEditor
             if (Project.SpriteAnimationList[0] is SpriteAnimationItem sa) {
                 int x = roomEditor.ViewCenter.X - (sa.Animation.Collision.x + sa.Animation.Collision.w) / 2;
                 int y = roomEditor.ViewCenter.Y - (sa.Animation.Collision.y + sa.Animation.Collision.h) / 2;
-                RoomData.Entity ent = Room.AddEntity(GenerateEntityName(), sa.Animation, x, y);
+                RoomData.Entity ent = Room.AddEntity(GenerateEntityName(), sa.Animation, x, y, []);
                 contentTreeManager.RefreshEntityList();
                 roomEditor.UpdateEntityList();
                 contentTreeManager.SelectEntityId(ent.Id);
@@ -197,7 +197,7 @@ namespace GameEditor.RoomEditor
             int h = 4 * Tileset.TILE_SIZE;
             int x = roomEditor.ViewCenter.X - w / 2;
             int y = roomEditor.ViewCenter.Y - h / 2;
-            RoomData.Trigger trg = Room.AddTrigger(GenerateTriggerName(), x, y, w, h);
+            RoomData.Trigger trg = Room.AddTrigger(GenerateTriggerName(), x, y, w, h, []);
             contentTreeManager.RefreshTriggerList();
             roomEditor.UpdateTriggerList();
             contentTreeManager.SelectTriggerId(trg.Id);

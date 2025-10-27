@@ -12,23 +12,18 @@ using System.Windows.Forms.Design;
 
 namespace GameEditor.RoomEditor
 {
-    public abstract class AbstractRoomItem
-    {
+    public abstract class AbstractRoomItem {
         [Browsable(false)]
         public RoomDataItem RoomItem { get; }
 
         [Browsable(false)]
         public RoomData Room { get { return RoomItem.Room; } }
 
-        [Browsable(false)]
-        public string RootNodeId { get; }
-
         [Category(".Information")]
         public abstract string Type { get; }
 
-        public AbstractRoomItem(RoomDataItem room, string rootNodeId) {
+        public AbstractRoomItem(RoomDataItem room) {
             RoomItem = room;
-            RootNodeId = rootNodeId;
         }
     }
 
@@ -42,26 +37,25 @@ namespace GameEditor.RoomEditor
         [Browsable(false)]
         public MapData? Map { get { return Room.GetMap(RoomMapId)?.MapData; } }
 
-        [Category(".Information")]
+        [Category("Basic")]
         [DisplayName("Map")]
         public string MapName { get { return Map?.Name ?? "(invalid)"; } }
 
-        [Category("Map")]
+        [Category("Basic")]
         [DisplayName("Position.X")]
         public int X {
             get { return Room.GetMap(RoomMapId)?.X ?? 0; }
             set { Room.GetMap(RoomMapId)?.SetX(value); }
         }
 
-        [Category("Map")]
-        [DisplayName("Position.X")]
+        [Category("Basic")]
+        [DisplayName("Position.Y")]
         public int Y {
             get { return Room.GetMap(RoomMapId)?.Y ?? 0; }
             set { Room.GetMap(RoomMapId)?.SetY(value); }
         }
 
-        public MapRoomItem(RoomDataItem room, string rootNodeId, int roomMapId)
-                : base(room, rootNodeId) {
+        public MapRoomItem(RoomDataItem room, int roomMapId) : base(room) {
             RoomMapId = roomMapId;
         }
     }
@@ -78,32 +72,55 @@ namespace GameEditor.RoomEditor
             get { return Room.GetEntity(RoomEntityId)?.SpriteAnim ?? null; }
         }
 
-        [Category("Entity")]
+        [Category("Basic")]
         [DisplayName("SpriteAnim")]
         public SpriteAnimProperty SpriteAnimProp { get; set; }
 
-        [Category("Entity")]
+        [Category("Basic")]
         public string Name {
             get { return Room.GetEntity(RoomEntityId)?.Name ?? ""; }
             set { Room.GetEntity(RoomEntityId)?.SetName(value); }
         }
 
-        [Category("Entity")]
+        [Category("Basic")]
         [DisplayName("Position.X")]
         public int X {
             get { return Room.GetEntity(RoomEntityId)?.X ?? 0; }
             set { Room.GetEntity(RoomEntityId)?.SetX(value); }
         }
 
-        [Category("Entity")]
+        [Category("Basic")]
         [DisplayName("Position.Y")]
         public int Y {
             get { return Room.GetEntity(RoomEntityId)?.Y ?? 0; }
             set { Room.GetEntity(RoomEntityId)?.SetY(value); }
         }
 
-        public EntityRoomItem(RoomDataItem room, string rootNodeId, int roomEntityId)
-                : base(room, rootNodeId) {
+        [Category("Extra")]
+        public int Data0 {
+            get { return Room.GetEntity(RoomEntityId)?.Data[0] ?? 0; }
+            set { Room.GetEntity(RoomEntityId)?.SetData(0, value); }
+        }
+
+        [Category("Extra")]
+        public int Data1 {
+            get { return Room.GetEntity(RoomEntityId)?.Data[1] ?? 0; }
+            set { Room.GetEntity(RoomEntityId)?.SetData(1, value); }
+        }
+
+        [Category("Extra")]
+        public int Data2 {
+            get { return Room.GetEntity(RoomEntityId)?.Data[2] ?? 0; }
+            set { Room.GetEntity(RoomEntityId)?.SetData(2, value); }
+        }
+
+        [Category("Extra")]
+        public int Data3 {
+            get { return Room.GetEntity(RoomEntityId)?.Data[3] ?? 0; }
+            set { Room.GetEntity(RoomEntityId)?.SetData(3, value); }
+        }
+
+        public EntityRoomItem(RoomDataItem room, int roomEntityId) : base(room) {
             RoomEntityId = roomEntityId;
             SpriteAnimProp = new SpriteAnimProperty(room, roomEntityId);
         }
@@ -155,42 +172,65 @@ namespace GameEditor.RoomEditor
         [Browsable(false)]
         public int RoomTriggerId { get; }
 
-        [Category("Trigger")]
+        [Category("Basic")]
         public string Name {
             get { return Room.GetTrigger(RoomTriggerId)?.Name ?? ""; }
             set { Room.GetEntity(RoomTriggerId)?.SetName(value); }
         }
 
-        [Category("Trigger")]
+        [Category("Basic")]
         [DisplayName("Position.X")]
         public int X {
             get { return Room.GetTrigger(RoomTriggerId)?.X ?? 0; }
             set { Room.GetTrigger(RoomTriggerId)?.SetX(value); }
         }
 
-        [Category("Trigger")]
+        [Category("Basic")]
         [DisplayName("Position.Y")]
         public int Y {
             get { return Room.GetTrigger(RoomTriggerId)?.Y ?? 0; }
             set { Room.GetTrigger(RoomTriggerId)?.SetY(value); }
         }
 
-        [Category("Trigger")]
+        [Category("Basic")]
         [DisplayName("Size.Width")]
         public int Width {
             get { return Room.GetTrigger(RoomTriggerId)?.Width ?? 0; }
             set { Room.GetTrigger(RoomTriggerId)?.SetWidth(value); }
         }
 
-        [Category("Trigger")]
+        [Category("Basic")]
         [DisplayName("Size.Height")]
         public int Height {
             get { return Room.GetTrigger(RoomTriggerId)?.Height ?? 0; }
             set { Room.GetTrigger(RoomTriggerId)?.SetHeight(value); }
         }
+        [Category("Extra")]
+        public int Data0 {
+            get { return Room.GetTrigger(RoomTriggerId)?.Data[0] ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetData(0, value); }
+        }
 
-        public TriggerRoomItem(RoomDataItem room, string rootNodeId, int roomTriggerId)
-                : base(room, rootNodeId) {
+        [Category("Extra")]
+        public int Data1 {
+            get { return Room.GetTrigger(RoomTriggerId)?.Data[1] ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetData(1, value); }
+        }
+
+        [Category("Extra")]
+        public int Data2 {
+            get { return Room.GetTrigger(RoomTriggerId)?.Data[2] ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetData(2, value); }
+        }
+
+        [Category("Extra")]
+        public int Data3 {
+            get { return Room.GetTrigger(RoomTriggerId)?.Data[3] ?? 0; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetData(3, value); }
+        }
+
+
+        public TriggerRoomItem(RoomDataItem room, int roomTriggerId) : base(room) {
             RoomTriggerId = roomTriggerId;
         }
     }
