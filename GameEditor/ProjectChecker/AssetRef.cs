@@ -14,13 +14,18 @@ namespace GameEditor.ProjectChecker
             Type = asset.AssetType;
             Index = proj.GetAssetIndex(asset);
         }
+
+        public AssetRef(DataAssetType type, int assetIndex) {
+            Type = type;
+            Index = assetIndex;
+        }
         
         public readonly DataAssetType Type { get; }
         public readonly int Index { get; }
 
         public readonly IDataAssetItem? Item(ProjectData proj) {
             AssetList<IDataAssetItem> items = proj.GetAssetList(Type);
-            if (Index < items.Count) {
+            if (Index >= 0 && Index < items.Count) {
                 return items[Index];
             }
             return null;

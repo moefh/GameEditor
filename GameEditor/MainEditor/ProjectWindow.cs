@@ -1,7 +1,6 @@
 ﻿using GameEditor.GameData;
 using GameEditor.Misc;
 using GameEditor.Properties;
-using Microsoft.VisualBasic.Devices;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -15,8 +14,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using System.Windows.Forms.VisualStyles;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 
 namespace GameEditor.MainEditor

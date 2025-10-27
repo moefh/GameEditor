@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 
 namespace GameEditor.ProjectChecker
 {
-    public class ModPatternProblem(ProjectData proj, ModData mod, List<string> errors) : IAssetProblem
+    public class ModPatternProblem : AssetProblem
     {
-        private readonly string modName = mod.Name;
-        private readonly List<string> errors = errors;
+        private readonly string modName;
+        private readonly List<string> errors;
 
-        public AssetRef Asset { get; } = new AssetRef(proj, mod);
+        public static AssetProblem ModNoteOutOfTune(ProjectData project, ModData mod, List<string> errors) {
+            return new ModPatternProblem(Type.ModNoteOutOfTune, project, mod, errors);
+        }
+
+        public ModPatternProblem(Type type, ProjectData proj, ModData mod, List<string> errors) : base(type, proj, mod) {
+            modName = mod.Name;
+            this.errors = errors;
+        }
 
         public override string ToString() {
             StringBuilder sb = new StringBuilder();

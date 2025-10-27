@@ -204,8 +204,6 @@ namespace GameEditor.CustomControls
             return index;
         }
 
-        int count = 0;
-
         private bool ClipScrollOffset() {
             if (Frames == null || Frames.Count == 0) return false;
             RenderInfo r = GetRenderInfo();

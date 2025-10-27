@@ -7,17 +7,33 @@ using System.Threading.Tasks;
 
 namespace GameEditor.ProjectChecker
 {
-    public class MapTileProblem(ProjectData proj, MapData map, int numTiles, Point tile) : IAssetProblem
-    {
-        private readonly string mapName = map.Name;
-        private readonly int numTiles = numTiles;
-        private readonly Point tile = tile;
+    public class MapTileProblem : AssetProblem {
+        private readonly string mapName;
+        private readonly int numTiles;
+        private readonly Point tile;
 
-        public AssetRef Asset { get; } = new AssetRef(proj, map);
+        public static MapTileProblem MapWithTransparentTiles(ProjectData proj, MapData map, int numTiles, Point tile) {
+            return new MapTileProblem(Type.MapWithTransparentTiles, proj, map, numTiles, tile);
+        }
+
+        public static AssetProblem MapWithInvalidTileIndices(ProjectData proj, MapData map, int numTiles, Point firstTile) {
+            return new MapTileProblem(Type.MapWithInvalidTileIndices, proj, map, numTiles, firstTile);
+        }
+
+        public static AssetProblem MapWithUnusedBgTiles(ProjectData proj, MapData map, int numTiles, Point firstTile) {
+            return new MapTileProblem(Type.MapWithInvalidTileIndices, proj, map, numTiles, firstTile);
+        }
+
+        public MapTileProblem(Type type, ProjectData proj, MapData map, int numTiles, Point tile) : base(type, proj, map) {
+            this.mapName = map.Name;
+            this.numTiles = numTiles;
+            this.tile = tile;
+        }
 
         public override string ToString() {
             return $"{mapName}: first tile at ({tile.X},{tile.Y}), {numTiles} tiles total";
         }
+
     }
 
 }

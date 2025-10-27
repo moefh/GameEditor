@@ -18,14 +18,14 @@ namespace GameEditor.MainEditor
 {
     public partial class CheckerWindow : ProjectUnclosableForm
     {
-        private List<IAssetProblem> savedProblems = [];
+        private ProjectCheckResult? savedResult;
 
         public CheckerWindow(ProjectData proj) : base(proj, "ValidatorWindow") {
             InitializeComponent();
         }
 
         public void ClearResults() {
-            savedProblems.Clear();
+            savedResult = null;
             txtLog.Text = "";
         }
 
@@ -39,14 +39,13 @@ namespace GameEditor.MainEditor
 
         public void RunCheck() {
             ProjectInspector inspector = new ProjectInspector(Project);
-            inspector.Run();
-            savedProblems = inspector.GetProblems();
-            txtLog.Text = inspector.GetReport();
+            savedResult = inspector.Run();
+            txtLog.Text = savedResult.GetReport();
         }
 
         private void toolStripBtnOpenProblems_Click(object sender, EventArgs e) {
-            if (MdiParent == null) return;
-            foreach (IAssetProblem p in savedProblems) {
+            if (MdiParent == null || savedResult == null) return;
+            foreach (AssetProblem p in savedResult.GetProblemList()) {
                 p.Asset.ShowEditor(Project, MdiParent);
             }
         }

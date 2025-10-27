@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 
 namespace GameEditor.ProjectChecker
 {
-    public class TilesetProblem(ProjectData proj, Tileset tileset) : IAssetProblem
+    public class TilesetProblem : AssetProblem
     {
-        private readonly string tilesetName = tileset.Name;
-        private readonly int numTiles = tileset.NumTiles;
+        private readonly string tilesetName;
+        private readonly int numTiles;
 
-        public AssetRef Asset { get; } = new AssetRef(proj, tileset);
+        public static AssetProblem TilesetTooBig(ProjectData proj, Tileset tileset) {
+            return new TilesetProblem(Type.TilesetTooBig, proj, tileset);
+        }
+
+        public TilesetProblem(Type type, ProjectData proj, Tileset tileset) : base(type, proj, tileset) {
+            tilesetName = tileset.Name;
+            numTiles = tileset.NumTiles;
+        }
 
         public override string ToString() {
             return $"{tilesetName}: {numTiles} tiles total";
