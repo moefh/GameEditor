@@ -210,5 +210,11 @@ namespace GameEditor.Misc
             return sb.ToString();
         }
 
+        public static IEnumerable<T> Reversed<T>(IList<T> list) {
+            for (int i = list.Count-1; i >= 0; i--) {
+                yield return list[i];
+            }
+        }
+
     }
 }

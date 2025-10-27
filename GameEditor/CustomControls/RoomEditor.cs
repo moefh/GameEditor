@@ -239,8 +239,7 @@ namespace GameEditor.CustomControls
 
         private RoomData.Map? GetMapAt(Point p) {
             if (Room == null) return null;
-            for (int index = Room.Maps.Count-1; index >= 0; index--) {
-                RoomData.Map map = Room.Maps[index];
+            foreach (RoomData.Map map in Room.Maps) {
                 if (IsMapAt(map, p)) {
                     return map;
                 }
@@ -250,8 +249,7 @@ namespace GameEditor.CustomControls
 
         private RoomData.Entity? GetEntityAt(Point p) {
             if (Room == null) return null;
-            for (int index = Room.Entities.Count-1; index >= 0; index--) {
-                RoomData.Entity ent = Room.Entities[index];
+            foreach (RoomData.Entity ent in Room.Entities) {
                 if (IsEntityAt(ent, p)) {
                     return ent;
                 }
@@ -261,8 +259,7 @@ namespace GameEditor.CustomControls
 
         private RoomData.Trigger? GetTriggerAt(Point p) {
             if (Room == null) return null;
-            for (int index = Room.Triggers.Count-1; index >= 0; index--) {
-                RoomData.Trigger trg = Room.Triggers[index];
+            foreach (RoomData.Trigger trg in Room.Triggers) {
                 if (IsTriggerAt(trg, p)) {
                     return trg;
                 }
@@ -515,6 +512,8 @@ namespace GameEditor.CustomControls
                 int footY = sprY + anim.FootOverlap;
                 anim.Sprite.DrawFrameAt(g, head, sprX, footY, sprW, sprH, true);
             }
+            int h = anim.Sprite.Height + ((foot >= 0) ? anim.Sprite.Height - anim.FootOverlap : 0);
+            DrawOutline(g, 1, Pens.White, entX, entY, anim.Sprite.Width, h);
         }
 
         private void DrawEntitySelection(Graphics g, Pen pen, int entX, int entY, SpriteAnimation anim) {
@@ -522,12 +521,11 @@ namespace GameEditor.CustomControls
             if (anim.Loops[0].Indices[0].FootIndex >= 0) {
                 h = h*2 - anim.FootOverlap;
             }
-            DrawOutline(g, 1, pen, entX, entY, anim.Sprite.Width, h);
+            DrawOutline(g, 3, pen, entX, entY, anim.Sprite.Width, h);
         }
 
         private void DrawTrigger(Graphics g, Pen pen, int trgX, int trgY, int trgW, int trgH) {
             DrawMesh(g, Tileset.TILE_SIZE, trgX, trgY, trgW, trgH);
-            //DrawOutline(g, 1, pen, trgX, trgY, trgW, trgH);
         }
 
         protected override void OnPaint(PaintEventArgs pe) {
@@ -549,23 +547,19 @@ namespace GameEditor.CustomControls
                 pe.Graphics.Clear(Color.Black);
             }
 
-            // draw maps
             foreach (RoomData.Map map in Room.Maps) {
                 DrawBgTiles(pe.Graphics, map.X, map.Y, map.MapData);
                 DrawFgTiles(pe.Graphics, map.X, map.Y, map.MapData);
             }
 
-            // draw triggers
-            foreach (RoomData.Trigger trg in Room.Triggers) {
+            foreach (RoomData.Trigger trg in Util.Reversed(Room.Triggers)) {
                 DrawTrigger(pe.Graphics, Pens.White, trg.X, trg.Y, trg.Width, trg.Height);
             }
 
-            // draw entities
-            foreach (RoomData.Entity ent in Room.Entities) {
+            foreach (RoomData.Entity ent in Util.Reversed(Room.Entities)) {
                 DrawEntity(pe.Graphics, ent.X, ent.Y, ent.SpriteAnim);
             }
 
-            // draw selected map rectangle
             if (SelectedMapId >= 0) {
                 using Pen selPen = new Pen(ConfigUtil.RoomEditorSelectionColor);
                 RoomData.Map? map = Room.GetMap(SelectedMapId);
@@ -582,7 +576,6 @@ namespace GameEditor.CustomControls
                 }
             }
 
-            // draw selected entity rectangle
             if (SelectedEntityId >= 0) {
                 using Pen selPen = new Pen(ConfigUtil.RoomEditorSelectionColor);
                 RoomData.Entity? ent = Room.GetEntity(SelectedEntityId);
@@ -686,7 +679,17 @@ namespace GameEditor.CustomControls
                 return;
             }
 
-            // check if we're hovering over the selected tigger (change the mouse cursor):
+            // change to move cursor if if we're hovering over the selected entity
+            if (selectedEntityId >= 0) {
+                RoomData.Entity? ent = GetSelectedEntity();
+                if (ent != null && IsEntityAt(ent, e.Location)) {
+                    Cursor = Cursors.SizeAll;
+                } else {
+                    Cursor = Cursors.Default;
+                }
+            }
+
+            // change to move/size cursor if we're hovering over the selected tigger
             if (selectedTriggerId >= 0) {
                 RoomData.Trigger? trg = GetSelectedTrigger();
                 if (trg != null) {
