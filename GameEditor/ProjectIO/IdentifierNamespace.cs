@@ -20,8 +20,16 @@ namespace GameEditor.ProjectIO
             this.globalPrefix = globalPrefix;
         }
 
+        public static string SanitizeUpperName(string name) {
+            return SanitizeName(name).ToUpperInvariant();
+        }
+
         public static string SanitizeName(string name) {
             return reNonIdent.Replace(name, "_");
+        }
+
+        public void AddRaw(object info, string rawValue) {
+            infos[info] = rawValue;
         }
 
         public string Add(object info, string prefix, string name, string suffix = "", uint flags = 0) {

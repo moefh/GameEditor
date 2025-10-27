@@ -17,7 +17,6 @@ using System.Data.Common;
 using System.Dynamic;
 using System.Linq;
 using System.Net;
-using System.Reflection.Metadata.Ecma335;
 using System.Security.Permissions;
 using System.Security.Policy;
 using System.Text;
@@ -728,12 +727,53 @@ namespace GameEditor.ProjectIO
         // =============================================================
 
         protected void WriteRoomMaps(RoomData room) {
+            if (room.Maps.Count == 0) {
+                identifiers.AddRaw(room.Maps, "NULL");
+                return;
+            }
+
             string mapIdent = GetLowerGlobal("maps");
-            string ident = identifiers.Add(room, "room_maps", room.Name);
+            string ident = identifiers.Add(room.Maps, "room_maps", room.Name);
             f.WriteLine($"static const struct {GetUpperGlobal("ROOM_MAP_INFO")} {ident}[] = {{");
             foreach (RoomData.Map map in room.Maps) {
                 int mapIndex = Project.GetAssetIndex(map.MapData);
                 f.WriteLine($"  {{ {map.X}, {map.Y}, &{mapIdent}[{mapIndex}] }},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected void WriteRoomEntities(RoomData room) {
+            if (room.Entities.Count == 0) {
+                identifiers.AddRaw(room.Entities, "NULL");
+                return;
+            }
+
+            string sprAnimIdent = GetLowerGlobal("sprite_animations");
+            string ident = identifiers.Add(room.Entities, "room_entities", room.Name);
+            f.WriteLine($"static const struct {GetUpperGlobal("ROOM_ENTITY_INFO")} {ident}[] = {{");
+            foreach (RoomData.Entity ent in room.Entities) {
+                int sprAnimIndex = Project.GetAssetIndex(ent.SpriteAnim);
+                int[] d = ent.Data;
+                f.Write($"  {{ {ent.X}, {ent.Y}, &{sprAnimIdent}[{sprAnimIndex}],");
+                f.WriteLine($" {d[0]}, {d[1]}, {d[2]}, {d[3]} }},");
+            }
+            f.WriteLine("};");
+            f.WriteLine();
+        }
+
+        protected void WriteRoomTriggers(RoomData room) {
+            if (room.Triggers.Count == 0) {
+                identifiers.AddRaw(room.Triggers, "NULL");
+                return;
+            }
+
+            string ident = identifiers.Add(room.Triggers, "room_triggers", room.Name);
+            f.WriteLine($"static const struct {GetUpperGlobal("ROOM_TRIGGER_INFO")} {ident}[] = {{");
+            foreach (RoomData.Trigger trg in room.Triggers) {
+                int[] d = trg.Data;
+                f.Write($"  {{ {trg.X}, {trg.Y}, {trg.Width}, {trg.Height},");
+                f.WriteLine($" {d[0]}, {d[1]}, {d[2]}, {d[3]} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -747,15 +787,63 @@ namespace GameEditor.ProjectIO
 
             foreach (RoomDataItem ri in Project.RoomList) {
                 WriteRoomMaps(ri.Room);
+                WriteRoomEntities(ri.Room);
+                WriteRoomTriggers(ri.Room);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("ROOM")} {GetLowerGlobal("rooms")}[] = {{");
             foreach (RoomDataItem ri in Project.RoomList) {
-                string maps = identifiers.Get(ri.Room);
-                f.WriteLine($"  {{ {ri.Room.Maps.Count}, {maps} }},");
+                string maps = identifiers.Get(ri.Room.Maps);
+                string entities = identifiers.Get(ri.Room.Entities);
+                string triggers = identifiers.Get(ri.Room.Triggers);
+                f.Write($"  {{ {ri.Room.Maps.Count}, {ri.Room.Entities.Count}, {ri.Room.Triggers.Count},");
+                f.WriteLine($" {maps}, {entities}, {triggers} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
+        }
+
+        private string GetUniqueRoomItem(string name, HashSet<string> seen) {
+            name = IdentifierNamespace.SanitizeUpperName(name);
+            int count = 1;
+            string newName = (name == "") ? "0" : name;
+            while (! seen.Add(newName)) {
+                newName = $"{name}{count++}";
+            }
+            return newName;
+        }
+
+        private void WriteRoomItemNames() {
+            string roomsPrefix = GetUpperGlobal("ROOM");
+            foreach (RoomDataItem ri in Project.RoomList) {
+                RoomData room = ri.Room;
+                string name = IdentifierNamespace.SanitizeUpperName(room.Name);
+                string roomPrefix = $"{roomsPrefix}_{name}";
+
+                // entities
+                if (room.Entities.Count > 0) {
+                    HashSet<string> seenEnts = [];
+                    f.WriteLine($"enum {roomPrefix}_ENT_NAMES {{");
+                    foreach (RoomData.Entity ent in room.Entities) {
+                        string entName = GetUniqueRoomItem(ent.Name, seenEnts);
+                        f.WriteLine($"  {roomPrefix}_ENT_{entName},");
+                    }
+                    f.WriteLine("};");
+                    f.WriteLine();
+                }
+
+                // triggers
+                if (room.Triggers.Count > 0) {
+                    HashSet<string> seenTrgs = [];
+                    f.WriteLine($"enum {roomPrefix}_TRG_NAMES {{");
+                    foreach (RoomData.Trigger trg in room.Triggers) {
+                        string trgName = GetUniqueRoomItem(trg.Name, seenTrgs);
+                        f.WriteLine($"  {roomPrefix}_TRG_{trgName},");
+                    }
+                    f.WriteLine("};");
+                    f.WriteLine();
+                }
+            }
         }
 
         // =============================================================
@@ -766,7 +854,7 @@ namespace GameEditor.ProjectIO
             string typeIdentPrefix = GetUpperGlobal(type);
             f.WriteLine($"enum {typeIdentPrefix}_IDS {{");
             foreach (IDataAsset a in assets) {
-                string name = IdentifierNamespace.SanitizeName(a.Name.ToUpperInvariant());
+                string name = IdentifierNamespace.SanitizeUpperName(a.Name);
                 f.WriteLine($"  {typeIdentPrefix}_ID_{name},");
             }
             f.WriteLine($"  {typeIdentPrefix}_COUNT,");
@@ -775,6 +863,13 @@ namespace GameEditor.ProjectIO
         }
         
         private void WriteDataIds() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === ROOM ITEM NAMES");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+
+            WriteRoomItemNames();
+
             f.WriteLine("// ================================================================");
             f.WriteLine("// === IDS");
             f.WriteLine("// ================================================================");

@@ -1,5 +1,6 @@
 ﻿using GameEditor.GameData;
 using GameEditor.Misc;
+using GameEditor.RoomEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,10 +10,12 @@ using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Reflection.Metadata.Ecma335;
 using System.Runtime.InteropServices;
 using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Xml.Linq;
 
 namespace GameEditor.ProjectIO
 {
@@ -43,7 +46,29 @@ namespace GameEditor.ProjectIO
             }
         }
 
-        private readonly string[] IGNORE_DATA_ID_ENUM_TYPES = [
+        private readonly string[] C_KEYWORDS = [
+            "static",
+            "const",
+            "struct",
+            "enum",
+        ];
+
+        private readonly string[] GAME_STRUCT_TAGS = [
+            "FONT",
+            "PROP_FONT",
+            "SFX",
+            "MOD_DATA",
+            "MOD_CELL",
+            "IMAGE",
+            "MAP",
+            "SPRITE_ANIMATION",
+            "ROOM_MAP_INFO",
+            "ROOM_ENTITY_INFO",
+            "ROOM_TRIGGER_INFO",
+            "ROOM",
+        ];
+
+        private readonly string[] GAME_DATA_ID_ENUM_TYPES = [
             "MOD",
             "SFX",
             "TILESET",
@@ -78,6 +103,8 @@ namespace GameEditor.ProjectIO
         private readonly Dictionary<string,SampleData> modSamples = [];
         private readonly Dictionary<string,List<ModCell>> modPattern = [];
         private readonly Dictionary<string,List<RoomData.Map>> roomMaps = [];
+        private readonly Dictionary<string,List<RoomData.Entity>> roomEntities = [];
+        private readonly Dictionary<string,List<RoomData.Trigger>> roomTriggers = [];
 
         // read asset lists:
         private readonly List<FontData> fontList = [];
@@ -89,6 +116,11 @@ namespace GameEditor.ProjectIO
         private readonly List<ModData> modList = [];
         private readonly List<SpriteAnimation> spriteAnimationList = [];
         private readonly List<RoomData> roomList = [];
+
+        // data ids:
+        private Dictionary<string,Dictionary<string,int>> globalDataIds = [];
+        private Dictionary<string,List<string>> roomEntityNames = [];
+        private Dictionary<string,List<string>> roomTriggerNames = [];
 
         public GameDataReader(string filename) {
             f = new StreamReader(filename, Encoding.UTF8);
@@ -214,27 +246,23 @@ namespace GameEditor.ProjectIO
             Util.Log($"-> got project global prefix: {globalPrefixUpper}");
         }
 
-        private bool MatchesGlobalUpperName(string ident, string type) {
-            return ident.StartsWith($"{GlobalPrefixUpper}_{type}_");
-        }
-
         private bool IsGlobalUpperName(string ident, string name) {
             return ident == $"{GlobalPrefixUpper}_{name}";
         }
 
-        private bool IsGlobalUpperName(string ident, string type, string name) {
+        private bool IsGlobalUpperTypeName(string ident, string type, string name) {
             return ident == $"{GlobalPrefixUpper}_{type}_{name}";
         }
 
-        private string ExtractGlobalUpperName(string ident, string type) {
+        private string? TryExtractGlobalLowerTypeName(string ident, string type) {
             string prefix = $"{GlobalPrefixUpper}_{type}_";
             if (ident.StartsWith(prefix)) {
                 return ident[prefix.Length..];
             }
-            throw new Exception($"can't extract name from global {ident} with type {type}");
+            return null;
         }
 
-        private bool MatchesGlobalLowerName(string ident, string type) {
+        private bool MatchesGlobalLowerTypeName(string ident, string type) {
             return ident.StartsWith($"{GlobalPrefixLower}_{type}_");
         }
 
@@ -242,11 +270,7 @@ namespace GameEditor.ProjectIO
             return ident == $"{GlobalPrefixLower}_{name}";
         }
 
-        private bool IsGlobalLowerName(string ident, string type, string name) {
-            return ident == $"{GlobalPrefixLower}_{type}_{name}";
-        }
-
-        private string ExtractGlobalLowerName(string ident, string type) {
+        private string ExtractGlobalLowerTypeName(string ident, string type) {
             string prefix = $"{GlobalPrefixLower}_{type}_";
             if (ident.StartsWith(prefix)) {
                 return ident[prefix.Length..];
@@ -390,7 +414,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid tileset: expected data for {numTiles.Num * width.Num * height.Num} pixels, got {data.Count*4}", dataIdent.LineNum);
                 }
 
-                string name = ExtractGlobalLowerName(dataIdent.Str, "tileset_data");
+                string name = ExtractGlobalLowerTypeName(dataIdent.Str, "tileset_data");
                 tilesetList.Add(CreateTileset(name, (int) numTiles.Num, data));
 
                 Util.Log($"-> got tileset for {dataIdent.Str} with {numTiles.Num} tiles");
@@ -470,7 +494,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid font: expected {FontData.NUM_CHARS * ((width.Num+7)/8) * height.Num} bytes, got {data.Count}", dataIdent.LineNum);
                 }
 
-                string name = ExtractGlobalLowerName(dataIdent.Str, "font_data");
+                string name = ExtractGlobalLowerTypeName(dataIdent.Str, "font_data");
                 fontList.Add(CreateFont(name, (int) width.Num, (int) height.Num, data));
 
                 Util.Log($"-> got font for {dataIdent.Str} with size {width.Num}x{height.Num}");
@@ -594,7 +618,7 @@ namespace GameEditor.ProjectIO
                     }
                 }
 
-                string name = ExtractGlobalLowerName(dataIdent.Str, "prop_font_data");
+                string name = ExtractGlobalLowerTypeName(dataIdent.Str, "prop_font_data");
                 propFontList.Add(CreatePropFont(name, (int) height.Num, charWidth, charOffset, data));
 
                 Util.Log($"-> got prop font for {dataIdent.Str} with height {height.Num}");
@@ -693,7 +717,7 @@ namespace GameEditor.ProjectIO
                     data.RemoveRange(data.Count/2, data.Count/2);
                 }
 
-                string name = ExtractGlobalLowerName(dataIdent.Str, "sprite_data");
+                string name = ExtractGlobalLowerTypeName(dataIdent.Str, "sprite_data");
                 spriteList.Add(CreateSprite(name, (int) width.Num, (int) height.Num, actualNumFrames, data));
 
                 Util.Log($"-> got sprite for {dataIdent.Str} with {numFrames.Num} frames");
@@ -769,7 +793,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid map tiles: expecting {3*fgW*fgH+bgW*bgH} tiles, got {tiles.Count}", tilesetIndex.LineNum);
                 }
 
-                string name = ExtractGlobalLowerName(mapTilesDataIdent.Str, "map_tiles");
+                string name = ExtractGlobalLowerTypeName(mapTilesDataIdent.Str, "map_tiles");
                 Tileset tileset = tilesetList[(int) tilesetIndex.Num];
                 mapList.Add(new MapData(name, fgW, fgH, bgW, bgH, tileset, tiles));
                 Util.Log($"-> got map for {mapTilesDataIdent.Str} with tileset {tilesetIndex.Num}");
@@ -852,7 +876,7 @@ namespace GameEditor.ProjectIO
                 if (collision.Count != 4) {
                     throw new ParseError($"collision for sprite animation must have 4 numbers", collisionBrace.LineNum);
                 }
-                string name = ExtractGlobalLowerName(spriteAnimationIdent.Str, "sprite_animation_frames");
+                string name = ExtractGlobalLowerTypeName(spriteAnimationIdent.Str, "sprite_animation_frames");
                 Sprite sprite = spriteList[(int) spriteIndex.Num];
                 SpriteAnimation anim = new SpriteAnimation(sprite, name);
                 anim.Collision = new SpriteAnimationCollision(collision[0], collision[1], collision[2], collision[3]);
@@ -941,7 +965,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid sfx: loop out of bounds", dataIdent.LineNum);
                 }
 
-                string name = ExtractGlobalLowerName(dataIdent.Str, "sfx_samples");
+                string name = ExtractGlobalLowerTypeName(dataIdent.Str, "sfx_samples");
                 sfxList.Add(new SfxData(name, (int)loopStart.Num, (int)loopLength.Num, sampleData.bitsPerSample, sampleData.data));
 
                 Util.Log($"-> got sfx for {dataIdent.Str} with {length.Num} samples");
@@ -1131,7 +1155,7 @@ namespace GameEditor.ProjectIO
                     throw new ParseError($"invalid mod: expected pattern with {numPatterns.Num*numChannels.Num*64} cells, got {pattern.Count}", patternIdent.LineNum);
                 }
 
-                string modName = ExtractGlobalLowerName(patternIdent.Str, "mod_pattern");
+                string modName = ExtractGlobalLowerTypeName(patternIdent.Str, "mod_pattern");
                 ModFile modFile = new ModFile((int)numChannels.Num, samples, songPositions, pattern);
                 modList.Add(new ModData(modName, modFile));
 
@@ -1180,6 +1204,104 @@ namespace GameEditor.ProjectIO
             roomMaps[ident.Str] = maps;
         }
 
+        private void ReadRoomEntities(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<RoomData.Entity> ents = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) {
+                    ExpectPunct(';');
+                    break;
+                }
+
+                long posX = ReadSignedNumber(ExpectToken());
+                ExpectPunct(',');
+                long posY = ReadSignedNumber(ExpectToken());
+                ExpectPunct(',');
+                ExpectPunct('&');
+                ExpectIdent($"{GlobalPrefixLower}_sprite_animations");
+                ExpectPunct('[');
+                Token sprAnimIndex = ExpectNumber();
+                ExpectPunct(']');
+
+                List<int> data = [];
+                while (true) {
+                    next = ExpectToken();
+                    if (next.IsPunct('}')) break;
+                    if (! next.IsPunct(',')) throw new ParseError($"expected '}}' or '}}', got {next}", next.LineNum);
+
+                    next = ExpectToken();
+                    if (next.IsPunct('}')) break;
+                    if (! next.IsNumber()) throw new ParseError($"expected '}}' or number, got {next}", next.LineNum);
+
+                    data.Add((int) next.Num);
+                }
+
+                ExpectPunct(',');
+
+                if (sprAnimIndex.Num >= spriteAnimationList.Count) {
+                    throw new ParseError($"invalid room: reference to invalid sprite animation index {sprAnimIndex.Num}", sprAnimIndex.LineNum);
+                }
+                SpriteAnimation sprAnim = spriteAnimationList[(int) sprAnimIndex.Num];
+                int x = (int) posX;
+                int y = (int) posY;
+
+                ents.Add(new RoomData.Entity(-1, "", sprAnim, x, y, data.ToArray()));
+            }
+
+            roomEntities[ident.Str] = ents;
+        }
+
+        private void ReadRoomTriggers(Token ident) {
+            ExpectPunct('[');
+            ExpectPunct(']');
+            ExpectPunct('=');
+            ExpectPunct('{');
+            List<RoomData.Trigger> trgs = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) {
+                    ExpectPunct(';');
+                    break;
+                }
+
+                long posX = ReadSignedNumber(ExpectToken());
+                ExpectPunct(',');
+                long posY = ReadSignedNumber(ExpectToken());
+                ExpectPunct(',');
+                Token width = ExpectNumber();
+                ExpectPunct(',');
+                Token height = ExpectNumber();
+
+                List<int> data = [];
+                while (true) {
+                    next = ExpectToken();
+                    if (next.IsPunct('}')) break;
+                    if (! next.IsPunct(',')) throw new ParseError($"expected '}}' or '}}', got {next}", next.LineNum);
+
+                    next = ExpectToken();
+                    if (next.IsPunct('}')) break;
+                    if (! next.IsNumber()) throw new ParseError($"expected '}}' or number, got {next}", next.LineNum);
+
+                    data.Add((int) next.Num);
+                }
+
+                ExpectPunct(',');
+
+                int x = (int) posX;
+                int y = (int) posY;
+                int w = (int) width.Num;
+                int h = (int) height.Num;
+
+                trgs.Add(new RoomData.Trigger(-1, "", x, y, w, h, data.ToArray()));
+            }
+
+            roomTriggers[ident.Str] = trgs;
+        }
+
         private void ReadRoomList(Token ident) {
             ExpectPunct('[');
             ExpectPunct(']');
@@ -1193,20 +1315,43 @@ namespace GameEditor.ProjectIO
 
                 Token numMaps = ExpectNumber();
                 ExpectPunct(',');
+                Token numEntities = ExpectNumber();
+                ExpectPunct(',');
+                Token numTriggers = ExpectNumber();
+                ExpectPunct(',');
 
                 Token mapListIdent = ExpectIdent();
+                ExpectPunct(',');
+                Token entListIdent = ExpectIdent();
+                ExpectPunct(',');
+                Token trgListIdent = ExpectIdent();
 
                 ExpectPunct('}');
                 ExpectPunct(',');
 
-                if (! roomMaps.TryGetValue(mapListIdent.Str, out List<RoomData.Map>? maps)) {
+                List<RoomData.Map>? maps = [];
+                List<RoomData.Entity>? entities = [];
+                List<RoomData.Trigger>? triggers = [];
+
+                if (mapListIdent.Str != "NULL" && ! roomMaps.TryGetValue(mapListIdent.Str, out maps)) {
                     throw new ParseError($"room map list {mapListIdent.Str} doesn't exist", mapListIdent.LineNum);
                 }
 
-                string name = ExtractGlobalLowerName(mapListIdent.Str, "room_maps");
-                roomList.Add(new RoomData(name, maps, [], []));
+                if (entListIdent.Str != "NULL" && ! roomEntities.TryGetValue(entListIdent.Str, out entities)) {
+                    throw new ParseError($"room entity list {entListIdent.Str} doesn't exist", entListIdent.LineNum);
+                }
 
-                Util.Log($"-> got room {name} with {maps.Count} maps");
+                if (trgListIdent.Str != "NULL" && ! roomTriggers.TryGetValue(trgListIdent.Str, out triggers)) {
+                    throw new ParseError($"room trigger list {trgListIdent.Str} doesn't exist", trgListIdent.LineNum);
+                }
+
+                string name = $"room{roomList.Count}";
+                if (mapListIdent.Str != "NULL") {
+                    name = ExtractGlobalLowerTypeName(mapListIdent.Str, "room_maps");
+                }
+                roomList.Add(new RoomData(name, maps, entities, triggers));
+
+                Util.Log($"-> got room {name} with {maps.Count} maps, {entities.Count} entities, {triggers.Count} triggers");
             }
             ExpectPunct(';');
         }
@@ -1215,20 +1360,25 @@ namespace GameEditor.ProjectIO
         // === DATA IDS
         // ======================================================================
 
-        private void IgnoreDataIdEnum(string type) {
+        private Dictionary<string,int> ReadDataIdEnum(string type) {
             Util.Log($"-> reading ids for type '{type}'");
             string typeId = $"{type}_ID";
             ExpectPunct('{');
             int nextId = 0;
+            Dictionary<string,int> ids = [];
             while (true) {
                 Token next = ExpectToken();
                 if (next.IsPunct('}')) break;
                 if (nextId < 0) {
-                    throw new ParseError($"expecting end of enum after COUNT member", lastLine);
+                    throw new ParseError($"expecting end of enum after COUNT member", next.LineNum);
                 }
-                if (next.IsIdent() && MatchesGlobalUpperName(next.Str, typeId)) {
-                    Util.Log($"  -> {next.Str} = {nextId++}");
-                } else if (next.IsIdent() && IsGlobalUpperName(next.Str, type, "COUNT")) {
+                if (! next.IsIdent()) throw new ParseError($"expecting identifier", next.LineNum);
+                
+                string? name = TryExtractGlobalLowerTypeName(next.Str, typeId);
+                if (name != null) {
+                    ids[name] = nextId++;
+                    Util.Log($"  -> {name} = {ids[name]}");
+                } else if (IsGlobalUpperTypeName(next.Str, type, "COUNT")) {
                     nextId = -1;
                 } else {
                     throw new ParseError($"expecting '{GlobalPrefixUpper}_{type}_COUNT' or identifier starting with '{GlobalPrefixUpper}_{typeId}', got {next}", lastLine);
@@ -1236,7 +1386,30 @@ namespace GameEditor.ProjectIO
                 ExpectPunct(',');
             }
             ExpectPunct(';');
-            
+            return ids;
+        }
+
+        private List<string> ReadRoomItemNamesEnum(string room, string itemType) {
+            Util.Log($"-> reading names for room '{room}'");
+            string namePrefix = $"ROOM_{room.ToUpperInvariant()}_{itemType}";
+            ExpectPunct('{');
+            List<string> names = [];
+            while (true) {
+                Token next = ExpectToken();
+                if (next.IsPunct('}')) break;
+                if (! next.IsIdent()) throw new ParseError($"expecting identifier", next.LineNum);
+                
+                string? name = TryExtractGlobalLowerTypeName(next.Str, namePrefix);
+                if (name != null) {
+                    names.Add(name.ToLowerInvariant());
+                    Util.Log($"  -> {name}");
+                } else {
+                    throw new ParseError($"expecting identifier starting with '{GlobalPrefixUpper}_{namePrefix}', got {next}", lastLine);
+                }
+                ExpectPunct(',');
+            }
+            ExpectPunct(';');
+            return names;
         }
 
         // ======================================================================
@@ -1257,7 +1430,7 @@ namespace GameEditor.ProjectIO
                 if (t.Value.IsIdent("struct")) continue;
                 if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MAP")) continue;
 
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "map_tiles")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "map_tiles")) {
                     ReadMapTiles(t.Value);
                     continue;
                 }
@@ -1268,6 +1441,64 @@ namespace GameEditor.ProjectIO
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }
+        }
+
+        private bool TryReadTypeIdsEnum(Token t) {
+            if (! t.IsIdent()) return false;
+            foreach (string type in GAME_DATA_ID_ENUM_TYPES) {
+                if (IsGlobalUpperTypeName(t.Str, type, "IDS")) {
+                    globalDataIds[type] = ReadDataIdEnum(type);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool TryReadRoomNameEnum(Token t) {
+            if (! t.IsIdent()) return false;
+            foreach (RoomData room in roomList) {
+                string roomType = $"ROOM_{room.Name.ToUpperInvariant()}";
+                if (IsGlobalUpperTypeName(t.Str, roomType, "ENT_NAMES")) {
+                    List<string> entNames = ReadRoomItemNamesEnum(room.Name, "ENT");
+                    for (int i = 0; i < entNames.Count; i++) {
+                        if (i < room.Entities.Count) {
+                            room.Entities[i].SetName(entNames[i].ToLowerInvariant());
+                        }
+                    }
+                    return true;
+                }
+
+                if (IsGlobalUpperTypeName(t.Str, roomType, "TRG_NAMES")) {
+                    List<string> trgNames = ReadRoomItemNamesEnum(room.Name, "TRG");
+                    for (int i = 0; i < trgNames.Count; i++) {
+                        if (i < room.Triggers.Count) {
+                            room.Triggers[i].SetName(trgNames[i].ToLowerInvariant());
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool IsIgnorableToken(Token t) {
+            if (! t.IsIdent()) return false;
+
+            // keywords
+            foreach (string keyword in C_KEYWORDS) {
+                if (t.IsIdent(keyword)) {
+                    return true;
+                }
+            }
+
+            // struct tags
+            foreach (string tag in GAME_STRUCT_TAGS) {
+                if (IsGlobalUpperName(t.Str, tag)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         public void ReadProject() {
@@ -1288,11 +1519,11 @@ namespace GameEditor.ProjectIO
                 }
 
                 // MOD stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "mod_samples")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "mod_samples")) {
                     ReadModSampleData(t.Value);
                     continue;
                 }
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "mod_pattern")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "mod_pattern")) {
                     ReadModPattern(t.Value);
                     continue;
                 }
@@ -1302,7 +1533,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // sfx stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sfx_samples")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "sfx_samples")) {
                     ReadSfxSamples(t.Value);
                     continue;
                 }
@@ -1312,7 +1543,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // tileset stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "tileset_data")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "tileset_data")) {
                     ReadTilesetData(t.Value);
                     continue;
                 }
@@ -1322,7 +1553,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // font stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "font_data")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "font_data")) {
                     ReadFontData(t.Value);
                     continue;
                 }
@@ -1332,7 +1563,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // proportional font stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "prop_font_data")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "prop_font_data")) {
                     ReadPropFontData(t.Value);
                     continue;
                 }
@@ -1342,7 +1573,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // sprite stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sprite_data")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "sprite_data")) {
                     ReadSpriteData(t.Value);
                     continue;
                 }
@@ -1352,7 +1583,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // map stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "map_tiles")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "map_tiles")) {
                     ReadMapTiles(t.Value);
                     continue;
                 }
@@ -1362,7 +1593,7 @@ namespace GameEditor.ProjectIO
                 }
 
                 // sprite animation stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "sprite_animation_frames")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "sprite_animation_frames")) {
                     ReadSpriteAnimationFrames(t.Value);
                     continue;
                 }
@@ -1372,8 +1603,16 @@ namespace GameEditor.ProjectIO
                 }
 
                 // room stuff
-                if (t.Value.IsIdent() && MatchesGlobalLowerName(t.Value.Str, "room_maps")) {
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "room_maps")) {
                     ReadRoomMaps(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "room_entities")) {
+                    ReadRoomEntities(t.Value);
+                    continue;
+                }
+                if (t.Value.IsIdent() && MatchesGlobalLowerTypeName(t.Value.Str, "room_triggers")) {
+                    ReadRoomTriggers(t.Value);
                     continue;
                 }
                 if (t.Value.IsIdent() && IsGlobalLowerName(t.Value.Str, "rooms")) {
@@ -1381,37 +1620,22 @@ namespace GameEditor.ProjectIO
                     continue;
                 }
 
-                // ids
-                bool foundIdToIgnore = false;
-                foreach (string ignoreDataIdEnumType in IGNORE_DATA_ID_ENUM_TYPES) {
-                    if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, ignoreDataIdEnumType, "IDS")) {
-                        IgnoreDataIdEnum(ignoreDataIdEnumType);
-                        foundIdToIgnore = true;
-                        break;
-                    }
-                }
-                if (foundIdToIgnore) continue;
-
-                if (t.Value.IsIdent("static")) continue;
-                if (t.Value.IsIdent("const")) continue;
-                if (t.Value.IsIdent("struct")) continue;
-                if (t.Value.IsIdent("enum")) continue;
+                // data types (remember type for array reading)
                 if (t.Value.IsIdent("int8_t"))   { curDataType = NumDataType.S8;  continue; }
                 if (t.Value.IsIdent("uint8_t"))  { curDataType = NumDataType.U8;  continue; }
                 if (t.Value.IsIdent("int16_t"))  { curDataType = NumDataType.S16; continue; }
                 if (t.Value.IsIdent("uint16_t")) { curDataType = NumDataType.U16; continue; }
                 if (t.Value.IsIdent("int32_t"))  { curDataType = NumDataType.S32; continue; }
                 if (t.Value.IsIdent("uint32_t")) { curDataType = NumDataType.U32; continue; }
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "FONT")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "PROP_FONT")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SFX")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_DATA")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MOD_CELL")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "IMAGE")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "MAP")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "SPRITE_ANIMATION")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "ROOM_MAP_INFO")) continue;
-                if (t.Value.IsIdent() && IsGlobalUpperName(t.Value.Str, "ROOM")) continue;
+
+                // type id enums
+                if (TryReadTypeIdsEnum(t.Value)) continue;
+
+                // room item name enums
+                if (TryReadRoomNameEnum(t.Value)) continue;
+
+                // ignored keywords and struct tags
+                if (IsIgnorableToken(t.Value)) continue;
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }

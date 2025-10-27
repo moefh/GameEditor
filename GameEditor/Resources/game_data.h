@@ -137,9 +137,9 @@ struct ${PREFIX}_ROOM_ENTITY_INFO {
     int16_t x;
     int16_t y;
     const struct ${PREFIX}_SPRITE_ANIMATION *anim;
-    uint16_t type;
     uint16_t data0;
     uint16_t data1;
+    uint16_t data2;
     uint16_t data3;
 };
 
