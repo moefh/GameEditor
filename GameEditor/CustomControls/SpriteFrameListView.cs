@@ -212,7 +212,6 @@ namespace GameEditor.CustomControls
             if (r.MaxDisplayFrames == 0 || r.WindowWidth == 0) return false;
 
             int offset = ScrollOffset;
-            Util.Log($"[{count++}] clip scroll offset: {offset}");
             int totalFramesWidth = Frames.Count * r.FrameStride;
             if (RepeatFrames) {
                 // wrap offset around
@@ -223,16 +222,13 @@ namespace GameEditor.CustomControls
                     offset = totalFramesWidth - r.WindowWidth;
                 }
                 if (offset < 0) offset = 0;
-                Util.Log($"-> check: {SelectedIndex*r.FrameStride} >= {offset} >= {(SelectedIndex+1)*r.FrameStride - r.WindowWidth}");
                 if (SelectionEnabled) {
                     // move selection into view
                     if (offset < (SelectedIndex+1)*r.FrameStride - r.WindowWidth && (SelectedIndex+1)*r.FrameStride - r.WindowWidth >= 0) {
                         offset = (SelectedIndex+1)*r.FrameStride - r.WindowWidth;
-                        Util.Log($"moving offset to {offset}");
                     }
                     if (offset > SelectedIndex*r.FrameStride) {
                         offset = SelectedIndex*r.FrameStride;
-                        Util.Log($"moving offset to {offset}");
                     }
                 }
             }

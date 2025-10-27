@@ -57,6 +57,7 @@ namespace GameEditor.RoomEditor
 
         public void RefreshDependencies(IDataAsset asset) {
             contentTreeManager.RefreshMapList();
+            contentTreeManager.RefreshEntityList();
             contentTreeManager.RefreshItemProperties();
             roomEditor.Invalidate();
         }
@@ -216,6 +217,7 @@ namespace GameEditor.RoomEditor
         }
 
         private void ContentTreeManager_ItemPropertyChanged(object? sender, EventArgs e) {
+            contentTreeManager.RefreshTree();
             roomEditor.UpdateRoomSize();
             roomEditor.Invalidate();
             SetDirty();

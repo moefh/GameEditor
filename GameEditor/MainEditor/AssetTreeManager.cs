@@ -174,14 +174,10 @@ namespace GameEditor.MainEditor
             AssetList<IDataAssetItem> list = listsByType[type];
             TreeNode root = rootNodesByType[type];
 
-            if (root.Nodes.Count != list.Count) {
-                Util.Log($"!! asset count for type {type} doesn't match: {root.Nodes.Count} vs {list.Count}");
-                return false;
-            }
+            if (root.Nodes.Count != list.Count) return false;
             for (int i = 0; i < root.Nodes.Count; i++) {
                 string id = root.Nodes[i].Name;
                 if (! assetsById.TryGetValue(id, out IDataAssetItem? asset)) {
-                    Util.Log($"!!! failed repairing tree for type {type}: '{id}' not found");
                     return false;  // unknown item in the tree (!?)
                 }
                 if (root.Nodes[i].Text != asset.Name) {

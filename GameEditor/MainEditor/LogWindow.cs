@@ -17,6 +17,8 @@ namespace GameEditor.MainEditor
     {
         public LogWindow() {
             InitializeComponent();
+            toolStripBtnAlwaysOnTop.Checked = true;
+            TopMost = true;
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e) {

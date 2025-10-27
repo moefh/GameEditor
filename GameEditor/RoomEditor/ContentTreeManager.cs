@@ -170,6 +170,12 @@ namespace GameEditor.RoomEditor
             propEditor.Refresh();
         }
 
+        public void RefreshTree() {
+            RefreshMapList();
+            RefreshEntityList();
+            RefreshTriggerList();
+        }
+
         public void RefreshMapList() {
             TreeNode mapRoot = tree.Nodes[TREE_MAP_NODE_INDEX];
             if (mapRoot.Nodes.Count != room.Room.Maps.Count) {
@@ -181,7 +187,6 @@ namespace GameEditor.RoomEditor
             for (int i = 0; i < mapRoot.Nodes.Count; i++) {
                 TreeNode node = mapRoot.Nodes[i];
                 MapRoomItem? map = GetMapById(node.Name);
-                Util.Log($"{map?.MapName} vs {node.Text}");
                 if (map == null || map.RoomMapId != room.Room.Maps[i].Id || map.MapName != node.Text) {
                     propEditor.SelectedObject = null;
                     PopulateTreeMaps();
@@ -444,7 +449,8 @@ namespace GameEditor.RoomEditor
         // ==========================================================================
 
         private void PropEditor_PropertyValueChanged(object? s, PropertyValueChangedEventArgs e) {
-            if (e.ChangedItem == null || e.ChangedItem.Label == null) return;
+            Util.Log($"property {e.ChangedItem} changed (label {e.ChangedItem?.Label})");
+            if (e.ChangedItem == null) return;
             if (propEditor.SelectedObject is AbstractRoomItem item) {
                 ItemPropertiesChanged?.Invoke(propEditor, EventArgs.Empty);
             }

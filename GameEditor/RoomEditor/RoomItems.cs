@@ -175,7 +175,7 @@ namespace GameEditor.RoomEditor
         [Category("Basic")]
         public string Name {
             get { return Room.GetTrigger(RoomTriggerId)?.Name ?? ""; }
-            set { Room.GetEntity(RoomTriggerId)?.SetName(value); }
+            set { Room.GetTrigger(RoomTriggerId)?.SetName(value); }
         }
 
         [Category("Basic")]

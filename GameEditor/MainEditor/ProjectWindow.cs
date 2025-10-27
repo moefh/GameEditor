@@ -343,8 +343,13 @@ namespace GameEditor.MainEditor
         }
 
         private void toolStripBtnLogWindow_Click(object sender, EventArgs e) {
-            Util.LogWindow.Show();
-            Util.LogWindow.Activate();
+            LogWindow logWindow = Util.LogWindow;
+            logWindow.Show();
+            if (logWindow.TopMost) {
+                Activate();
+            } else {
+                logWindow.Activate();
+            }
         }
 
     }
