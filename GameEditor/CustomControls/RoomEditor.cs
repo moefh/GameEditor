@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Drawing;
+using System.Drawing.Imaging;
 using System.Drawing.Printing;
 using System.Linq;
 using System.Reflection;
@@ -17,9 +18,20 @@ namespace GameEditor.CustomControls
 {
     public partial class RoomEditor : AbstractPaintedControl
     {
+        [Flags]
+        private enum BorderType {
+            None = 0,
+            N = (1<<0),
+            S = (1<<1),
+            W = (1<<2),
+            E = (1<<3),
+            NW = N|W,
+            NE = N|E,
+            SW = S|W,
+            SE = S|E,
+        }
+
         private const int MARGIN = 4;
-        private const double MIN_ZOOM = 0.125;
-        private const double MAX_ZOOM = 4.0;
 
         private RoomData? room;
         private int zoomedTileSize = 16;
@@ -27,9 +39,11 @@ namespace GameEditor.CustomControls
         private Point scrollMouseDown;
         private Point itemMoveMouseDown;
         private Point itemMoveStartingPosition;
+        private Size itemResizeStartingSize;
         private int movingMapId;
         private int movingEntityId;
         private int movingTriggerId;
+        private BorderType movingResizeBorder = BorderType.None;
         private int selectedMapId = -1;
         private int selectedEntityId = -1;
         private int selectedTriggerId = -1;
@@ -160,58 +174,100 @@ namespace GameEditor.CustomControls
             Invalidate();
         }
 
-        private int GetMapIdAt(Point p) {
-            if (Room == null) return -1;
+        private bool IsMapAt(RoomData.Map map, Point p) {
+            int mapX = map.X * zoomedTileSize + MARGIN - (int) origin.X;
+            int mapY = map.Y * zoomedTileSize + MARGIN - (int) origin.Y;
+            int mapW = int.Max(map.MapData.FgWidth,  map.MapData.BgWidth) * zoomedTileSize;
+            int mapH = int.Max(map.MapData.FgHeight, map.MapData.BgHeight) * zoomedTileSize;
+            Rectangle mapRect = new Rectangle(mapX, mapY, mapW, mapH);
+            return mapRect.Contains(p);
+        }
 
+        private bool IsEntityAt(RoomData.Entity ent, Point p) {
+            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
+            Sprite spr = ent.SpriteAnim.Sprite;
+            int entX = (int) double.Round(ent.X * zoom) + MARGIN - (int) origin.X;
+            int entY = (int) double.Round(ent.Y * zoom) + MARGIN - (int) origin.Y;
+            int entW = (int) double.Round(spr.Width * zoom);
+            int entH = (int) double.Round(spr.Height * zoom);
+            Rectangle entRect = new Rectangle(entX, entY, entW, entH);
+            return entRect.Contains(p);
+        }
+
+        private bool IsTriggerAt(RoomData.Trigger trg, Point p) {
+            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
+            int trgX = (int) double.Round(trg.X * zoom) + MARGIN - (int) origin.X;
+            int trgY = (int) double.Round(trg.Y * zoom) + MARGIN - (int) origin.Y;
+            int trgW = (int) double.Round(trg.Width * zoom);
+            int trgH = (int) double.Round(trg.Height * zoom);
+            Rectangle trgRect = new Rectangle(trgX, trgY, trgW, trgH);
+            return trgRect.Contains(p);
+        }
+
+        private bool IsPointNearHLine(int x, int y, int w, Point p, int dist) {
+            Rectangle r = new Rectangle(x-dist, y-dist, w + 2*dist, 2*dist);
+            return r.Contains(p);
+        }
+
+        private bool IsPointNearVLine(int x, int y, int h, Point p, int dist) {
+            Rectangle r = new Rectangle(x-dist, y-dist, 2*dist+1, h + 2*dist);
+            return r.Contains(p);
+        }
+
+        private BorderType GetBorderUnderPoint(RoomData.Trigger trg, Point p) {
+            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
+            int x = (int) double.Round(trg.X * zoom) + MARGIN - (int) origin.X;
+            int y = (int) double.Round(trg.Y * zoom) + MARGIN - (int) origin.Y;
+            int w = (int) double.Round(trg.Width * zoom);
+            int h = (int) double.Round(trg.Height * zoom);
+
+            bool isN = IsPointNearHLine(x+0, y+0, w, p, 6);
+            bool isS = IsPointNearHLine(x+0, y+h, w, p, 6);
+            bool isW = IsPointNearVLine(x+0, y+0, h, p, 6);
+            bool isE = IsPointNearVLine(x+w, y+0, h, p, 6);
+
+            if (isN && isW) return BorderType.NW;
+            if (isN && isE) return BorderType.NE;
+            if (isN)        return BorderType.N;
+            if (isS && isW) return BorderType.SW;
+            if (isS && isE) return BorderType.SE;
+            if (isS)        return BorderType.S;
+            if (isW)        return BorderType.W;
+            if (isE)        return BorderType.E;
+            return BorderType.None;
+        }
+
+        private RoomData.Map? GetMapAt(Point p) {
+            if (Room == null) return null;
             for (int index = Room.Maps.Count-1; index >= 0; index--) {
                 RoomData.Map map = Room.Maps[index];
-                int mapX = map.X * zoomedTileSize + MARGIN - (int) origin.X;
-                int mapY = map.Y * zoomedTileSize + MARGIN - (int) origin.Y;
-                int mapW = int.Max(map.MapData.FgWidth,  map.MapData.BgWidth) * zoomedTileSize;
-                int mapH = int.Max(map.MapData.FgHeight, map.MapData.BgHeight) * zoomedTileSize;
-                Rectangle mapRect = new Rectangle(mapX, mapY, mapW, mapH);
-                if (mapRect.Contains(p)) {
-                    return map.Id;
+                if (IsMapAt(map, p)) {
+                    return map;
                 }
             }
-            return -1;
+            return null;
         }
 
-        private int GetEntityIdAt(Point p) {
-            if (Room == null) return -1;
-            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
-
+        private RoomData.Entity? GetEntityAt(Point p) {
+            if (Room == null) return null;
             for (int index = Room.Entities.Count-1; index >= 0; index--) {
                 RoomData.Entity ent = Room.Entities[index];
-                Sprite spr = ent.SpriteAnim.Sprite;
-                int entX = (int) double.Round(ent.X * zoom) + MARGIN - (int) origin.X;
-                int entY = (int) double.Round(ent.Y * zoom) + MARGIN - (int) origin.Y;
-                int entW = (int) double.Round(spr.Width * zoom);
-                int entH = (int) double.Round(spr.Height * zoom);
-                Rectangle entRect = new Rectangle(entX, entY, entW, entH);
-                if (entRect.Contains(p)) {
-                    return ent.Id;
+                if (IsEntityAt(ent, p)) {
+                    return ent;
                 }
             }
-            return -1;
+            return null;
         }
 
-        private int GetTriggerIdAt(Point p) {
-            if (Room == null) return -1;
-            double zoom = (double) zoomedTileSize / Tileset.TILE_SIZE;
-
+        private RoomData.Trigger? GetTriggerAt(Point p) {
+            if (Room == null) return null;
             for (int index = Room.Triggers.Count-1; index >= 0; index--) {
                 RoomData.Trigger trg = Room.Triggers[index];
-                int trgX = (int) double.Round(trg.X * zoom) + MARGIN - (int) origin.X;
-                int trgY = (int) double.Round(trg.Y * zoom) + MARGIN - (int) origin.Y;
-                int trgW = (int) double.Round(trg.Width * zoom);
-                int trgH = (int) double.Round(trg.Height * zoom);
-                Rectangle trgRect = new Rectangle(trgX, trgY, trgW, trgH);
-                if (trgRect.Contains(p)) {
-                    return trg.Id;
+                if (IsTriggerAt(trg, p)) {
+                    return trg;
                 }
             }
-            return -1;
+            return null;
         }
 
         private void MoveSelection(Point amount) {
@@ -261,12 +317,63 @@ namespace GameEditor.CustomControls
             if (trg != null) {
                 int deltaX = amount.X * Tileset.TILE_SIZE / zoomedTileSize;
                 int deltaY = amount.Y * Tileset.TILE_SIZE / zoomedTileSize;
-                int newX = itemMoveStartingPosition.X + deltaX;
-                int newY = itemMoveStartingPosition.Y + deltaY;
-                if (newX != trg.X || newY != trg.Y) {
-                    trg.SetPosition(newX, newY);
+                if (movingResizeBorder != BorderType.None) {
+                    // we're actually resizing the trigger rectabgle
+                    if ((movingResizeBorder & BorderType.N) != 0) {
+                        if ((ModifierKeys & Keys.Control) != 0) {
+                            deltaY -= (itemMoveStartingPosition.Y + deltaY) % Tileset.TILE_SIZE;
+                        }
+                        trg.Y = itemMoveStartingPosition.Y + deltaY;
+                        trg.Height = itemResizeStartingSize.Height - deltaY;
+                        if (trg.Height < 2*Tileset.TILE_SIZE) {
+                            trg.Y += trg.Height - 2*Tileset.TILE_SIZE;
+                            trg.Height = 2*Tileset.TILE_SIZE;
+                        }
+                    }
+                    if ((movingResizeBorder & BorderType.S) != 0) {
+                        trg.Height = itemResizeStartingSize.Height + deltaY;
+                        if ((ModifierKeys & Keys.Control) != 0) {
+                            trg.Height -= trg.Height % Tileset.TILE_SIZE;
+                        }
+                        if (trg.Height < 2*Tileset.TILE_SIZE) {
+                            trg.Height = 2*Tileset.TILE_SIZE;
+                        }
+                    }
+                    if ((movingResizeBorder & BorderType.W) != 0) {
+                        if ((ModifierKeys & Keys.Control) != 0) {
+                            deltaX -= (itemMoveStartingPosition.X + deltaX) % Tileset.TILE_SIZE;
+                        }
+                        trg.X = itemMoveStartingPosition.X + deltaX;
+                        trg.Width = itemResizeStartingSize.Width - deltaX;
+                        if (trg.Width < 2*Tileset.TILE_SIZE) {
+                            trg.X += trg.Width - 2*Tileset.TILE_SIZE;
+                            trg.Width = 2*Tileset.TILE_SIZE;
+                        }
+                    }
+                    if ((movingResizeBorder & BorderType.E) != 0) {
+                        trg.Width = itemResizeStartingSize.Width + deltaX;
+                        if ((ModifierKeys & Keys.Control) != 0) {
+                            trg.Width -= trg.Width % Tileset.TILE_SIZE;
+                        }
+                        if (trg.Width < 2*Tileset.TILE_SIZE) {
+                            trg.Width = 2*Tileset.TILE_SIZE;
+                        }
+                    }
                     UpdateRoomSize();
                     TriggersChanged?.Invoke(this, EventArgs.Empty);
+                } else {
+                    // here we're doing normal movement
+                    int newX = itemMoveStartingPosition.X + deltaX;
+                    int newY = itemMoveStartingPosition.Y + deltaY;
+                    if ((ModifierKeys & Keys.Control) != 0) {
+                        newX -= newX % Tileset.TILE_SIZE;
+                        newY -= newY % Tileset.TILE_SIZE;
+                    }
+                    if (newX != trg.X || newY != trg.Y) {
+                        trg.SetPosition(newX, newY);
+                        UpdateRoomSize();
+                        TriggersChanged?.Invoke(this, EventArgs.Empty);
+                    }
                 }
                 return;
             }
@@ -305,6 +412,23 @@ namespace GameEditor.CustomControls
             SelectItem(-1, -1, trgId, generateEvent);
         }
 
+        /*
+        private RoomData.Map? GetSelectedMap() {
+            if (Room == null || selectedMapId < 0) return null;
+            return Room.GetMap(selectedMapId);
+        }
+        */
+
+        private RoomData.Entity? GetSelectedEntity() {
+            if (Room == null || selectedEntityId < 0) return null;
+            return Room.GetEntity(selectedEntityId);
+        }
+
+        private RoomData.Trigger? GetSelectedTrigger() {
+            if (Room == null || selectedTriggerId < 0) return null;
+            return Room.GetTrigger(selectedTriggerId);
+        }
+
         // ====================================================================
         // === PAINT
         // ====================================================================
@@ -337,6 +461,33 @@ namespace GameEditor.CustomControls
 
             for (int i = 1; i <= 2+size; i++) {
                 g.DrawRectangle((i==1||i==2+size) ? Pens.Black : pen, sx-i, sy-i, sw+2*i, sh+2*i);
+            }
+        }
+
+        private void DrawMesh(Graphics g, int space, int x, int y, int w, int h) {
+            int large = int.Max(w, h);
+            int small = int.Min(w, h);
+            int numSteps = (large + small + space - 1) / space;
+            for (int i = 0; i < numSteps; i++) {
+                int ix = i*space;
+                int x1 = x + int.Min(ix, w);
+                int x2 = x + int.Max(0, ix - h);
+                int y1 = y + int.Max(0, ix - w);
+                int y2 = y + int.Min(ix, h);
+                int sx1 = x1 * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.X;
+                int sy1 = y1 * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.Y;
+                int sx2 = x2 * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.X;
+                int sy2 = y2 * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.Y;
+                for (int k = -1; k <= 1; k++) {
+                    g.DrawLine(k == 0 ? Pens.White : Pens.Black, sx1+k, sy1, sx2+k, sy2);
+                }
+            }
+            int sx = x * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.X;
+            int sy = y * zoomedTileSize / Tileset.TILE_SIZE + MARGIN - (int) origin.Y;
+            int sw = w * zoomedTileSize / Tileset.TILE_SIZE;
+            int sh = h * zoomedTileSize / Tileset.TILE_SIZE;
+            for (int k = -1; k <= 1; k++) {
+                g.DrawRectangle(k == 0 ? Pens.White : Pens.Black, sx+k, sy+k, sw-k*2, sh-k*2);
             }
         }
 
@@ -375,7 +526,8 @@ namespace GameEditor.CustomControls
         }
 
         private void DrawTrigger(Graphics g, Pen pen, int trgX, int trgY, int trgW, int trgH) {
-            DrawOutline(g, 1, pen, trgX, trgY, trgW, trgH);
+            DrawMesh(g, Tileset.TILE_SIZE, trgX, trgY, trgW, trgH);
+            //DrawOutline(g, 1, pen, trgX, trgY, trgW, trgH);
         }
 
         protected override void OnPaint(PaintEventArgs pe) {
@@ -422,6 +574,14 @@ namespace GameEditor.CustomControls
                 }
             }
 
+            if (SelectedTriggerId >= 0) {
+                using Pen selPen = new Pen(ConfigUtil.RoomEditorSelectionColor);
+                RoomData.Trigger? trg = Room.GetTrigger(SelectedTriggerId);
+                if (trg != null) {
+                    DrawOutline(pe.Graphics, 2, selPen, trg.X, trg.Y, trg.Width, trg.Height);
+                }
+            }
+
             // draw selected entity rectangle
             if (SelectedEntityId >= 0) {
                 using Pen selPen = new Pen(ConfigUtil.RoomEditorSelectionColor);
@@ -440,6 +600,7 @@ namespace GameEditor.CustomControls
             base.OnMouseDown(e);
             if (Room == null) return;
 
+            movingResizeBorder = BorderType.None;
             movingEntityId = -1;
             movingMapId = -1;
             movingTriggerId = -1;
@@ -447,36 +608,54 @@ namespace GameEditor.CustomControls
             if (e.Button == MouseButtons.Left) {
                 itemMoveMouseDown = e.Location;
 
-                movingEntityId = GetEntityIdAt(e.Location);
-                if (movingEntityId >= 0) {
-                    RoomData.Entity? ent = Room.GetEntity(movingEntityId);
-                    if (ent != null) {
-                        itemMoveStartingPosition = new Point(ent.X, ent.Y);
-                        SelectEntity(movingEntityId);
-                        Invalidate();
-                    }
+                // First, check if the click is on a selected entity or trigger.
+                // If so, start moving it regardless of what's in front of it:
+
+                RoomData.Entity? ent = GetSelectedEntity();
+                if (ent != null && IsEntityAt(ent, e.Location)) {
+                    movingEntityId = ent.Id;
+                    itemMoveStartingPosition = new Point(ent.X, ent.Y);
                     return;
                 }
 
-                movingTriggerId = GetTriggerIdAt(e.Location);
-                if (movingTriggerId >= 0) {
-                    RoomData.Trigger? trg = Room.GetTrigger(movingTriggerId);
-                    if (trg != null) {
+                RoomData.Trigger? trg = GetSelectedTrigger();
+                if (trg != null) {
+                    // for triggers, we also allow resizing if near one of the borders
+                    movingResizeBorder = GetBorderUnderPoint(trg, e.Location);
+                    if (movingResizeBorder != BorderType.None || IsTriggerAt(trg, e.Location)) {
+                        movingTriggerId = trg.Id;
                         itemMoveStartingPosition = new Point(trg.X, trg.Y);
-                        SelectTrigger(movingTriggerId);
-                        Invalidate();
+                        itemResizeStartingSize = new Size(trg.Width, trg.Height);
+                        return;
                     }
+                }
+
+                // Now, check if the click is on any item:
+
+                ent = GetEntityAt(e.Location);
+                if (ent != null) {
+                    movingEntityId = ent.Id;
+                    itemMoveStartingPosition = new Point(ent.X, ent.Y);
+                    SelectEntity(movingEntityId);
+                    Invalidate();
                     return;
                 }
 
-                movingMapId = GetMapIdAt(e.Location);
-                if (movingMapId >= 0) {
-                    RoomData.Map? map = Room.GetMap(movingMapId);
-                    if (map != null) {
-                        itemMoveStartingPosition = new Point(map.X, map.Y);
-                        SelectMap(movingMapId);
-                        Invalidate();
-                    }
+                trg = GetTriggerAt(e.Location);
+                if (trg != null) {
+                    movingTriggerId = trg.Id;
+                    itemMoveStartingPosition = new Point(trg.X, trg.Y);
+                    SelectTrigger(movingTriggerId);
+                    Invalidate();
+                    return;
+                }
+
+                RoomData.Map? map = GetMapAt(e.Location);
+                if (map != null) {
+                    movingMapId = map.Id;
+                    itemMoveStartingPosition = new Point(map.X, map.Y);
+                    SelectMap(movingMapId);
+                    Invalidate();
                     return;
                 }
 
@@ -505,6 +684,31 @@ namespace GameEditor.CustomControls
                 ScrollView(e.Location - new Size(scrollMouseDown));
                 scrollMouseDown = e.Location;
                 return;
+            }
+
+            // check if we're hovering over the selected tigger (change the mouse cursor):
+            if (selectedTriggerId >= 0) {
+                RoomData.Trigger? trg = GetSelectedTrigger();
+                if (trg != null) {
+                    BorderType border = GetBorderUnderPoint(trg, e.Location);
+                    switch (border) {
+                    case BorderType.N:  Cursor = Cursors.SizeNS; break;
+                    case BorderType.NE: Cursor = Cursors.SizeNESW; break;
+                    case BorderType.NW: Cursor = Cursors.SizeNWSE; break;
+                    case BorderType.S:  Cursor = Cursors.SizeNS; break;
+                    case BorderType.SE: Cursor = Cursors.SizeNWSE; break;
+                    case BorderType.SW: Cursor = Cursors.SizeNESW; break;
+                    case BorderType.E:  Cursor = Cursors.SizeWE; break;
+                    case BorderType.W:  Cursor = Cursors.SizeWE; break;
+                    default:
+                        if (IsTriggerAt(trg, e.Location)) {
+                            Cursor = Cursors.SizeAll;
+                        } else {
+                            Cursor = Cursors.Default;
+                        }
+                        break;
+                    }
+                }
             }
         }
 

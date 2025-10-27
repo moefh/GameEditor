@@ -22,8 +22,8 @@ namespace GameEditor.GameData
 
             public int Id { get; }
             public MapData MapData { get; private set; }
-            public int X { get; private set; }
-            public int Y { get; private set; }
+            public int X { get; set; }
+            public int Y { get; set; }
 
             public void SetPosition(int x, int y) { X = x; Y = y; }
             public void SetX(int x) { X = x; }
@@ -44,8 +44,8 @@ namespace GameEditor.GameData
             public int Id { get; }
             public string Name { get; private set; }
             public SpriteAnimation SpriteAnim { get; private set; }
-            public int X { get; private set; }
-            public int Y { get; private set; }
+            public int X { get; set; }
+            public int Y { get; set; }
 
             public void SetName(string name) { Name = name; }
             public void SetSpriteAnim(SpriteAnimation anim) { SpriteAnim = anim; }
@@ -69,10 +69,10 @@ namespace GameEditor.GameData
 
             public int Id { get; }
             public string Name { get; private set; }
-            public int X { get; private set; }
-            public int Y { get; private set; }
-            public int Width { get; private set; }
-            public int Height { get; private set; }
+            public int X { get; set; }
+            public int Y { get; set; }
+            public int Width { get; set; }
+            public int Height { get; set; }
 
             public void SetName(string name) { Name = name; }
             public void SetPosition(int x, int y) { X = x; Y = y; }
