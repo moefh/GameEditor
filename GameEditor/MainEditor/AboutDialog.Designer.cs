@@ -30,11 +30,13 @@
             label2 = new Label();
             label3 = new Label();
             lblIcon = new Label();
+            linkLabelURL = new LinkLabel();
             SuspendLayout();
             // 
             // btnClose
             // 
-            btnClose.Location = new Point(318, 163);
+            btnClose.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            btnClose.Location = new Point(318, 196);
             btnClose.Name = "btnClose";
             btnClose.Size = new Size(91, 35);
             btnClose.TabIndex = 0;
@@ -44,8 +46,9 @@
             // 
             // label1
             // 
+            label1.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             label1.Font = new Font("Segoe UI", 13.8F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label1.Location = new Point(12, 21);
+            label1.Location = new Point(12, 30);
             label1.Name = "label1";
             label1.Size = new Size(397, 23);
             label1.TabIndex = 1;
@@ -54,36 +57,51 @@
             // 
             // label2
             // 
-            label2.Location = new Point(12, 69);
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label2.Location = new Point(12, 77);
             label2.Name = "label2";
             label2.Size = new Size(397, 23);
             label2.TabIndex = 2;
-            label2.Text = "Copyright (C) 2024 MoeFH";
+            label2.Text = "Copyright (C) 2025 MoeFH";
             label2.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // label3
             // 
-            label3.Location = new Point(12, 108);
+            label3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            label3.Location = new Point(12, 113);
             label3.Name = "label3";
             label3.Size = new Size(397, 23);
             label3.TabIndex = 3;
-            label3.Text = "Source code released under the MIT license.";
+            label3.Text = "Source code released under the MIT license:";
             label3.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // lblIcon
             // 
             lblIcon.Image = Properties.Resources.PicoIcon;
-            lblIcon.Location = new Point(39, 21);
+            lblIcon.Location = new Point(39, 32);
             lblIcon.Name = "lblIcon";
             lblIcon.Size = new Size(32, 32);
             lblIcon.TabIndex = 4;
+            // 
+            // linkLabelURL
+            // 
+            linkLabelURL.Location = new Point(12, 136);
+            linkLabelURL.Name = "linkLabelURL";
+            linkLabelURL.Size = new Size(397, 23);
+            linkLabelURL.TabIndex = 5;
+            linkLabelURL.TabStop = true;
+            linkLabelURL.Text = "https://github.com/moefh/GameEditor";
+            linkLabelURL.TextAlign = ContentAlignment.MiddleCenter;
+            linkLabelURL.LinkClicked += linkLabelURL_LinkClicked;
             // 
             // AboutDialog
             // 
             AcceptButton = btnClose;
             AutoScaleDimensions = new SizeF(8F, 19F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(421, 210);
+            CancelButton = btnClose;
+            ClientSize = new Size(421, 243);
+            Controls.Add(linkLabelURL);
             Controls.Add(lblIcon);
             Controls.Add(label3);
             Controls.Add(label2);
@@ -105,5 +123,6 @@
         private Label label2;
         private Label label3;
         private Label lblIcon;
+        private LinkLabel linkLabelURL;
     }
 }
