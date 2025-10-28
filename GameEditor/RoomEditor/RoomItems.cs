@@ -42,17 +42,9 @@ namespace GameEditor.RoomEditor
         public string MapName { get { return Map?.Name ?? "(invalid)"; } }
 
         [Category("Basic")]
-        [DisplayName("Position.X")]
-        public int X {
-            get { return Room.GetMap(RoomMapId)?.X ?? 0; }
-            set { Room.GetMap(RoomMapId)?.SetX(value); }
-        }
-
-        [Category("Basic")]
-        [DisplayName("Position.Y")]
-        public int Y {
-            get { return Room.GetMap(RoomMapId)?.Y ?? 0; }
-            set { Room.GetMap(RoomMapId)?.SetY(value); }
+        public Point Position {
+            get { return Room.GetMap(RoomMapId)?.Position ?? Point.Empty; }
+            set { Room.GetMap(RoomMapId)?.SetPosition(value); }
         }
 
         public MapRoomItem(RoomDataItem room, int roomMapId) : base(room) {
@@ -83,17 +75,9 @@ namespace GameEditor.RoomEditor
         }
 
         [Category("Basic")]
-        [DisplayName("Position.X")]
-        public int X {
-            get { return Room.GetEntity(RoomEntityId)?.X ?? 0; }
-            set { Room.GetEntity(RoomEntityId)?.SetX(value); }
-        }
-
-        [Category("Basic")]
-        [DisplayName("Position.Y")]
-        public int Y {
-            get { return Room.GetEntity(RoomEntityId)?.Y ?? 0; }
-            set { Room.GetEntity(RoomEntityId)?.SetY(value); }
+        public Point Position {
+            get { return Room.GetEntity(RoomEntityId)?.Position ?? Point.Empty; }
+            set { Room.GetEntity(RoomEntityId)?.SetPosition(value); }
         }
 
         [Category("Extra")]
@@ -179,32 +163,17 @@ namespace GameEditor.RoomEditor
         }
 
         [Category("Basic")]
-        [DisplayName("Position.X")]
-        public int X {
-            get { return Room.GetTrigger(RoomTriggerId)?.X ?? 0; }
-            set { Room.GetTrigger(RoomTriggerId)?.SetX(value); }
+        public Point Position {
+            get { return Room.GetTrigger(RoomTriggerId)?.Position ?? Point.Empty; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetPosition(value); }
         }
 
         [Category("Basic")]
-        [DisplayName("Position.Y")]
-        public int Y {
-            get { return Room.GetTrigger(RoomTriggerId)?.Y ?? 0; }
-            set { Room.GetTrigger(RoomTriggerId)?.SetY(value); }
+        public Size Size {
+            get { return Room.GetTrigger(RoomTriggerId)?.Size ?? Size.Empty; }
+            set { Room.GetTrigger(RoomTriggerId)?.SetSize(value); }
         }
 
-        [Category("Basic")]
-        [DisplayName("Size.Width")]
-        public int Width {
-            get { return Room.GetTrigger(RoomTriggerId)?.Width ?? 0; }
-            set { Room.GetTrigger(RoomTriggerId)?.SetWidth(value); }
-        }
-
-        [Category("Basic")]
-        [DisplayName("Size.Height")]
-        public int Height {
-            get { return Room.GetTrigger(RoomTriggerId)?.Height ?? 0; }
-            set { Room.GetTrigger(RoomTriggerId)?.SetHeight(value); }
-        }
         [Category("Extra")]
         public int Data0 {
             get { return Room.GetTrigger(RoomTriggerId)?.Data[0] ?? 0; }

@@ -76,7 +76,7 @@
             spriteAnimationView.GridColor = Color.Black;
             spriteAnimationView.Location = new Point(168, 12);
             spriteAnimationView.Name = "spriteAnimationView";
-            spriteAnimationView.ReadOnly = false;
+            spriteAnimationView.ReadOnly = true;
             spriteAnimationView.RenderFlags = CustomControls.RenderFlags.Transparent;
             spriteAnimationView.SelectedIndex = 0;
             spriteAnimationView.Size = new Size(258, 171);

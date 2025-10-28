@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using System.Net.Mime;
-using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -30,33 +28,34 @@ namespace GameEditor.RoomEditor
 
         private readonly List<NodeDef> NodeDefs = [
             new NodeDef("Maps",     "Map",     "NodeMaps",     Resources.MapIcon),
-            new NodeDef("Entities", "Entity",  "NodeEntities", Resources.SpriteIcon),
-            new NodeDef("Triggers", "Trigger", "NodeTriggers", Resources.AnimationIcon),
+            new NodeDef("Entities", "Entity",  "NodeEntities", Resources.AnimationIcon),
+            new NodeDef("Triggers", "Trigger", "NodeTriggers", Resources.SfxIcon),
         ];
 
         private readonly int TREE_MAP_NODE_INDEX = 0;
         private readonly int TREE_ENTITY_NODE_INDEX = 1;
         private readonly int TREE_TRIGGER_NODE_INDEX = 2;
 
-        private readonly ProjectData project;
         private readonly RoomDataItem room;
         private readonly TreeView tree;
         private readonly PropertyGrid propEditor;
         private readonly Dictionary<string, AbstractRoomItem> itemsById = [];
 
         private ImageList? imageList;
-        private ContextMenuStrip? contextMenuStrip;
+        private ContextMenuStrip? rootContextMenuStrip;
+        private ContextMenuStrip? itemContextMenuStrip;
         private int nextId = 0;
 
         public event EventHandler? ManageMapsRequested;
         public event EventHandler? AddEntityRequested;
+        public event EventHandler? RemoveEntityRequested;
         public event EventHandler? AddTriggerRequested;
+        public event EventHandler? RemoveTriggerRequested;
         public event EventHandler? ItemPropertiesChanged;
         public event EventHandler<RoomItemEventArgs>? ItemActivated;
         public event EventHandler<RoomItemEventArgs>? ItemSelectionChanged;
 
-        public ContentTreeManager(ProjectData project, TreeView tree, PropertyGrid propEditor, RoomDataItem room, IContainer? container) {
-            this.project = project;
+        public ContentTreeManager(TreeView tree, PropertyGrid propEditor, RoomDataItem room, IContainer? container) {
             this.tree = tree;
             this.propEditor = propEditor;
             this.room = room;
@@ -328,15 +327,22 @@ namespace GameEditor.RoomEditor
             }
             tree.ImageList = imageList;
 
-            contextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
-            contextMenuStrip.Items.Add("Activate Item", null, ActivatetemToolStripMenuItem_Click);
-            contextMenuStrip.Items.Add("Select Maps", null, ManageMapsToolStripMenuItem_Click);
-            contextMenuStrip.Items.Add("Add Entity", null, AddEntityToolStripMenuItem_Click);
-            contextMenuStrip.Items.Add("Add Trigger", null, AddTriggerToolStripMenuItem_Click);
-            contextMenuStrip.ImageList = imageList;
-            contextMenuStrip.Opening += ContextMenuStrip_Opening;
+            itemContextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
+            itemContextMenuStrip.Items.Add("Activate Item", null, ActivatetemToolStripMenuItem_Click);
+            itemContextMenuStrip.Items.Add(new ToolStripSeparator());
+            itemContextMenuStrip.Items.Add("Remove Item", null, RemoveItemToolStripMenuItem_Click);
 
-            tree.ContextMenuStrip = contextMenuStrip;
+            itemContextMenuStrip.ImageList = imageList;
+            itemContextMenuStrip.Opening += ContextMenuStrip_Opening;
+
+            rootContextMenuStrip = (container == null) ? new ContextMenuStrip() : new ContextMenuStrip(container);
+            rootContextMenuStrip.Items.Add("Select Maps", null, ManageMapsToolStripMenuItem_Click);
+            rootContextMenuStrip.Items.Add("Add Item", null, AddItemToolStripMenuItem_Click);
+
+            rootContextMenuStrip.ImageList = imageList;
+            rootContextMenuStrip.Opening += ContextMenuStrip_Opening;
+
+            tree.ContextMenuStrip = null;
             tree.NodeMouseClick += TreeView_NodeMouseClick;
             tree.NodeMouseDoubleClick += Tree_NodeMouseDoubleClick;
             tree.AfterSelect += Tree_AfterSelect;
@@ -345,51 +351,55 @@ namespace GameEditor.RoomEditor
         }
         
         private void ContextMenuStrip_Opening(object? sender, CancelEventArgs e) {
-            if (contextMenuStrip == null) return;
+            if (rootContextMenuStrip == null || itemContextMenuStrip == null) return;
             string? selectedId = tree.SelectedNode?.Name;
             if (selectedId == null) return;
 
-            if (selectedId == "NodeMaps") {
-                contextMenuStrip.Items[0].Visible = false;  // Activate Item
-                contextMenuStrip.Items[1].Visible = true;   // Manage Maps
-                contextMenuStrip.Items[2].Visible = false;  // Add Entity
-                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
+            if (selectedId == NodeDefs[TREE_MAP_NODE_INDEX].NodeId) {
+                rootContextMenuStrip.Items[0].Visible = true;   // Select Maps
+                rootContextMenuStrip.Items[1].Visible = false;  // Add Item
                 return;
             }
 
-            if (selectedId == "NodeEntities") {
-                contextMenuStrip.Items[0].Visible = false;  // Activate Item
-                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
-                contextMenuStrip.Items[2].Visible = true;   // Add Entity
-                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
+            if (selectedId == NodeDefs[TREE_ENTITY_NODE_INDEX].NodeId) {
+                rootContextMenuStrip.Items[1].Text = "Add Entity";
+                rootContextMenuStrip.Items[0].Visible = false;  // Select Maps
+                rootContextMenuStrip.Items[1].Visible = true;   // Add Item
                 return;
             }
 
-            if (selectedId == "NodeTriggers") {
-                contextMenuStrip.Items[0].Visible = false;  // Activate Item
-                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
-                contextMenuStrip.Items[2].Visible = false;  // Add Entity
-                contextMenuStrip.Items[3].Visible = true;   // Add Trigger
+            if (selectedId == NodeDefs[TREE_TRIGGER_NODE_INDEX].NodeId) {
+                rootContextMenuStrip.Items[1].Text = "Add Trigger";
+                rootContextMenuStrip.Items[0].Visible = false;  // Select Maps
+                rootContextMenuStrip.Items[1].Visible = true;   // Add Item
                 return;
             }
 
             MapRoomItem? map = GetSelectedMap();
             if (map != null) {
-                contextMenuStrip.Items[0].Text = "Edit Map";
-                contextMenuStrip.Items[0].Visible = true;   // Edit Map
-                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
-                contextMenuStrip.Items[2].Visible = false;  // Add Entity
-                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
+                itemContextMenuStrip.Items[0].Text = "Edit Map";
+                itemContextMenuStrip.Items[0].Visible = true;   // Edit Map
+                itemContextMenuStrip.Items[1].Visible = false;  // Separator
+                itemContextMenuStrip.Items[2].Visible = false;  // Remove Item
                 return;
             }
 
             EntityRoomItem? entity = GetSelectedEntity();
             if (entity != null) {
-                contextMenuStrip.Items[0].Text = "Edit Sprite Animation";
-                contextMenuStrip.Items[0].Visible = true;   // Edit Sprite Animation
-                contextMenuStrip.Items[1].Visible = false;  // Manage Maps
-                contextMenuStrip.Items[2].Visible = false;  // Add Entity
-                contextMenuStrip.Items[3].Visible = false;  // Add Trigger
+                itemContextMenuStrip.Items[0].Text = "Edit Sprite Animation";
+                itemContextMenuStrip.Items[2].Text = "Remove Entity";
+                itemContextMenuStrip.Items[0].Visible = true;   // Edit Sprite Animation
+                itemContextMenuStrip.Items[1].Visible = true;   // Separator
+                itemContextMenuStrip.Items[2].Visible = true;   // Remove Item
+                return;
+            }
+
+            TriggerRoomItem? trigger = GetSelectedTrigger();
+            if (trigger != null) {
+                itemContextMenuStrip.Items[2].Text = "Remove Trigger";
+                itemContextMenuStrip.Items[0].Visible = false;  // Edit Item
+                itemContextMenuStrip.Items[1].Visible = false;  // Separator
+                itemContextMenuStrip.Items[2].Visible = true;   // Remove Item
                 return;
             }
 
@@ -404,12 +414,34 @@ namespace GameEditor.RoomEditor
             ManageMapsRequested?.Invoke(this, EventArgs.Empty);
         }
 
-        private void AddEntityToolStripMenuItem_Click(object? sender, EventArgs e) {
-            AddEntityRequested?.Invoke(this, EventArgs.Empty);
+        private void AddItemToolStripMenuItem_Click(object? sender, EventArgs e) {
+            TreeNode? node = tree.SelectedNode;
+            if (node == null) return;
+            if (node.Name == NodeDefs[TREE_ENTITY_NODE_INDEX].NodeId) {
+                AddEntityRequested?.Invoke(this, EventArgs.Empty);
+            } else if (node.Name == NodeDefs[TREE_TRIGGER_NODE_INDEX].NodeId) {
+                AddTriggerRequested?.Invoke(this, EventArgs.Empty);
+            }
         }
 
-        private void AddTriggerToolStripMenuItem_Click(object? sender, EventArgs e) {
-            AddTriggerRequested?.Invoke(this, EventArgs.Empty);
+        private void RemoveItemToolStripMenuItem_Click(object? sender, EventArgs e) {
+            EntityRoomItem? ent = GetSelectedEntity();
+            if (ent != null) {
+                propEditor.SelectedObject = null;
+                room.Room.RemoveEntity(ent.RoomEntityId);
+                RefreshEntityList();
+                RemoveEntityRequested?.Invoke(this, EventArgs.Empty);
+                return;
+            }
+
+            TriggerRoomItem? trg = GetSelectedTrigger();
+            if (trg != null) {
+                propEditor.SelectedObject = null;
+                room.Room.RemoveTrigger(trg.RoomTriggerId);
+                RefreshTriggerList();
+                RemoveTriggerRequested?.Invoke(this, EventArgs.Empty);
+                return;
+            }
         }
 
         private void ActivatetemToolStripMenuItem_Click(object? sender, EventArgs e) {
@@ -426,6 +458,11 @@ namespace GameEditor.RoomEditor
         private void TreeView_NodeMouseClick(object? sender, TreeNodeMouseClickEventArgs e) {
             if (e.Button == MouseButtons.Right) {
                 tree.SelectedNode = e.Node;
+                if (e.Node.Level == 0) {
+                    tree.ContextMenuStrip = rootContextMenuStrip;
+                } else {
+                    tree.ContextMenuStrip = itemContextMenuStrip;
+                }
             }
         }
 
@@ -449,7 +486,6 @@ namespace GameEditor.RoomEditor
         // ==========================================================================
 
         private void PropEditor_PropertyValueChanged(object? s, PropertyValueChangedEventArgs e) {
-            Util.Log($"property {e.ChangedItem} changed (label {e.ChangedItem?.Label})");
             if (e.ChangedItem == null) return;
             if (propEditor.SelectedObject is AbstractRoomItem item) {
                 ItemPropertiesChanged?.Invoke(propEditor, EventArgs.Empty);

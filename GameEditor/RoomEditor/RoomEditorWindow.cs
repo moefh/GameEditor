@@ -27,10 +27,12 @@ namespace GameEditor.RoomEditor
             InitializeComponent();
             SetupAssetControls(lblDataSize);
 
-            contentTreeManager = new ContentTreeManager(Project, contentTree, itemPropertyGrid, roomItem, components);
+            contentTreeManager = new ContentTreeManager(contentTree, itemPropertyGrid, roomItem, components);
             contentTreeManager.ManageMapsRequested += ContentTreeManager_ManageMapsRequested;
             contentTreeManager.AddEntityRequested += ContentTreeManager_AddEntityRequested;
+            contentTreeManager.RemoveEntityRequested += ContentTreeManager_RemoveEntityRequested;
             contentTreeManager.AddTriggerRequested += ContentTreeManager_AddTriggerRequested;
+            contentTreeManager.RemoveTriggerRequested += ContentTreeManager_RemoveTriggerRequested;
             contentTreeManager.ItemPropertiesChanged += ContentTreeManager_ItemPropertyChanged;
             contentTreeManager.ItemActivated += ContentTreeManager_ItemActivated;
             contentTreeManager.ItemSelectionChanged += ContentTreeManager_ItemSelectionChanged;
@@ -237,6 +239,14 @@ namespace GameEditor.RoomEditor
                 return;
             }
             roomEditor.SelectedMapId = -1;  // this will de-select everything
+        }
+
+        private void ContentTreeManager_RemoveTriggerRequested(object? sender, EventArgs e) {
+            roomEditor.Invalidate();
+        }
+
+        private void ContentTreeManager_RemoveEntityRequested(object? sender, EventArgs e) {
+            roomEditor.Invalidate();
         }
 
     }

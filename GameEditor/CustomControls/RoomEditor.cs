@@ -249,7 +249,7 @@ namespace GameEditor.CustomControls
 
         private RoomData.Entity? GetEntityAt(Point p) {
             if (Room == null) return null;
-            foreach (RoomData.Entity ent in Room.Entities) {
+            foreach (RoomData.Entity ent in Util.Reversed(Room.Entities)) {
                 if (IsEntityAt(ent, p)) {
                     return ent;
                 }
@@ -259,7 +259,7 @@ namespace GameEditor.CustomControls
 
         private RoomData.Trigger? GetTriggerAt(Point p) {
             if (Room == null) return null;
-            foreach (RoomData.Trigger trg in Room.Triggers) {
+            foreach (RoomData.Trigger trg in Util.Reversed(Room.Triggers)) {
                 if (IsTriggerAt(trg, p)) {
                     return trg;
                 }
@@ -409,13 +409,6 @@ namespace GameEditor.CustomControls
             SelectItem(-1, -1, trgId, generateEvent);
         }
 
-        /*
-        private RoomData.Map? GetSelectedMap() {
-            if (Room == null || selectedMapId < 0) return null;
-            return Room.GetMap(selectedMapId);
-        }
-        */
-
         private RoomData.Entity? GetSelectedEntity() {
             if (Room == null || selectedEntityId < 0) return null;
             return Room.GetEntity(selectedEntityId);
@@ -552,11 +545,11 @@ namespace GameEditor.CustomControls
                 DrawFgTiles(pe.Graphics, map.X, map.Y, map.MapData);
             }
 
-            foreach (RoomData.Trigger trg in Util.Reversed(Room.Triggers)) {
+            foreach (RoomData.Trigger trg in Room.Triggers) {
                 DrawTrigger(pe.Graphics, Pens.White, trg.X, trg.Y, trg.Width, trg.Height);
             }
 
-            foreach (RoomData.Entity ent in Util.Reversed(Room.Entities)) {
+            foreach (RoomData.Entity ent in Room.Entities) {
                 DrawEntity(pe.Graphics, ent.X, ent.Y, ent.SpriteAnim);
             }
 
@@ -729,6 +722,10 @@ namespace GameEditor.CustomControls
             int centerY = (ClientSize.Height - 2*MARGIN) / 2;
             int oldZoomedTileSize = zoomedTileSize;
             zoomedTileSize += delta;
+            if ((oldZoomedTileSize < Tileset.TILE_SIZE && zoomedTileSize > Tileset.TILE_SIZE) ||
+                (oldZoomedTileSize > Tileset.TILE_SIZE && zoomedTileSize < Tileset.TILE_SIZE)) {
+                zoomedTileSize = Tileset.TILE_SIZE;
+            }
             ClampZoom();
             origin.X = (int) (((centerX + origin.X) * zoomedTileSize) / oldZoomedTileSize) - centerX;
             origin.Y = (int) (((centerY + origin.Y) * zoomedTileSize) / oldZoomedTileSize) - centerY;
