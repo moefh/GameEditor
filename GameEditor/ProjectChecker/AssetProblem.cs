@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static GameEditor.GameData.RoomData;
 
 namespace GameEditor.ProjectChecker
 {
@@ -25,6 +24,7 @@ namespace GameEditor.ProjectChecker
             RoomEntityInvalidLocation,
             RoomTriggerInvalidLocation,
             RoomTriggerInvalidSize,
+            RoomWithNoMaps,
         }
 
         public static string ProblemName(Type type) {
@@ -43,6 +43,7 @@ namespace GameEditor.ProjectChecker
                 case Type.RoomEntityInvalidLocation: return "room entities with invalid location";
                 case Type.RoomTriggerInvalidLocation: return "room triggers with invalid location";
                 case Type.RoomTriggerInvalidSize: return "room triggers with invalid size";
+                case Type.RoomWithNoMaps: return "rooms with no maps";
             }
             return $"unknown problem type {type}";
         }

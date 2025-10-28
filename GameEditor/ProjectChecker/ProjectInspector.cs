@@ -23,6 +23,7 @@ namespace GameEditor.ProjectChecker
             typeof(CheckTilesetTooBig),
             typeof(CheckSpriteTooBig),
             typeof(CheckModPattern),
+            typeof(CheckRoomMaps),
             typeof(CheckRoomMapLocation),
             typeof(CheckRoomEntities),
             typeof(CheckRoomTriggers),

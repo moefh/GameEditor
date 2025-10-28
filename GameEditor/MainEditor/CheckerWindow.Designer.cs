@@ -44,7 +44,6 @@
             txtLog.ScrollBars = ScrollBars.Vertical;
             txtLog.Size = new Size(418, 176);
             txtLog.TabIndex = 3;
-            txtLog.WordWrap = false;
             // 
             // toolStrip
             // 
