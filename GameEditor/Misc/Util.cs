@@ -216,5 +216,17 @@ namespace GameEditor.Misc
             }
         }
 
+        public static IEnumerable<Tuple<int,T>> WithIndices<T>(IList<T> list) {
+            for (int i = 0; i < list.Count; i++) {
+                yield return new Tuple<int,T>(i, list[i]);
+            }
+        }
+
+        public static IEnumerable<Tuple<int,T>> ReversedWithIndices<T>(IList<T> list) {
+            for (int i = list.Count-1; i >= 0; i--) {
+                yield return new Tuple<int,T>(i, list[i]);
+            }
+        }
+
     }
 }

@@ -59,9 +59,11 @@ namespace GameEditor.ProjectIO
         }
 
         protected void WriteHeader() {
-            f.WriteLine($"// Auto-generated at {DateTime.Now:yyyy-MM-dd HH:mm:ss}");
+            DateTime now = DateTime.Now;
+            f.WriteLine($"// Auto-generated at {now:yyyy-MM-dd HH:mm:ss}");
             f.WriteLine();
             f.WriteLine($"#define {GetUpperGlobal("DATA_VGA_SYNC_BITS")} 0x{Project.VgaSyncBits:x02}");
+            f.WriteLine($"#define {GetUpperGlobal("DATA_SAVE_TIMESTAMP")} 0x{now:yyyyMMdd00HHmmss}");
             f.WriteLine();
         }
 
@@ -93,6 +95,16 @@ namespace GameEditor.ProjectIO
 
         private string GetUpperGlobal(string name) {
             return $"{globalPrefixUpper}_{IdentifierNamespace.SanitizeName(name)}";
+        }
+
+        private string GenUniqueName(string name, HashSet<string> currentNames) {
+            name = IdentifierNamespace.SanitizeUpperName(name);
+            int count = 1;
+            string newName = (name == "") ? "0" : name;
+            while (! currentNames.Add(newName)) {
+                newName = $"{name}{count++}";
+            }
+            return newName;
         }
 
         // =============================================================
@@ -673,14 +685,19 @@ namespace GameEditor.ProjectIO
         // =============================================================
 
         protected void WriteSpriteAnimationFrames(SpriteAnimation anim) {
+            bool useFootFrames = anim.CheckUseFootFrames();
             string ident = identifiers.Add(anim, "sprite_animation_frames", anim.Name);
+            int lineLength = useFootFrames ? 8 : 16;
             f.WriteLine($"static const uint8_t {ident}[] = {{");
-            foreach (SpriteAnimationLoop loop in anim.Loops) {
+            foreach (var (loopIndex, loop) in Util.WithIndices(anim.Loops)) {
+                if (loop.NumFrames == 0) continue;
                 f.Write($"  // {loop.Name}");
                 for (int i = 0; i < loop.NumFrames; i++) {
-                    if (i % 8 == 0) { f.WriteLine(); f.Write("  "); }
+                    if (i % lineLength == 0) { f.WriteLine(); f.Write("  "); }
                     f.Write($"0x{loop.Indices[i].HeadIndex & 0xff:x02},");
-                    f.Write($"0x{loop.Indices[i].FootIndex & 0xff:x02},");
+                    if (useFootFrames) {
+                        f.Write($"0x{loop.Indices[i].FootIndex & 0xff:x02},");
+                    }
                 }
                 f.WriteLine();
             }
@@ -703,16 +720,19 @@ namespace GameEditor.ProjectIO
                 string spritesIdent = GetLowerGlobal("sprites");
                 int spriteIndex = Project.GetAssetIndex(anim.Sprite);
                 string ident = identifiers.Get(ai.Animation);
+                int useFootFrames = anim.CheckUseFootFrames() ? 1 : 0;
                 f.WriteLine("  {");
                 f.WriteLine($"    {ident},");
                 f.WriteLine($"    &{spritesIdent}[{spriteIndex}],");
                 f.WriteLine($"    {{ {anim.Collision.x}, {anim.Collision.y}, {anim.Collision.w}, {anim.Collision.h} }},");
+                f.WriteLine($"    {useFootFrames},");
                 f.WriteLine($"    {anim.FootOverlap},");
                 f.WriteLine("    {");
                 int offset = 0;
-                foreach (SpriteAnimationLoop loop in anim.Loops) {
-                    int length = 2*loop.NumFrames;
-                    f.WriteLine($"      {{ {offset,5}, {length,5} }},  // {loop.Name}");
+                foreach ((int loopIndex, SpriteAnimationLoop loop) in Util.WithIndices(anim.Loops)) {
+                    int length = ((useFootFrames != 0) ? 2 : 1) * loop.NumFrames;
+                    string nameComment = (length > 0) ? $" // {loop.Name}" : "";
+                    f.WriteLine($"      {{ {offset,5}, {length,5} }},{nameComment}");
                     offset += length;
                 }
                 f.WriteLine("    }");
@@ -720,6 +740,37 @@ namespace GameEditor.ProjectIO
             }
             f.WriteLine("};");
             f.WriteLine();
+        }
+
+        private void WriteSpriteAnimationLoopNames() {
+            string animsPrefix = GetUpperGlobal("SPRITE_ANIMATION");
+            foreach (SpriteAnimationItem sai in Project.SpriteAnimationList) {
+                SpriteAnimation anim = sai.Animation;
+                string name = IdentifierNamespace.SanitizeUpperName(anim.Name);
+                string animPrefix = $"{animsPrefix}_{name}";
+
+                // Only save loop names up to the last named one.
+                // We can't simply save only the named loops because
+                // that could create holes in the enum.
+                int numNamedLoops = 0;
+                foreach ((int i, SpriteAnimationLoop loop) in Util.ReversedWithIndices(anim.Loops)) {
+                    if (loop.Name != $"loop{i}") {
+                        numNamedLoops = i+1;
+                        break;
+                    }
+                }
+                if (numNamedLoops == 0) continue;
+
+                HashSet<string> seenLoops = [];
+                f.WriteLine($"enum {animPrefix}_LOOP_NAMES {{");
+                for (int i = 0; i < numNamedLoops; i++) {
+                    SpriteAnimationLoop loop = anim.Loops[i];
+                    string loopName = GenUniqueName(loop.Name, seenLoops);
+                    f.WriteLine($"  {animPrefix}_LOOP_{loopName},");
+                }
+                f.WriteLine("};");
+                f.WriteLine();
+            }
         }
 
         // =============================================================
@@ -803,16 +854,6 @@ namespace GameEditor.ProjectIO
             f.WriteLine();
         }
 
-        private string GetUniqueRoomItem(string name, HashSet<string> seen) {
-            name = IdentifierNamespace.SanitizeUpperName(name);
-            int count = 1;
-            string newName = (name == "") ? "0" : name;
-            while (! seen.Add(newName)) {
-                newName = $"{name}{count++}";
-            }
-            return newName;
-        }
-
         private void WriteRoomItemNames() {
             string roomsPrefix = GetUpperGlobal("ROOM");
             foreach (RoomDataItem ri in Project.RoomList) {
@@ -825,7 +866,7 @@ namespace GameEditor.ProjectIO
                     HashSet<string> seenEnts = [];
                     f.WriteLine($"enum {roomPrefix}_ENT_NAMES {{");
                     foreach (RoomData.Entity ent in room.Entities) {
-                        string entName = GetUniqueRoomItem(ent.Name, seenEnts);
+                        string entName = GenUniqueName(ent.Name, seenEnts);
                         f.WriteLine($"  {roomPrefix}_ENT_{entName},");
                     }
                     f.WriteLine("};");
@@ -837,7 +878,7 @@ namespace GameEditor.ProjectIO
                     HashSet<string> seenTrgs = [];
                     f.WriteLine($"enum {roomPrefix}_TRG_NAMES {{");
                     foreach (RoomData.Trigger trg in room.Triggers) {
-                        string trgName = GetUniqueRoomItem(trg.Name, seenTrgs);
+                        string trgName = GenUniqueName(trg.Name, seenTrgs);
                         f.WriteLine($"  {roomPrefix}_TRG_{trgName},");
                     }
                     f.WriteLine("};");
@@ -863,6 +904,13 @@ namespace GameEditor.ProjectIO
         }
         
         private void WriteDataIds() {
+            f.WriteLine("// ================================================================");
+            f.WriteLine("// === SPRITE ANIMATION LOOP NAMES");
+            f.WriteLine("// ================================================================");
+            f.WriteLine();
+
+            WriteSpriteAnimationLoopNames();
+
             f.WriteLine("// ================================================================");
             f.WriteLine("// === ROOM ITEM NAMES");
             f.WriteLine("// ================================================================");

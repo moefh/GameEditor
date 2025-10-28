@@ -1,18 +1,12 @@
 ﻿using GameEditor.GameData;
 using GameEditor.Misc;
-using GameEditor.RoomEditor;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.Eventing.Reader;
 using System.Drawing.Design;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Reflection.Metadata.Ecma335;
-using System.Runtime.InteropServices;
-using System.Security.Permissions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
@@ -119,8 +113,6 @@ namespace GameEditor.ProjectIO
 
         // data ids:
         private Dictionary<string,Dictionary<string,int>> globalDataIds = [];
-        private Dictionary<string,List<string>> roomEntityNames = [];
-        private Dictionary<string,List<string>> roomTriggerNames = [];
 
         public GameDataReader(string filename) {
             f = new StreamReader(filename, Encoding.UTF8);
@@ -308,8 +300,15 @@ namespace GameEditor.ProjectIO
                 if (name.EndsWith("_DATA_VGA_SYNC_BITS")) {
                     SetGlobalPrefix(name[..^"_DATA_VGA_SYNC_BITS".Length]);
 
-                    vgaSyncBits = Tokenizer.ParseNumber(value, t.LineNum);
+                    vgaSyncBits = (uint) Tokenizer.ParseNumber(value, t.LineNum);
                     Util.Log($"-> got vga sync bits 0x{VgaSyncBits:x02}");
+                } else if (IsGlobalUpperName(name, "DATA_SAVE_TIMESTAMP")) {
+                    try {
+                        ulong timestamp = Tokenizer.ParseNumber(value, t.LineNum);
+                        Util.Log($"-> got save timestamp date={timestamp>>32:x02} time={timestamp&0xffffffff:x02}");
+                    } catch (Exception e) {
+                        Util.Log($"WARNING: line {t.LineNum}: error parsing timestamp {value}");
+                    }
                 } else {
                     Util.Log($"WARNING: line {t.LineNum}: ignoring unknown #define {name}");
                 }
@@ -861,6 +860,8 @@ namespace GameEditor.ProjectIO
                 Token collisionBrace = ExpectPunct('{');
                 List<ushort> collision = ReadUShortList();
                 ExpectPunct(',');
+                Token useFootFramesToken = ExpectNumber();
+                ExpectPunct(',');
                 long footOverlap = ReadSignedNumber(ExpectToken());
                 ExpectPunct(',');
                 List<(int,int)> loopOffsetAndLengths = ReadSpriteAnimationLoops();
@@ -876,6 +877,7 @@ namespace GameEditor.ProjectIO
                 if (collision.Count != 4) {
                     throw new ParseError($"collision for sprite animation must have 4 numbers", collisionBrace.LineNum);
                 }
+                bool useFootFrames = useFootFramesToken.Num != 0;
                 string name = ExtractGlobalLowerTypeName(spriteAnimationIdent.Str, "sprite_animation_frames");
                 Sprite sprite = spriteList[(int) spriteIndex.Num];
                 SpriteAnimation anim = new SpriteAnimation(sprite, name);
@@ -884,13 +886,13 @@ namespace GameEditor.ProjectIO
                 for (int loop = 0; loop < loopOffsetAndLengths.Count; loop++) {
                     if (loop >= anim.Loops.Length) throw new Exception($"too many loops in animation {spriteAnimationIdent.Str}");
                     (int offset, int length) = loopOffsetAndLengths[loop];
-                    if (offset % 2 != 0 || length % 2 != 0) {
-                        throw new ParseError($"loop {loop} has invalid offset/length: {offset} and {length} are expected to be even", spriteAnimationIdent.LineNum);
+                    if (useFootFrames && (offset % 2 != 0 || length % 2 != 0)) {
+                        throw new ParseError($"loop {loop} has invalid offset/length: offset={offset} and lenght={length} are both expected to be even", spriteAnimationIdent.LineNum);
                     }
                     if (offset + length > frames.Count) {
                         throw new ParseError($"loop {loop} has invalid offset/length: {offset + length} is larger than the frame data size {frames.Count}", spriteAnimationIdent.LineNum);
                     }
-                    anim.Loops[loop].LoadIndicesFromData(frames, offset, length);
+                    anim.Loops[loop].LoadIndicesFromData(frames, offset, length, useFootFrames);
                 }
                 spriteAnimationList.Add(anim);
                 Util.Log($"-> got sprite animation for {sprite.Name}");
@@ -1389,9 +1391,19 @@ namespace GameEditor.ProjectIO
             return ids;
         }
 
-        private List<string> ReadRoomItemNamesEnum(string room, string itemType) {
-            Util.Log($"-> reading names for room '{room}'");
-            string namePrefix = $"ROOM_{room.ToUpperInvariant()}_{itemType}";
+        private bool TryReadTypeIdsEnum(Token t) {
+            if (! t.IsIdent()) return false;
+            foreach (string type in GAME_DATA_ID_ENUM_TYPES) {
+                if (IsGlobalUpperTypeName(t.Str, type, "IDS")) {
+                    globalDataIds[type] = ReadDataIdEnum(type);
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private List<string> ReadAssetItemNamesEnum(string assetType, string assetName, string itemType) {
+            string namePrefix = $"{assetType}_{assetName.ToUpperInvariant()}_{itemType}";
             ExpectPunct('{');
             List<string> names = [];
             while (true) {
@@ -1410,6 +1422,72 @@ namespace GameEditor.ProjectIO
             }
             ExpectPunct(';');
             return names;
+        }
+
+        private bool TryReadSpriteAnimationLoopNameEnum(Token t) {
+            if (! t.IsIdent()) return false;
+            foreach (SpriteAnimation anim in SpriteAnimationList) {
+                string animType = $"SPRITE_ANIMATION_{anim.Name.ToUpperInvariant()}";
+                if (IsGlobalUpperTypeName(t.Str, animType, "LOOP_NAMES")) {
+                    List<string> entNames = ReadAssetItemNamesEnum("SPRITE_ANIMATION", anim.Name, "LOOP");
+                    for (int i = 0; i < entNames.Count; i++) {
+                        if (i < anim.Loops.Length) {
+                            anim.Loops[i].Name = entNames[i].ToLowerInvariant();
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool TryReadRoomNameEnum(Token t) {
+            if (! t.IsIdent()) return false;
+            foreach (RoomData room in roomList) {
+                string roomType = $"ROOM_{room.Name.ToUpperInvariant()}";
+                if (IsGlobalUpperTypeName(t.Str, roomType, "ENT_NAMES")) {
+                    Util.Log($"-> reading entity names for room '{room.Name}'");
+                    List<string> entNames = ReadAssetItemNamesEnum("ROOM", room.Name, "ENT");
+                    for (int i = 0; i < entNames.Count; i++) {
+                        if (i < room.Entities.Count) {
+                            room.Entities[i].SetName(entNames[i].ToLowerInvariant());
+                        }
+                    }
+                    return true;
+                }
+
+                if (IsGlobalUpperTypeName(t.Str, roomType, "TRG_NAMES")) {
+                    Util.Log($"-> reading trigger names for room '{room.Name}'");
+                    List<string> trgNames = ReadAssetItemNamesEnum("ROOM", room.Name, "TRG");
+                    for (int i = 0; i < trgNames.Count; i++) {
+                        if (i < room.Triggers.Count) {
+                            room.Triggers[i].SetName(trgNames[i].ToLowerInvariant());
+                        }
+                    }
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        private bool IsIgnorableToken(Token t) {
+            if (! t.IsIdent()) return false;
+
+            // keywords
+            foreach (string keyword in C_KEYWORDS) {
+                if (t.IsIdent(keyword)) {
+                    return true;
+                }
+            }
+
+            // struct tags
+            foreach (string tag in GAME_STRUCT_TAGS) {
+                if (IsGlobalUpperName(t.Str, tag)) {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         // ======================================================================
@@ -1441,64 +1519,6 @@ namespace GameEditor.ProjectIO
 
                 throw new ParseError($"unexpected {t.Value}", t.Value.LineNum);
             }
-        }
-
-        private bool TryReadTypeIdsEnum(Token t) {
-            if (! t.IsIdent()) return false;
-            foreach (string type in GAME_DATA_ID_ENUM_TYPES) {
-                if (IsGlobalUpperTypeName(t.Str, type, "IDS")) {
-                    globalDataIds[type] = ReadDataIdEnum(type);
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool TryReadRoomNameEnum(Token t) {
-            if (! t.IsIdent()) return false;
-            foreach (RoomData room in roomList) {
-                string roomType = $"ROOM_{room.Name.ToUpperInvariant()}";
-                if (IsGlobalUpperTypeName(t.Str, roomType, "ENT_NAMES")) {
-                    List<string> entNames = ReadRoomItemNamesEnum(room.Name, "ENT");
-                    for (int i = 0; i < entNames.Count; i++) {
-                        if (i < room.Entities.Count) {
-                            room.Entities[i].SetName(entNames[i].ToLowerInvariant());
-                        }
-                    }
-                    return true;
-                }
-
-                if (IsGlobalUpperTypeName(t.Str, roomType, "TRG_NAMES")) {
-                    List<string> trgNames = ReadRoomItemNamesEnum(room.Name, "TRG");
-                    for (int i = 0; i < trgNames.Count; i++) {
-                        if (i < room.Triggers.Count) {
-                            room.Triggers[i].SetName(trgNames[i].ToLowerInvariant());
-                        }
-                    }
-                    return true;
-                }
-            }
-            return false;
-        }
-
-        private bool IsIgnorableToken(Token t) {
-            if (! t.IsIdent()) return false;
-
-            // keywords
-            foreach (string keyword in C_KEYWORDS) {
-                if (t.IsIdent(keyword)) {
-                    return true;
-                }
-            }
-
-            // struct tags
-            foreach (string tag in GAME_STRUCT_TAGS) {
-                if (IsGlobalUpperName(t.Str, tag)) {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         public void ReadProject() {
@@ -1633,6 +1653,9 @@ namespace GameEditor.ProjectIO
 
                 // room item name enums
                 if (TryReadRoomNameEnum(t.Value)) continue;
+
+                // sprite animation loop name enums
+                if (TryReadSpriteAnimationLoopNameEnum(t.Value)) continue;
 
                 // ignored keywords and struct tags
                 if (IsIgnorableToken(t.Value)) continue;

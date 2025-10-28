@@ -294,7 +294,7 @@ namespace GameEditor.MainEditor
         }
 
         private void addSpriteAnimationToolStripMenuItem_Click(object sender, EventArgs e) {
-            project.CreateNewAsset(DataAssetType.Map)?.ShowEditor(this);
+            project.CreateNewAsset(DataAssetType.SpriteAnimation)?.ShowEditor(this);
         }
 
         private void addSoundEffectToolStripMenuItem_Click(object sender, EventArgs e) {

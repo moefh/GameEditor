@@ -29,6 +29,9 @@ namespace GameEditor.SpriteAnimationEditor
 
         public SpriteAnimationLoopPropertiesDialog(SpriteAnimationLoop loop) {
             InitializeComponent();
+
+            txtLoopName.Text = loop.Name;
+
             for (int i = 0; i < loop.NumFrames; i++) {
                 headFrames.Add(new SelectedFrame(loop.Indices[i].HeadIndex));
                 footFrames.Add(new SelectedFrame(loop.Indices[i].FootIndex));
@@ -38,7 +41,7 @@ namespace GameEditor.SpriteAnimationEditor
 
             checkEnableFoot.Checked = loop.Indices.Any((SpriteAnimationLoop.Frame frame) => frame.FootIndex >= 0);
 
-            numSelectedFrames.Minimum = 1;
+            numSelectedFrames.Minimum = (loop == loop.Animation.Loops[0]) ? 1 : 0;
             numSelectedFrames.Maximum = 50;
             numSelectedFrames.Value = loop.NumFrames;
 
@@ -52,6 +55,10 @@ namespace GameEditor.SpriteAnimationEditor
             selFramesListView.FootOverlap = loop.Animation.FootOverlap;
             selFramesListView.SelectedIndex = 0;
             UpdateSelectedFrames();
+        }
+
+        public string LoopName {
+            get { return txtLoopName.Text; }
         }
 
         public IEnumerable<SpriteAnimationLoop.Frame> SelectedFrames {
@@ -86,12 +93,16 @@ namespace GameEditor.SpriteAnimationEditor
             if (numFrames < footFrames.Count) footFrames.RemoveRange(numFrames, footFrames.Count - numFrames);
 
             // fix list boxes
+            int headSel = listBoxHeadFrames.SelectedIndex;
+            int footSel = listBoxFootFrames.SelectedIndex;
             listBoxHeadFrames.DataSource = null;
             listBoxHeadFrames.DataSource = headFrames;
             listBoxFootFrames.DataSource = null;
             listBoxFootFrames.DataSource = footFrames;
             AdjustListBoxScroll(listBoxHeadFrames);
             AdjustListBoxScroll(listBoxFootFrames);
+            if (headSel < listBoxHeadFrames.Items.Count) listBoxHeadFrames.SelectedIndex = headSel;
+            if (footSel < listBoxFootFrames.Items.Count) listBoxFootFrames.SelectedIndex = footSel;
 
             // fix selected frames view
             List<SpriteFrameListView.Frame> frames = selFramesListView.Frames ?? [];
@@ -147,6 +158,7 @@ namespace GameEditor.SpriteAnimationEditor
             } else if (listBox == listBoxFootFrames) {
                 if (index < 0 || index >= footFrames.Count) return;
                 footFrames[index] = new SelectedFrame(-1);
+                checkEnableFoot.Checked = footFrames.Any((SelectedFrame frame) => frame.Index >= 0);
             }
             UpdateSelectedFrames();
         }

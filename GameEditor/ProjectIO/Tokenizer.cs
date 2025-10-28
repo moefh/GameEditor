@@ -80,13 +80,13 @@ namespace GameEditor.ProjectIO
             this.f = f;
         }
 
-        public static uint ParseNumber(string s, int lineNumber) {
+        public static ulong ParseNumber(string s, int lineNumber) {
             if (s.StartsWith("0x") || s.StartsWith("0X")) {
-                if (uint.TryParse(s.AsSpan(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out uint n)) {
+                if (ulong.TryParse(s.AsSpan(2), NumberStyles.AllowHexSpecifier, CultureInfo.InvariantCulture, out ulong n)) {
                     return n;
                 }
             } else {
-                if (uint.TryParse(s, CultureInfo.InvariantCulture, out uint n)) {
+                if (ulong.TryParse(s, CultureInfo.InvariantCulture, out ulong n)) {
                     return n;
                 }
             }
@@ -189,7 +189,12 @@ namespace GameEditor.ProjectIO
                 Unread(c);
                 break;
             }
-            return Token.Number(ParseNumber(sb.ToString(), startLine), startLine);
+
+            ulong num = ParseNumber(sb.ToString(), startLine);
+            if (num > uint.MaxValue) {
+                throw new ParseError($"number is loo large: {sb}", startLine);
+            }
+            return Token.Number((uint) num, startLine);
         }
 
         private Token ReadPreProcessor(char ch) {

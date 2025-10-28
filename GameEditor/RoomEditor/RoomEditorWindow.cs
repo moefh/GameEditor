@@ -67,7 +67,7 @@ namespace GameEditor.RoomEditor
         private string GenerateEntityName() {
             int n = 0;
             while (true) {
-                string name = $"ENTITY_{n}";
+                string name = $"entity_{n}";
                 if (Room.Entities.Find(e => e.Name == name) == null) {
                     return name;
                 }
@@ -78,7 +78,7 @@ namespace GameEditor.RoomEditor
         private string GenerateTriggerName() {
             int n = 0;
             while (true) {
-                string name = $"TRIGGER_{n}";
+                string name = $"tigger_{n}";
                 if (Room.Triggers.Find(t => t.Name == name) == null) {
                     return name;
                 }

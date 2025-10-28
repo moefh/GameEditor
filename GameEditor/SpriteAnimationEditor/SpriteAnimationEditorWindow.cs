@@ -116,6 +116,9 @@ namespace GameEditor.SpriteAnimationEditor
         }
 
         private void loopsListBox_SelectedIndexChanged(object sender, EventArgs e) {
+            if (loopsListBox.SelectedIndex < 0 || loopsListBox.SelectedIndex >= Animation.Loops.Length) return;
+            SpriteAnimationLoop loop = Animation.Loops[loopsListBox.SelectedIndex];
+            animLoopView.SelectedIndex = (loop.NumFrames == 0) ? -1 : 0;
             RefreshSelectedLoop();
             animLoopView.Focus(); // remove focus from list box so arrow keys can be used again
         }
@@ -142,9 +145,11 @@ namespace GameEditor.SpriteAnimationEditor
 
             SpriteAnimationLoopPropertiesDialog dlg = new SpriteAnimationLoopPropertiesDialog(loop);
             if (dlg.ShowDialog() == DialogResult.OK) {
+                loop.Name = dlg.LoopName;
                 loop.Indices.Clear();
                 loop.Indices.AddRange(dlg.SelectedFrames);
                 SetDirty();
+                UpdateDataSize();
                 animEditor.Invalidate();
                 animLoopView.Invalidate();
                 RefreshSpriteLoopList();

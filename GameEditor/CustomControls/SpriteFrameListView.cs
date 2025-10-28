@@ -73,6 +73,7 @@ namespace GameEditor.CustomControls
         private int scrollOffset;
         private bool selectionEnabled;
         private bool dragEnabled;
+        private bool displayFrameNumbers;
 
         // data:
         private bool dragging;
@@ -95,8 +96,8 @@ namespace GameEditor.CustomControls
             get { return frames; }
             set {
                 frames = value;
-                if (frames != null && SelectedIndex >= frames.Count) {
-                    SelectedIndex = frames.Count - 1;
+                if (frames != null && selIndex >= frames.Count) {
+                    selIndex = frames.Count - 1;
                 }
                 ClipScrollOffset();
                 Invalidate();
@@ -123,6 +124,11 @@ namespace GameEditor.CustomControls
             set { repeatFrames = value; Invalidate(); }
         }
 
+        public bool DisplayFrameNumbers {
+            get { return displayFrameNumbers; }
+            set { displayFrameNumbers = value; Invalidate(); }
+        }
+
         public bool SelectionEnabled {
             get { return selectionEnabled; }
             set { selectionEnabled = value; Invalidate(); }
@@ -130,7 +136,7 @@ namespace GameEditor.CustomControls
 
         public bool DragEnabled {
             get { return dragEnabled; }
-            set { dragEnabled = value; Invalidate(); }
+            set { dragEnabled = value; }
         }
 
         public int ScrollOffset {
@@ -161,10 +167,27 @@ namespace GameEditor.CustomControls
 
         private void DrawFrame(PaintEventArgs pe, int index, int x, bool isHead, RenderInfo r) {
             if (Sprite == null || (! isHead && ! DisplayFoot)) return;
-            if (Frames == null || Frames.Count == 0 || (index >= Frames.Count && ! RepeatFrames)) return;
+            if (Frames == null || Frames.Count == 0 || ((index < 0 || index >= Frames.Count) && ! RepeatFrames)) return;
+            while (index < 0) index += Frames.Count;
+            index %= Frames.Count;
             int y = isHead ? r.HeadOffY : r.FootOffY;
             int frame = isHead ? Frames[index].HeadIndex : Frames[index].FootIndex;
+
             Sprite.DrawFrameAt(pe.Graphics, frame, x, y, r.FrameWidth, r.FrameHeight, true);
+            if (DisplayFrameNumbers) {
+                for (int tx = -2; tx <= 3; tx++) {
+                    for (int ty = -2; ty <= 3; ty++) {
+                        Point txtPos = new Point(x+tx, y+ty);
+                        pe.Graphics.DrawString($"{frame}", Font, Brushes.White, txtPos);
+                    }
+                }
+                for (int tx = 0; tx <= 1; tx++) {
+                    for (int ty = 0; ty <= 1; ty++) {
+                        Point txtPos = new Point(x+tx, y+ty);
+                        pe.Graphics.DrawString($"{frame}", Font, Brushes.Black, txtPos);
+                    }
+                }
+            }
         }
 
         protected override void OnPaint(PaintEventArgs pe) {
@@ -183,8 +206,7 @@ namespace GameEditor.CustomControls
             int numDisplayFrames = r.MaxDisplayFrames;
             for (int i = 0; i < numDisplayFrames; i++) {
                 int index = i + firstFrame;
-                if (index >= Frames.Count && ! RepeatFrames) break;
-                index %= Frames.Count;
+                if ((index < 0 || index >= Frames.Count) && ! RepeatFrames) break;
                 int x = r.FrameOffX + r.FrameStride * i - xOffset;
                 DrawFrame(pe, index, x, false, r);   // foot
                 DrawFrame(pe, index, x, true, r);    // head (over foot)
@@ -196,16 +218,22 @@ namespace GameEditor.CustomControls
         }
 
         private int GetSpriteFrameIndexAt(Point p) {
-            if (Frames == null) return -1;
+            if (Frames == null || Frames.Count == 0) return -1;
             RenderInfo r = GetRenderInfo();
             if (r.MaxDisplayFrames == 0) return -1;
             int index = (p.X - MARGIN + ScrollOffset) / r.FrameStride;
-            if (index < 0 || index >= Frames.Count) return -1;
+            if (index < 0) return 0;
+            if (index >= Frames.Count) index = Frames.Count - 1;
             return index;
         }
 
         private bool ClipScrollOffset() {
             if (Frames == null || Frames.Count == 0) return false;
+            if (SelectedIndex < 0) {
+                scrollOffset = 0;
+                return true;
+            }
+
             RenderInfo r = GetRenderInfo();
             if (r.MaxDisplayFrames == 0 || r.WindowWidth == 0) return false;
 
@@ -262,7 +290,7 @@ namespace GameEditor.CustomControls
                 SelectedIndexChanged?.Invoke(this, EventArgs.Empty);
             }
 
-            if (DragEnabled && SelectedIndex >= 0) {
+            if (DragEnabled && SelectedIndex >= 0 && SelectedIndex < Frames.Count) {
                 dragging = false;
                 dragOrigin = e.Location;
                 dragFrame = Frames[SelectedIndex];

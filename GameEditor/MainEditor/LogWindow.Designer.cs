@@ -91,7 +91,6 @@
             Controls.Add(txtLog);
             Controls.Add(toolStrip);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimizeBox = false;
             Name = "LogWindow";
             StartPosition = FormStartPosition.Manual;
             Text = "Log";

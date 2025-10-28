@@ -98,6 +98,7 @@ struct ${PREFIX}_SPRITE_ANIMATION {
     const uint8_t *frame_indices;
     const struct ${PREFIX}_IMAGE *sprite;
     struct ${PREFIX}_SPRITE_ANIMATION_COLLISION collision;
+    int8_t use_foot_frames;
     int8_t foot_overlap;
     struct ${PREFIX}_SPRITE_ANIMATION_LOOP loops[20];
 };

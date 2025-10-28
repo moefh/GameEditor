@@ -1,5 +1,4 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
@@ -25,10 +24,10 @@ namespace GameEditor.GameData
             public int FootIndex = footIndex;
         }
 
-        public SpriteAnimationLoop(SpriteAnimation anim, string name) {
+        public SpriteAnimationLoop(SpriteAnimation anim, string name, bool addFrame = false) {
             Animation = anim;
             Name = name;
-            Indices = [Frame.Empty];
+            Indices = (addFrame) ? [Frame.Empty] : [];
         }
 
         public SpriteAnimationLoop(SpriteAnimation anim, string name, List<Frame> indices) {
@@ -47,11 +46,12 @@ namespace GameEditor.GameData
 
         public List<Frame> Indices { get; }
 
-        public void LoadIndicesFromData(List<byte> data, int offset, int length) {
+        public void LoadIndicesFromData(List<byte> data, int offset, int length, bool useFoot) {
             Indices.Clear();
-            for (int i = 0; i < length; i += 2) {
+            int inc = useFoot ? 2 : 1;
+            for (int i = 0; i < length; i += inc) {
                 int head = data[offset+i+0];
-                int foot = data[offset+i+1];
+                int foot = (useFoot) ? data[offset+i+1] : -1;
                 if (head == 0xff) head = -1;
                 if (foot == 0xff) foot = -1;
                 Indices.Add(new Frame(head, foot));
@@ -79,28 +79,10 @@ namespace GameEditor.GameData
             spr.NumFramesChanged += HandleNumFramesChanged;
             Name = name;
             Collision = new SpriteAnimationCollision(0, 0, 0, 0);
-            Loops = [
-                new SpriteAnimationLoop(this, "stand"),
-                new SpriteAnimationLoop(this, "stand_shoot_n"),
-                new SpriteAnimationLoop(this, "stand_shoot_ne"),
-                new SpriteAnimationLoop(this, "stand_shoot_e"),
-                new SpriteAnimationLoop(this, "stand_shoot_se"),
-                new SpriteAnimationLoop(this, "crouch"),
-                new SpriteAnimationLoop(this, "crouch_shoot_ne"),
-                new SpriteAnimationLoop(this, "crouch_shoot_e"),
-                new SpriteAnimationLoop(this, "crouch_shoot_se"),
-                new SpriteAnimationLoop(this, "run"),
-                new SpriteAnimationLoop(this, "run_shoot_ne"),
-                new SpriteAnimationLoop(this, "run_shoot_e"),
-                new SpriteAnimationLoop(this, "run_shoot_se"),
-                new SpriteAnimationLoop(this, "jump"),
-                new SpriteAnimationLoop(this, "jump_spin"),
-                new SpriteAnimationLoop(this, "jump_shoot_n"),
-                new SpriteAnimationLoop(this, "jump_shoot_ne"),
-                new SpriteAnimationLoop(this, "jump_shoot_e"),
-                new SpriteAnimationLoop(this, "jump_shoot_se"),
-                new SpriteAnimationLoop(this, "jump_shoot_s"),
-            ];
+            Loops = new SpriteAnimationLoop[20];
+            for (int i = 0; i < Loops.Length; i++) {
+                Loops[i] = new SpriteAnimationLoop(this, $"loop{i}", i==0);
+            }
             FixLoopFrameReferences();
         }
 
@@ -121,15 +103,26 @@ namespace GameEditor.GameData
         public string Name { get; set; }
         public DataAssetType AssetType { get { return DataAssetType.SpriteAnimation; } }
 
+        public bool CheckUseFootFrames() {
+            foreach (SpriteAnimationLoop loop in Loops) {
+                foreach (SpriteAnimationLoop.Frame index in loop.Indices) {
+                    if (index.FootIndex >= 0) {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+
         public int DataSize {
             get {
                 // frameDataOffset(2) + frameDataLength(2) + numHeadIndices*index(1) + numFootIndices*index(1)
-                int size = 0;
+                int loopsSize = 0;
                 foreach (SpriteAnimationLoop loop in Loops) {
-                    size += 2 + 2 + 2*loop.Indices.Count;
+                    loopsSize += 2 + 2 + 2*loop.Indices.Count;
                 }
-                // framesData(4) + spriteImage(4) + collision(4*2) + footOverlap(1) + padding(3) + loop sizes
-                return 4 + 4 + 4*2 + 1 + 3 + size;
+                // framesPointer(4) + spriteImage(4) + collision(4*2) + usesFoot(1) + footOverlap(1) + padding(2) + loop sizes
+                return 4 + 4 + 4*2 + 1 + 1 + 2 + (2+2)*Loops.Length + loopsSize;
             }
         }
 

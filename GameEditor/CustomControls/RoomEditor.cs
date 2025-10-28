@@ -497,11 +497,11 @@ namespace GameEditor.CustomControls
             int sprH = (int) double.Round(zoom * anim.Sprite.Height);
 
             int head = anim.Loops[0].Indices[0].HeadIndex;
-            if (head >= 0) {
+            if (head >= 0 && head < anim.Sprite.NumFrames) {
                 anim.Sprite.DrawFrameAt(g, head, sprX, sprY, sprW, sprH, true);
             }
             int foot = anim.Loops[0].Indices[0].FootIndex;
-            if (foot >= 0) {
+            if (foot >= 0 && foot < anim.Sprite.NumFrames) {
                 int footY = sprY + anim.FootOverlap;
                 anim.Sprite.DrawFrameAt(g, head, sprX, footY, sprW, sprH, true);
             }
