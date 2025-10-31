@@ -11,13 +11,13 @@ namespace GameEditor.SpriteAnimationEditor
 {
     public class SpriteAnimationItem : IDataAssetItem
     {
-        public SpriteAnimationItem(SpriteAnimation anim, ProjectData proj) {
+        public SpriteAnimationItem(SpriteAnimation anim, ProjectDataItem proj) {
             Animation = anim;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Animation; } }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public SpriteAnimation Animation { get; }
         public SpriteAnimationEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 

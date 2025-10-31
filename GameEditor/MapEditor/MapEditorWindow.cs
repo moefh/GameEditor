@@ -233,7 +233,7 @@ namespace GameEditor.MapEditor
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
-                using GameDataWriter w = new GameDataWriter(Project, dlg.FileName, "PREFIX");
+                using GameDataWriter w = new GameDataWriter(Project.ProjectData, dlg.FileName, "PREFIX");
                 w.WriteMap(Map);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error exporting map to {dlg.FileName}", "Error Exporting Map");

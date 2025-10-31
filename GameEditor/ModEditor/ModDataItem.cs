@@ -12,13 +12,13 @@ namespace GameEditor.ModEditor
 {
     public class ModDataItem : IDataAssetItem
     {
-        public ModDataItem(ModData modData, ProjectData proj) {
+        public ModDataItem(ModData modData, ProjectDataItem proj) {
             Mod = modData;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Mod; } }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public ModData Mod { get; }
         public ModEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 

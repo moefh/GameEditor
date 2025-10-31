@@ -1,5 +1,4 @@
-﻿using GameEditor.GameData;
-using GameEditor.Misc;
+﻿using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,16 +18,16 @@ namespace GameEditor.MainEditor
     public class BaseProjectForm : Form
     {
         private string? propName;
-        private ProjectData? project;
+        private ProjectDataItem? project;
 
-        public BaseProjectForm(ProjectData project, string propName) {
+        public BaseProjectForm(ProjectDataItem project, string propName) {
             this.project = project;
             this.propName = propName;
         }
 
         public BaseProjectForm() {}  // to keep VS happy
 
-        public ProjectData Project {
+        public ProjectDataItem Project {
             get {
                 if (project == null) {
                     if (Util.DesignMode) return Util.DesignModeDummyProject;

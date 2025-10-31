@@ -11,14 +11,14 @@ namespace GameEditor.MapEditor
 {
     public class MapDataItem : IDataAssetItem
     {
-        public MapDataItem(MapData mapData, ProjectData proj) {
+        public MapDataItem(MapData mapData, ProjectDataItem proj) {
             Map = mapData;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Map; } }
         public MapData Map { get; set; }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public MapEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Map.Name; } }

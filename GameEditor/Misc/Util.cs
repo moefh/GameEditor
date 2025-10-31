@@ -1,5 +1,4 @@
 ﻿using GameEditor.MainEditor;
-using GameEditor.GameData;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Imaging;
@@ -51,7 +50,7 @@ namespace GameEditor.Misc
         private static LogTarget logTargets;
         private static LogWindow? logWindow;
         private static bool logTargetsLoaded;
-        private static ProjectData? designModeDummyProject;
+        private static ProjectDataItem? designModeDummyProject;
 
         static Util() {
             DesignMode = true;
@@ -67,9 +66,9 @@ namespace GameEditor.Misc
             private set { logWindow = value; }
         }
 
-        public static ProjectData DesignModeDummyProject {
+        public static ProjectDataItem DesignModeDummyProject {
             get {
-                designModeDummyProject ??= new ProjectData();
+                designModeDummyProject ??= new ProjectDataItem();
                 return designModeDummyProject;
             }
         }
@@ -104,10 +103,10 @@ namespace GameEditor.Misc
         }
 
         public static ProjectWindow CreateProjectWindow() {
-            return CreateProjectWindow(new ProjectData(), null);
+            return CreateProjectWindow(new ProjectDataItem(), null);
         }
 
-        public static ProjectWindow CreateProjectWindow(ProjectData project, WindowPositionInfo? pos) {
+        public static ProjectWindow CreateProjectWindow(ProjectDataItem project, WindowPositionInfo? pos) {
             ProjectWindow w = new ProjectWindow(project, pos);
             projectWindows.Add(w);
             return w;

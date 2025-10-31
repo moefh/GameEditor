@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -113,7 +114,7 @@ namespace GameEditor.RoomEditor
         public class SpriteAnimProperty(RoomDataItem room, int entityId) {
             private readonly RoomDataItem room = room;
             private readonly int entityId = entityId;
-            public ProjectData Project { get { return room.Project; } }
+            public ProjectDataItem Project { get { return room.Project; } }
             public SpriteAnimation? SprAnim {
                 get { return room.Room.GetEntity(entityId)?.SpriteAnim; }
                 set {

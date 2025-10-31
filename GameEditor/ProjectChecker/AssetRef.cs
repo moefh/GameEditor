@@ -1,4 +1,5 @@
 ﻿using GameEditor.GameData;
+using GameEditor.MainEditor;
 using GameEditor.Misc;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace GameEditor.ProjectChecker
         public readonly DataAssetType Type { get; }
         public readonly int Index { get; }
 
-        public readonly IDataAssetItem? Item(ProjectData proj) {
+        public readonly IDataAssetItem? Item(ProjectDataItem proj) {
             AssetList<IDataAssetItem> items = proj.GetAssetList(Type);
             if (Index >= 0 && Index < items.Count) {
                 return items[Index];
@@ -31,7 +32,7 @@ namespace GameEditor.ProjectChecker
             return null;
         }
 
-        public readonly void ShowEditor(ProjectData proj, Form parent) {
+        public readonly void ShowEditor(ProjectDataItem proj, Form parent) {
             Item(proj)?.ShowEditor(parent);
         }
     }

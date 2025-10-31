@@ -306,7 +306,7 @@ namespace GameEditor.ProjectIO
                     try {
                         ulong timestamp = Tokenizer.ParseNumber(value, t.LineNum);
                         Util.Log($"-> got save timestamp date={timestamp>>32:x02} time={timestamp&0xffffffff:x02}");
-                    } catch (Exception e) {
+                    } catch (Exception) {
                         Util.Log($"WARNING: line {t.LineNum}: error parsing timestamp {value}");
                     }
                 } else {

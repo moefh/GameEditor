@@ -45,13 +45,13 @@ namespace GameEditor.MainEditor
         private ImageList? imageList;
         private ContextMenuStrip? contextMenuStrip;
 
-        private ProjectData project;
+        private ProjectDataItem project;
         private readonly Dictionary<DataAssetType,AssetList<IDataAssetItem>> listsByType = [];
         private readonly Dictionary<AssetList<IDataAssetItem>,DataAssetType> typesByList = [];
         private readonly Dictionary<string,IDataAssetItem> assetsById = [];
         private int nextId = 0;
 
-        public AssetTreeManager(ProjectWindow win, TreeView tree, ProjectData project, IContainer? container) {
+        public AssetTreeManager(ProjectWindow win, TreeView tree, ProjectDataItem project, IContainer? container) {
             this.mainWindow = win;
             this.tree = tree;
             this.project = project;
@@ -68,7 +68,7 @@ namespace GameEditor.MainEditor
             HandleProjectReplaced();
         }
 
-        public ProjectData Project {
+        public ProjectDataItem Project {
             get { return project; }
             set { project = value; HandleProjectReplaced(); }
         }

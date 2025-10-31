@@ -23,9 +23,9 @@ namespace GameEditor.MainEditor
         private readonly CheckerWindow checkerWindow;
         private readonly AssetTreeManager assetManager;
         private readonly WindowPositionInfo? startPosition;
-        private ProjectData project;
+        private ProjectDataItem project;
 
-        public ProjectWindow(ProjectData project, WindowPositionInfo? startPosition = null) {
+        public ProjectWindow(ProjectDataItem project, WindowPositionInfo? startPosition = null) {
             InitializeComponent();
 
             this.project = project;
@@ -38,7 +38,7 @@ namespace GameEditor.MainEditor
             SetupCurrentProject();
         }
 
-        public ProjectWindow() : this(new ProjectData()) {
+        public ProjectWindow() : this(new ProjectDataItem()) {
         }
 
         public void UpdateDataSize() {
@@ -118,13 +118,13 @@ namespace GameEditor.MainEditor
         // === NEW/SAVE/LOAD STUFF
         // ======================================================================
 
-        private void CreateProjectWindow(ProjectData project) {
+        private void CreateProjectWindow(ProjectDataItem project) {
             WindowPositionInfo pos = new WindowPositionInfo(this);
             pos.Location.Offset(40, 40);
             Util.CreateProjectWindow(project, pos).Show();
         }
 
-        private void ReplaceCurrentProject(ProjectData proj) {
+        private void ReplaceCurrentProject(ProjectDataItem proj) {
             checkerWindow.ClearResults();
             DestroyProject();
             project = proj;
@@ -154,7 +154,7 @@ namespace GameEditor.MainEditor
         }
 
         public void NewProject() {
-            CreateProjectWindow(new ProjectData());
+            CreateProjectWindow(new ProjectDataItem());
         }
 
         private void SaveProject() {
@@ -188,9 +188,9 @@ namespace GameEditor.MainEditor
             lblModified.Visible = false;
             lblDataSize.Text = "Reading project file...";
             Refresh();  // show "Reading project file..." while we load the project
-            ProjectData? newProject = null;
+            ProjectDataItem? newProject = null;
             try {
-                newProject = new ProjectData(dlg.FileName);
+                newProject = new ProjectDataItem(dlg.FileName);
             } catch (Exception) {
                 UpdateDirtyStatus();
                 UpdateDataSize();
@@ -250,19 +250,8 @@ namespace GameEditor.MainEditor
             dlg.RestoreDirectory = true;
             if (dlg.ShowDialog() != DialogResult.OK) return;
 
-            string prefixLower = project.IdentifierPrefix.ToLowerInvariant();
-            string prefixUpper = project.IdentifierPrefix.ToUpperInvariant();
-            string content = Regex.Replace(Resources.game_data, """\${([A-Za-z0-9_]+)}""", delegate (Match m) {
-                string name = m.Groups[1].ToString();
-                return name switch {
-                    "prefix" => prefixLower,
-                    "PREFIX" => prefixUpper,
-                    _ => "?",
-                };
-            });
-            content.ReplaceLineEndings("\n");
             try {
-                File.WriteAllBytes(dlg.FileName, Encoding.UTF8.GetBytes(content));
+                project.ProjectData.ExportHeaderFile(dlg.FileName);
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error writing {dlg.FileName}", "Error Exporting Header File");
                 return;
@@ -273,11 +262,11 @@ namespace GameEditor.MainEditor
 
         private void propertiesToolStripMenuItem_Click(object sender, EventArgs e) {
             ProjectPropertiesDialog dlg = new ProjectPropertiesDialog();
-            dlg.VgaSyncBits = project.VgaSyncBits;
-            dlg.IdentifierPrefix = project.IdentifierPrefix;
+            dlg.VgaSyncBits = project.ProjectData.VgaSyncBits;
+            dlg.IdentifierPrefix = project.ProjectData.IdentifierPrefix;
             if (dlg.ShowDialog() != DialogResult.OK) return;
-            project.VgaSyncBits = dlg.VgaSyncBits;
-            project.IdentifierPrefix = dlg.IdentifierPrefix;
+            project.ProjectData.VgaSyncBits = dlg.VgaSyncBits;
+            project.ProjectData.IdentifierPrefix = dlg.IdentifierPrefix;
             project.SetDirty();
         }
 

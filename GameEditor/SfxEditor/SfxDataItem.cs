@@ -11,13 +11,13 @@ namespace GameEditor.SfxEditor
 {
     public class SfxDataItem : IDataAssetItem
     {
-        public SfxDataItem(SfxData sfxData, ProjectData proj) {
+        public SfxDataItem(SfxData sfxData, ProjectDataItem proj) {
             Sfx = sfxData;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Sfx; } }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public SfxData Sfx { get; }
         public SfxEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 

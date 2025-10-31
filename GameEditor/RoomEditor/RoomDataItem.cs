@@ -12,13 +12,13 @@ namespace GameEditor.RoomEditor
 {
     public class RoomDataItem : IDataAssetItem
     {
-        public RoomDataItem(RoomData roomData, ProjectData proj) {
+        public RoomDataItem(RoomData roomData, ProjectDataItem proj) {
             Room = roomData;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Room; } }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public RoomData Room { get; }
         public RoomEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 

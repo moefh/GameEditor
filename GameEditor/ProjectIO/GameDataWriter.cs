@@ -1,14 +1,5 @@
-﻿using GameEditor.FontEditor;
-using GameEditor.GameData;
-using GameEditor.MapEditor;
+﻿using GameEditor.GameData;
 using GameEditor.Misc;
-using GameEditor.ModEditor;
-using GameEditor.PropFontEditor;
-using GameEditor.RoomEditor;
-using GameEditor.SfxEditor;
-using GameEditor.SpriteAnimationEditor;
-using GameEditor.SpriteEditor;
-using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
@@ -151,15 +142,15 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === FONTS");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (FontDataItem fi in Project.FontList) {
-                WriteFontData(fi.Font);
+            foreach (FontData font in Project.FontList) {
+                WriteFontData(font);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("FONT")} {GetLowerGlobal("fonts")}[] = {{");
-            foreach (FontDataItem fi in Project.FontList) {
-                int w = fi.Font.Width;
-                int h = fi.Font.Height;
-                string ident = identifiers.Get(fi.Font);
+            foreach (FontData font in Project.FontList) {
+                int w = font.Width;
+                int h = font.Height;
+                string ident = identifiers.Get(font);
                 f.WriteLine($"  {{ {w}, {h}, {ident} }},");
             }
             f.WriteLine("};");
@@ -175,7 +166,7 @@ namespace GameEditor.ProjectIO
             f.Write($"static const uint8_t {ident}[] = {{");
 
             byte[] bmp = new byte[4 * font.MaxCharWidth * font.Height];
-            for (int ch = 0; ch < FontData.NUM_CHARS; ch++) {
+            for (int ch = 0; ch < PropFontData.NUM_CHARS; ch++) {
                 int charWidth = font.CharWidth[ch];
                 int bytesPerLine = (charWidth + 7) / 8;
                 f.WriteLine();
@@ -211,14 +202,13 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === PROPORTIONAL FONTS");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (PropFontDataItem fi in Project.PropFontList) {
-                WritePropFontData(fi.PropFont);
+            foreach (PropFontData font in Project.PropFontList) {
+                WritePropFontData(font);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("PROP_FONT")} {GetLowerGlobal("prop_fonts")}[] = {{");
-            foreach (PropFontDataItem fi in Project.PropFontList) {
-                PropFontData pfont = fi.PropFont;
-                int h = fi.PropFont.Height;
+            foreach (PropFontData pfont in Project.PropFontList) {
+                int h = pfont.Height;
                 string ident = identifiers.Get(pfont);
                 f.WriteLine("  {");
                 f.WriteLine($"    {h},");
@@ -272,8 +262,7 @@ namespace GameEditor.ProjectIO
             modSampleIds = [];
             modSamplesById = [];
 
-            foreach (ModDataItem modItem in Project.ModList) {
-                ModData mod = modItem.Mod;
+            foreach (ModData mod in Project.ModList) {
                 ModFile file = mod.ModFile;
                 List<string> sampleIdentifiers = [];
                 for (int spl = 0; spl < file.NumSamples; spl++) {
@@ -293,14 +282,14 @@ namespace GameEditor.ProjectIO
             }
 
             for (int m1 = 0; m1 < Project.ModList.Count; m1++) {
-                ModData mod1 = (ModData) Project.ModList[m1].Asset;
+                ModData mod1 = (ModData) Project.ModList[m1];
                 ModFile file1 = mod1.ModFile;
                 for (int spl1 = 0; spl1 < file1.NumSamples; spl1++) {
                     int bitsPerSample1 = file1.Sample[spl1].BitsPerSample;
                     short[]? data1 = file1.Sample[spl1].Data;
                     if (data1 == null) continue;
                     for (int m2 = m1+1; m2 < Project.ModList.Count; m2++) {
-                        ModData mod2 = (ModData) Project.ModList[m2].Asset;
+                        ModData mod2 = (ModData) Project.ModList[m2];
                         ModFile file2 = mod2.ModFile;
                         for (int spl2 = 0; spl2 < file2.NumSamples; spl2++) {
                             short[]? data2 = file2.Sample[spl2].Data;
@@ -419,14 +408,14 @@ namespace GameEditor.ProjectIO
             WriteModSamples(modSamplesById);
 
             // write patterns
-            foreach (ModDataItem mi in Project.ModList) {
-                WriteModPatterns(mi.Mod);
+            foreach (ModData mod in Project.ModList) {
+                WriteModPatterns(mod);
             }
 
             // write mod list
             f.WriteLine($"const struct {GetUpperGlobal("MOD_DATA")} {GetLowerGlobal("mods")}[] = {{");
-            foreach (ModDataItem mi in Project.ModList) {
-                WriteMod(mi.Mod, modSampleIds[mi.Mod]);
+            foreach (ModData mod in Project.ModList) {
+                WriteMod(mod, modSampleIds[mod]);
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -455,17 +444,17 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === SFX");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (SfxDataItem si in Project.SfxList) {
-                WriteSfxData(si.Sfx);
+            foreach (SfxData sfx in Project.SfxList) {
+                WriteSfxData(sfx);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("SFX")} {GetLowerGlobal("sfxs")}[] = {{");
-            foreach (SfxDataItem si in Project.SfxList) {
-                string name = identifiers.Get(si.Sfx);
-                int len = si.Sfx.Length;
-                int loopStart = si.Sfx.LoopStart;
-                int loopLen = si.Sfx.LoopLength;
-                int bitsPerSample = si.Sfx.BitsPerSample;
+            foreach (SfxData sfx in Project.SfxList) {
+                string name = identifiers.Get(sfx);
+                int len = sfx.Length;
+                int loopStart = sfx.LoopStart;
+                int loopLen = sfx.LoopLength;
+                int bitsPerSample = sfx.BitsPerSample;
                 f.WriteLine($"  {{ {len}, {loopStart}, {loopLen}, {bitsPerSample}, {{ .spl{bitsPerSample} = {name} }} }},");
             }
             f.WriteLine("};");
@@ -513,15 +502,15 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === TILESETS");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (TilesetItem ti in Project.TilesetList) {
-                WriteTilesetData(ti.Tileset);
+            foreach (Tileset ts in Project.TilesetList) {
+                WriteTilesetData(ts);
             }
 
             const int size = Tileset.TILE_SIZE;
             f.WriteLine($"const struct {GetUpperGlobal("IMAGE")} {GetLowerGlobal("tilesets")}[] = {{");
-            foreach (TilesetItem ti in Project.TilesetList) {
-                string ident = identifiers.Get(ti.Tileset);
-                f.WriteLine($"  {{ {size}, {size}, {size/4}, {ti.Tileset.NumTiles}, {ident} }},");
+            foreach (Tileset ts in Project.TilesetList) {
+                string ident = identifiers.Get(ts);
+                f.WriteLine($"  {{ {size}, {size}, {size/4}, {ts.NumTiles}, {ident} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -581,16 +570,16 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === SPRITES");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (SpriteItem si in Project.SpriteList) {
-                WriteSpriteData(si.Sprite);
+            foreach (Sprite spr in Project.SpriteList) {
+                WriteSpriteData(spr);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("IMAGE")} {GetLowerGlobal("sprites")}[] = {{");
-            foreach (SpriteItem si in Project.SpriteList) {
-                int w = si.Sprite.Width;
-                int h = si.Sprite.Height;
-                int nFrames = si.Sprite.NumFrames;
-                string ident = identifiers.Get(si.Sprite);
+            foreach (Sprite spr in Project.SpriteList) {
+                int w = spr.Width;
+                int h = spr.Height;
+                int nFrames = spr.NumFrames;
+                string ident = identifiers.Get(spr);
                 if (ADD_SPRITE_MIRRORS) nFrames *= 2;
                 f.WriteLine($"  {{ {w}, {h}, {(w+3)/4}, {nFrames}, {ident} }},");
             }
@@ -648,22 +637,22 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === MAPS");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (MapDataItem mi in Project.MapList) {
-                WriteMapTiles(mi.Map);
+            foreach (MapData map in Project.MapList) {
+                WriteMapTiles(map);
             }
 
             Dictionary<IDataAsset, int>? tsIndices = [];
-            foreach (var (ti, index) in Project.TilesetList.Zip(Enumerable.Range(0, Project.TilesetList.Count))) {
-                tsIndices[ti.Asset] = index;
+            foreach (var (ts, index) in Project.TilesetList.Zip(Enumerable.Range(0, Project.TilesetList.Count))) {
+                tsIndices[ts] = index;
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("MAP")} {GetLowerGlobal("maps")}[] = {{");
-            foreach (MapDataItem mi in Project.MapList) {
+            foreach (MapData map in Project.MapList) {
                 string tilesetsIdent = GetLowerGlobal("tilesets");
-                int tilesetIndex = Project.GetAssetIndex(mi.Map.Tileset);
+                int tilesetIndex = Project.GetAssetIndex(map.Tileset);
                 string tileset = $"&{tilesetsIdent}[{tilesetIndex}]";
-                string tiles = identifiers.Get(mi.Map);
-                f.WriteLine($"  {{ {mi.Map.FgWidth}, {mi.Map.FgHeight}, {mi.Map.BgWidth}, {mi.Map.BgHeight}, {tileset}, {tiles} }},");
+                string tiles = identifiers.Get(map);
+                f.WriteLine($"  {{ {map.FgWidth}, {map.FgHeight}, {map.BgWidth}, {map.BgHeight}, {tileset}, {tiles} }},");
             }
             f.WriteLine("};");
             f.WriteLine();
@@ -710,16 +699,15 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// === SPRITE ANIMATIONS");
             f.WriteLine("// ================================================================");
             f.WriteLine();
-            foreach (SpriteAnimationItem si in Project.SpriteAnimationList) {
-                WriteSpriteAnimationFrames(si.Animation);
+            foreach (SpriteAnimation anim in Project.SpriteAnimationList) {
+                WriteSpriteAnimationFrames(anim);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("SPRITE_ANIMATION")} {GetLowerGlobal("sprite_animations")}[] = {{");
-            foreach (SpriteAnimationItem ai in Project.SpriteAnimationList) {
-                SpriteAnimation anim = ai.Animation;
+            foreach (SpriteAnimation anim in Project.SpriteAnimationList) {
                 string spritesIdent = GetLowerGlobal("sprites");
                 int spriteIndex = Project.GetAssetIndex(anim.Sprite);
-                string ident = identifiers.Get(ai.Animation);
+                string ident = identifiers.Get(anim);
                 int useFootFrames = anim.CheckUseFootFrames() ? 1 : 0;
                 f.WriteLine("  {");
                 f.WriteLine($"    {ident},");
@@ -744,8 +732,7 @@ namespace GameEditor.ProjectIO
 
         private void WriteSpriteAnimationLoopNames() {
             string animsPrefix = GetUpperGlobal("SPRITE_ANIMATION");
-            foreach (SpriteAnimationItem sai in Project.SpriteAnimationList) {
-                SpriteAnimation anim = sai.Animation;
+            foreach (SpriteAnimation anim in Project.SpriteAnimationList) {
                 string name = IdentifierNamespace.SanitizeUpperName(anim.Name);
                 string animPrefix = $"{animsPrefix}_{name}";
 
@@ -836,18 +823,18 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// ================================================================");
             f.WriteLine();
 
-            foreach (RoomDataItem ri in Project.RoomList) {
-                WriteRoomMaps(ri.Room);
-                WriteRoomEntities(ri.Room);
-                WriteRoomTriggers(ri.Room);
+            foreach (RoomData room in Project.RoomList) {
+                WriteRoomMaps(room);
+                WriteRoomEntities(room);
+                WriteRoomTriggers(room);
             }
 
             f.WriteLine($"const struct {GetUpperGlobal("ROOM")} {GetLowerGlobal("rooms")}[] = {{");
-            foreach (RoomDataItem ri in Project.RoomList) {
-                string maps = identifiers.Get(ri.Room.Maps);
-                string entities = identifiers.Get(ri.Room.Entities);
-                string triggers = identifiers.Get(ri.Room.Triggers);
-                f.Write($"  {{ {ri.Room.Maps.Count}, {ri.Room.Entities.Count}, {ri.Room.Triggers.Count},");
+            foreach (RoomData room in Project.RoomList) {
+                string maps = identifiers.Get(room.Maps);
+                string entities = identifiers.Get(room.Entities);
+                string triggers = identifiers.Get(room.Triggers);
+                f.Write($"  {{ {room.Maps.Count}, {room.Entities.Count}, {room.Triggers.Count},");
                 f.WriteLine($" {maps}, {entities}, {triggers} }},");
             }
             f.WriteLine("};");
@@ -856,8 +843,7 @@ namespace GameEditor.ProjectIO
 
         private void WriteRoomItemNames() {
             string roomsPrefix = GetUpperGlobal("ROOM");
-            foreach (RoomDataItem ri in Project.RoomList) {
-                RoomData room = ri.Room;
+            foreach (RoomData room in Project.RoomList) {
                 string name = IdentifierNamespace.SanitizeUpperName(room.Name);
                 string roomPrefix = $"{roomsPrefix}_{name}";
 
@@ -923,15 +909,15 @@ namespace GameEditor.ProjectIO
             f.WriteLine("// ================================================================");
             f.WriteLine();
 
-            WriteDataIdsForType(Project.FontList.GetAssetList(), "FONT");
-            WriteDataIdsForType(Project.PropFontList.GetAssetList(), "PROP_FONT");
-            WriteDataIdsForType(Project.ModList.GetAssetList(), "MOD");
-            WriteDataIdsForType(Project.SfxList.GetAssetList(), "SFX");
-            WriteDataIdsForType(Project.TilesetList.GetAssetList(), "TILESET");
-            WriteDataIdsForType(Project.SpriteList.GetAssetList(), "SPRITE");
-            WriteDataIdsForType(Project.MapList.GetAssetList(), "MAP");
-            WriteDataIdsForType(Project.SpriteAnimationList.GetAssetList(), "SPRITE_ANIMATION");
-            WriteDataIdsForType(Project.RoomList.GetAssetList(), "ROOM");
+            WriteDataIdsForType(Project.FontList, "FONT");
+            WriteDataIdsForType(Project.PropFontList, "PROP_FONT");
+            WriteDataIdsForType(Project.ModList, "MOD");
+            WriteDataIdsForType(Project.SfxList, "SFX");
+            WriteDataIdsForType(Project.TilesetList, "TILESET");
+            WriteDataIdsForType(Project.SpriteList, "SPRITE");
+            WriteDataIdsForType(Project.MapList, "MAP");
+            WriteDataIdsForType(Project.SpriteAnimationList, "SPRITE_ANIMATION");
+            WriteDataIdsForType(Project.RoomList, "ROOM");
         }
 
         // =============================================================

@@ -1,5 +1,4 @@
-﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
+﻿using GameEditor.MapEditor;
 using GameEditor.Misc;
 using GameEditor.ProjectChecker;
 using GameEditor.TilesetEditor;
@@ -20,7 +19,7 @@ namespace GameEditor.MainEditor
     {
         private ProjectCheckResult? savedResult;
 
-        public CheckerWindow(ProjectData proj) : base(proj, "ValidatorWindow") {
+        public CheckerWindow(ProjectDataItem proj) : base(proj, "ValidatorWindow") {
             InitializeComponent();
         }
 
@@ -38,7 +37,7 @@ namespace GameEditor.MainEditor
         // ===================================================================
 
         public void RunCheck() {
-            ProjectInspector inspector = new ProjectInspector(Project);
+            ProjectInspector inspector = new ProjectInspector(Project.ProjectData);
             savedResult = inspector.Run();
             txtLog.Text = savedResult.GetReport();
         }

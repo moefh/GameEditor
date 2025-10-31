@@ -13,14 +13,14 @@ namespace GameEditor.PropFontEditor
 {
     public class PropFontDataItem : IDataAssetItem
     {
-        public PropFontDataItem(PropFontData font, ProjectData proj) {
+        public PropFontDataItem(PropFontData font, ProjectDataItem proj) {
             PropFont = font;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return PropFont; } }
         public PropFontData PropFont { get; }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public PropFontEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return PropFont.Name; } }

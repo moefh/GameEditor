@@ -12,13 +12,13 @@ namespace GameEditor.TilesetEditor
 {
     public class TilesetItem : IDataAssetItem
     {
-        public TilesetItem(Tileset ts, ProjectData proj) {
+        public TilesetItem(Tileset ts, ProjectDataItem proj) {
             Tileset = ts;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Tileset; } }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public Tileset Tileset { get; }
         public TilesetEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 

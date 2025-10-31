@@ -12,14 +12,14 @@ namespace GameEditor.FontEditor
 {
     public class FontDataItem : IDataAssetItem
     {
-        public FontDataItem(FontData font, ProjectData proj) {
+        public FontDataItem(FontData font, ProjectDataItem proj) {
             Font = font;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Font; } }
         public FontData Font { get; }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public FontEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
         public string Name { get { return Font.Name; } }

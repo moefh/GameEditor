@@ -13,13 +13,13 @@ namespace GameEditor.SpriteEditor
 {
     public class SpriteItem : IDataAssetItem
     {
-        public SpriteItem(Sprite sprite, ProjectData proj) {
+        public SpriteItem(Sprite sprite, ProjectDataItem proj) {
             Sprite = sprite;
             Project = proj;
         }
 
         public IDataAsset Asset { get { return Sprite; } }
-        public ProjectData Project { get; }
+        public ProjectDataItem Project { get; }
         public Sprite Sprite { get; }
         public SpriteEditorWindow? Editor { get; private set; }
         public ProjectAssetEditorForm? EditorForm { get { return Editor; } } 
