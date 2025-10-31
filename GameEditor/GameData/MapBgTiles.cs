@@ -121,7 +121,9 @@ namespace GameEditor.GameData
         public void RemovedTiles(int index, int count) {
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
-                    if (bg[x,y] >= index) bg[x,y] -= count;
+                    if (bg[x,y] >= index) {
+                        bg[x,y] = (bg[x,y] < index + count) ? -1 : bg[x,y] - count;
+                    }
                 }
             }
         }

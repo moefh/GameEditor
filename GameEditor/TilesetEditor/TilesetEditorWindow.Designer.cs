@@ -407,6 +407,7 @@
             // insertTileToolStripMenuItem
             // 
             insertTileToolStripMenuItem.Name = "insertTileToolStripMenuItem";
+            insertTileToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.I;
             insertTileToolStripMenuItem.Size = new Size(225, 24);
             insertTileToolStripMenuItem.Text = "Insert Tile";
             insertTileToolStripMenuItem.Click += insertTileToolStripMenuItem_Click;
@@ -414,6 +415,7 @@
             // appendTileToolStripMenuItem
             // 
             appendTileToolStripMenuItem.Name = "appendTileToolStripMenuItem";
+            appendTileToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.A;
             appendTileToolStripMenuItem.Size = new Size(225, 24);
             appendTileToolStripMenuItem.Text = "Append Tile";
             appendTileToolStripMenuItem.Click += appendTileToolStripMenuItem_Click;
@@ -445,6 +447,7 @@
             // deleteTileToolStripMenuItem
             // 
             deleteTileToolStripMenuItem.Name = "deleteTileToolStripMenuItem";
+            deleteTileToolStripMenuItem.ShortcutKeys = Keys.Control | Keys.Delete;
             deleteTileToolStripMenuItem.Size = new Size(225, 24);
             deleteTileToolStripMenuItem.Text = "Delete Tile";
             deleteTileToolStripMenuItem.Click += deleteTileToolStripMenuItem_Click;

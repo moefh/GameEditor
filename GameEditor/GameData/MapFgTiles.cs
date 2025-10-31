@@ -155,7 +155,9 @@ namespace GameEditor.GameData
         public void RemovedTiles(int index, int count) {
             for (int y = 0; y < Height; y++) {
                 for (int x = 0; x < Width; x++) {
-                    if (fg[x,y] >= index) fg[x,y] -= count;
+                    if (fg[x,y] >= index) {
+                        fg[x,y] = (fg[x,y] < index + count) ? -1 : fg[x,y] - count;
+                    }
                 }
             }
         }

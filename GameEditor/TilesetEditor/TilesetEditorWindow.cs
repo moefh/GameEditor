@@ -226,11 +226,10 @@ namespace GameEditor.TilesetEditor
         }
 
         private void InsertTileAt(int index) {
-            int oldNumTiles = Tileset.NumTiles;
             Tileset.AddTiles(index, 1, colorPicker.SelectedBackColor);
             foreach (MapDataItem map in Project.MapList) {
                 if (map.Map.Tileset == Tileset) {
-                    map.Map.InsertedTile(index, 1);
+                    map.Map.InsertedTiles(index, 1);
                 }
             }
             tilePicker.LeftSelectedTile = index;
@@ -253,7 +252,7 @@ namespace GameEditor.TilesetEditor
                 // fix maps that use this tileset
                 foreach (MapDataItem map in Project.MapList) {
                     if (map.Map.Tileset == Tileset) {
-                        map.Map.InsertedTile(index, numAdded);
+                        map.Map.InsertedTiles(index, numAdded);
                     }
                 }
             } catch (Exception ex) {

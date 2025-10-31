@@ -64,8 +64,7 @@ namespace GameEditor.GameData
             return b;
         }
 
-
-        public void InsertedTile(int index, int count) {
+        public void InsertedTiles(int index, int count) {
             fg.InsertedTiles(index, count);
             bg.InsertedTiles(index, count);
         }
