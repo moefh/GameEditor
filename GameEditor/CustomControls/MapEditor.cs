@@ -144,7 +144,9 @@ namespace GameEditor.CustomControls
         }
 
         protected override void SelfDispose() {
-            DropSelection();
+            base.SelfDispose();
+            selectionTiles = null;
+            activeSelection = Rectangle.Empty;
             Map = null; // this stops any event handlers from trying to work after disposing
         }
 

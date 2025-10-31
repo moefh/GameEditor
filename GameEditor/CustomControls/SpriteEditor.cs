@@ -47,6 +47,7 @@ namespace GameEditor.CustomControls
         }
 
         protected override void SelfDispose() {
+            base.SelfDispose();
             // this stops any event handlers from trying to work after disposing
             Sprite = null;
         }

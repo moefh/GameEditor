@@ -88,15 +88,22 @@ namespace GameEditor.Misc
         }
 
         public void PasteIntoImage(Image source, int image, int x, int y, bool transparent) {
+            Util.Log($"paste into image: {x}, {y}");
+            int sx = 0;
+            int sy = 0;
+            int dx = x;
+            int dy = y;
             int w = int.Min(source.Width, Width-x);
             int h = int.Min(source.Height, Height-y);
+            if (x < 0) { w += x; dx = 0; sx = -x; }
+            if (y < 0) { h += y; dy = 0; sy = -y; }
             if (w <= 0 || h <= 0) return;
 
             using Graphics g = Graphics.FromImage(bitmap);
             if (transparent) {
-                g.DrawImage(source, new Rectangle(x, y+image*Height, w, h), 0, 0, w, h, GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
+                g.DrawImage(source, new Rectangle(dx, dy+image*Height, w, h), sx, sy, w, h, GraphicsUnit.Pixel, ImageUtil.TransparentGreen);
             } else {
-                g.DrawImage(source, new Rectangle(x, y+image*Height, w, h), 0, 0, w, h, GraphicsUnit.Pixel);
+                g.DrawImage(source, new Rectangle(dx, dy+image*Height, w, h), sx, sy, w, h, GraphicsUnit.Pixel);
             }
 
             byte[] pixels = new byte[Width*Height*4];

@@ -63,7 +63,6 @@ namespace GameEditor.CustomControls
         }
 
         protected override void SelfDispose() {
-            DropSelection();
             selectionBmp?.Dispose();
             selectionBmp = null;
             undoBitmap?.Dispose();
