@@ -1,5 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.SpriteEditor;
 using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
@@ -19,8 +18,8 @@ namespace GameEditor.ProjectChecker
         }
 
         public override void Run() {
-            foreach (SpriteItem si in Project.SpriteList) {
-                CheckSprite(si.Sprite);
+            foreach (Sprite spr in Project.SpriteList) {
+                CheckSprite(spr);
             }
         }
     }

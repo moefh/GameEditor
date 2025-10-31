@@ -1,5 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,8 +17,8 @@ namespace GameEditor.ProjectChecker
         }
 
         public override void Run() {
-            foreach (TilesetItem ti in Project.TilesetList) {
-                CheckTileset(ti.Tileset);
+            foreach (Tileset tileset in Project.TilesetList) {
+                CheckTileset(tileset);
             }
         }
     }

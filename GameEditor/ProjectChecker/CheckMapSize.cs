@@ -1,11 +1,9 @@
 ﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static GameEditor.GameData.RoomData;
 
 namespace GameEditor.ProjectChecker
 {
@@ -30,8 +28,8 @@ namespace GameEditor.ProjectChecker
         }
 
         public override void Run() {
-            foreach (MapDataItem mi in Project.MapList) {
-                CheckMap(Project, mi.Map, Result);
+            foreach (MapData map in Project.MapList) {
+                CheckMap(Project, map, Result);
             }
         }
     }

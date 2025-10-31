@@ -1,6 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
-using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,8 +33,8 @@ namespace GameEditor.ProjectChecker
 
         private Dictionary<Tileset, bool[]> BuildTilesetTransparencyMap() {
             Dictionary<Tileset, bool[]> trans = [];
-            foreach (TilesetItem ti in Project.TilesetList) {
-                trans[ti.Tileset] = BuildTilesetTransparencyArray(ti.Tileset);
+            foreach (Tileset tileset in Project.TilesetList) {
+                trans[tileset] = BuildTilesetTransparencyArray(tileset);
             }
             return trans;
         }
@@ -95,8 +93,8 @@ namespace GameEditor.ProjectChecker
 
         public override void Run() {
             Dictionary<Tileset, bool[]> tilesetTransparency = BuildTilesetTransparencyMap();
-            foreach (MapDataItem mi in Project.MapList) {
-                CheckMap(mi.Map, tilesetTransparency);
+            foreach (MapData map in Project.MapList) {
+                CheckMap(map, tilesetTransparency);
             }
         }
     }

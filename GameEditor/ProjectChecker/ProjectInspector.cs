@@ -1,8 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
-using GameEditor.Misc;
-using GameEditor.ModEditor;
-using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.IO;

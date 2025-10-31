@@ -1,5 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.RoomEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,8 +38,8 @@ namespace GameEditor.ProjectChecker
         }
 
         public override void Run() {
-            foreach (RoomDataItem room in Project.RoomList) {
-                CheckRoom(room.Room);
+            foreach (RoomData room in Project.RoomList) {
+                CheckRoom(room);
             }
         }
     }

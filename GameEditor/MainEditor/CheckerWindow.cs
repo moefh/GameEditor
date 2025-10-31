@@ -1,7 +1,5 @@
-﻿using GameEditor.MapEditor;
-using GameEditor.Misc;
+﻿using GameEditor.Misc;
 using GameEditor.ProjectChecker;
-using GameEditor.TilesetEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;

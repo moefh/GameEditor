@@ -1,5 +1,4 @@
 ﻿using GameEditor.GameData;
-using GameEditor.MapEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -45,8 +44,8 @@ namespace GameEditor.ProjectChecker
         }
 
         public override void Run() {
-            foreach (MapDataItem mi in Project.MapList) {
-                CheckMap(mi.Map);
+            foreach (MapData map in Project.MapList) {
+                CheckMap(map);
             }
         }
     }

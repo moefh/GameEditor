@@ -1,6 +1,5 @@
 ﻿using GameEditor.GameData;
 using GameEditor.Misc;
-using GameEditor.ModEditor;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,8 +49,8 @@ namespace GameEditor.ProjectChecker
         }
 
         public override void Run() {
-            foreach (ModDataItem mi in Project.ModList) {
-                CheckMod(mi.Mod);
+            foreach (ModData mod in Project.ModList) {
+                CheckMod(mod);
             }
         }
     }
