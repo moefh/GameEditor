@@ -141,7 +141,7 @@ namespace GameEditor.CustomControls
 
         public int ScrollOffset {
             get { return scrollOffset; }
-            set { scrollOffset = value; ClipScrollOffset(); Invalidate(); }
+            set { scrollOffset = value; ClipScrollOffset(true); Invalidate(); }
         }
 
         private RenderInfo GetRenderInfo() {
@@ -227,7 +227,7 @@ namespace GameEditor.CustomControls
             return index;
         }
 
-        private bool ClipScrollOffset() {
+        private bool ClipScrollOffset(bool adjustSelection = false) {
             if (Frames == null || Frames.Count == 0) return false;
             if (SelectedIndex < 0) {
                 scrollOffset = 0;
@@ -248,17 +248,33 @@ namespace GameEditor.CustomControls
                     offset = totalFramesWidth - r.WindowWidth;
                 }
                 if (offset < 0) offset = 0;
-                if (SelectionEnabled) {
-                    // move selection into view
-                    if (offset < (SelectedIndex+1)*r.FrameStride - r.WindowWidth && (SelectedIndex+1)*r.FrameStride - r.WindowWidth >= 0) {
-                        offset = (SelectedIndex+1)*r.FrameStride - r.WindowWidth;
-                    }
-                    if (offset > SelectedIndex*r.FrameStride) {
-                        offset = SelectedIndex*r.FrameStride;
+                if (SelectionEnabled && selIndex >= 0) {
+                    if (adjustSelection) {
+                        if (selIndex * r.FrameStride <= offset) {
+                            selIndex = (offset + r.FrameStride - 1) / r.FrameStride;
+                        } else if ((selIndex + 1) * r.FrameStride > offset + r.WindowWidth) {
+                            if (r.FrameStride < r.WindowWidth) {
+                                selIndex = (offset + r.WindowWidth) / r.FrameStride - 1;
+                            } else {
+                                selIndex = (offset + r.WindowWidth) / r.FrameStride;
+                            }
+                        }
+                        if (selIndex >= Frames.Count) selIndex = Frames.Count - 1;
+                        if (selIndex < 0) selIndex = 0;
+                    } else {
+                        if (SelectionEnabled && SelectedIndex >= 0) {
+                            // move selection into view
+                            if (offset < (SelectedIndex+1)*r.FrameStride - r.WindowWidth && (SelectedIndex+1)*r.FrameStride - r.WindowWidth >= 0) {
+                                offset = (SelectedIndex+1)*r.FrameStride - r.WindowWidth;
+                            }
+                            if (offset > SelectedIndex*r.FrameStride) {
+                                offset = SelectedIndex*r.FrameStride;
+                            }
+                        }
                     }
                 }
             }
-            if (offset != ScrollOffset) {
+            if (offset != scrollOffset) {
                 scrollOffset = offset;
                 return true;
             }

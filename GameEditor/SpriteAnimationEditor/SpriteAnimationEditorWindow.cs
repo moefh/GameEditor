@@ -279,7 +279,7 @@ namespace GameEditor.SpriteAnimationEditor
 
         private void AdvanceFrameIndex(int delta) {
             SpriteAnimationLoop loop = Animation.Loops[loopsListBox.SelectedIndex];
-            if (loop == null) return;
+            if (loop == null || loop.NumFrames == 0) return;
             int index = (animLoopView.SelectedIndex + delta + loop.NumFrames) % loop.NumFrames;
             animLoopView.SelectedIndex = index;
             animEditor.SelectedIndex = index;
