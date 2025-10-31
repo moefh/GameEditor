@@ -102,19 +102,19 @@ namespace GameEditor.CustomControls
             Invalidate();
         }
 
-        public void ScrollTileIntoView(int tile) {
+        public void ScrollFrameIntoView(int frame) {
             if (Sprite == null) return;
             RenderInfo ri = GetRenderInfo(Sprite);
-            int y = (tile+ri.EmptyFrameSpace) / ri.NumHorzFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
+            int y = (frame+ri.EmptyFrameSpace) / ri.NumHorzFrames * (ri.ZoomedFrameHeight + 2*SEL_BORDER) + 1;
 
             if (y + 2*SEL_BORDER + ri.ZoomedFrameHeight < scrollValue) {
-                // tile is above the scolled area, we must scroll up
+                // frame is above the scolled area, we must scroll up
                 SetScrollPosition(y - 2*SEL_BORDER);
                 Invalidate();
             }
 
             if (y > scrollValue + ClientSize.Height) {
-                // tile is below the scolled area, we must scroll down
+                // frame is below the scolled area, we must scroll down
                 SetScrollPosition(y + ri.ZoomedFrameHeight + 2*SEL_BORDER - (ClientSize.Width + 1));
                 Invalidate();
             }

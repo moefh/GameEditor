@@ -3,6 +3,7 @@ using GameEditor.GameData;
 using GameEditor.MainEditor;
 using GameEditor.MapEditor;
 using GameEditor.Misc;
+using GameEditor.SpriteAnimationEditor;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -10,6 +11,7 @@ using System.Data;
 using System.Drawing;
 using System.Drawing.Design;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -21,6 +23,7 @@ namespace GameEditor.SpriteEditor
         private readonly SpriteItem spriteItem;
         private Rectangle spriteSelection;
         private Point spritePointHovered;
+        private bool warnedAboutTooManyFrames;
 
         public SpriteEditorWindow(SpriteItem spriteItem) : base(spriteItem, "SpriteEditor") {
             this.spriteItem = spriteItem;
@@ -80,6 +83,53 @@ namespace GameEditor.SpriteEditor
             string sel = (spriteSelection.Width <= 0 || spriteSelection.Height <= 0) ? "" : $"selection: {spriteSelection.Width}x{spriteSelection.Height}";
             lblSpriteSelectionInfo.Text = (sel == "") ? point : (point == "") ? sel : $"{point} {sel}";
         }
+
+        private void CheckTooManyFrames() {
+            if (Sprite.NumFrames <= Sprite.MAX_NUM_FRAMES || warnedAboutTooManyFrames) return;
+            warnedAboutTooManyFrames = true;
+            MessageBox.Show(
+                "Too many frames. Frames above the maximum number can't be properly used in animations.\n\n" +
+                "To fix this, edit the properties and set the number of frames to the maximum.",
+                "Too Many Frames", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+        }
+
+        private void OnSpriteResized() {
+            SetDirty();
+            FixFormTitle();
+            UpdateDataSize();
+            spriteFramePicker.ResetSize();
+            if (spriteFramePicker.SelectedFrame >= Sprite.NumFrames) {
+                spriteFramePicker.SelectedFrame = Sprite.NumFrames - 1;
+                spriteEditor.SelectedFrame = spriteFramePicker.SelectedFrame;
+            } else {
+                spriteEditor.Invalidate();
+            }
+            spriteFramePicker.Invalidate();
+            foreach (SpriteAnimationItem anim in Project.SpriteAnimationList) {
+                if (anim.Animation.Sprite == Sprite) {
+                    anim.Animation.FixFrameReferences();
+                }
+            }
+            Project.RefreshAssetUsers(Sprite);
+        }
+
+        private void insertFrameAt(int index) {
+            Sprite.AddFrames(index, 1, colorPicker.SelectedBackColor);
+            foreach (SpriteAnimationItem anim in Project.SpriteAnimationList) {
+                if (anim.Animation.Sprite == Sprite) {
+                    anim.Animation.InsertedSpriteFrames(index, 1);
+                }
+            }
+            spriteFramePicker.SelectedFrame = index;
+            spriteEditor.SelectedFrame = index;
+            OnSpriteResized();
+            spriteFramePicker.ScrollFrameIntoView(spriteFramePicker.SelectedFrame);
+            spriteFramePicker.Invalidate();
+
+            Project.RefreshAssetUsers(Sprite);
+            CheckTooManyFrames();
+        }
+
 
         private void colorPicker_SelectedColorChanged(object sender, EventArgs e) {
             spriteEditor.ForePen = colorPicker.SelectedForeColor;
@@ -160,11 +210,7 @@ namespace GameEditor.SpriteEditor
             if (dlg.ShowDialog() != DialogResult.OK) return;
             try {
                 Sprite.ImportBitmap(dlg.FileName, dlg.SpriteWidth, dlg.SpriteHeight);
-                SetDirty();
-                FixFormTitle();
-                UpdateDataSize();
-                spriteEditor.Invalidate();
-                spriteFramePicker.ResetSize();
+                OnSpriteResized();
             } catch (Exception ex) {
                 Util.ShowError(ex, $"Error importing sprite from {dlg.FileName} with size {dlg.SpriteWidth}x{dlg.SpriteHeight}", "Error Importing Sprite");
             }
@@ -192,10 +238,7 @@ namespace GameEditor.SpriteEditor
             Sprite.Name = dlg.SpriteName;
             if (dlg.SpriteWidth != Sprite.Width || dlg.SpriteHeight != Sprite.Height || dlg.SpriteFrames != Sprite.NumFrames) {
                 Sprite.Resize(dlg.SpriteWidth, dlg.SpriteHeight, dlg.SpriteFrames);
-                UpdateDataSize();
-                spriteFramePicker.ResetSize();
-                spriteEditor.SelectedFrame = 0;
-                spriteFramePicker.SelectedFrame = 0;
+                OnSpriteResized();
             }
             SetDirty();
             Project.UpdateAssetNames(Sprite.AssetType);
@@ -233,6 +276,34 @@ namespace GameEditor.SpriteEditor
             spriteEditor.DeleteSelection();
         }
 
+        private void insertFrameToolStripMenuItem_Click(object sender, EventArgs e) {
+            insertFrameAt(spriteFramePicker.SelectedFrame);
+        }
+
+        private void appendFrameToolStripMenuItem_Click(object sender, EventArgs e) {
+            insertFrameAt(Sprite.NumFrames);
+        }
+
+        private void deleteFrameToolStripMenuItem_Click(object sender, EventArgs e) {
+            if (Sprite.NumFrames <= 1) {
+                MessageBox.Show($"The sprite must have at least one frame.", "Can't Remove Frame",
+                                MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+            if (MessageBox.Show("Are you sure you want to delete this lovely frame?", "Delete Frame",
+                                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) {
+                return;
+            }
+            Sprite.DeleteFrames(spriteFramePicker.SelectedFrame, 1);
+            foreach (SpriteAnimationItem anim in Project.SpriteAnimationList) {
+                if (anim.Animation.Sprite == Sprite) {
+                    anim.Animation.RemovedSpriteFrames(spriteFramePicker.SelectedFrame, 1);
+                }
+            }
+            OnSpriteResized();
+            spriteFramePicker.ScrollFrameIntoView(spriteFramePicker.SelectedFrame);
+        }
+
         // ====================================================================
         // === SHORTCUTS
         // ====================================================================
@@ -249,13 +320,13 @@ namespace GameEditor.SpriteEditor
 
             switch (keyData) {
             case Keys.Space: SelectTool(PaintTool.Pen); return true;
-            case Keys.S:     SelectTool(PaintTool.RectSelect); return true;
-            case Keys.F:     SelectTool(PaintTool.FloodFill); return true;
+            case Keys.S: SelectTool(PaintTool.RectSelect); return true;
+            case Keys.F: SelectTool(PaintTool.FloodFill); return true;
 
-            case Keys.Left:  AdvanceFrame(-1); return true;
+            case Keys.Left: AdvanceFrame(-1); return true;
             case Keys.Right: AdvanceFrame(1); return true;
-            case Keys.Q:     AdvanceFrame(-1); return true;
-            case Keys.E:     AdvanceFrame(1); return true;
+            case Keys.Q: AdvanceFrame(-1); return true;
+            case Keys.E: AdvanceFrame(1); return true;
             default: return false;
             }
         }

@@ -33,7 +33,7 @@ namespace GameEditor.GameData
         public SpriteAnimationLoop(SpriteAnimation anim, string name, List<Frame> indices) {
             Animation = anim;
             Name = name;
-            Indices = new List<Frame>(indices);
+            Indices = [..indices];
         }
 
         public SpriteAnimation Animation { get; }
@@ -68,6 +68,38 @@ namespace GameEditor.GameData
             }
         }
 
+        public void InsertedSpriteFrames(int index, int count) {
+            for (int i = 0; i < Indices.Count; i++) {
+                int newHeadIndex = (Indices[i].HeadIndex >= index) ? Indices[i].HeadIndex + count : -1;
+                int newFootIndex = (Indices[i].FootIndex >= index) ? Indices[i].FootIndex + count : -1;
+                if (newHeadIndex >= 0 || newFootIndex >= 0) {
+                    if (newHeadIndex < 0) newHeadIndex = Indices[i].HeadIndex;
+                    if (newFootIndex < 0) newFootIndex = Indices[i].FootIndex;
+                    Indices[i] = new Frame(newHeadIndex, newFootIndex);
+                }
+            }
+        }
+
+        public void RemovedSpriteFrames(int index, int count) {
+            for (int i = 0; i < Indices.Count; i++) {
+                bool fixHeadIndex = false;
+                bool fixFootIndex = false;
+                int newHeadIndex = Indices[i].HeadIndex;
+                int newFootIndex = Indices[i].FootIndex;
+                if (Indices[i].HeadIndex >= index) {
+                    fixHeadIndex = true;
+                    newHeadIndex = (Indices[i].HeadIndex < index+count) ? -1 : Indices[i].HeadIndex-count;
+                }
+                if (Indices[i].FootIndex >= index) {
+                    fixFootIndex = true;
+                    newFootIndex = (Indices[i].FootIndex < index+count) ? -1 : Indices[i].FootIndex-count;
+                }
+                if (fixFootIndex || fixHeadIndex) {
+                    Indices[i] = new Frame(newHeadIndex, newFootIndex);
+                }
+            }
+        }
+
     }
 
     public class SpriteAnimation : IDataAsset
@@ -76,23 +108,20 @@ namespace GameEditor.GameData
 
         public SpriteAnimation(Sprite sprite, string name) {
             spr = sprite;
-            spr.NumFramesChanged += HandleNumFramesChanged;
             Name = name;
             Collision = new SpriteAnimationCollision(0, 0, 0, 0);
             Loops = new SpriteAnimationLoop[20];
             for (int i = 0; i < Loops.Length; i++) {
                 Loops[i] = new SpriteAnimationLoop(this, $"loop{i}", i==0);
             }
-            FixLoopFrameReferences();
+            FixFrameReferences();
         }
 
         public Sprite Sprite {
             get { return spr; }
             set {
-                spr.NumFramesChanged -= HandleNumFramesChanged;
                 spr = value;
-                spr.NumFramesChanged += HandleNumFramesChanged;
-                FixLoopFrameReferences();
+                FixFrameReferences();
             }
         }
 
@@ -127,17 +156,25 @@ namespace GameEditor.GameData
         }
 
         public void Dispose() {
-            Sprite.NumFramesChanged -= HandleNumFramesChanged;
         }
 
-        public void FixLoopFrameReferences() {
+        public void FixFrameReferences() {
             foreach (SpriteAnimationLoop loop in Loops) {
                 loop.FixFrameReferences();
             }
         }
 
-        private void HandleNumFramesChanged(object? sender, EventArgs e) {
-            FixLoopFrameReferences();
+        public void InsertedSpriteFrames(int index, int count) {
+            foreach (SpriteAnimationLoop loop in Loops) {
+                loop.InsertedSpriteFrames(index, count);
+            }
         }
+
+        public void RemovedSpriteFrames(int index, int count) {
+            foreach (SpriteAnimationLoop loop in Loops) {
+                loop.RemovedSpriteFrames(index, count);
+            }
+        }
+
     }
 }

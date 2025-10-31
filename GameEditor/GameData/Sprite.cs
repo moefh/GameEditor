@@ -22,8 +22,6 @@ namespace GameEditor.GameData
 
         private ImageCollection images;
 
-        public event EventHandler? NumFramesChanged;
-
         public Sprite(string name) {
             Name = name;
             images = CreateDefaultImages(DEFAULT_WIDTH, DEFAULT_HEIGHT, DEFAULT_NUM_FRAMES);
@@ -56,14 +54,18 @@ namespace GameEditor.GameData
             images.Dispose();
         }
 
-        protected void NotifyNumFramesChanged() {
-            NumFramesChanged?.Invoke(this, EventArgs.Empty);
-        }
-
         public void Resize(int newWidth, int newHeight, int newNumFrames) {
             images.Resize(newWidth, newHeight, newNumFrames, Color.FromArgb(0,255,0));
-            NotifyNumFramesChanged();
         }
+
+        public void AddFrames(int index, int count, Color background) {
+            images.AddImages(index, count, background);
+        }
+
+        public void DeleteFrames(int index, int count) {
+            images.DeleteImages(index, count);
+        }
+
 
         private static ImageCollection CreateDefaultImages(int width, int height, int numFrames) {
             Bitmap frames = new Bitmap(width, height * numFrames);
@@ -102,7 +104,6 @@ namespace GameEditor.GameData
 
         public void ImportBitmap(string filename, int frameW, int frameH, int border = 0, int spaceBetweenFrames = 0) {
             images.ImportBitmap(filename, frameW, frameH, border, spaceBetweenFrames);
-            NotifyNumFramesChanged();
         }
 
         public void ExportBitmap(string filename, int numHorzFrames) {
@@ -136,5 +137,6 @@ namespace GameEditor.GameData
         public void HFlipFrame(int frame, int x, int y, int width, int height) {
             images.HFlipImage(frame, x, y, width, height);
         }
+
     }
 }

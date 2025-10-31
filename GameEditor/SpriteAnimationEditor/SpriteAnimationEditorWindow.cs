@@ -97,7 +97,7 @@ namespace GameEditor.SpriteAnimationEditor
 
         public void RefreshSprite(Sprite sprite) {
             if (sprite == Animation.Sprite) {
-                animLoopView.Invalidate();
+                RefreshSelectedLoop();
                 animEditor.Invalidate();
                 FixFormTitle();
             }
