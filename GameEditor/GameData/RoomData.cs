@@ -131,8 +131,8 @@ namespace GameEditor.GameData
 
         public int DataSize {
             get {
-                // num_maps(1) + num_entities(1) + num_triggers(!) + pad(1)
-                int headerSize = 4;
+                // num_maps(1) + num_entities(1) + num_triggers(1) + pad(1) + 3*pointers
+                int headerSize = 4 + 3*4;
 
                 // - each map: x(2) + y(2) + mapPointer(4)
                 int mapsSize = maps.Count * (2 + 2 + 4);

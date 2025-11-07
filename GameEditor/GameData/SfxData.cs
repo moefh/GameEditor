@@ -43,7 +43,7 @@ namespace GameEditor.GameData
         public int LoopLength { get; set; }
         public int BitsPerSample { get; set; }
 
-        public int DataSize { get { return 4+4+4+4 + Length * BitsPerSample / 8; } }
+        public int DataSize { get { return 4+4+4+4 + 4 + Length * BitsPerSample / 8; } }
 
         public void Dispose() {
         }

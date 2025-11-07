@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 using System.Xml.Linq;
@@ -145,10 +146,12 @@ namespace GameEditor.GameData
 
         public int DataSize {
             get {
+                bool useFootFrames = CheckUseFootFrames();
+
                 // frameDataOffset(2) + frameDataLength(2) + numHeadIndices*index(1) + numFootIndices*index(1)
                 int loopsSize = 0;
                 foreach (SpriteAnimationLoop loop in Loops) {
-                    loopsSize += 2 + 2 + 2*loop.Indices.Count;
+                    loopsSize += loop.Indices.Count * (useFootFrames ? 2 : 1);
                 }
                 // framesPointer(4) + spriteImage(4) + collision(4*2) + usesFoot(1) + footOverlap(1) + padding(2) + loop sizes
                 return 4 + 4 + 4*2 + 1 + 1 + 2 + (2+2)*Loops.Length + loopsSize;

@@ -43,8 +43,8 @@ namespace GameEditor.GameData
             // all sample data
             int samplesData = modFile.Sample.Aggregate(0, (int size, ModSample s) => size + (s.Data == null ? 0 : s.Data.Length * s.BitsPerSample / 8));
 
-            // each pattern cell: sample(1) + padding(1) + period(2) + effect(2)
-            int patternSize = modFile.Pattern.Length * (1 + 1 + 2 + 2);
+            // each pattern cell: sample(1) + period(1) + effect(2)
+            int patternSize = modFile.Pattern.Length * (1 + 1 + 2);
 
             return structSize + samplesData + patternSize;
         }
